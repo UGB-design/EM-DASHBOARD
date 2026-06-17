@@ -8,7 +8,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0ede6;color:#1a1a1a;min-height:100vh}
 
-/* HEADER — warm gradient like Image 3 */
+/* HEADER */
 .header{background:linear-gradient(150deg,#f8f4ee 0%,#ede8df 100%);padding:22px 32px 0;border-bottom:1px solid #ddd8ce}
 .h-top{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;flex-wrap:wrap;gap:10px}
 .h-title{font-size:26px;font-weight:700;color:#1a1a1a;letter-spacing:-0.4px}
@@ -19,68 +19,91 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .saving{font-size:11px;color:#888;display:none}
 .saving.show{display:inline}
 
-/* TABS */
+/* TABS NAV */
 .tabs-row{display:flex;gap:2px;overflow-x:auto;padding-bottom:0}
 .tab-btn{padding:10px 22px;border-radius:10px 10px 0 0;font-size:13px;cursor:pointer;color:#999;border:none;background:transparent;font-weight:500;transition:all .15s;white-space:nowrap}
 .tab-btn.active{background:#fff;color:#1a1a1a;font-weight:600;box-shadow:0 -1px 5px rgba(0,0,0,.07)}
 
-/* CONTENT */
+/* LAYOUT */
 .content{padding:22px 32px}
 .tab-content{display:none}
 .tab-content.active{display:block}
 
-/* SUMMARY CARDS */
+/* TOP METRIC CARDS */
 .c5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:12px}
 .c1{display:grid;grid-template-columns:200px 1fr;gap:12px;margin-bottom:22px}
 .card{background:#fff;border-radius:14px;padding:18px 20px;box-shadow:0 1px 4px rgba(0,0,0,.06);border:1px solid #ece8e0}
 .cl{font-size:10px;color:#aaa;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;font-weight:700}
 .cv{font-size:28px;font-weight:700;margin-bottom:5px;line-height:1.1}
-/* BLUE = Plan numbers */
-.cv.blue{color:#185FA5}
-/* GREEN = Actual numbers & Overall% */
-.cv.green{color:#2E7D32}
-.cv.orange{color:#D97706}
-.cv.red{color:#DC2626}
-.cs{font-size:12px;color:#bbb}
+.cv.blue{color:#185FA5}.cv.green{color:#2E7D32}
+/* Sub-stat line under card value */
+.cs{font-size:11px;color:#bbb;line-height:1.5}
+.cs-detail{font-size:11px;margin-top:4px;display:flex;gap:8px;flex-wrap:wrap}
+.cs-done{color:#2E7D32;font-weight:600;background:#ecfdf5;padding:2px 7px;border-radius:10px;font-size:10px}
+.cs-pend{color:#b91c1c;font-weight:600;background:#fef2f2;padding:2px 7px;border-radius:10px;font-size:10px}
 
-/* TABLE CARD */
+/* FILTER BAR */
+.filter-bar{display:flex;align-items:center;gap:14px;margin-bottom:18px;background:#fff;padding:12px 18px;border-radius:12px;border:1px solid #ece8e0;flex-wrap:wrap;font-size:12px}
+.filter-bar label{font-weight:600;color:#666}
+.filter-bar select,.filter-bar input{padding:5px 12px;border:1px solid #ddd;border-radius:6px;outline:none;font-size:12px;color:#333}
+.meta-info-badge{display:flex;gap:8px;margin-bottom:14px}
+.m-badge{font-size:11px;padding:4px 10px;border-radius:20px;font-weight:600}
+.m-badge.b-blue{background:#eff6ff;color:#1d4ed8}
+.m-badge.b-green{background:#ecfdf5;color:#047857}
+.m-badge.b-red{background:#fef2f2;color:#b91c1c}
+
+/* FMS GROUP CARDS (FMS Steps tab) */
+.fms-card{background:#fff;border-radius:14px;box-shadow:0 1px 4px rgba(0,0,0,.06);border:1px solid #ece8e0;margin-bottom:20px;padding:18px 22px}
+.fms-card-top{display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:1px solid #f5f3ef;margin-bottom:10px;flex-wrap:wrap;gap:10px}
+.fms-card-title{font-size:15px;font-weight:700;color:#1a1a1a;display:flex;align-items:center;gap:8px}
+.fms-dot{width:8px;height:8px;border-radius:50%;background:#0d9488}
+.fms-card-meta{display:flex;align-items:center;gap:12px}
+.fms-badge{font-size:11px;font-weight:600;padding:3px 9px;border-radius:12px}
+.fms-badge.p-blue{background:#eff6ff;color:#1e40af}
+.fms-badge.a-green{background:#ecfdf5;color:#065f46}
+
+/* TABLES */
+table{width:100%;border-collapse:collapse}
+th{font-size:11px;color:#888;font-weight:700;padding:9px 12px;text-align:left;border-bottom:1px solid #f0eeea;text-transform:uppercase;letter-spacing:.05em;background:#fafaf8}
+td{padding:11px 12px;border-bottom:1px solid #faf8f5;vertical-align:middle;font-size:12px;color:#333}
+
+/* BADGES */
+.mb-ok{background:#ecfdf5;color:#047857;font-weight:700;font-size:10px;padding:3px 8px;border-radius:6px;display:inline-block}
+.mb-num{background:#fef2f2;color:#b91c1c;font-weight:700;font-size:11px;padding:3px 8px;border-radius:6px;display:inline-block}
+.st-done{background:#e6f4ea;color:#137333;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600;display:inline-block}
+.st-pend{background:#feeeea;color:#c5221f;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600;display:inline-block}
+.st-shift{background:#fef7e0;color:#b06000;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600;display:inline-block}
+.dept-pill{background:#e8f0fe;color:#1a73e8;font-size:11px;padding:2px 8px;border-radius:6px;font-weight:600}
+.freq-pill{background:#fff0e6;color:#e65100;font-size:11px;padding:2px 6px;border-radius:50%;font-weight:700;border:1px solid #ffccaa}
+/* FMS process type pill (green style like screenshot) */
+.fms-type-pill{background:#e6f4f1;color:#0d6b5e;font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;display:inline-block;white-space:nowrap}
+
+/* AVATARS */
+.dc{display:flex;align-items:center;gap:9px}
+.av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
+.av0{background:#DBEAFE;color:#1D4ED8}.av1{background:#D1FAE5;color:#065F46}
+.av2{background:#FEE2E2;color:#991B1B}.av3{background:#EDE9FE;color:#5B21B6}
+.av4{background:#FEF3C7;color:#92400E}.av5{background:#FCE7F3;color:#9D174D}
+.av6{background:#ECFEFF;color:#155E75}.av7{background:#F0FDF4;color:#14532D}
+
+/* PROGRESS BARS */
+.pgw{min-width:100px;display:flex;align-items:center;gap:10px}
+.pgbg{border-radius:4px;height:7px;width:75px;overflow:hidden;background:#f3f4f6}
+.pgf{height:7px;border-radius:4px;transition:width .6s}
+.pgp{font-size:11px;font-weight:700;min-width:32px;text-align:right}
+.pg-g .pgf{background:#2E7D32}.pg-g .pgp{color:#2E7D32}
+.pg-o .pgf{background:#F59E0B}.pg-o .pgp{color:#D97706}
+.pg-r .pgf{background:#EF4444}.pg-r .pgp{color:#DC2626}
+
+/* MASTER TABLE WRAPPER */
 .tc{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06);border:1px solid #ece8e0}
 .tc-top{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid #f0eeea}
 .tc-title{font-size:14px;font-weight:700;color:#1a1a1a}
 .date-cols-wrap{display:flex;align-items:flex-end;gap:1px}
 .dcol{font-size:10px;color:#aaa;text-align:center;width:38px;line-height:1.4}
 .dcol-day{font-weight:600;font-size:11px}
-
-table{width:100%;border-collapse:collapse}
-th{font-size:11px;color:#888;font-weight:700;padding:9px 12px;text-align:left;border-bottom:1px solid #f0eeea;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;background:#fafaf8}
-td{padding:11px 12px;border-bottom:1px solid #faf8f5;vertical-align:middle;font-size:12px}
-tr:last-child td{border-bottom:none}
-tbody tr:hover td{background:#faf8f4}
-
-/* AVATAR */
-.dc{display:flex;align-items:center;gap:9px}
-.av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
-.av0{background:#DBEAFE;color:#1D4ED8}.av1{background:#D1FAE5;color:#065F46}
-.av2{background:#FEE2E2;color:#991B1B}.av3{background:#EDE9FE;color:#5B21B6}
-.av4{background:#FEF3C7;color:#92400E}.av5{background:#FCE7F3;color:#9D174D}
-.av6{background:#D1FAE5;color:#065F46}.av7{background:#DBEAFE;color:#1D4ED8}
-.av8{background:#EDE9FE;color:#5B21B6}.av9{background:#FEE2E2;color:#991B1B}
-.av10{background:#FEF3C7;color:#92400E}.av11{background:#FCE7F3;color:#9D174D}
-.av12{background:#DBEAFE;color:#1D4ED8}.av13{background:#D1FAE5;color:#065F46}
-.dn{font-weight:600;font-size:13px;color:#1a1a1a}
-
-/* NUM BADGE */
 .nb{background:#f5f3f0;border:1px solid #ece8e0;border-radius:6px;padding:3px 8px;font-size:12px;display:inline-block;min-width:30px;text-align:center;color:#333;font-weight:600}
 .nb.z{color:#ddd;background:#fafaf8;border-color:#f0eeec}
-
-/* PROGRESS BAR */
-.pgw{min-width:100px}
-.pgbg{border-radius:4px;height:7px;width:88px;overflow:hidden;margin-bottom:4px}
-.pgf{height:7px;border-radius:4px;transition:width .6s}
-.pgp{font-size:11px;font-weight:700}
-.pg-g .pgbg{background:#E8F5E9}.pg-g .pgf{background:#2E7D32}.pg-g .pgp{color:#2E7D32}
-.pg-o .pgbg{background:#FFF8E1}.pg-o .pgf{background:#F59E0B}.pg-o .pgp{color:#D97706}
-.pg-r .pgbg{background:#FEECEC}.pg-r .pgf{background:#EF4444}.pg-r .pgp{color:#DC2626}
 
 /* HEATMAP CELLS */
 .hok{display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:24px;border-radius:7px;font-size:10px;font-weight:700;padding:0 5px;background:#D1FAE5;color:#065F46}
@@ -88,26 +111,29 @@ tbody tr:hover td{background:#faf8f4}
 .hbad{display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:24px;border-radius:7px;font-size:10px;font-weight:700;padding:0 5px;background:#FEE2E2;color:#991B1B}
 .hdash{color:#ddd;font-size:14px}
 
-/* DETAIL SECTION */
-.sc{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06);border:1px solid #ece8e0;margin-bottom:18px}
-.sh{padding:14px 18px;font-size:14px;font-weight:700;border-bottom:1px solid #f0eeea;display:flex;align-items:center;gap:10px;color:#1a1a1a}
-.sbadge{background:#EEF2FF;color:#4338CA;border-radius:7px;padding:2px 9px;font-size:11px;font-weight:700}
-.pct-g{color:#2E7D32;font-weight:700}
-.pct-o{color:#D97706;font-weight:700}
-.pct-r{color:#DC2626;font-weight:700}
+/* ── BOTTOM SUMMARY PANELS (FMS by Process + Checklist by Doer) ── */
+.summary-panels{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:22px}
+.sp-card{background:#fff;border-radius:14px;box-shadow:0 1px 4px rgba(0,0,0,.06);border:1px solid #ece8e0;overflow:hidden}
+.sp-head{padding:14px 18px;border-bottom:1px solid #f0eeea;display:flex;align-items:center;justify-content:space-between}
+.sp-title{font-size:14px;font-weight:700;color:#1a1a1a}
+.sp-count{font-size:11px;color:#aaa;font-weight:500}
+.sp-card table th{background:#fafaf8}
+.sp-card td{padding:10px 12px}
 
-/* LOADING/ERROR */
+/* LOADING / ERROR */
 .loading{text-align:center;padding:60px;color:#bbb}
 .spin{width:32px;height:32px;border:3px solid #eee;border-top-color:#185FA5;border-radius:50%;animation:sp .8s linear infinite;margin:0 auto 14px}
 @keyframes sp{to{transform:rotate(360deg)}}
 .ebox{background:#FEF2F2;border:1px solid #FECACA;border-radius:12px;padding:18px;margin:14px 0}
-.ebox h3{color:#991B1B;margin-bottom:6px;font-size:14px}
-.ebox p{color:#7F1D1D;font-size:13px;line-height:1.6}
 
-@media(max-width:800px){
-  .c5{grid-template-columns:repeat(2,1fr)}
+@media(max-width:900px){
+  .c5{grid-template-columns:repeat(3,1fr)}
   .c1{grid-template-columns:1fr}
-  .content{padding:14px 16px}
+  .summary-panels{grid-template-columns:1fr}
+  .content{padding:16px}
+}
+@media(max-width:600px){
+  .c5{grid-template-columns:1fr 1fr}
   .header{padding:16px 16px 0}
 }
 </style>
@@ -138,70 +164,68 @@ tbody tr:hover td{background:#faf8f4}
 
 <div class="content">
 
-  <!-- SUMMARY -->
+  <!-- ══════════════ SUMMARY TAB ══════════════ -->
   <div class="tab-content active" id="tab-summary">
-    <div id="ldiv" class="loading"><div class="spin"></div> Please Wait...</div>
+    <div id="ldiv" class="loading"><div class="spin"></div> Please Wait Loading Summary...</div>
     <div id="mdiv" style="display:none">
 
-      <!-- 5 CARDS: Plan=Blue, Actual=Green -->
+      <!-- TOP 5 METRIC CARDS -->
       <div class="c5">
         <div class="card">
           <div class="cl">Total Plan</div>
           <div class="cv blue" id="cTP">—</div>
-          <div class="cs">FMS + Checklist + Delegation</div>
+          <div class="cs">FMS+CL+DL Combined</div>
         </div>
         <div class="card">
           <div class="cl">Total Actual</div>
           <div class="cv green" id="cTA">—</div>
           <div class="cs" id="cTAs">—</div>
         </div>
+        <!-- FMS PLAN with done/pending sub-stats -->
         <div class="card">
           <div class="cl">FMS Plan</div>
           <div class="cv blue" id="cFP">—</div>
-          <div class="cs" id="cFPs">—</div>
+          <div class="cs-detail" id="cFPdetail"></div>
         </div>
+        <!-- CHECKLIST PLAN with done/pending sub-stats -->
         <div class="card">
           <div class="cl">Checklist Plan</div>
           <div class="cv blue" id="cCP">—</div>
-          <div class="cs" id="cCPs">—</div>
+          <div class="cs-detail" id="cCPdetail"></div>
         </div>
+        <!-- DELEGATION PLAN with done/pending sub-stats -->
         <div class="card">
           <div class="cl">Delegation Plan</div>
           <div class="cv blue" id="cDP">—</div>
-          <div class="cs" id="cDPs">—</div>
+          <div class="cs-detail" id="cDPdetail"></div>
         </div>
       </div>
 
-      <!-- OVERALL % — Green -->
+      <!-- OVERALL SCORE -->
       <div class="c1">
         <div class="card">
-          <div class="cl">Overall %</div>
+          <div class="cl">Overall Score</div>
           <div class="cv green" id="cOV">—</div>
-          <div class="cs">completion rate</div>
+          <div class="cs">weekly progress rate</div>
         </div>
-        <div></div>
       </div>
 
-      <!-- ALL DOERS TABLE + HEATMAP -->
+      <!-- ALL DOERS MASTER SUMMARY TABLE -->
       <div class="tc">
         <div class="tc-top">
-          <div class="tc-title">All Doers - FMS + Checklist + Delegation</div>
+          <div class="tc-title">All Doers Master Summary</div>
           <div class="date-cols-wrap" id="hmDateCols"></div>
         </div>
         <div style="overflow-x:auto">
           <table>
             <thead>
               <tr>
-                <th>#</th>
-                <th>Doer</th>
-                <th>FMS Plan</th>
-                <th>FMS Actual</th>
-                <th>CL Plan</th>
-                <th>CL Actual</th>
-                <th>DL Plan</th>
-                <th>DL Actual</th>
-                <th>Progress</th>
-                <th style="text-align:center" id="hmThLabel">Daily Heatmap</th>
+                <th>#</th><th>Doer Name</th>
+                <th>FMS P</th><th>FMS A</th>
+                <th>CL P</th><th>CL A</th>
+                <th>DL P</th><th>DL A</th>
+                <th>Total Progress</th>
+                <th style="text-align:center" id="hmThLabel">Heatmap Tracker</th>
               </tr>
             </thead>
             <tbody id="dBody"></tbody>
@@ -209,334 +233,494 @@ tbody tr:hover td{background:#faf8f4}
         </div>
       </div>
 
-    </div>
-    <div id="ediv" style="display:none"></div>
-  </div>
+      <!-- ── BOTTOM PANELS: FMS by Process + Checklist by Doer ── -->
+      <div class="summary-panels">
 
-  <!-- FMS -->
+        <!-- FMS BY PROCESS -->
+        <div class="sp-card">
+          <div class="sp-head">
+            <div class="sp-title">FMS by Process</div>
+            <div class="sp-count" id="fmsByProcessCount"></div>
+          </div>
+          <div style="overflow-x:auto">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>FMS</th>
+                  <th>Plan</th>
+                  <th>Actual</th>
+                  <th>Miss</th>
+                  <th>Progress</th>
+                </tr>
+              </thead>
+              <tbody id="fmsByProcessBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- CHECKLIST BY DOER -->
+        <div class="sp-card">
+          <div class="sp-head">
+            <div class="sp-title">Checklist by Doer</div>
+            <div class="sp-count" id="clByDoerCount"></div>
+          </div>
+          <div style="overflow-x:auto">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Doer</th>
+                  <th>Dept</th>
+                  <th>Plan</th>
+                  <th>Actual</th>
+                  <th>Progress</th>
+                </tr>
+              </thead>
+              <tbody id="clByDoerBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div><!-- /summary-panels -->
+    </div><!-- /mdiv -->
+  </div><!-- /tab-summary -->
+
+  <!-- ══════════════ FMS STEPS TAB ══════════════ -->
   <div class="tab-content" id="tab-fms">
-    <div class="sc">
-      <div class="sh">FMS Steps <span class="sbadge" id="fmsBadge">—</span></div>
-      <table>
-        <thead><tr><th>#</th><th>Name</th><th>Planned</th><th>Completed</th><th>Pending</th><th>Completion %</th></tr></thead>
-        <tbody id="fmsBody"></tbody>
-      </table>
+    <!-- Filter bar with Type + Doer dropdowns -->
+    <div class="filter-bar">
+      <label>FMS Type:</label>
+      <select id="fmsFilterType" onchange="applyFmsFilters()">
+        <option value="All">All Types</option>
+      </select>
+      <label>Doer:</label>
+      <select id="fmsFilterDoer" onchange="applyFmsFilters()">
+        <option value="All">All Doers</option>
+      </select>
     </div>
+    <div class="meta-info-badge" id="fmsMetaBadges"></div>
+    <div id="fmsCardsContainer"><div class="loading">Fetching FMS structured groups...</div></div>
   </div>
 
-  <!-- CHECKLIST -->
+  <!-- ══════════════ CHECKLIST TAB ══════════════ -->
   <div class="tab-content" id="tab-checklist">
-    <div class="sc">
-      <div class="sh">Checklist <span class="sbadge" id="clBadge">—</span></div>
-      <table>
-        <thead><tr><th>#</th><th>Name</th><th>Planned</th><th>Completed</th><th>Pending</th><th>Completion %</th></tr></thead>
-        <tbody id="clBody"></tbody>
-      </table>
+    <div class="filter-bar">
+      <label>Doer:</label>
+      <select id="clFilterDoer" onchange="applyChecklistFilters()"><option value="All">All Doers</option></select>
+      <label>Dept:</label>
+      <select id="clFilterDept" onchange="applyChecklistFilters()"><option value="All">All Depts</option></select>
+      <label>Status:</label>
+      <select id="clFilterStatus" onchange="applyChecklistFilters()">
+        <option value="All">All Status</option>
+        <option value="Done">Done</option>
+        <option value="Pending">Pending</option>
+      </select>
+    </div>
+    <div class="meta-info-badge" id="clMetaBadges"></div>
+    <div class="tc">
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Doer</th><th>Dept</th><th>Task Details</th><th>Freq</th><th>Planned Date</th><th>Actual Date</th><th>Status</th></tr>
+          </thead>
+          <tbody id="clTableBody"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 
-  <!-- DELEGATION -->
+  <!-- ══════════════ DELEGATION TAB ══════════════ -->
   <div class="tab-content" id="tab-delegation">
-    <div class="sc">
-      <div class="sh">Delegation <span class="sbadge" id="dlBadge">—</span></div>
-      <table>
-        <thead><tr><th>#</th><th>Name</th><th>Planned</th><th>Completed</th><th>Pending</th><th>Completion %</th></tr></thead>
-        <tbody id="dlBody"></tbody>
-      </table>
+    <div class="filter-bar">
+      <label>Doer:</label>
+      <select id="dlFilterDoer" onchange="applyDelegationFilters()"><option value="All">All Doers</option></select>
+      <label>Status:</label>
+      <select id="dlFilterStatus" onchange="applyDelegationFilters()">
+        <option value="All">All Status</option>
+        <option value="Completed">Completed</option>
+        <option value="Week Shifted">Week Shifted</option>
+        <option value="Pending">Pending</option>
+      </select>
+    </div>
+    <div class="meta-info-badge" id="dlMetaBadges"></div>
+    <div class="tc">
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Doer</th><th>Task Description</th><th>First Date</th><th>Revision 1</th><th>Revision 2</th><th>Latest Revision</th><th>Status</th></tr>
+          </thead>
+          <tbody id="dlTableBody"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 
+  <div id="ediv" style="display:none"></div>
 </div>
 
 <script>
-// ===== YOUR API URL HERE =====
-var API = "https://script.google.com/macros/s/AKfycbzQrOMk0k9rZbVIVl-B9d0LIGUyWZbla8W6QnJTor3WCWcbpgBV0THoG5xon-sotmRC/exec";
-// =============================
+var API = "https://script.google.com/macros/s/AKfycbzd13AMCBQ4SUfjsYm7HWlzHAi6NCNoZ7RcXzGQ4aXAKuqrKzePh8VbmjDUQun6gYz-/exec";
 
-var _weeks = [];
+var globalRawData = null;
 var _currentWeekVal = null;
 
-// ---- HELPERS ----
-function ini(n){var p=String(n).trim().split(' ');return p.length>=2?(p[0][0]+p[1][0]).toUpperCase():String(n).substring(0,2).toUpperCase();}
-
-function nb(v){var n=Number(v)||0;return '<span class="nb'+(n===0?' z':'')+'">'+( n===0?'–':n)+'</span>';}
-
-function pgCls(p){return p>=90?'pg-g':p>=50?'pg-o':'pg-r';}
-function pg(p){
-  p=parseFloat(p)||0;
-  return '<div class="pgw '+pgCls(p)+'"><div class="pgbg"><div class="pgf" style="width:'+Math.min(p,100)+'%"></div></div><div class="pgp">'+p.toFixed(1)+'%</div></div>';
+// ── Helpers ──────────────────────────────────────────────────────────────────
+function ini(n) {
+  var p = String(n).trim().split(' ');
+  return p.length >= 2 ? (p[0][0] + p[1][0]).toUpperCase() : String(n).substring(0, 2).toUpperCase();
 }
-
-function pctSpan(v){
-  var p=parseFloat(v)||0;
-  return '<span class="'+(p>=90?'pct-g':p>=50?'pct-o':'pct-r')+'">'+p.toFixed(1)+'%</span>';
+function nb(v) {
+  var n = Number(v) || 0;
+  return '<span class="nb' + (n === 0 ? ' z' : '') + '">' + (n === 0 ? '–' : n) + '</span>';
 }
+function pgCls(p) { return p >= 90 ? 'pg-g' : p >= 50 ? 'pg-o' : 'pg-r'; }
+function pg(p) {
+  p = parseFloat(p) || 0;
+  return '<div class="pgw ' + pgCls(p) + '"><div class="pgbg"><div class="pgf" style="width:' + Math.min(p, 100) + '%"></div></div><div class="pgp">' + p.toFixed(1) + '%</div></div>';
+}
+function ovCls(v) { return 'green'; }
 
-function ovCls(v){var p=parseFloat(v)||0;return p>=90?'green':p>=50?'orange':'red';}
-
-function hmCell(val){
-  if(!val||val==='-'||val==='null'||val==='undefined') return '<span class="hdash">–</span>';
-  var s=String(val).trim();
-  if(!s||s==='-') return '<span class="hdash">–</span>';
-  var pts=s.split('/');
-  if(pts.length===2){
-    var done=parseInt(pts[0])||0,tot=parseInt(pts[1])||0;
-    if(tot===0) return '<span class="hdash">–</span>';
-    if(done===tot) return '<span class="hok">'+s+'</span>';
-    if(done===0) return '<span class="hbad">'+s+'</span>';
-    return '<span class="hwarn">'+s+'</span>';
+function hmCell(val) {
+  if (!val || val === '-' || val === 'null' || val === 'undefined') return '<span class="hdash">–</span>';
+  var s = String(val).trim();
+  if (!s || s === '-') return '<span class="hdash">–</span>';
+  if (s.toLowerCase() === 'ok' || s.toLowerCase() === 'completed') return '<span class="hok">OK</span>';
+  if (s.toLowerCase() === 'x') return '<span class="hbad">✕</span>';
+  var pts = s.split('/');
+  if (pts.length === 2) {
+    var d = parseInt(pts[0]) || 0, t = parseInt(pts[1]) || 0;
+    if (t === 0) return '<span class="hdash">–</span>';
+    return d === t ? '<span class="hok">' + s + '</span>' : d === 0 ? '<span class="hbad">' + s + '</span>' : '<span class="hwarn">' + s + '</span>';
   }
-  if(s.toLowerCase()==='ok') return '<span class="hok">OK</span>';
-  return '<span class="hok">'+s+'</span>';
+  return '<span class="hok">' + s + '</span>';
 }
 
-// ---- BUILD WEEK DROPDOWN FROM WEEK_MASTER ----
+// ── Week Dropdown ─────────────────────────────────────────────────────────────
 function buildWeekDropdown(weeks, currentFrom, currentTo) {
-  _weeks = weeks || [];
   var sel = document.getElementById('wkSel');
   sel.innerHTML = '';
-
-  // Group by month for optgroups
-  var months = {};
-  var monthOrder = [];
-  _weeks.forEach(function(w, idx) {
-    // Parse from date to get month label
-    var parts = w.from.split('/');
-    var d = parts.length===3 ? new Date(parts[2], parseInt(parts[1])-1, parseInt(parts[0])) : new Date(w.from);
-    var M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    var mKey = M[d.getMonth()]+' '+d.getFullYear();
-    if (!months[mKey]) { months[mKey] = []; monthOrder.push(mKey); }
-    months[mKey].push({ idx: idx, w: w });
+  weeks.forEach(function(w) {
+    var o = document.createElement('option');
+    var val = JSON.stringify({ from: w.from, to: w.to });
+    o.value = val;
+    o.textContent = w.from + ' – ' + w.to;
+    if (currentFrom && currentTo && (w.from === currentFrom || w.to === currentTo)) o.selected = true;
+    sel.appendChild(o);
   });
-
-  var selectedVal = null;
-  monthOrder.forEach(function(mKey) {
-    var grp = document.createElement('optgroup');
-    grp.label = mKey;
-    months[mKey].forEach(function(item) {
-      var w = item.w;
-      var o = document.createElement('option');
-      var val = JSON.stringify({ from: w.from, to: w.to, name: w.name });
-      o.value = val;
-      // Format label: "Week 16 · 15/06 – 21/06"
-      var fParts = w.from.split('/'); var tParts = w.to.split('/');
-      var months = [
-'January','February','March','April','May','June',
-'July','August','September','October','November','December'
-];
-
-var fLabel = parseInt(fParts[0]) + ' ' + months[parseInt(fParts[1])-1];
-var tLabel = parseInt(tParts[0]) + ' ' + months[parseInt(tParts[1])-1] + ' ' + tParts[2];
-
-o.textContent = fLabel + ' - ' + tLabel;
-      // Check if this matches current sheet dates
-      if (currentFrom && currentTo && (w.from===currentFrom || w.to===currentTo)) {
-        o.selected = true;
-        selectedVal = val;
-      }
-      grp.appendChild(o);
-    });
-    sel.appendChild(grp);
-  });
-
-  // If nothing matched, try to select closest to today
-  if (!selectedVal && sel.options.length > 0) {
-    var today = new Date();
-    var bestIdx = 0, bestDiff = Infinity;
-    for (var i=0; i<sel.options.length; i++) {
-      try {
-        var v = JSON.parse(sel.options[i].value);
-        var fp = v.from.split('/');
-        var fd = new Date(fp[2], parseInt(fp[1])-1, parseInt(fp[0]));
-        var diff = Math.abs(today - fd);
-        if (diff < bestDiff) { bestDiff = diff; bestIdx = i; }
-      } catch(e){}
-    }
-    sel.selectedIndex = bestIdx;
-  }
   _currentWeekVal = sel.value;
 }
 
-// ---- ON WEEK CHANGE ----
 function onWeekChange(val) {
-  if (!val || val===_currentWeekVal) return;
+  if (!val || val === _currentWeekVal) return;
   _currentWeekVal = val;
-  var parsed;
-  try { parsed = JSON.parse(val); } catch(e){ return; }
-
+  var parsed = JSON.parse(val);
   document.getElementById('savingTxt').classList.add('show');
-  document.getElementById('ldiv').style.display='block';
-  document.getElementById('mdiv').style.display='none';
-
-  // Call API to update J1/K1 in sheet then get fresh data
-  var url = API+'?action=setDates&from='+encodeURIComponent(parsed.from)+'&to='+encodeURIComponent(parsed.to)+'&cb='+Date.now();
-  fetch(url,{redirect:'follow'})
-  .then(function(r){return r.json();})
-  .then(function(data){
-    document.getElementById('savingTxt').classList.remove('show');
-    document.getElementById('ldiv').style.display='none';
-    document.getElementById('mdiv').style.display='block';
-    renderAll(data);
-  })
-  .catch(function(err){
-    document.getElementById('savingTxt').classList.remove('show');
-    document.getElementById('ldiv').style.display='none';
-    document.getElementById('ediv').innerHTML='<div class="ebox"><h3>Error</h3><p>'+err.message+'</p></div>';
-    document.getElementById('ediv').style.display='block';
-  });
+  document.getElementById('ldiv').style.display = 'block';
+  document.getElementById('mdiv').style.display = 'none';
+  fetch(API + '?action=setDates&from=' + encodeURIComponent(parsed.from) + '&to=' + encodeURIComponent(parsed.to) + '&cb=' + Date.now(), { redirect: 'follow' })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      document.getElementById('savingTxt').classList.remove('show');
+      document.getElementById('ldiv').style.display = 'none';
+      document.getElementById('mdiv').style.display = 'block';
+      renderAll(data);
+    });
 }
 
-// ---- RENDER HEATMAP DATE HEADER ----
-function renderHmDates(dates) {
-  if (!dates||!dates.length) {
-    document.getElementById('hmDateCols').innerHTML='';
-    return;
-  }
-  var M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  var html='';
-  dates.forEach(function(d){
-    var pts=d.split('/');
-    var mon=M[parseInt(pts[1])-1]||pts[1];
-    html+='<div class="dcol"><div class="dcol-day">'+pts[0]+'</div><div style="font-size:9px">'+mon+'</div></div>';
-  });
-  document.getElementById('hmDateCols').innerHTML=html;
-  // Set colspan on heatmap header cell
-  if(dates.length>0) document.getElementById('hmThLabel').setAttribute('colspan', dates.length);
-}
+// ── Main Render ───────────────────────────────────────────────────────────────
+function renderAll(data) {
+  globalRawData = data;
+  var em = data.emDashboard || {};
+  var t  = em.totals || {};
+  var bd = em.breakdown || {};
 
-// ---- RENDER DOERS TABLE ----
-function renderDoers(doers, hmData) {
-  if (!doers||!doers.length) return '<tr><td colspan="20" style="text-align:center;color:#ccc;padding:30px">No data</td></tr>';
-  var hmMap={};
-  if(hmData&&hmData.doers){
-    hmData.doers.forEach(function(hd){ hmMap[hd.name.toLowerCase().trim()]=hd.days; });
-  }
-  var numDates = hmData && hmData.dates ? hmData.dates.length : 0;
-  return doers.map(function(d,i){
-    var key=d.name.toLowerCase().trim();
-    var days=hmMap[key]||[];
-    var hmCells='';
-    if(numDates>0){
-      for(var j=0;j<numDates;j++){
-        hmCells+='<td style="text-align:center;padding:6px 3px">'+hmCell(days[j]||null)+'</td>';
-      }
-    }
-    return '<tr>'+
-      '<td style="color:#bbb;font-size:11px;width:24px">'+(i+1)+'</td>'+
-      '<td><div class="dc"><div class="av av'+(i%14)+'">'+ini(d.name)+'</div><span class="dn">'+d.name+'</span></div></td>'+
-      '<td>'+nb(d.fmsPlan)+'</td>'+
-      '<td>'+nb(d.fmsActual)+'</td>'+
-      '<td>'+nb(d.clPlan)+'</td>'+
-      '<td>'+nb(d.clActual)+'</td>'+
-      '<td>'+nb(d.dlPlan)+'</td>'+
-      '<td>'+nb(d.dlActual)+'</td>'+
-      '<td>'+pg(d.progress)+'</td>'+
-      hmCells+
-    '</tr>';
-  }).join('');
-}
+  if (data.weeks && data.weeks.length) buildWeekDropdown(data.weeks, em.week ? em.week.from : '', em.week ? em.week.to : '');
 
-// ---- RENDER DETAIL TABLE ----
-function renderDetail(doers,bodyId,badgeId){
-  if(!doers||!doers.length){
-    document.getElementById(bodyId).innerHTML='<tr><td colspan="6" style="text-align:center;color:#ccc;padding:24px">No data</td></tr>';
-    if(badgeId) document.getElementById(badgeId).textContent='0 doers';
-    return;
-  }
-  document.getElementById(bodyId).innerHTML=doers.map(function(d,i){
-    return '<tr>'+
-      '<td style="color:#bbb;font-size:11px">'+(i+1)+'</td>'+
-      '<td><div class="dc"><div class="av av'+(i%14)+'">'+ini(d.name)+'</div><span class="dn">'+d.name+'</span></div></td>'+
-      '<td>'+nb(d.planned)+'</td>'+
-      '<td>'+nb(d.completed)+'</td>'+
-      '<td>'+nb(d.pending)+'</td>'+
-      '<td>'+pctSpan(d.completionPct)+'</td>'+
-    '</tr>';
-  }).join('');
-  if(badgeId) document.getElementById(badgeId).textContent=doers.length+' doers';
-}
+  // ── Top metric cards ──
+  document.getElementById('cTP').textContent = t.totalPlan || 0;
+  document.getElementById('cTA').textContent = t.totalActual || 0;
+  document.getElementById('cFP').textContent = t.fmsPlan || 0;
+  document.getElementById('cCP').textContent = t.checklistPlan || 0;
+  document.getElementById('cDP').textContent = t.delegationPlan || 0;
 
-// ---- RENDER ALL ----
-function renderAll(data){
-  var em=data.emDashboard;
-  if(!em) return;
-
-  // Build week dropdown from WEEK_MASTER data
-  if(data.weeks && data.weeks.length){
-    buildWeekDropdown(data.weeks, em.week?em.week.from:'', em.week?em.week.to:'');
-  }
-
-  var t=em.totals||{};
-
-  // PLAN cards = Blue, ACTUAL = Green
-  document.getElementById('cTP').textContent = t.totalPlan||0;
-  document.getElementById('cTA').textContent = t.totalActual||0;
-  document.getElementById('cFP').textContent = t.fmsPlan||0;
-  document.getElementById('cCP').textContent = t.checklistPlan||0;
-  document.getElementById('cDP').textContent = t.delegationPlan||0;
-
-  // Overall % — format properly
   var ov = t.overall || '0%';
-  var ovNum = t.overallNum !== undefined ? t.overallNum : parseFloat(ov)||0;
-  document.getElementById('cTAs').textContent = ov+' complete';
-
-  var ovEl=document.getElementById('cOV');
+  document.getElementById('cTAs').textContent = ov + ' complete';
+  var ovEl = document.getElementById('cOV');
   ovEl.textContent = ov;
-  ovEl.className = 'cv '+ovCls(ovNum);
+  ovEl.className = 'cv ' + ovCls(parseFloat(ov));
 
-  // Subtexts: done · pending
-  if(data.fms&&data.fms.doers){
-    var fD=0,fP=0; data.fms.doers.forEach(function(r){fD+=r.completed;fP+=r.pending;});
-    document.getElementById('cFPs').textContent=fD+' done · '+fP+' pending';
+  // ── Done / Pending sub-stats under FMS, CL, DL cards ──
+  document.getElementById('cFPdetail').innerHTML =
+    '<span class="cs-done">' + bd.fmsDone + ' done</span>' +
+    '<span class="cs-pend">' + bd.fmsPending + ' pending</span>';
+
+  document.getElementById('cCPdetail').innerHTML =
+    '<span class="cs-done">' + bd.clDone + ' done</span>' +
+    '<span class="cs-pend">' + bd.clPending + ' pending</span>';
+
+  document.getElementById('cDPdetail').innerHTML =
+    '<span class="cs-done">' + bd.dlDone + ' done</span>' +
+    '<span class="cs-pend">' + bd.dlPending + ' pending</span>';
+
+  // ── Heatmap date header ──
+  if (data.heatmap && data.heatmap.dates) {
+    var M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var html = '';
+    data.heatmap.dates.forEach(function(d) {
+      var pts = d.split('/');
+      html += '<div class="dcol"><div class="dcol-day">' + pts[0] + '</div><div style="font-size:9px">' + (M[parseInt(pts[1]) - 1] || pts[1]) + '</div></div>';
+    });
+    document.getElementById('hmDateCols').innerHTML = html;
+    document.getElementById('hmThLabel').setAttribute('colspan', data.heatmap.dates.length);
   }
-  if(data.checklist&&data.checklist.doers){
-    var cD=0,cP=0; data.checklist.doers.forEach(function(r){cD+=r.completed;cP+=r.pending;});
-    document.getElementById('cCPs').textContent=cD+' done · '+cP+' pending';
+
+  // ── All Doers Master table ──
+  if (em.doers) {
+    var hmMap = {};
+    if (data.heatmap && data.heatmap.doers) data.heatmap.doers.forEach(function(hd) { hmMap[hd.name.toLowerCase().trim()] = hd.days; });
+    var numDates = data.heatmap && data.heatmap.dates ? data.heatmap.dates.length : 0;
+    document.getElementById('dBody').innerHTML = em.doers.map(function(d, i) {
+      var cells = '';
+      for (var j = 0; j < numDates; j++) cells += '<td style="text-align:center;padding:6px 2px">' + hmCell((hmMap[d.name.toLowerCase().trim()] || [])[j]) + '</td>';
+      return '<tr><td>' + (i + 1) + '</td>' +
+        '<td><div class="dc"><div class="av av' + (i % 8) + '">' + ini(d.name) + '</div>' + d.name + '</div></td>' +
+        '<td>' + nb(d.fmsPlan) + '</td><td>' + nb(d.fmsActual) + '</td>' +
+        '<td>' + nb(d.clPlan) + '</td><td>' + nb(d.clActual) + '</td>' +
+        '<td>' + nb(d.dlPlan) + '</td><td>' + nb(d.dlActual) + '</td>' +
+        '<td>' + pg(d.progress) + '</td>' + cells + '</tr>';
+    }).join('');
   }
-  if(data.delegation&&data.delegation.doers){
-    var dD=0,dP=0; data.delegation.doers.forEach(function(r){dD+=r.completed;dP+=r.pending;});
-    document.getElementById('cDPs').textContent=dD+' done · '+dP+' pending';
-  }
 
-  // Heatmap dates in table header
-  if(data.heatmap&&data.heatmap.dates) renderHmDates(data.heatmap.dates);
+  // ── FMS by Process panel ──
+  renderFmsByProcess(data.fmsByProcess || []);
 
-  // All doers table
-  if(em.doers) document.getElementById('dBody').innerHTML=renderDoers(em.doers, data.heatmap);
+  // ── Checklist by Doer panel ──
+  renderClByDoer(data.checklistByDoer || []);
 
-  // Detail tabs
-  if(data.fms&&data.fms.doers) renderDetail(data.fms.doers,'fmsBody','fmsBadge');
-  if(data.checklist&&data.checklist.doers) renderDetail(data.checklist.doers,'clBody','clBadge');
-  if(data.delegation&&data.delegation.doers) renderDetail(data.delegation.doers,'dlBody','dlBadge');
+  // ── FMS Steps tab: populate filter dropdowns ──
+  populateFmsFilters(data.fmsFilterOptions || {});
+  applyFmsFilters();
+
+  // ── Checklist + Delegation tabs ──
+  populateChecklistDelegationFilters();
+  applyChecklistFilters();
+  applyDelegationFilters();
 }
 
-// ---- LOAD DATA ----
-function loadData(){
-  document.getElementById('ldiv').style.display='block';
-  document.getElementById('mdiv').style.display='none';
-  document.getElementById('ediv').style.display='none';
-  fetch(API+'?cb='+Date.now(),{redirect:'follow'})
-  .then(function(r){return r.json();})
-  .then(function(data){
-    document.getElementById('ldiv').style.display='none';
-    document.getElementById('mdiv').style.display='block';
-    renderAll(data);
-  })
-  .catch(function(err){
-    document.getElementById('ldiv').style.display='none';
-    document.getElementById('ediv').innerHTML='<div class="ebox"><h3>Connection Error</h3><p>'+err.message+'<br><br>Apps Script redeploy karo — "Anyone" access select karo.</p></div>';
-    document.getElementById('ediv').style.display='block';
+// ── FMS by Process panel render ───────────────────────────────────────────────
+function renderFmsByProcess(rows) {
+  document.getElementById('fmsByProcessCount').textContent = rows.length + ' process types';
+  document.getElementById('fmsByProcessBody').innerHTML = rows.map(function(r, i) {
+    return '<tr>' +
+      '<td>' + (i + 1) + '</td>' +
+      '<td><span class="fms-type-pill">' + r.fmsType + '</span></td>' +
+      '<td>' + nb(r.plan) + '</td>' +
+      '<td>' + nb(r.actual) + '</td>' +
+      '<td>' + (r.missed === 0 ? '<span class="mb-ok">OK</span>' : '<span class="mb-num">' + r.missed + '</span>') + '</td>' +
+      '<td>' + pg(r.progress) + '</td>' +
+      '</tr>';
+  }).join('') || '<tr><td colspan="6" style="text-align:center;color:#bbb;padding:20px">No FMS data for this week</td></tr>';
+}
+
+// ── Checklist by Doer panel render ───────────────────────────────────────────
+function renderClByDoer(rows) {
+  document.getElementById('clByDoerCount').textContent = rows.length + ' doers';
+  document.getElementById('clByDoerBody').innerHTML = rows.map(function(r, i) {
+    return '<tr>' +
+      '<td>' + (i + 1) + '</td>' +
+      '<td><div class="dc"><div class="av av' + (i % 8) + '">' + ini(r.doer) + '</div>' + r.doer + '</div></td>' +
+      '<td><span class="dept-pill">' + r.dept + '</span></td>' +
+      '<td>' + nb(r.plan) + '</td>' +
+      '<td>' + nb(r.actual) + '</td>' +
+      '<td>' + pg(r.progress) + '</td>' +
+      '</tr>';
+  }).join('') || '<tr><td colspan="6" style="text-align:center;color:#bbb;padding:20px">No checklist data for this week</td></tr>';
+}
+
+// ── FMS Steps Tab Filters ─────────────────────────────────────────────────────
+function populateFmsFilters(opts) {
+  var typesSel = document.getElementById('fmsFilterType');
+  var doersSel = document.getElementById('fmsFilterDoer');
+  var prevType = typesSel.value;
+  var prevDoer = doersSel.value;
+
+  typesSel.innerHTML = '<option value="All">All Types</option>';
+  (opts.types || []).forEach(function(t) {
+    var o = document.createElement('option');
+    o.value = t; o.textContent = t;
+    if (t === prevType) o.selected = true;
+    typesSel.appendChild(o);
+  });
+
+  doersSel.innerHTML = '<option value="All">All Doers</option>';
+  (opts.doers || []).forEach(function(d) {
+    var o = document.createElement('option');
+    o.value = d; o.textContent = d;
+    if (d === prevDoer) o.selected = true;
+    doersSel.appendChild(o);
   });
 }
 
-function switchTab(name,el){
-  document.querySelectorAll('.tab-btn').forEach(function(t){t.classList.remove('active');});
-  document.querySelectorAll('.tab-content').forEach(function(t){t.classList.remove('active');});
-  el.classList.add('active');
-  document.getElementById('tab-'+name).classList.add('active');
+function applyFmsFilters() {
+  var typeFilter = document.getElementById('fmsFilterType').value;
+  var doerFilter = document.getElementById('fmsFilterDoer').value;
+  var groups = globalRawData ? (globalRawData.fmsGroups || []) : [];
+
+  var totalPlan = 0, totalActual = 0, groupCount = 0;
+
+  var html = groups.map(function(g) {
+    // Filter by type
+    if (typeFilter !== 'All' && g.groupName !== typeFilter) return '';
+
+    // Filter steps by doer
+    var filteredSteps = g.steps.filter(function(s) {
+      return doerFilter === 'All' || s.doer === doerFilter;
+    });
+    if (filteredSteps.length === 0) return '';
+
+    var gPlan = filteredSteps.reduce(function(s, r) { return s + r.plan; }, 0);
+    var gActual = filteredSteps.reduce(function(s, r) { return s + r.actual; }, 0);
+    var gProg = gPlan > 0 ? (gActual / gPlan) * 100 : 0;
+    totalPlan += gPlan; totalActual += gActual; groupCount++;
+
+    var rows = filteredSteps.map(function(s, idx) {
+      return '<tr>' +
+        '<td>' + (idx + 1) + '</td>' +
+        '<td style="font-weight:600">' + s.step + '</td>' +
+        '<td><div class="dc"><div class="av av' + (idx % 8) + '">' + ini(s.doer) + '</div>' + s.doer + '</div></td>' +
+        '<td>' + nb(s.plan) + '</td>' +
+        '<td>' + nb(s.actual) + '</td>' +
+        '<td>' + (s.missed === 0 ? '<span class="mb-ok">OK</span>' : '<span class="mb-num">' + s.missed + '</span>') + '</td>' +
+        '<td>' + pg(s.progress) + '</td>' +
+        '</tr>';
+    }).join('');
+
+    return '<div class="fms-card">' +
+      '<div class="fms-card-top">' +
+        '<div class="fms-card-title"><span class="fms-dot"></span>' + g.groupName + '</div>' +
+        '<div class="fms-card-meta">' +
+          '<span class="fms-badge p-blue">' + gPlan + ' plan</span>' +
+          '<span class="fms-badge a-green">' + gActual + ' actual</span>' +
+          '<div style="width:120px">' + pg(gProg) + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<table><thead><tr><th>#</th><th>Step</th><th>Doer</th><th>Plan</th><th>Actual</th><th>Missed</th><th>Progress</th></tr></thead>' +
+      '<tbody>' + rows + '</tbody></table>' +
+      '</div>';
+  }).join('');
+
+  // Meta badges
+  var missed = totalPlan - totalActual;
+  document.getElementById('fmsMetaBadges').innerHTML =
+    '<span class="m-badge b-blue">' + groupCount + ' groups</span>' +
+    '<span class="m-badge b-green">' + totalActual + ' done</span>' +
+    '<span class="m-badge b-red">' + Math.max(0, missed) + ' pending</span>';
+
+  document.getElementById('fmsCardsContainer').innerHTML = html ||
+    '<div style="text-align:center;padding:40px;color:#bbb">No FMS data matches the selected filters</div>';
 }
 
-loadData();
+// ── Checklist & Delegation filter population ──────────────────────────────────
+function populateChecklistDelegationFilters() {
+  var clDoers = new Set(), clDepts = new Set();
+  if (globalRawData.checklistData) {
+    globalRawData.checklistData.forEach(function(r) { clDoers.add(r.doer); clDepts.add(r.dept); });
+  }
+  updateSelectOptions('clFilterDoer', clDoers);
+  updateSelectOptions('clFilterDept', clDepts);
+
+  var dlDoers = new Set();
+  if (globalRawData.delegationData) {
+    globalRawData.delegationData.forEach(function(r) { dlDoers.add(r.doer); });
+  }
+  updateSelectOptions('dlFilterDoer', dlDoers);
+}
+
+function updateSelectOptions(id, setObj) {
+  var sel = document.getElementById(id);
+  var currentVal = sel.value;
+  sel.innerHTML = '<option value="All">' + (id.includes('Doer') ? 'All Doers' : id.includes('Dept') ? 'All Depts' : 'All') + '</option>';
+  Array.from(setObj).sort().forEach(function(v) {
+    var o = document.createElement('option');
+    o.value = v; o.textContent = v;
+    if (v === currentVal) o.selected = true;
+    sel.appendChild(o);
+  });
+}
+
+// ── Checklist Tab ─────────────────────────────────────────────────────────────
+function applyChecklistFilters() {
+  var dFilter    = document.getElementById('clFilterDoer').value;
+  var deptFilter = document.getElementById('clFilterDept').value;
+  var sFilter    = document.getElementById('clFilterStatus').value;
+  var data = globalRawData ? (globalRawData.checklistData || []) : [];
+  var filtered = data.filter(function(r) {
+    return (dFilter === 'All' || r.doer === dFilter) &&
+           (deptFilter === 'All' || r.dept === deptFilter) &&
+           (sFilter === 'All' || r.status === sFilter);
+  });
+  var doneCount = filtered.filter(function(r) { return r.status === 'Done'; }).length;
+  document.getElementById('clMetaBadges').innerHTML =
+    '<span class="m-badge b-blue">' + filtered.length + ' planned</span>' +
+    '<span class="m-badge b-green">' + doneCount + ' done</span>' +
+    '<span class="m-badge b-red">' + (filtered.length - doneCount) + ' pending</span>';
+  document.getElementById('clTableBody').innerHTML = filtered.map(function(r, i) {
+    return '<tr><td>' + (i + 1) + '</td>' +
+      '<td><div class="dc"><div class="av av' + (i % 8) + '">' + ini(r.doer) + '</div>' + r.doer + '</div></td>' +
+      '<td><span class="dept-pill">' + r.dept + '</span></td>' +
+      '<td>' + r.task + '</td>' +
+      '<td><span class="freq-pill">' + r.freq + '</span></td>' +
+      '<td>' + r.plannedDate + '</td><td>' + r.actualDate + '</td>' +
+      '<td><span class="' + (r.status === 'Done' ? 'st-done' : 'st-pend') + '">' + r.status + '</span></td></tr>';
+  }).join('');
+}
+
+// ── Delegation Tab ────────────────────────────────────────────────────────────
+function applyDelegationFilters() {
+  var dFilter = document.getElementById('dlFilterDoer').value;
+  var sFilter = document.getElementById('dlFilterStatus').value;
+  var data = globalRawData ? (globalRawData.delegationData || []) : [];
+  var filtered = data.filter(function(r) {
+    return (dFilter === 'All' || r.doer === dFilter) &&
+           (sFilter === 'All' || r.status.toLowerCase() === sFilter.toLowerCase());
+  });
+  var doneCount = filtered.filter(function(r) { return r.status.toLowerCase() === 'completed'; }).length;
+  document.getElementById('dlMetaBadges').innerHTML =
+    '<span class="m-badge b-blue">' + filtered.length + ' planned</span>' +
+    '<span class="m-badge b-green">' + doneCount + ' done</span>' +
+    '<span class="m-badge b-red">' + (filtered.length - doneCount) + ' pending</span>';
+  document.getElementById('dlTableBody').innerHTML = filtered.map(function(r, i) {
+    var sCls = r.status.toLowerCase() === 'completed' ? 'st-done' : r.status.toLowerCase() === 'week shifted' ? 'st-shift' : 'st-pend';
+    return '<tr><td>' + (i + 1) + '</td>' +
+      '<td><div class="dc"><div class="av av' + (i % 8) + '">' + ini(r.client) + '</div>' + r.client + '</div></td>' +
+      '<td>' + r.task + '</td>' +
+      '<td>' + r.firstDate + '</td><td>' + r.revision1 + '</td><td>' + r.revision2 + '</td><td>' + r.latestRevision + '</td>' +
+      '<td><span class="' + sCls + '">' + r.status + '</span></td></tr>';
+  }).join('');
+}
+
+// ── Tab switch ────────────────────────────────────────────────────────────────
+function switchTab(name, el) {
+  document.querySelectorAll('.tab-btn').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.tab-content').forEach(function(t) { t.classList.remove('active'); });
+  el.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+// ── Initial load ──────────────────────────────────────────────────────────────
+(function() {
+  fetch(API + '?cb=' + Date.now(), { redirect: 'follow' })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      document.getElementById('ldiv').style.display = 'none';
+      document.getElementById('mdiv').style.display = 'block';
+      renderAll(data);
+    })
+    .catch(function(err) {
+      document.getElementById('ldiv').innerHTML = '<div class="ebox">Error loading data. Please refresh.<br><small>' + err + '</small></div>';
+    });
+})();
 </script>
 </body>
 </html>
