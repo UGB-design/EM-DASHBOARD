@@ -6,81 +6,83 @@
 <title>EM Dashboard</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0ede6;color:#1a1a1a;min-height:100vh}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f7f8fa;color:#1a1a1a;min-height:100vh}
 
 /* HEADER */
-.header{background:linear-gradient(150deg,#f8f4ee 0%,#ede8df 100%);padding:22px 32px 0;border-bottom:1px solid #ddd8ce}
+.header{background:#fff;padding:20px 32px 0;border-bottom:1px solid #e8eaed}
 .h-top{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;flex-wrap:wrap;gap:10px}
-.h-title{font-size:26px;font-weight:700;color:#1a1a1a;letter-spacing:-0.4px}
-.h-sub{font-size:12px;color:#aaa;margin-top:3px}
+.h-title{font-size:24px;font-weight:700;color:#1a1a1a;letter-spacing:-0.3px}
+.h-sub{font-size:12px;color:#9aa0ac;margin-top:3px}
 .h-right{display:flex;align-items:center;gap:10px}
 .wk-label{font-size:13px;color:#888;font-weight:500}
-.wk-sel{background:#fff;border:1px solid #ccc;border-radius:20px;padding:7px 16px;font-size:13px;color:#333;font-weight:500;cursor:pointer;outline:none;box-shadow:0 1px 4px rgba(0,0,0,.07);max-width:240px}
+.wk-sel{background:#fff;border:1.5px solid #d1d5db;border-radius:8px;padding:7px 14px;font-size:13px;color:#333;font-weight:500;cursor:pointer;outline:none;box-shadow:0 1px 3px rgba(0,0,0,.06);max-width:260px}
 .saving{font-size:11px;color:#888;display:none}
 .saving.show{display:inline}
 
 /* TABS NAV */
-.tabs-row{display:flex;gap:2px;overflow-x:auto;padding-bottom:0}
-.tab-btn{padding:10px 22px;border-radius:10px 10px 0 0;font-size:13px;cursor:pointer;color:#999;border:none;background:transparent;font-weight:500;transition:all .15s;white-space:nowrap}
-.tab-btn.active{background:#fff;color:#1a1a1a;font-weight:600;box-shadow:0 -1px 5px rgba(0,0,0,.07)}
+.tabs-row{display:flex;gap:0;overflow-x:auto;padding-bottom:0}
+.tab-btn{padding:11px 24px;border-radius:0;font-size:13px;cursor:pointer;color:#9aa0ac;border:none;border-bottom:2px solid transparent;background:transparent;font-weight:500;transition:all .15s;white-space:nowrap}
+.tab-btn.active{color:#1a1a1a;font-weight:700;border-bottom:2px solid #1a1a1a;background:transparent}
+.tab-btn:hover:not(.active){color:#555;background:#f7f8fa}
 
 /* LAYOUT */
-.content{padding:22px 32px}
+.content{padding:24px 32px}
 .tab-content{display:none}
 .tab-content.active{display:block}
 
 /* TOP METRIC CARDS */
-.c5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:12px}
-.c1{display:grid;grid-template-columns:200px 1fr;gap:12px;margin-bottom:22px}
-.card{background:#fff;border-radius:14px;padding:18px 20px;box-shadow:0 1px 4px rgba(0,0,0,.06);border:1px solid #ece8e0}
-.cl{font-size:10px;color:#aaa;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;font-weight:700}
-.cv{font-size:28px;font-weight:700;margin-bottom:5px;line-height:1.1}
-.cv.blue{color:#185FA5}.cv.green{color:#2E7D32}
+.c5{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:14px}
+.c1{display:grid;grid-template-columns:200px 1fr;gap:14px;margin-bottom:24px}
+.card{background:#fff;border-radius:12px;padding:20px 22px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed}
+.cl{font-size:10px;color:#9aa0ac;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;font-weight:700}
+.cv{font-size:30px;font-weight:700;margin-bottom:6px;line-height:1.1}
+.cv.blue{color:#2563eb}.cv.green{color:#16a34a}
 /* Sub-stat line under card value */
 .cs{font-size:11px;color:#bbb;line-height:1.5}
-.cs-detail{font-size:11px;margin-top:4px;display:flex;gap:8px;flex-wrap:wrap}
-.cs-done{color:#2E7D32;font-weight:600;background:#ecfdf5;padding:2px 7px;border-radius:10px;font-size:10px}
-.cs-pend{color:#b91c1c;font-weight:600;background:#fef2f2;padding:2px 7px;border-radius:10px;font-size:10px}
+.cs-detail{font-size:11px;margin-top:6px;display:flex;gap:6px;flex-wrap:wrap}
+.cs-done{color:#16a34a;font-weight:600;background:#f0fdf4;padding:2px 8px;border-radius:20px;font-size:11px}
+.cs-pend{color:#dc2626;font-weight:600;background:#fef2f2;padding:2px 8px;border-radius:20px;font-size:11px}
 
 /* FILTER BAR */
-.filter-bar{display:flex;align-items:center;gap:14px;margin-bottom:18px;background:#fff;padding:12px 18px;border-radius:12px;border:1px solid #ece8e0;flex-wrap:wrap;font-size:12px}
-.filter-bar label{font-weight:600;color:#666}
-.filter-bar select,.filter-bar input{padding:5px 12px;border:1px solid #ddd;border-radius:6px;outline:none;font-size:12px;color:#333}
+.filter-bar{display:flex;align-items:center;gap:16px;margin-bottom:16px;background:#fff;padding:12px 20px;border-radius:10px;border:1px solid #e8eaed;flex-wrap:wrap;font-size:12px}
+.filter-bar label{font-weight:600;color:#555}
+.filter-bar select,.filter-bar input{padding:6px 12px;border:1px solid #d1d5db;border-radius:6px;outline:none;font-size:12px;color:#333;background:#fff}
 .meta-info-badge{display:flex;gap:8px;margin-bottom:14px}
-.m-badge{font-size:11px;padding:4px 10px;border-radius:20px;font-weight:600}
+.m-badge{font-size:11px;padding:4px 12px;border-radius:20px;font-weight:600}
 .m-badge.b-blue{background:#eff6ff;color:#1d4ed8}
-.m-badge.b-green{background:#ecfdf5;color:#047857}
-.m-badge.b-red{background:#fef2f2;color:#b91c1c}
+.m-badge.b-green{background:#f0fdf4;color:#16a34a}
+.m-badge.b-red{background:#fef2f2;color:#dc2626}
 
 /* FMS GROUP CARDS (FMS Steps tab) */
-.fms-card{background:#fff;border-radius:14px;box-shadow:0 1px 4px rgba(0,0,0,.06);border:1px solid #ece8e0;margin-bottom:20px;padding:18px 22px}
-.fms-card-top{display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:1px solid #f5f3ef;margin-bottom:10px;flex-wrap:wrap;gap:10px}
-.fms-card-title{font-size:15px;font-weight:700;color:#1a1a1a;display:flex;align-items:center;gap:8px}
-.fms-dot{width:8px;height:8px;border-radius:50%;background:#0d9488}
+.fms-card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed;margin-bottom:16px;padding:18px 22px}
+.fms-card-top{display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:1px solid #f0f0f0;margin-bottom:12px;flex-wrap:wrap;gap:10px}
+.fms-card-title{font-size:14px;font-weight:700;color:#1a1a1a;display:flex;align-items:center;gap:8px}
+.fms-dot{width:8px;height:8px;border-radius:50%;background:#10b981}
 .fms-card-meta{display:flex;align-items:center;gap:12px}
-.fms-badge{font-size:11px;font-weight:600;padding:3px 9px;border-radius:12px}
+.fms-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px}
 .fms-badge.p-blue{background:#eff6ff;color:#1e40af}
-.fms-badge.a-green{background:#ecfdf5;color:#065f46}
+.fms-badge.a-green{background:#f0fdf4;color:#166534}
 
 /* TABLES */
 table{width:100%;border-collapse:collapse}
-th{font-size:11px;color:#888;font-weight:700;padding:9px 12px;text-align:left;border-bottom:1px solid #f0eeea;text-transform:uppercase;letter-spacing:.05em;background:#fafaf8}
-td{padding:11px 12px;border-bottom:1px solid #faf8f5;vertical-align:middle;font-size:12px;color:#333}
+th{font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 14px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fff}
+td{padding:13px 14px;border-bottom:1px solid #f3f4f6;vertical-align:middle;font-size:13px;color:#374151}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafbfc}
 
 /* BADGES */
-.mb-ok{background:#ecfdf5;color:#047857;font-weight:700;font-size:10px;padding:3px 8px;border-radius:6px;display:inline-block}
-.mb-num{background:#fef2f2;color:#b91c1c;font-weight:700;font-size:11px;padding:3px 8px;border-radius:6px;display:inline-block}
-.st-done{background:#e6f4ea;color:#137333;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600;display:inline-block}
-.st-pend{background:#feeeea;color:#c5221f;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600;display:inline-block}
-.st-shift{background:#fef7e0;color:#b06000;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600;display:inline-block}
-.dept-pill{background:#e8f0fe;color:#1a73e8;font-size:11px;padding:2px 8px;border-radius:6px;font-weight:600}
-.freq-pill{background:#fff0e6;color:#e65100;font-size:11px;padding:2px 6px;border-radius:50%;font-weight:700;border:1px solid #ffccaa}
-/* FMS process type pill (green style like screenshot) */
-.fms-type-pill{background:#e6f4f1;color:#0d6b5e;font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;display:inline-block;white-space:nowrap}
+.mb-ok{background:#f0fdf4;color:#16a34a;font-weight:700;font-size:10px;padding:3px 8px;border-radius:6px;display:inline-block}
+.mb-num{background:#fef2f2;color:#dc2626;font-weight:700;font-size:11px;padding:3px 8px;border-radius:6px;display:inline-block}
+.st-done{background:#f0fdf4;color:#16a34a;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block}
+.st-pend{background:#fef2f2;color:#dc2626;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block}
+.st-shift{background:#fffbeb;color:#d97706;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block}
+.dept-pill{background:#eff6ff;color:#2563eb;font-size:11px;padding:3px 9px;border-radius:6px;font-weight:600}
+.freq-pill{background:#fff7ed;color:#ea580c;font-size:11px;padding:2px 7px;border-radius:20px;font-weight:700;border:1px solid #fed7aa}
+.fms-type-pill{background:#f0fdf4;color:#166534;font-size:11px;padding:4px 12px;border-radius:20px;font-weight:600;display:inline-block;white-space:nowrap}
 
 /* AVATARS - colorful unique per person */
-.dc{display:flex;align-items:center;gap:9px}
-.av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.dc{display:flex;align-items:center;gap:10px}
+.av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
 .av0{background:#3B82F6;color:#fff}.av1{background:#10B981;color:#fff}
 .av2{background:#EF4444;color:#fff}.av3{background:#8B5CF6;color:#fff}
 .av4{background:#F59E0B;color:#fff}.av5{background:#EC4899;color:#fff}
@@ -91,44 +93,44 @@ td{padding:11px 12px;border-bottom:1px solid #faf8f5;vertical-align:middle;font-
 .av14{background:#22C55E;color:#fff}.av15{background:#FB923C;color:#fff}
 
 /* PROGRESS BARS */
-.pgw{min-width:100px;display:flex;align-items:center;gap:10px}
-.pgbg{border-radius:4px;height:7px;width:75px;overflow:hidden;background:#f3f4f6}
-.pgf{height:7px;border-radius:4px;transition:width .6s}
-.pgp{font-size:11px;font-weight:700;min-width:32px;text-align:right}
-.pg-g .pgf{background:#2E7D32}.pg-g .pgp{color:#2E7D32}
-.pg-o .pgf{background:#F59E0B}.pg-o .pgp{color:#D97706}
-.pg-r .pgf{background:#EF4444}.pg-r .pgp{color:#DC2626}
+.pgw{display:flex;align-items:center;gap:10px;min-width:140px}
+.pgbg{border-radius:4px;height:8px;width:100px;overflow:hidden;background:#e5e7eb;flex-shrink:0}
+.pgf{height:8px;border-radius:4px;transition:width .6s}
+.pgp{font-size:12px;font-weight:700;min-width:38px;text-align:right}
+.pg-g .pgf{background:#16a34a}.pg-g .pgp{color:#16a34a}
+.pg-o .pgf{background:#f59e0b}.pg-o .pgp{color:#d97706}
+.pg-r .pgf{background:#ef4444}.pg-r .pgp{color:#dc2626}
 
 /* MASTER TABLE WRAPPER */
-.tc{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06);border:1px solid #ece8e0}
-.tc-top{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid #f0eeea}
+.tc{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed}
+.tc-top{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e8eaed}
 .tc-title{font-size:14px;font-weight:700;color:#1a1a1a}
-.date-cols-wrap{display:flex;align-items:flex-end;gap:1px}
-.dcol{font-size:10px;color:#aaa;text-align:center;width:38px;line-height:1.4}
-.dcol-day{font-weight:600;font-size:11px}
-.nb{background:#f5f3f0;border:1px solid #ece8e0;border-radius:6px;padding:3px 8px;font-size:12px;display:inline-block;min-width:30px;text-align:center;color:#333;font-weight:600}
-.nb.z{color:#ddd;background:#fafaf8;border-color:#f0eeec}
+.date-cols-wrap{display:flex;align-items:flex-end;gap:2px}
+.dcol{font-size:10px;color:#9aa0ac;text-align:center;width:42px;line-height:1.4}
+.dcol-day{font-weight:700;font-size:12px;color:#374151}
+.nb{background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:3px 8px;font-size:12px;display:inline-block;min-width:32px;text-align:center;color:#374151;font-weight:600}
+.nb.z{color:#d1d5db;background:#fff;border-color:#f3f4f6}
 
 /* HEATMAP CELLS */
-.hok{display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:24px;border-radius:7px;font-size:10px;font-weight:700;padding:0 5px;background:#D1FAE5;color:#065F46}
-.hwarn{display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:24px;border-radius:7px;font-size:10px;font-weight:700;padding:0 5px;background:#FEF3C7;color:#92400E}
-.hbad{display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:24px;border-radius:7px;font-size:10px;font-weight:700;padding:0 5px;background:#FEE2E2;color:#991B1B}
-.hdash{color:#ddd;font-size:14px}
+.hok{display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:26px;border-radius:8px;font-size:10px;font-weight:700;padding:0 6px;background:#dcfce7;color:#166534}
+.hwarn{display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:26px;border-radius:8px;font-size:10px;font-weight:700;padding:0 6px;background:#fef9c3;color:#854d0e}
+.hbad{display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:26px;border-radius:8px;font-size:10px;font-weight:700;padding:0 6px;background:#fee2e2;color:#991b1b}
+.hdash{color:#d1d5db;font-size:16px}
 
 /* ── BOTTOM SUMMARY PANELS (FMS by Process + Checklist by Doer) ── */
-.summary-panels{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:22px}
-.sp-card{background:#fff;border-radius:14px;box-shadow:0 1px 4px rgba(0,0,0,.06);border:1px solid #ece8e0;overflow:hidden}
-.sp-head{padding:14px 18px;border-bottom:1px solid #f0eeea;display:flex;align-items:center;justify-content:space-between}
+.summary-panels{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+.sp-card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed;overflow:hidden}
+.sp-head{padding:14px 20px;border-bottom:1px solid #e8eaed;display:flex;align-items:center;justify-content:space-between}
 .sp-title{font-size:14px;font-weight:700;color:#1a1a1a}
-.sp-count{font-size:11px;color:#aaa;font-weight:500}
-.sp-card table th{background:#fafaf8}
-.sp-card td{padding:10px 12px}
+.sp-count{font-size:11px;color:#9aa0ac;font-weight:500}
+.sp-card table th{background:#fff}
+.sp-card td{padding:11px 14px}
 
 /* LOADING / ERROR */
 .loading{text-align:center;padding:60px;color:#bbb}
-.spin{width:32px;height:32px;border:3px solid #eee;border-top-color:#185FA5;border-radius:50%;animation:sp .8s linear infinite;margin:0 auto 14px}
+.spin{width:32px;height:32px;border:3px solid #e5e7eb;border-top-color:#2563eb;border-radius:50%;animation:sp .8s linear infinite;margin:0 auto 14px}
 @keyframes sp{to{transform:rotate(360deg)}}
-.ebox{background:#FEF2F2;border:1px solid #FECACA;border-radius:12px;padding:18px;margin:14px 0}
+.ebox{background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:18px;margin:14px 0}
 
 @media(max-width:900px){
   .c5{grid-template-columns:repeat(3,1fr)}
@@ -364,7 +366,7 @@ td{padding:11px 12px;border-bottom:1px solid #faf8f5;vertical-align:middle;font-
 </div>
 
 <script>
-var API = "https://script.google.com/macros/s/AKfycbzd13AMCBQ4SUfjsYm7HWlzHAi6NCNoZ7RcXzGQ4aXAKuqrKzePh8VbmjDUQun6gYz-/exec";
+var API = "https://script.google.com/macros/s/AKfycbz8CH6LoPS26GXTtZPkSI6Qn5f3VmWbLsutSICULaLlHph3HORAnnfZvjTDBFXhOF-d/exec";
 
 var globalRawData = null;
 var _currentWeekVal = null;
@@ -592,13 +594,20 @@ function applyFmsFilters() {
     totalPlan += gPlan; totalActual += gActual; groupCount++;
 
     var rows = filteredSteps.map(function(s, idx) {
+      var missedCell;
+      if (s.missed === 0) {
+        missedCell = '<span class="mb-ok">OK</span>';
+      } else {
+        var encoded = encodeURIComponent(JSON.stringify(s.pendingTasks || []));
+        missedCell = '<span class="mb-num" style="cursor:pointer" onclick="showPendingModal(\'' + s.step + '\',\'' + s.doer + '\',' + '\'' + encoded + '\')">' + s.missed + '</span>';
+      }
       return '<tr>' +
         '<td>' + (idx + 1) + '</td>' +
         '<td style="font-weight:600">' + s.step + '</td>' +
         '<td><div class="dc"><div class="av av' + (idx % 16) + '">' + ini(s.doer) + '</div>' + s.doer + '</div></td>' +
         '<td>' + nb(s.plan) + '</td>' +
         '<td>' + nb(s.actual) + '</td>' +
-        '<td>' + (s.missed === 0 ? '<span class="mb-ok">OK</span>' : '<span class="mb-num">' + s.missed + '</span>') + '</td>' +
+        '<td>' + missedCell + '</td>' +
         '<td>' + pg(s.progress) + '</td>' +
         '</tr>';
     }).join('');
@@ -728,6 +737,60 @@ function switchTab(name, el) {
       document.getElementById('ldiv').innerHTML = '<div class="ebox">Error loading data. Please refresh.<br><small>' + err + '</small></div>';
     });
 })();
+</script>
+<!-- ── PENDING TASKS MODAL ── -->
+<div id="pendingModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:14px;width:90%;max-width:620px;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e8eaed">
+      <div>
+        <div id="modalTitle" style="font-size:15px;font-weight:700;color:#1a1a1a"></div>
+        <div id="modalSubtitle" style="font-size:12px;color:#9aa0ac;margin-top:2px"></div>
+      </div>
+      <button onclick="closePendingModal()" style="background:#f3f4f6;border:none;border-radius:8px;width:30px;height:30px;font-size:16px;cursor:pointer;color:#555;display:flex;align-items:center;justify-content:center">✕</button>
+    </div>
+    <div style="overflow-y:auto;padding:0">
+      <table style="width:100%;border-collapse:collapse">
+        <thead>
+          <tr>
+            <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa">#</th>
+            <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa">Planned Date</th>
+            <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa">Client Name</th>
+            <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa">Final Doer</th>
+            <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa">Status</th>
+          </tr>
+        </thead>
+        <tbody id="modalBody"></tbody>
+      </table>
+    </div>
+    <div style="padding:12px 20px;border-top:1px solid #e8eaed;text-align:right">
+      <button onclick="closePendingModal()" style="background:#1a1a1a;color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:13px;font-weight:600;cursor:pointer">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function showPendingModal(step, doer, encoded) {
+  var tasks = JSON.parse(decodeURIComponent(encoded));
+  document.getElementById('modalTitle').textContent = step + '  —  Pending Tasks';
+  document.getElementById('modalSubtitle').textContent = 'Doer: ' + doer + '  ·  ' + tasks.length + ' pending';
+  document.getElementById('modalBody').innerHTML = tasks.map(function(t, i) {
+    return '<tr>' +
+      '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#555">' + (i+1) + '</td>' +
+      '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151;font-weight:600">' + t.plannedDate + '</td>' +
+      '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151">' + t.client + '</td>' +
+      '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151">' + t.finalDoer + '</td>' +
+      '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6"><span style="background:#fef2f2;color:#dc2626;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600">Pending</span></td>' +
+      '</tr>';
+  }).join('');
+  var modal = document.getElementById('pendingModal');
+  modal.style.display = 'flex';
+}
+function closePendingModal() {
+  document.getElementById('pendingModal').style.display = 'none';
+}
+document.getElementById('pendingModal').addEventListener('click', function(e) {
+  if (e.target === this) closePendingModal();
+});
 </script>
 </body>
 </html>
