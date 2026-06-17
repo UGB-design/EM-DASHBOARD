@@ -65,7 +65,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 /* TABLES */
 table{width:100%;border-collapse:collapse}
-th{font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 14px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fff}
+th{font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 14px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fff;white-space:nowrap}
 td{padding:13px 14px;border-bottom:1px solid #f3f4f6;vertical-align:middle;font-size:13px;color:#374151}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:#fafbfc}
@@ -76,7 +76,7 @@ tr:hover td{background:#fafbfc}
 .st-done{background:#f0fdf4;color:#16a34a;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block}
 .st-pend{background:#fef2f2;color:#dc2626;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block}
 .st-shift{background:#fffbeb;color:#d97706;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block}
-.dept-pill{background:#eff6ff;color:#2563eb;font-size:11px;padding:3px 9px;border-radius:6px;font-weight:600}
+.dept-pill{background:#eff6ff;color:#2563eb;font-size:11px;padding:3px 9px;border-radius:6px;font-weight:600;white-space:nowrap;display:inline-block}
 .freq-pill{background:#fff7ed;color:#ea580c;font-size:11px;padding:2px 7px;border-radius:20px;font-weight:700;border:1px solid #fed7aa}
 .fms-type-pill{background:#f0fdf4;color:#166534;font-size:11px;padding:4px 12px;border-radius:20px;font-weight:600;display:inline-block;white-space:nowrap}
 
@@ -93,10 +93,10 @@ tr:hover td{background:#fafbfc}
 .av14{background:#22C55E;color:#fff}.av15{background:#FB923C;color:#fff}
 
 /* PROGRESS BARS */
-.pgw{display:flex;align-items:center;gap:10px;min-width:140px}
-.pgbg{border-radius:4px;height:8px;width:100px;overflow:hidden;background:#e5e7eb;flex-shrink:0}
+.pgw{display:flex;align-items:center;gap:6px;min-width:0;width:100%}
+.pgbg{border-radius:4px;height:8px;width:80px;min-width:60px;overflow:hidden;background:#e5e7eb;flex-shrink:0}
 .pgf{height:8px;border-radius:4px;transition:width .6s}
-.pgp{font-size:12px;font-weight:700;min-width:38px;text-align:right}
+.pgp{font-size:12px;font-weight:700;min-width:36px;text-align:right;white-space:nowrap}
 .pg-g .pgf{background:#16a34a}.pg-g .pgp{color:#16a34a}
 .pg-o .pgf{background:#f59e0b}.pg-o .pgp{color:#d97706}
 .pg-r .pgf{background:#ef4444}.pg-r .pgp{color:#dc2626}
@@ -366,7 +366,7 @@ tr:hover td{background:#fafbfc}
 </div>
 
 <script>
-var API = "https://script.google.com/macros/s/AKfycbz8CH6LoPS26GXTtZPkSI6Qn5f3VmWbLsutSICULaLlHph3HORAnnfZvjTDBFXhOF-d/exec";
+var API = "https://script.google.com/macros/s/AKfycbxWZj-XYFm4eNzAO9Ak4GhrHDF04BQO9mpUMdlVnCLqasx05uerd3zIeSd4NgtahU4w/exec";
 
 var globalRawData = null;
 var _currentWeekVal = null;
@@ -598,17 +598,24 @@ function applyFmsFilters() {
       if (s.missed === 0) {
         missedCell = '<span class="mb-ok">OK</span>';
       } else {
-        var encoded = encodeURIComponent(JSON.stringify(s.pendingTasks || []));
-        missedCell = '<span class="mb-num" style="cursor:pointer" onclick="showPendingModal(\'' + s.step + '\',\'' + s.doer + '\',' + '\'' + encoded + '\')">' + s.missed + '</span>';
+        // Filter pendingTasks: if doer filter active, only show that doer's tasks
+        var tasks = (s.pendingTasks || []).filter(function(t) {
+          return doerFilter === 'All' || t.finalDoer === doerFilter || s.doer === doerFilter;
+        });
+        // If tasks empty after filter, use all pending tasks for this step
+        if (tasks.length === 0) tasks = s.pendingTasks || [];
+        var encoded = encodeURIComponent(JSON.stringify(tasks));
+        missedCell = '<span class="mb-num" style="cursor:pointer" onclick="showPendingModal(\'' +
+          s.step.replace(/'/g, "\\'") + '\',\'' + s.doer.replace(/'/g, "\\'") + '\',\'' + encoded + '\')">' + s.missed + '</span>';
       }
       return '<tr>' +
-        '<td>' + (idx + 1) + '</td>' +
-        '<td style="font-weight:600">' + s.step + '</td>' +
-        '<td><div class="dc"><div class="av av' + (idx % 16) + '">' + ini(s.doer) + '</div>' + s.doer + '</div></td>' +
-        '<td>' + nb(s.plan) + '</td>' +
-        '<td>' + nb(s.actual) + '</td>' +
-        '<td>' + missedCell + '</td>' +
-        '<td>' + pg(s.progress) + '</td>' +
+        '<td style="width:40px">' + (idx + 1) + '</td>' +
+        '<td>' + s.step + '</td>' +
+        '<td style="width:180px"><div class="dc"><div class="av av' + (idx % 16) + '">' + ini(s.doer) + '</div>' + s.doer + '</div></td>' +
+        '<td style="width:70px">' + nb(s.plan) + '</td>' +
+        '<td style="width:70px">' + nb(s.actual) + '</td>' +
+        '<td style="width:80px">' + missedCell + '</td>' +
+        '<td style="width:160px">' + pg(s.progress) + '</td>' +
         '</tr>';
     }).join('');
 
@@ -687,7 +694,8 @@ function applyChecklistFilters() {
       '<td><span class="dept-pill">' + r.dept + '</span></td>' +
       '<td>' + r.task + '</td>' +
       '<td><span class="freq-pill">' + r.freq + '</span></td>' +
-      '<td>' + r.plannedDate + '</td><td>' + r.actualDate + '</td>' +
+      '<td style="white-space:nowrap">' + r.plannedDate + '</td>' +
+      '<td style="white-space:nowrap">' + r.actualDate + '</td>' +
       '<td><span class="' + (r.status === 'Done' ? 'st-done' : 'st-pend') + '">' + r.status + '</span></td></tr>';
   }).join('');
 }
@@ -711,7 +719,10 @@ function applyDelegationFilters() {
     return '<tr><td>' + (i + 1) + '</td>' +
       '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(r.client) + '</div>' + r.client + '</div></td>' +
       '<td>' + r.task + '</td>' +
-      '<td>' + r.firstDate + '</td><td>' + r.revision1 + '</td><td>' + r.revision2 + '</td><td>' + r.latestRevision + '</td>' +
+      '<td style="white-space:nowrap">' + r.firstDate + '</td>' +
+      '<td style="white-space:nowrap">' + r.revision1 + '</td>' +
+      '<td style="white-space:nowrap">' + r.revision2 + '</td>' +
+      '<td style="white-space:nowrap">' + r.latestRevision + '</td>' +
       '<td><span class="' + sCls + '">' + r.status + '</span></td></tr>';
   }).join('');
 }
