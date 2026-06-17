@@ -78,13 +78,17 @@ td{padding:11px 12px;border-bottom:1px solid #faf8f5;vertical-align:middle;font-
 /* FMS process type pill (green style like screenshot) */
 .fms-type-pill{background:#e6f4f1;color:#0d6b5e;font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;display:inline-block;white-space:nowrap}
 
-/* AVATARS */
+/* AVATARS - colorful unique per person */
 .dc{display:flex;align-items:center;gap:9px}
-.av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
-.av0{background:#DBEAFE;color:#1D4ED8}.av1{background:#D1FAE5;color:#065F46}
-.av2{background:#FEE2E2;color:#991B1B}.av3{background:#EDE9FE;color:#5B21B6}
-.av4{background:#FEF3C7;color:#92400E}.av5{background:#FCE7F3;color:#9D174D}
-.av6{background:#ECFEFF;color:#155E75}.av7{background:#F0FDF4;color:#14532D}
+.av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.av0{background:#3B82F6;color:#fff}.av1{background:#10B981;color:#fff}
+.av2{background:#EF4444;color:#fff}.av3{background:#8B5CF6;color:#fff}
+.av4{background:#F59E0B;color:#fff}.av5{background:#EC4899;color:#fff}
+.av6{background:#06B6D4;color:#fff}.av7{background:#84CC16;color:#fff}
+.av8{background:#F97316;color:#fff}.av9{background:#6366F1;color:#fff}
+.av10{background:#14B8A6;color:#fff}.av11{background:#A855F7;color:#fff}
+.av12{background:#0EA5E9;color:#fff}.av13{background:#D946EF;color:#fff}
+.av14{background:#22C55E;color:#fff}.av15{background:#FB923C;color:#fff}
 
 /* PROGRESS BARS */
 .pgw{min-width:100px;display:flex;align-items:center;gap:10px}
@@ -174,7 +178,7 @@ td{padding:11px 12px;border-bottom:1px solid #faf8f5;vertical-align:middle;font-
         <div class="card">
           <div class="cl">Total Plan</div>
           <div class="cv blue" id="cTP">—</div>
-          <div class="cs">FMS+CL+DL Combined</div>
+          <div class="cs">FMS + CHECKLIST + DELEGATION</div>
         </div>
         <div class="card">
           <div class="cl">Total Actual</div>
@@ -220,12 +224,12 @@ td{padding:11px 12px;border-bottom:1px solid #faf8f5;vertical-align:middle;font-
           <table>
             <thead>
               <tr>
-                <th>#</th><th>Doer Name</th>
-                <th>FMS P</th><th>FMS A</th>
-                <th>CL P</th><th>CL A</th>
-                <th>DL P</th><th>DL A</th>
-                <th>Total Progress</th>
-                <th style="text-align:center" id="hmThLabel">Heatmap Tracker</th>
+                <th>#</th><th>Doer</th>
+                <th>FMS Plan</th><th>FMS Actual</th>
+                <th>CL Plan</th><th>CL Actual</th>
+                <th>DL Plan</th><th>DL Actual</th>
+                <th>Progress</th>
+                <th style="text-align:center" id="hmThLabel">Daily Heatmap</th>
               </tr>
             </thead>
             <tbody id="dBody"></tbody>
@@ -377,7 +381,7 @@ function nb(v) {
 function pgCls(p) { return p >= 90 ? 'pg-g' : p >= 50 ? 'pg-o' : 'pg-r'; }
 function pg(p) {
   p = parseFloat(p) || 0;
-  return '<div class="pgw ' + pgCls(p) + '"><div class="pgbg"><div class="pgf" style="width:' + Math.min(p, 100) + '%"></div></div><div class="pgp">' + p.toFixed(1) + '%</div></div>';
+  return '<div class="pgw ' + pgCls(p) + '"><div class="pgbg"><div class="pgf" style="width:' + Math.min(p, 100) + '%"></div></div><div class="pgp">' + Math.round(p) + '%</div></div>';
 }
 function ovCls(v) { return 'green'; }
 
@@ -445,10 +449,13 @@ function renderAll(data) {
   document.getElementById('cDP').textContent = t.delegationPlan || 0;
 
   var ov = t.overall || '0%';
-  document.getElementById('cTAs').textContent = ov + ' complete';
+  // Round to 0 decimal: "97.65%" → "97%"
+  var ovNum = parseFloat(ov) || 0;
+  var ovRounded = Math.round(ovNum) + '%';
+  document.getElementById('cTAs').textContent = ovRounded + ' complete';
   var ovEl = document.getElementById('cOV');
-  ovEl.textContent = ov;
-  ovEl.className = 'cv ' + ovCls(parseFloat(ov));
+  ovEl.textContent = ovRounded;
+  ovEl.className = 'cv ' + ovCls(ovNum);
 
   // ── Done / Pending sub-stats under FMS, CL, DL cards ──
   document.getElementById('cFPdetail').innerHTML =
@@ -484,7 +491,7 @@ function renderAll(data) {
       var cells = '';
       for (var j = 0; j < numDates; j++) cells += '<td style="text-align:center;padding:6px 2px">' + hmCell((hmMap[d.name.toLowerCase().trim()] || [])[j]) + '</td>';
       return '<tr><td>' + (i + 1) + '</td>' +
-        '<td><div class="dc"><div class="av av' + (i % 8) + '">' + ini(d.name) + '</div>' + d.name + '</div></td>' +
+        '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(d.name) + '</div>' + d.name + '</div></td>' +
         '<td>' + nb(d.fmsPlan) + '</td><td>' + nb(d.fmsActual) + '</td>' +
         '<td>' + nb(d.clPlan) + '</td><td>' + nb(d.clActual) + '</td>' +
         '<td>' + nb(d.dlPlan) + '</td><td>' + nb(d.dlActual) + '</td>' +
@@ -529,7 +536,7 @@ function renderClByDoer(rows) {
   document.getElementById('clByDoerBody').innerHTML = rows.map(function(r, i) {
     return '<tr>' +
       '<td>' + (i + 1) + '</td>' +
-      '<td><div class="dc"><div class="av av' + (i % 8) + '">' + ini(r.doer) + '</div>' + r.doer + '</div></td>' +
+      '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(r.doer) + '</div>' + r.doer + '</div></td>' +
       '<td><span class="dept-pill">' + r.dept + '</span></td>' +
       '<td>' + nb(r.plan) + '</td>' +
       '<td>' + nb(r.actual) + '</td>' +
@@ -588,7 +595,7 @@ function applyFmsFilters() {
       return '<tr>' +
         '<td>' + (idx + 1) + '</td>' +
         '<td style="font-weight:600">' + s.step + '</td>' +
-        '<td><div class="dc"><div class="av av' + (idx % 8) + '">' + ini(s.doer) + '</div>' + s.doer + '</div></td>' +
+        '<td><div class="dc"><div class="av av' + (idx % 16) + '">' + ini(s.doer) + '</div>' + s.doer + '</div></td>' +
         '<td>' + nb(s.plan) + '</td>' +
         '<td>' + nb(s.actual) + '</td>' +
         '<td>' + (s.missed === 0 ? '<span class="mb-ok">OK</span>' : '<span class="mb-num">' + s.missed + '</span>') + '</td>' +
@@ -632,7 +639,7 @@ function populateChecklistDelegationFilters() {
 
   var dlDoers = new Set();
   if (globalRawData.delegationData) {
-    globalRawData.delegationData.forEach(function(r) { dlDoers.add(r.doer); });
+    globalRawData.delegationData.forEach(function(r) { dlDoers.add(r.client); });
   }
   updateSelectOptions('dlFilterDoer', dlDoers);
 }
@@ -667,7 +674,7 @@ function applyChecklistFilters() {
     '<span class="m-badge b-red">' + (filtered.length - doneCount) + ' pending</span>';
   document.getElementById('clTableBody').innerHTML = filtered.map(function(r, i) {
     return '<tr><td>' + (i + 1) + '</td>' +
-      '<td><div class="dc"><div class="av av' + (i % 8) + '">' + ini(r.doer) + '</div>' + r.doer + '</div></td>' +
+      '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(r.doer) + '</div>' + r.doer + '</div></td>' +
       '<td><span class="dept-pill">' + r.dept + '</span></td>' +
       '<td>' + r.task + '</td>' +
       '<td><span class="freq-pill">' + r.freq + '</span></td>' +
@@ -682,7 +689,7 @@ function applyDelegationFilters() {
   var sFilter = document.getElementById('dlFilterStatus').value;
   var data = globalRawData ? (globalRawData.delegationData || []) : [];
   var filtered = data.filter(function(r) {
-    return (dFilter === 'All' || r.doer === dFilter) &&
+    return (dFilter === 'All' || r.client === dFilter) &&
            (sFilter === 'All' || r.status.toLowerCase() === sFilter.toLowerCase());
   });
   var doneCount = filtered.filter(function(r) { return r.status.toLowerCase() === 'completed'; }).length;
@@ -693,7 +700,7 @@ function applyDelegationFilters() {
   document.getElementById('dlTableBody').innerHTML = filtered.map(function(r, i) {
     var sCls = r.status.toLowerCase() === 'completed' ? 'st-done' : r.status.toLowerCase() === 'week shifted' ? 'st-shift' : 'st-pend';
     return '<tr><td>' + (i + 1) + '</td>' +
-      '<td><div class="dc"><div class="av av' + (i % 8) + '">' + ini(r.client) + '</div>' + r.client + '</div></td>' +
+      '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(r.client) + '</div>' + r.client + '</div></td>' +
       '<td>' + r.task + '</td>' +
       '<td>' + r.firstDate + '</td><td>' + r.revision1 + '</td><td>' + r.revision2 + '</td><td>' + r.latestRevision + '</td>' +
       '<td><span class="' + sCls + '">' + r.status + '</span></td></tr>';
