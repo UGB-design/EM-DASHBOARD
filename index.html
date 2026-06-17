@@ -366,7 +366,7 @@ tr:hover td{background:#fafbfc}
 </div>
 
 <script>
-var API = "https://script.google.com/macros/s/AKfycbxWZj-XYFm4eNzAO9Ak4GhrHDF04BQO9mpUMdlVnCLqasx05uerd3zIeSd4NgtahU4w/exec";
+var API = "https://script.google.com/macros/s/AKfycbyNYVIVRY6Kko6tLrAZGQ0sbWDLjvUJLjmT9NqGhYWpd3FPs9MwPmGVH1xeXOIBBrTQ/exec";
 
 var globalRawData = null;
 var _currentWeekVal = null;
@@ -598,12 +598,7 @@ function applyFmsFilters() {
       if (s.missed === 0) {
         missedCell = '<span class="mb-ok">OK</span>';
       } else {
-        // Filter pendingTasks: if doer filter active, only show that doer's tasks
-        var tasks = (s.pendingTasks || []).filter(function(t) {
-          return doerFilter === 'All' || t.finalDoer === doerFilter || s.doer === doerFilter;
-        });
-        // If tasks empty after filter, use all pending tasks for this step
-        if (tasks.length === 0) tasks = s.pendingTasks || [];
+        var tasks = s.pendingTasks || [];
         var encoded = encodeURIComponent(JSON.stringify(tasks));
         missedCell = '<span class="mb-num" style="cursor:pointer" onclick="showPendingModal(\'' +
           s.step.replace(/'/g, "\\'") + '\',\'' + s.doer.replace(/'/g, "\\'") + '\',\'' + encoded + '\')">' + s.missed + '</span>';
