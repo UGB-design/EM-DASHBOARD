@@ -203,8 +203,8 @@ tr:hover td{background:#fafbfc}
     <div id="ldiv" class="loading"><div class="spin"></div> Please Wait Loading Summary...</div>
     <div id="mdiv" style="display:none">
 
-      <!-- TOP 6 METRIC CARDS -->
-      <div class="c5" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px">
+      <!-- 9 METRIC CARDS: 5 top + 4 bottom -->
+      <div class="c5" style="margin-bottom:12px">
         <div class="card">
           <div class="cl">Total Plan</div>
           <div class="cv blue" id="cTP">—</div>
@@ -215,32 +215,6 @@ tr:hover td{background:#fafbfc}
           <div class="cv green" id="cTA">—</div>
           <div class="cs" id="cTAs">—</div>
         </div>
-        <div class="card">
-          <div class="cl">On Time Completed</div>
-          <div class="cv green" id="cOTC">—</div>
-          <div class="cs" id="cOTCs">—</div>
-        </div>
-      </div>
-      <div class="c5" style="grid-template-columns:repeat(3,1fr);margin-bottom:22px">
-        <div class="card">
-          <div class="cl">Work Not Done %</div>
-          <div class="cv" style="color:#dc2626" id="cWND">—</div>
-          <div class="cs" id="cWNDs">pending tasks</div>
-        </div>
-        <div class="card">
-          <div class="cl">Work Not Done On Time %</div>
-          <div class="cv" style="color:#d97706" id="cWNDOT">—</div>
-          <div class="cs" id="cWNDOTs">late completed</div>
-        </div>
-        <div class="card">
-          <div class="cl">Overall %</div>
-          <div class="cv green" id="cOV">—</div>
-          <div class="cs">weekly progress rate</div>
-        </div>
-      </div>
-
-      <!-- FMS / CL / DL PLAN BREAKDOWN -->
-      <div class="c5" style="margin-bottom:22px">
         <div class="card">
           <div class="cl">FMS Plan</div>
           <div class="cv blue" id="cFP">—</div>
@@ -256,15 +230,27 @@ tr:hover td{background:#fafbfc}
           <div class="cv blue" id="cDP">—</div>
           <div class="cs-detail" id="cDPdetail"></div>
         </div>
+      </div>
+      <div class="c5" style="grid-template-columns:repeat(4,1fr);margin-bottom:22px">
         <div class="card">
-          <div class="cl">FMS On Time</div>
-          <div class="cv green" id="cFOT">—</div>
-          <div class="cs" id="cFOTs">—</div>
+          <div class="cl">On Time Completed</div>
+          <div class="cv green" id="cOTC">—</div>
+          <div class="cs" id="cOTCs">—</div>
         </div>
         <div class="card">
-          <div class="cl">CL On Time</div>
-          <div class="cv green" id="cCOT">—</div>
-          <div class="cs" id="cCOTs">—</div>
+          <div class="cl">Work Not Done %</div>
+          <div class="cv" style="color:#dc2626" id="cWND">—</div>
+          <div class="cs" id="cWNDs">pending tasks</div>
+        </div>
+        <div class="card">
+          <div class="cl">Work Not Done On Time %</div>
+          <div class="cv" style="color:#d97706" id="cWNDOT">—</div>
+          <div class="cs" id="cWNDOTs">late completed</div>
+        </div>
+        <div class="card">
+          <div class="cl">Overall %</div>
+          <div class="cv green" id="cOV">—</div>
+          <div class="cs">weekly progress rate</div>
         </div>
       </div>
 
@@ -582,16 +568,6 @@ function renderAll(data) {
   document.getElementById('cTA').textContent  = totalActual;
   document.getElementById('cTAs').textContent = Math.round(totalPlan > 0 ? (totalActual/totalPlan)*100 : 0) + '% complete';
 
-  document.getElementById('cOTC').textContent  = totalOnTime;
-  document.getElementById('cOTCs').textContent = 'of ' + totalActual + ' completed';
-
-  document.getElementById('cWND').textContent   = Math.round(wndPct) + '%';
-  document.getElementById('cWNDs').textContent  = totalPend + ' tasks pending';
-  document.getElementById('cWNDOT').textContent  = Math.round(wndotPct) + '%';
-  document.getElementById('cWNDOTs').textContent = totalLate + ' late completed';
-
-  document.getElementById('cOV').textContent = ovRounded;
-
   document.getElementById('cFP').textContent = t.fmsPlan || 0;
   document.getElementById('cCP').textContent = t.checklistPlan || 0;
   document.getElementById('cDP').textContent = t.delegationPlan || 0;
@@ -606,10 +582,15 @@ function renderAll(data) {
     '<span class="cs-done">' + (bd.dlDone||0) + ' done</span>' +
     '<span class="cs-pend">' + (bd.dlPending||0) + ' pending</span>';
 
-  document.getElementById('cFOT').textContent  = fs.onTime || 0;
-  document.getElementById('cFOTs').textContent = 'of ' + (fs.actual||0) + ' FMS done';
-  document.getElementById('cCOT').textContent  = cs.onTime || 0;
-  document.getElementById('cCOTs').textContent = 'of ' + (cs.actual||0) + ' CL done';
+  document.getElementById('cOTC').textContent  = totalOnTime;
+  document.getElementById('cOTCs').textContent = 'of ' + totalActual + ' completed';
+
+  document.getElementById('cWND').textContent   = Math.round(wndPct) + '%';
+  document.getElementById('cWNDs').textContent  = totalPend + ' tasks pending';
+  document.getElementById('cWNDOT').textContent  = Math.round(wndotPct) + '%';
+  document.getElementById('cWNDOTs').textContent = totalLate + ' late completed';
+
+  document.getElementById('cOV').textContent = ovRounded;
 
   // ── Heatmap date header ──
   if (data.heatmap && data.heatmap.dates) {
@@ -772,16 +753,16 @@ function applyFmsFilters() {
       '</div>';
   }).join('');
 
-  var fmsMissed  = totalFmsPlan - totalFmsActual;
-  var fmsWndPct  = totalFmsPlan > 0 ? Math.round((fmsMissed / totalFmsPlan) * 100) : 0;
-  var fmsWndotPct= totalFmsPlan > 0 ? Math.round((totalFmsLate / totalFmsPlan) * 100) : 0;
+  var fmsMissed   = totalFmsPlan - totalFmsActual;
+  var fmsWndPct   = totalFmsPlan > 0 ? Math.round((fmsMissed      / totalFmsPlan) * 100) : 0;
+  var fmsWndotPct = totalFmsPlan > 0 ? Math.round((totalFmsLate   / totalFmsPlan) * 100) : 0;
   document.getElementById('fmsMetaBadges').innerHTML =
-    '<span class="m-badge b-blue">'  + groupCount     + ' groups</span>' +
-    '<span class="m-badge b-green">' + totalFmsActual + ' done</span>' +
-    '<span class="m-badge b-green" style="background:#f0fdf4;color:#15803d">' + totalFmsOnTime + ' on time</span>' +
+    '<span class="m-badge b-blue">'  + groupCount      + ' groups</span>' +
+    '<span class="m-badge b-green">' + totalFmsActual  + ' done</span>' +
+    '<span class="m-badge" style="background:#dcfce7;color:#166534;padding:5px 14px;font-size:12px">🟢 On Time: ' + totalFmsOnTime + '</span>' +
     '<span class="m-badge b-red">'   + Math.max(0,fmsMissed) + ' pending</span>' +
-    '<span class="m-badge" style="background:#fef2f2;color:#dc2626">WND: ' + fmsWndPct + '%</span>' +
-    '<span class="m-badge" style="background:#fffbeb;color:#d97706">Late: ' + fmsWndotPct + '%</span>';
+    '<span class="m-badge" style="background:#fef2f2;color:#dc2626;padding:5px 14px;font-size:12px">🔴 Work Not Done: ' + fmsWndPct + '%</span>' +
+    '<span class="m-badge" style="background:#fffbeb;color:#d97706;padding:5px 14px;font-size:12px">🟡 Work Not Done On Time: ' + fmsWndotPct + '%</span>';
 
   document.getElementById('fmsCardsContainer').innerHTML = html ||
     '<div style="text-align:center;padding:40px;color:#bbb">No FMS data matches the selected filters</div>';
@@ -835,10 +816,10 @@ function applyChecklistFilters() {
   document.getElementById('clMetaBadges').innerHTML =
     '<span class="m-badge b-blue">'  + filtered.length + ' planned</span>' +
     '<span class="m-badge b-green">' + doneCount   + ' done</span>' +
-    '<span class="m-badge b-green" style="background:#f0fdf4;color:#15803d">' + onTimeCount + ' on time</span>' +
+    '<span class="m-badge" style="background:#dcfce7;color:#166534;padding:5px 14px;font-size:12px">🟢 On Time: ' + onTimeCount + '</span>' +
     '<span class="m-badge b-red">'   + pendCount   + ' pending</span>' +
-    '<span class="m-badge" style="background:#fef2f2;color:#dc2626">WND: ' + clWnd + '%</span>' +
-    '<span class="m-badge" style="background:#fffbeb;color:#d97706">Late: ' + clWndot + '%</span>';
+    '<span class="m-badge" style="background:#fef2f2;color:#dc2626;padding:5px 14px;font-size:12px">🔴 Work Not Done: ' + clWnd + '%</span>' +
+    '<span class="m-badge" style="background:#fffbeb;color:#d97706;padding:5px 14px;font-size:12px">🟡 Work Not Done On Time: ' + clWndot + '%</span>';
   document.getElementById('clTableBody').innerHTML = filtered.map(function(r, i) {
     return '<tr><td>' + (i + 1) + '</td>' +
       '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(r.doer) + '</div>' + r.doer + '</div></td>' +
