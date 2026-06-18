@@ -203,8 +203,8 @@ tr:hover td{background:#fafbfc}
     <div id="ldiv" class="loading"><div class="spin"></div> Please Wait Loading Summary...</div>
     <div id="mdiv" style="display:none">
 
-      <!-- TOP 5 METRIC CARDS -->
-      <div class="c5">
+      <!-- TOP 6 METRIC CARDS -->
+      <div class="c5" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px">
         <div class="card">
           <div class="cl">Total Plan</div>
           <div class="cv blue" id="cTP">—</div>
@@ -215,32 +215,56 @@ tr:hover td{background:#fafbfc}
           <div class="cv green" id="cTA">—</div>
           <div class="cs" id="cTAs">—</div>
         </div>
-        <!-- FMS PLAN with done/pending sub-stats -->
+        <div class="card">
+          <div class="cl">On Time Completed</div>
+          <div class="cv green" id="cOTC">—</div>
+          <div class="cs" id="cOTCs">—</div>
+        </div>
+      </div>
+      <div class="c5" style="grid-template-columns:repeat(3,1fr);margin-bottom:22px">
+        <div class="card">
+          <div class="cl">Work Not Done %</div>
+          <div class="cv" style="color:#dc2626" id="cWND">—</div>
+          <div class="cs" id="cWNDs">pending tasks</div>
+        </div>
+        <div class="card">
+          <div class="cl">Work Not Done On Time %</div>
+          <div class="cv" style="color:#d97706" id="cWNDOT">—</div>
+          <div class="cs" id="cWNDOTs">late completed</div>
+        </div>
+        <div class="card">
+          <div class="cl">Overall %</div>
+          <div class="cv green" id="cOV">—</div>
+          <div class="cs">weekly progress rate</div>
+        </div>
+      </div>
+
+      <!-- FMS / CL / DL PLAN BREAKDOWN -->
+      <div class="c5" style="margin-bottom:22px">
         <div class="card">
           <div class="cl">FMS Plan</div>
           <div class="cv blue" id="cFP">—</div>
           <div class="cs-detail" id="cFPdetail"></div>
         </div>
-        <!-- CHECKLIST PLAN with done/pending sub-stats -->
         <div class="card">
           <div class="cl">Checklist Plan</div>
           <div class="cv blue" id="cCP">—</div>
           <div class="cs-detail" id="cCPdetail"></div>
         </div>
-        <!-- DELEGATION PLAN with done/pending sub-stats -->
         <div class="card">
           <div class="cl">Delegation Plan</div>
           <div class="cv blue" id="cDP">—</div>
           <div class="cs-detail" id="cDPdetail"></div>
         </div>
-      </div>
-
-      <!-- OVERALL SCORE -->
-      <div class="c1">
         <div class="card">
-          <div class="cl">Overall Score</div>
-          <div class="cv green" id="cOV">—</div>
-          <div class="cs">weekly progress rate</div>
+          <div class="cl">FMS On Time</div>
+          <div class="cv green" id="cFOT">—</div>
+          <div class="cs" id="cFOTs">—</div>
+        </div>
+        <div class="card">
+          <div class="cl">CL On Time</div>
+          <div class="cv green" id="cCOT">—</div>
+          <div class="cs" id="cCOTs">—</div>
         </div>
       </div>
 
@@ -394,7 +418,7 @@ tr:hover td{background:#fafbfc}
 </div>
 
 <script>
-var API = "https://script.google.com/macros/s/AKfycbylqk900cG49AUWmutYwO3Ot1Yf9kudBhllbJf9E2k6UkXC3-3TE-bUJPzLYy2s3qg/exec";
+var API = "https://script.google.com/macros/s/AKfycbxMWeyonYjV2stUbFbt9sw5XtUke_vYTMYmL-BA7Sjb0xa95oVaWZ9DUs4X3FM-JRFf/exec";
 
 var globalRawData = null;
 var _currentWeekVal = null;
@@ -536,37 +560,56 @@ function renderAll(data) {
   var em = data.emDashboard || {};
   var t  = em.totals || {};
   var bd = em.breakdown || {};
+  var fs = data.fmsStats || {};
+  var cs = data.clStats  || {};
+  var ds = data.dlStats  || {};
 
   if (data.weeks && data.weeks.length) buildWeekDropdown(data.weeks, em.week ? em.week.from : '', em.week ? em.week.to : '');
 
-  // ── Top metric cards ──
-  document.getElementById('cTP').textContent = t.totalPlan || 0;
-  document.getElementById('cTA').textContent = t.totalActual || 0;
+  // ── Combined totals ──
+  var totalPlan   = t.totalPlan || 0;
+  var totalActual = t.totalActual || 0;
+  var totalOnTime = (fs.onTime || 0) + (cs.onTime || 0);
+  var totalLate   = (fs.late   || 0) + (cs.late   || 0);
+  var totalPend   = totalPlan - totalActual;
+  var wndPct      = totalPlan > 0 ? (totalPend  / totalPlan) * 100 : 0;
+  var wndotPct    = totalPlan > 0 ? (totalLate  / totalPlan) * 100 : 0;
+  var ov          = t.overall || '0%';
+  var ovNum       = parseFloat(ov) || 0;
+  var ovRounded   = Math.round(ovNum) + '%';
+
+  document.getElementById('cTP').textContent  = totalPlan;
+  document.getElementById('cTA').textContent  = totalActual;
+  document.getElementById('cTAs').textContent = Math.round(totalPlan > 0 ? (totalActual/totalPlan)*100 : 0) + '% complete';
+
+  document.getElementById('cOTC').textContent  = totalOnTime;
+  document.getElementById('cOTCs').textContent = 'of ' + totalActual + ' completed';
+
+  document.getElementById('cWND').textContent   = Math.round(wndPct) + '%';
+  document.getElementById('cWNDs').textContent  = totalPend + ' tasks pending';
+  document.getElementById('cWNDOT').textContent  = Math.round(wndotPct) + '%';
+  document.getElementById('cWNDOTs').textContent = totalLate + ' late completed';
+
+  document.getElementById('cOV').textContent = ovRounded;
+
   document.getElementById('cFP').textContent = t.fmsPlan || 0;
   document.getElementById('cCP').textContent = t.checklistPlan || 0;
   document.getElementById('cDP').textContent = t.delegationPlan || 0;
 
-  var ov = t.overall || '0%';
-  // Round to 0 decimal: "97.65%" → "97%"
-  var ovNum = parseFloat(ov) || 0;
-  var ovRounded = Math.round(ovNum) + '%';
-  document.getElementById('cTAs').textContent = ovRounded + ' complete';
-  var ovEl = document.getElementById('cOV');
-  ovEl.textContent = ovRounded;
-  ovEl.className = 'cv ' + ovCls(ovNum);
-
-  // ── Done / Pending sub-stats under FMS, CL, DL cards ──
   document.getElementById('cFPdetail').innerHTML =
-    '<span class="cs-done">' + bd.fmsDone + ' done</span>' +
-    '<span class="cs-pend">' + bd.fmsPending + ' pending</span>';
-
+    '<span class="cs-done">' + (bd.fmsDone||0) + ' done</span>' +
+    '<span class="cs-pend">' + (bd.fmsPending||0) + ' pending</span>';
   document.getElementById('cCPdetail').innerHTML =
-    '<span class="cs-done">' + bd.clDone + ' done</span>' +
-    '<span class="cs-pend">' + bd.clPending + ' pending</span>';
-
+    '<span class="cs-done">' + (bd.clDone||0) + ' done</span>' +
+    '<span class="cs-pend">' + (bd.clPending||0) + ' pending</span>';
   document.getElementById('cDPdetail').innerHTML =
-    '<span class="cs-done">' + bd.dlDone + ' done</span>' +
-    '<span class="cs-pend">' + bd.dlPending + ' pending</span>';
+    '<span class="cs-done">' + (bd.dlDone||0) + ' done</span>' +
+    '<span class="cs-pend">' + (bd.dlPending||0) + ' pending</span>';
+
+  document.getElementById('cFOT').textContent  = fs.onTime || 0;
+  document.getElementById('cFOTs').textContent = 'of ' + (fs.actual||0) + ' FMS done';
+  document.getElementById('cCOT').textContent  = cs.onTime || 0;
+  document.getElementById('cCOTs').textContent = 'of ' + (cs.actual||0) + ' CL done';
 
   // ── Heatmap date header ──
   if (data.heatmap && data.heatmap.dates) {
@@ -672,7 +715,8 @@ function applyFmsFilters() {
   var doerFilter = document.getElementById('fmsFilterDoer').value;
   var groups = globalRawData ? (globalRawData.fmsGroups || []) : [];
 
-  var totalPlan = 0, totalActual = 0, groupCount = 0;
+  var totalFmsPlan = 0, totalFmsActual = 0, groupCount = 0;
+  var totalFmsOnTime = 0, totalFmsLate = 0;
 
   var html = groups.map(function(g) {
     // Filter by type
@@ -684,10 +728,14 @@ function applyFmsFilters() {
     });
     if (filteredSteps.length === 0) return '';
 
-    var gPlan = filteredSteps.reduce(function(s, r) { return s + r.plan; }, 0);
+    var gPlan   = filteredSteps.reduce(function(s, r) { return s + r.plan;   }, 0);
     var gActual = filteredSteps.reduce(function(s, r) { return s + r.actual; }, 0);
-    var gProg = gPlan > 0 ? (gActual / gPlan) * 100 : 0;
-    totalPlan += gPlan; totalActual += gActual; groupCount++;
+    var gOnTime = filteredSteps.reduce(function(s, r) { return s + (r.onTime||0); }, 0);
+    var gLate   = filteredSteps.reduce(function(s, r) { return s + (r.late||0);   }, 0);
+    var gProg   = gPlan > 0 ? (gActual / gPlan) * 100 : 0;
+    totalFmsPlan   += gPlan;   totalFmsActual += gActual;
+    totalFmsOnTime += gOnTime; totalFmsLate   += gLate;
+    groupCount++;
 
     var rows = filteredSteps.map(function(s, idx) {
       var missedCell;
@@ -724,12 +772,16 @@ function applyFmsFilters() {
       '</div>';
   }).join('');
 
-  // Meta badges
-  var missed = totalPlan - totalActual;
+  var fmsMissed  = totalFmsPlan - totalFmsActual;
+  var fmsWndPct  = totalFmsPlan > 0 ? Math.round((fmsMissed / totalFmsPlan) * 100) : 0;
+  var fmsWndotPct= totalFmsPlan > 0 ? Math.round((totalFmsLate / totalFmsPlan) * 100) : 0;
   document.getElementById('fmsMetaBadges').innerHTML =
-    '<span class="m-badge b-blue">' + groupCount + ' groups</span>' +
-    '<span class="m-badge b-green">' + totalActual + ' done</span>' +
-    '<span class="m-badge b-red">' + Math.max(0, missed) + ' pending</span>';
+    '<span class="m-badge b-blue">'  + groupCount     + ' groups</span>' +
+    '<span class="m-badge b-green">' + totalFmsActual + ' done</span>' +
+    '<span class="m-badge b-green" style="background:#f0fdf4;color:#15803d">' + totalFmsOnTime + ' on time</span>' +
+    '<span class="m-badge b-red">'   + Math.max(0,fmsMissed) + ' pending</span>' +
+    '<span class="m-badge" style="background:#fef2f2;color:#dc2626">WND: ' + fmsWndPct + '%</span>' +
+    '<span class="m-badge" style="background:#fffbeb;color:#d97706">Late: ' + fmsWndotPct + '%</span>';
 
   document.getElementById('fmsCardsContainer').innerHTML = html ||
     '<div style="text-align:center;padding:40px;color:#bbb">No FMS data matches the selected filters</div>';
@@ -774,11 +826,19 @@ function applyChecklistFilters() {
            (deptFilter === 'All' || r.dept === deptFilter) &&
            (sFilter === 'All' || r.status === sFilter);
   });
-  var doneCount = filtered.filter(function(r) { return r.status === 'Done'; }).length;
+  var doneCount    = filtered.filter(function(r) { return r.status === 'Done'; }).length;
+  var onTimeCount  = filtered.filter(function(r) { return r.onTime; }).length;
+  var lateCount    = filtered.filter(function(r) { return r.late; }).length;
+  var pendCount    = filtered.length - doneCount;
+  var clWnd        = filtered.length > 0 ? Math.round((pendCount  / filtered.length) * 100) : 0;
+  var clWndot      = filtered.length > 0 ? Math.round((lateCount  / filtered.length) * 100) : 0;
   document.getElementById('clMetaBadges').innerHTML =
-    '<span class="m-badge b-blue">' + filtered.length + ' planned</span>' +
-    '<span class="m-badge b-green">' + doneCount + ' done</span>' +
-    '<span class="m-badge b-red">' + (filtered.length - doneCount) + ' pending</span>';
+    '<span class="m-badge b-blue">'  + filtered.length + ' planned</span>' +
+    '<span class="m-badge b-green">' + doneCount   + ' done</span>' +
+    '<span class="m-badge b-green" style="background:#f0fdf4;color:#15803d">' + onTimeCount + ' on time</span>' +
+    '<span class="m-badge b-red">'   + pendCount   + ' pending</span>' +
+    '<span class="m-badge" style="background:#fef2f2;color:#dc2626">WND: ' + clWnd + '%</span>' +
+    '<span class="m-badge" style="background:#fffbeb;color:#d97706">Late: ' + clWndot + '%</span>';
   document.getElementById('clTableBody').innerHTML = filtered.map(function(r, i) {
     return '<tr><td>' + (i + 1) + '</td>' +
       '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(r.doer) + '</div>' + r.doer + '</div></td>' +
@@ -800,11 +860,18 @@ function applyDelegationFilters() {
     return (dFilter === 'All' || r.client === dFilter) &&
            (sFilter === 'All' || r.status.toLowerCase() === sFilter.toLowerCase());
   });
-  var doneCount = filtered.filter(function(r) { return r.status.toLowerCase() === 'completed'; }).length;
+  var dlDoneCount    = filtered.filter(function(r) { return r.status.toLowerCase() === 'completed'; }).length;
+  var dlShiftCount   = filtered.filter(function(r) { return r.status.toLowerCase() === 'week shifted'; }).length;
+  var dlPendCount    = filtered.filter(function(r) { return r.status.toLowerCase() === 'pending'; }).length;
+  var dlTotal        = filtered.length;
+  var redScore       = dlTotal > 0 ? Math.round((dlShiftCount / dlTotal) * 100) : 0;
+  var yellowScore    = dlTotal > 0 ? Math.round((dlPendCount  / dlTotal) * 100) : 0;
+  var greenScore     = dlTotal > 0 ? Math.round((dlDoneCount  / dlTotal) * 100) : 0;
   document.getElementById('dlMetaBadges').innerHTML =
-    '<span class="m-badge b-blue">' + filtered.length + ' planned</span>' +
-    '<span class="m-badge b-green">' + doneCount + ' done</span>' +
-    '<span class="m-badge b-red">' + (filtered.length - doneCount) + ' pending</span>';
+    '<span class="m-badge b-blue">' + dlTotal + ' total tasks</span>' +
+    '<span class="m-badge" style="background:#fef2f2;color:#fff;background:#dc2626;padding:5px 14px;font-size:12px">🔴 Red Score: ' + redScore + '%</span>' +
+    '<span class="m-badge" style="background:#fef9c3;color:#854d0e;padding:5px 14px;font-size:12px">🟡 Yellow Score: ' + yellowScore + '%</span>' +
+    '<span class="m-badge" style="background:#dcfce7;color:#166534;padding:5px 14px;font-size:12px">🟢 Green Score: ' + greenScore + '%</span>';
   document.getElementById('dlTableBody').innerHTML = filtered.map(function(r, i) {
     var sCls = r.status.toLowerCase() === 'completed' ? 'st-done' : r.status.toLowerCase() === 'week shifted' ? 'st-shift' : 'st-pend';
     return '<tr><td>' + (i + 1) + '</td>' +
