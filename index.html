@@ -6,24 +6,24 @@
 <title>EM Dashboard</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f7f8fa;color:#1a1a1a;min-height:100vh}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:linear-gradient(135deg,#f7ead9 0%,#f3ede3 28%,#eef1ea 58%,#e6ece8 100%);background-attachment:fixed;color:#1a1a1a;min-height:100vh}
 
 /* HEADER */
-.header{background:#fff;padding:20px 32px 0;border-bottom:1px solid #e8eaed}
+.header{background:transparent;padding:20px 32px 0}
 .h-top{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;flex-wrap:wrap;gap:10px}
 .h-title{font-size:24px;font-weight:700;color:#1a1a1a;letter-spacing:-0.3px}
-.h-sub{font-size:12px;color:#9aa0ac;margin-top:3px}
+.h-sub{font-size:12px;color:#8a8478;margin-top:3px}
 .h-right{display:flex;align-items:center;gap:10px}
-.wk-label{font-size:13px;color:#888;font-weight:500}
-.wk-sel{background:#fff;border:1.5px solid #d1d5db;border-radius:8px;padding:7px 14px;font-size:13px;color:#333;font-weight:500;cursor:pointer;outline:none;box-shadow:0 1px 3px rgba(0,0,0,.06);max-width:260px}
+.wk-label{font-size:13px;color:#7a756a;font-weight:500}
+.wk-sel{background:#fff;border:1.5px solid #e3ddd2;border-radius:10px;padding:7px 14px;font-size:13px;color:#333;font-weight:500;cursor:pointer;outline:none;box-shadow:0 2px 8px rgba(60,50,30,.08);max-width:260px}
 .saving{font-size:11px;color:#888;display:none}
 .saving.show{display:inline}
 
-/* TABS NAV */
-.tabs-row{display:flex;gap:0;overflow-x:auto;padding-bottom:0}
-.tab-btn{padding:11px 24px;border-radius:0;font-size:13px;cursor:pointer;color:#9aa0ac;border:none;border-bottom:2px solid transparent;background:transparent;font-weight:500;transition:all .15s;white-space:nowrap}
-.tab-btn.active{color:#1a1a1a;font-weight:700;border-bottom:2px solid #1a1a1a;background:transparent}
-.tab-btn:hover:not(.active){color:#555;background:#f7f8fa}
+/* TABS NAV — sticky rounded segmented control */
+.tabs-row{display:flex;gap:4px;overflow-x:auto;width:fit-content;max-width:100%;background:rgba(255,255,255,.6);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-radius:14px;padding:6px;margin:0 0 18px;box-shadow:0 6px 18px rgba(60,50,30,.07);position:sticky;top:14px;z-index:60}
+.tab-btn{padding:10px 22px;border-radius:10px;font-size:13px;cursor:pointer;color:#8a8478;border:none;background:transparent;font-weight:600;transition:all .2s;white-space:nowrap}
+.tab-btn.active{color:#1a1a1a;font-weight:700;background:#fff;box-shadow:0 3px 10px rgba(0,0,0,.08)}
+.tab-btn:hover:not(.active){color:#4b4538}
 
 /* LAYOUT */
 .content{padding:24px 32px}
@@ -33,10 +33,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 /* TOP METRIC CARDS */
 .c5{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:14px}
 .c1{display:grid;grid-template-columns:200px 1fr;gap:14px;margin-bottom:24px}
-.card{background:#fff;border-radius:12px;padding:20px 22px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed}
+.card{background:linear-gradient(160deg,#ffffff 0%,#fbf8f3 100%);border-radius:16px;padding:20px 22px;box-shadow:0 4px 18px rgba(60,50,30,.07);border:1px solid rgba(255,255,255,.8);animation:cardPop .65s cubic-bezier(.34,1.56,.64,1) both}
 .cl{font-size:10px;color:#9aa0ac;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;font-weight:700}
 .cv{font-size:30px;font-weight:700;margin-bottom:6px;line-height:1.1}
 .cv.blue{color:#2563eb}.cv.green{color:#16a34a}
+@keyframes cardPop{
+  0%{opacity:0;transform:scale(.82) translateY(16px) rotate(-3deg)}
+  45%{opacity:1;transform:scale(1.05) translateY(-3px) rotate(2deg)}
+  65%{transform:scale(.97) translateY(0) rotate(-1deg)}
+  82%{transform:scale(1.02) rotate(.5deg)}
+  100%{opacity:1;transform:scale(1) translateY(0) rotate(0)}
+}
+.c5 .card:nth-child(1){animation-delay:.02s}
+.c5 .card:nth-child(2){animation-delay:.08s}
+.c5 .card:nth-child(3){animation-delay:.14s}
+.c5 .card:nth-child(4){animation-delay:.2s}
+.c5 .card:nth-child(5){animation-delay:.26s}
+.c1 .card{animation-delay:.32s}
 /* Sub-stat line under card value */
 .cs{font-size:11px;color:#bbb;line-height:1.5}
 .cs-detail{font-size:11px;margin-top:6px;display:flex;gap:6px;flex-wrap:wrap}
@@ -65,7 +78,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 /* TABLES */
 table{width:100%;border-collapse:collapse}
-th{font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 14px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fff;white-space:nowrap}
+th{font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 14px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fdfbf7;white-space:nowrap}
 td{padding:13px 14px;border-bottom:1px solid #f3f4f6;vertical-align:middle;font-size:13px;color:#374151}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:#fafbfc}
@@ -103,13 +116,18 @@ tr:hover td{background:#fafbfc}
 
 /* MASTER TABLE WRAPPER */
 .tc{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed}
-.tc-top{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e8eaed}
+.tc-top{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e8eaed;position:sticky;top:62px;z-index:30;background:#fff}
 .tc-title{font-size:14px;font-weight:700;color:#1a1a1a}
+.tc table thead th{position:sticky;top:62px;z-index:25;box-shadow:0 1px 0 #e8eaed}
+#masterDoerTable thead th{top:114px;z-index:24}
 .date-cols-wrap{display:flex;align-items:flex-end;gap:2px}
 .dcol{font-size:10px;color:#9aa0ac;text-align:center;width:42px;line-height:1.4}
 .dcol-day{font-weight:700;font-size:12px;color:#374151}
 .nb{background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:3px 8px;font-size:12px;display:inline-block;min-width:32px;text-align:center;color:#374151;font-weight:600}
 .nb.z{color:#d1d5db;background:#fff;border-color:#f3f4f6}
+.nb-blue{background:#eff6ff;border:1px solid #dbeafe;border-radius:6px;padding:3px 9px;font-size:12px;display:inline-block;min-width:32px;text-align:center;color:#1d4ed8;font-weight:700}
+.nb-green{background:#f0fdf4;border:1px solid #dcfce7;border-radius:6px;padding:3px 9px;font-size:12px;display:inline-block;min-width:32px;text-align:center;color:#15803d;font-weight:700}
+.nb-blue.z,.nb-green.z{color:#d1d5db;background:#fff;border-color:#f3f4f6}
 
 /* HEATMAP CELLS */
 .hok{display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:26px;border-radius:8px;font-size:10px;font-weight:700;padding:0 6px;background:#dcfce7;color:#166534}
@@ -150,14 +168,14 @@ tr:hover td{background:#fafbfc}
   <div class="h-top">
     <div>
       <div class="h-title">EM Dashboard</div>
-      <div class="h-sub">FMS + Checklist + Delegation &nbsp;·&nbsp; Score Systems</div>
+      <div class="h-sub">FMS + Checklist + Delegation &nbsp;·&nbsp; ugbolmalassociates.com</div>
     </div>
     <div class="h-right">
       <span class="wk-label">Week</span>
       <select class="wk-sel" id="wkSel" onchange="onWeekChange(this.value)">
         <option>Loading...</option>
       </select>
-      <span class="saving" id="savingTxt"> Updating...</span>
+      <span class="saving" id="savingTxt"> Loading...</span>
     </div>
   </div>
   <div class="tabs-row">
@@ -223,14 +241,14 @@ tr:hover td{background:#fafbfc}
           <div class="date-cols-wrap" id="hmDateCols"></div>
         </div>
         <div style="overflow-x:auto">
-          <table>
+          <table id="masterDoerTable">
             <thead>
               <tr>
-                <th>#</th><th>Doer</th>
-                <th>FMS Plan</th><th>FMS Actual</th>
-                <th>CL Plan</th><th>CL Actual</th>
-                <th>DL Plan</th><th>DL Actual</th>
-                <th>Progress</th>
+                <th style="text-align:center">#</th><th>Doer</th>
+                <th style="text-align:center">FMS Plan</th><th style="text-align:center">FMS Actual</th>
+                <th style="text-align:center">CL Plan</th><th style="text-align:center">CL Actual</th>
+                <th style="text-align:center">DL Plan</th><th style="text-align:center">DL Actual</th>
+                <th style="text-align:center">Progress</th>
                 <th style="text-align:center" id="hmThLabel">Daily Heatmap</th>
               </tr>
             </thead>
@@ -380,6 +398,14 @@ function nb(v) {
   var n = Number(v) || 0;
   return '<span class="nb' + (n === 0 ? ' z' : '') + '">' + (n === 0 ? '–' : n) + '</span>';
 }
+function nbB(v) {
+  var n = Number(v) || 0;
+  return '<span class="nb-blue' + (n === 0 ? ' z' : '') + '">' + (n === 0 ? '–' : n) + '</span>';
+}
+function nbG(v) {
+  var n = Number(v) || 0;
+  return '<span class="nb-green' + (n === 0 ? ' z' : '') + '">' + (n === 0 ? '–' : n) + '</span>';
+}
 function pgCls(p) { return p >= 90 ? 'pg-g' : p >= 50 ? 'pg-o' : 'pg-r'; }
 function pg(p) {
   p = parseFloat(p) || 0;
@@ -492,11 +518,11 @@ function renderAll(data) {
     document.getElementById('dBody').innerHTML = em.doers.map(function(d, i) {
       var cells = '';
       for (var j = 0; j < numDates; j++) cells += '<td style="text-align:center;padding:6px 2px">' + hmCell((hmMap[d.name.toLowerCase().trim()] || [])[j]) + '</td>';
-      return '<tr><td>' + (i + 1) + '</td>' +
+      return '<tr><td style="text-align:center">' + (i + 1) + '</td>' +
         '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(d.name) + '</div>' + d.name + '</div></td>' +
-        '<td>' + nb(d.fmsPlan) + '</td><td>' + nb(d.fmsActual) + '</td>' +
-        '<td>' + nb(d.clPlan) + '</td><td>' + nb(d.clActual) + '</td>' +
-        '<td>' + nb(d.dlPlan) + '</td><td>' + nb(d.dlActual) + '</td>' +
+        '<td style="text-align:center">' + nbB(d.fmsPlan) + '</td><td style="text-align:center">' + nbG(d.fmsActual) + '</td>' +
+        '<td style="text-align:center">' + nbB(d.clPlan) + '</td><td style="text-align:center">' + nbG(d.clActual) + '</td>' +
+        '<td style="text-align:center">' + nbB(d.dlPlan) + '</td><td style="text-align:center">' + nbG(d.dlActual) + '</td>' +
         '<td>' + pg(d.progress) + '</td>' + cells + '</tr>';
     }).join('');
   }
