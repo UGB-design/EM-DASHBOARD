@@ -33,23 +33,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 /* TOP METRIC CARDS */
 .c5{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:14px}
 .c1{display:grid;grid-template-columns:200px 1fr;gap:14px;margin-bottom:24px}
-.card{background:linear-gradient(160deg,#ffffff 0%,#fbf8f3 100%);border-radius:16px;padding:20px 22px;box-shadow:0 4px 18px rgba(60,50,30,.07);border:1px solid rgba(255,255,255,.8);animation:cardPop .65s cubic-bezier(.34,1.56,.64,1) both}
+.card{background:linear-gradient(160deg,#ffffff 0%,#fbf8f3 100%);border-radius:16px;padding:20px 22px;box-shadow:0 4px 18px rgba(60,50,30,.07);border:1px solid rgba(255,255,255,.8);animation:cardPop .4s ease-out both}
 .cl{font-size:10px;color:#9aa0ac;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;font-weight:700}
 .cv{font-size:30px;font-weight:700;margin-bottom:6px;line-height:1.1}
 .cv.blue{color:#2563eb}.cv.green{color:#16a34a}
 @keyframes cardPop{
-  0%{opacity:0;transform:scale(.82) translateY(16px) rotate(-3deg)}
-  45%{opacity:1;transform:scale(1.05) translateY(-3px) rotate(2deg)}
-  65%{transform:scale(.97) translateY(0) rotate(-1deg)}
-  82%{transform:scale(1.02) rotate(.5deg)}
-  100%{opacity:1;transform:scale(1) translateY(0) rotate(0)}
+  0%{opacity:0;transform:translateY(8px)}
+  100%{opacity:1;transform:translateY(0)}
 }
 .c5 .card:nth-child(1){animation-delay:.02s}
-.c5 .card:nth-child(2){animation-delay:.08s}
-.c5 .card:nth-child(3){animation-delay:.14s}
-.c5 .card:nth-child(4){animation-delay:.2s}
-.c5 .card:nth-child(5){animation-delay:.26s}
-.c1 .card{animation-delay:.32s}
+.c5 .card:nth-child(2){animation-delay:.06s}
+.c5 .card:nth-child(3){animation-delay:.1s}
+.c5 .card:nth-child(4){animation-delay:.14s}
+.c5 .card:nth-child(5){animation-delay:.18s}
+.c1 .card{animation-delay:.22s}
 /* Sub-stat line under card value */
 .cs{font-size:11px;color:#bbb;line-height:1.5}
 .cs-detail{font-size:11px;margin-top:6px;display:flex;gap:6px;flex-wrap:wrap}
@@ -116,10 +113,8 @@ tr:hover td{background:#fafbfc}
 
 /* MASTER TABLE WRAPPER */
 .tc{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed}
-.tc-top{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e8eaed;position:sticky;top:62px;z-index:30;background:#fff}
+.tc-top{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e8eaed}
 .tc-title{font-size:14px;font-weight:700;color:#1a1a1a}
-.tc table thead th{position:sticky;top:62px;z-index:25;box-shadow:0 1px 0 #e8eaed}
-#masterDoerTable thead th{top:114px;z-index:24}
 .date-cols-wrap{display:flex;align-items:flex-end;gap:2px}
 .dcol{font-size:10px;color:#9aa0ac;text-align:center;width:42px;line-height:1.4}
 .dcol-day{font-weight:700;font-size:12px;color:#374151}
@@ -175,7 +170,7 @@ tr:hover td{background:#fafbfc}
       <select class="wk-sel" id="wkSel" onchange="onWeekChange(this.value)">
         <option>Loading...</option>
       </select>
-      <span class="saving" id="savingTxt"> Loading...</span>
+      <span class="saving" id="savingTxt"> Please Wait...</span>
     </div>
   </div>
   <div class="tabs-row">
