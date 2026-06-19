@@ -245,18 +245,16 @@ tr:hover td{background:#fafbfc}
       <div class="tc">
         <div class="tc-top">
           <div class="tc-title">All Doers Master Summary</div>
-          <div class="date-cols-wrap" id="hmDateCols"></div>
         </div>
         <div style="overflow-x:auto">
           <table>
             <thead>
-              <tr>
+              <tr id="masterTableHeadRow">
                 <th>#</th><th>Doer</th>
                 <th>FMS Plan</th><th>FMS Actual</th>
                 <th>CL Plan</th><th>CL Actual</th>
                 <th>DL Plan</th><th>DL Actual</th>
                 <th>Progress</th>
-                <th style="text-align:center" id="hmThLabel">Daily Heatmap</th>
               </tr>
             </thead>
             <tbody id="dBody"></tbody>
@@ -391,7 +389,7 @@ tr:hover td{background:#fafbfc}
 </div>
 
 <script>
-var API = "https://script.google.com/macros/s/AKfycbwhzGsyR-CleDRGlcN_johsBfZz2LY6E6jHHWttUN8IWFWiWzqNM1hWbGUaqsUQtoBB/exec";
+var API = "https://script.google.com/macros/s/AKfycbwrv1mw9t5JIXcMCDPQhVV205fJFiMRvzagJ4mxw-v1-z7Hyud6tR4hY3uOA7ccT1O2/exec";
 
 var globalRawData = null;
 var _currentWeekVal = null;
@@ -565,16 +563,21 @@ function renderAll(data) {
   ovEl.textContent = ovRounded;
   ovEl.className = 'cv ' + ovCls(ovNum);
 
-  // ── Heatmap date header ──
+  // ── Heatmap date header: append individual <th> per date so columns align with td cells below ──
+  var headRow = document.getElementById('masterTableHeadRow');
+  // Remove any previously-added date <th> cells (keep only the original 9 static columns)
+  while (headRow.children.length > 9) headRow.removeChild(headRow.lastChild);
+
   if (data.heatmap && data.heatmap.dates) {
     var M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    var html = '';
     data.heatmap.dates.forEach(function(d) {
       var pts = d.split('/');
-      html += '<div class="dcol"><div class="dcol-day">' + pts[0] + '</div><div style="font-size:9px">' + (M[parseInt(pts[1]) - 1] || pts[1]) + '</div></div>';
+      var th = document.createElement('th');
+      th.style.textAlign = 'center';
+      th.style.minWidth = '46px';
+      th.innerHTML = '<div style="font-weight:700;font-size:12px;color:#374151">' + pts[0] + '</div><div style="font-size:9px;color:#9aa0ac;text-transform:none;letter-spacing:0">' + (M[parseInt(pts[1]) - 1] || pts[1]) + '</div>';
+      headRow.appendChild(th);
     });
-    document.getElementById('hmDateCols').innerHTML = html;
-    document.getElementById('hmThLabel').setAttribute('colspan', data.heatmap.dates.length);
   }
 
   // ── All Doers Master table ──
@@ -584,7 +587,7 @@ function renderAll(data) {
     var numDates = data.heatmap && data.heatmap.dates ? data.heatmap.dates.length : 0;
     document.getElementById('dBody').innerHTML = em.doers.map(function(d, i) {
       var cells = '';
-      for (var j = 0; j < numDates; j++) cells += '<td style="text-align:center;padding:6px 2px">' + hmCell((hmMap[d.name.toLowerCase().trim()] || [])[j]) + '</td>';
+      for (var j = 0; j < numDates; j++) cells += '<td style="text-align:center;padding:6px 2px;min-width:46px">' + hmCell((hmMap[d.name.toLowerCase().trim()] || [])[j]) + '</td>';
       return '<tr><td>' + (i + 1) + '</td>' +
         '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(d.name) + '</div>' + d.name + '</div></td>' +
         '<td>' + nb(d.fmsPlan) + '</td><td>' + nb(d.fmsActual) + '</td>' +
