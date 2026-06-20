@@ -53,6 +53,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .m-badge.b-green{background:#f0fdf4;color:#16a34a}
 .m-badge.b-red{background:#fef2f2;color:#dc2626}
 
+/* ── NEW: STAT CARD ROW (On Time Completed / Work Not Done % / Work Not Done On Time % / Red-Yellow-Green Score) ── */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px}
+.stat-card{background:#fff;border-radius:10px;padding:14px 18px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed}
+.stat-label{font-size:10px;color:#9aa0ac;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:6px}
+.stat-value{font-size:22px;font-weight:700;line-height:1.1}
+.stat-value.blue{color:#2563eb}
+.stat-value.green{color:#16a34a}
+.stat-value.orange{color:#d97706}
+.stat-value.red{color:#dc2626}
+
 /* FMS GROUP CARDS (FMS Steps tab) */
 .fms-card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed;margin-bottom:16px;padding:18px 22px}
 .fms-card-top{display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:1px solid #f0f0f0;margin-bottom:12px;flex-wrap:wrap;gap:10px}
@@ -329,6 +339,8 @@ tr:hover td{background:#fafbfc}
       </select>
     </div>
     <div class="meta-info-badge" id="fmsMetaBadges"></div>
+    <!-- NEW: On Time Completed / Work Not Done % / Work Not Done On Time % -->
+    <div class="stat-grid" id="fmsStatsGrid"></div>
     <div id="fmsCardsContainer"><div class="loading">Fetching FMS structured groups...</div></div>
   </div>
 
@@ -347,6 +359,8 @@ tr:hover td{background:#fafbfc}
       </select>
     </div>
     <div class="meta-info-badge" id="clMetaBadges"></div>
+    <!-- NEW: On Time Completed / Work Not Done % / Work Not Done On Time % -->
+    <div class="stat-grid" id="clStatsGrid"></div>
     <div class="tc">
       <div style="overflow-x:auto">
         <table>
@@ -373,6 +387,8 @@ tr:hover td{background:#fafbfc}
       </select>
     </div>
     <div class="meta-info-badge" id="dlMetaBadges"></div>
+    <!-- NEW: Red Score / Yellow Score / Green Score -->
+    <div class="stat-grid" id="dlStatsGrid"></div>
     <div class="tc">
       <div style="overflow-x:auto">
         <table>
@@ -389,7 +405,7 @@ tr:hover td{background:#fafbfc}
 </div>
 
 <script>
-var API = "https://script.google.com/macros/s/AKfycbzC6iAXW4dUNf5xn9SYSNbi2nFxXnElRusAvMV5Kdmtq5QLGmf2PjWWAenM02Rz0Yaw/exec";
+var API = "https://script.google.com/macros/s/AKfycbwSXidRm0o7m4evRqvoNtkwGAQlSmY-oj_PjFheMFtbItmxIkeK0B_0uB38nPnQyorC/exec";
 
 var globalRawData = null;
 var _currentWeekVal = null;
@@ -477,6 +493,11 @@ function pg(p) {
   return '<div class="pgw ' + pgCls(p) + '"><div class="pgbg"><div class="pgf" style="width:' + Math.min(p, 100) + '%"></div></div><div class="pgp">' + Math.round(p) + '%</div></div>';
 }
 function ovCls(v) { return 'green'; }
+
+// NEW: small stat card builder, used by FMS Steps / Checklist / Delegation tabs
+function statCard(label, value, color) {
+  return '<div class="stat-card"><div class="stat-label">' + label + '</div><div class="stat-value ' + color + '">' + value + '</div></div>';
+}
 
 function hmCell(val) {
   if (!val || val === '-' || val === 'null' || val === 'undefined') return '<span class="hdash">–</span>';
@@ -672,7 +693,7 @@ function applyFmsFilters() {
   var doerFilter = document.getElementById('fmsFilterDoer').value;
   var groups = globalRawData ? (globalRawData.fmsGroups || []) : [];
 
-  var totalFmsPlan = 0, totalFmsActual = 0, groupCount = 0;
+  var totalFmsPlan = 0, totalFmsActual = 0, totalFmsOnTime = 0, groupCount = 0;
 
   var html = groups.map(function(g) {
     // Filter by type
@@ -686,8 +707,9 @@ function applyFmsFilters() {
 
     var gPlan   = filteredSteps.reduce(function(s, r) { return s + r.plan;   }, 0);
     var gActual = filteredSteps.reduce(function(s, r) { return s + r.actual; }, 0);
+    var gOnTime = filteredSteps.reduce(function(s, r) { return s + (r.onTime || 0); }, 0);
     var gProg   = gPlan > 0 ? (gActual / gPlan) * 100 : 0;
-    totalFmsPlan += gPlan; totalFmsActual += gActual;
+    totalFmsPlan += gPlan; totalFmsActual += gActual; totalFmsOnTime += gOnTime;
     groupCount++;
 
     var rows = filteredSteps.map(function(s, idx) {
@@ -730,6 +752,14 @@ function applyFmsFilters() {
     '<span class="m-badge b-blue">'  + groupCount     + ' groups</span>' +
     '<span class="m-badge b-green">' + totalFmsActual + ' done</span>' +
     '<span class="m-badge b-red">'   + Math.max(0,fmsMissed) + ' pending</span>';
+
+  // NEW: On Time Completed / Work Not Done % / Work Not Done On Time %
+  var fmsWorkNotDonePct       = totalFmsPlan   > 0 ? (Math.max(0,fmsMissed) / totalFmsPlan * 100) : 0;
+  var fmsWorkNotDoneOnTimePct = totalFmsActual > 0 ? Math.max(0, 100 - (totalFmsOnTime / totalFmsActual * 100)) : 0;
+  document.getElementById('fmsStatsGrid').innerHTML =
+    statCard('On Time Completed', totalFmsOnTime, 'blue') +
+    statCard('Work Not Done %', fmsWorkNotDonePct.toFixed(2) + '%', 'red') +
+    statCard('Work Not Done On Time %', fmsWorkNotDoneOnTimePct.toFixed(2) + '%', 'orange');
 
   document.getElementById('fmsCardsContainer').innerHTML = html ||
     '<div style="text-align:center;padding:40px;color:#bbb">No FMS data matches the selected filters</div>';
@@ -780,6 +810,19 @@ function applyChecklistFilters() {
     '<span class="m-badge b-blue">'  + filtered.length + ' planned</span>' +
     '<span class="m-badge b-green">' + doneCount   + ' done</span>' +
     '<span class="m-badge b-red">'   + pendCount   + ' pending</span>';
+
+  // NEW: On Time Completed / Work Not Done % / Work Not Done On Time %
+  // On time = status Done AND actualDate <= plannedDate (yyyy-MM-dd strings compare lexicographically)
+  var onTimeCount = filtered.filter(function(r) {
+    return r.status === 'Done' && r.actualDate && r.actualDate !== '-' && r.plannedDate && r.plannedDate !== '-' && r.actualDate <= r.plannedDate;
+  }).length;
+  var clWorkNotDonePct       = filtered.length > 0 ? (pendCount / filtered.length * 100) : 0;
+  var clWorkNotDoneOnTimePct = doneCount > 0 ? Math.max(0, 100 - (onTimeCount / doneCount * 100)) : 0;
+  document.getElementById('clStatsGrid').innerHTML =
+    statCard('On Time Completed', onTimeCount, 'blue') +
+    statCard('Work Not Done %', clWorkNotDonePct.toFixed(2) + '%', 'red') +
+    statCard('Work Not Done On Time %', clWorkNotDoneOnTimePct.toFixed(2) + '%', 'orange');
+
   document.getElementById('clTableBody').innerHTML = filtered.map(function(r, i) {
     return '<tr><td>' + (i + 1) + '</td>' +
       '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(r.doer) + '</div>' + r.doer + '</div></td>' +
@@ -807,6 +850,20 @@ function applyDelegationFilters() {
     '<span class="m-badge b-blue">'  + filtered.length + ' planned</span>' +
     '<span class="m-badge b-green">' + dlDoneCount + ' done</span>' +
     '<span class="m-badge b-red">'   + dlPendCount + ' pending</span>';
+
+  // NEW: Red Score (Week Shifted/total) / Yellow Score (Pending/total) / Green Score (Completed/total)
+  var totalCount       = filtered.length;
+  var weekShiftedCount = filtered.filter(function(r) { return r.status.toLowerCase() === 'week shifted'; }).length;
+  var pendingOnlyCount = filtered.filter(function(r) { return r.status.toLowerCase() === 'pending'; }).length;
+  var completedCount   = filtered.filter(function(r) { return r.status.toLowerCase() === 'completed'; }).length;
+  var redScore    = totalCount > 0 ? (weekShiftedCount / totalCount * 100) : 0;
+  var yellowScore = totalCount > 0 ? (pendingOnlyCount / totalCount * 100) : 0;
+  var greenScore  = totalCount > 0 ? (completedCount   / totalCount * 100) : 0;
+  document.getElementById('dlStatsGrid').innerHTML =
+    statCard('Red Score', redScore.toFixed(2) + '%', 'red') +
+    statCard('Yellow Score', yellowScore.toFixed(2) + '%', 'orange') +
+    statCard('Green Score', greenScore.toFixed(2) + '%', 'green');
+
   document.getElementById('dlTableBody').innerHTML = filtered.map(function(r, i) {
     var sCls = r.status.toLowerCase() === 'completed' ? 'st-done' : r.status.toLowerCase() === 'week shifted' ? 'st-shift' : 'st-pend';
     return '<tr><td>' + (i + 1) + '</td>' +
