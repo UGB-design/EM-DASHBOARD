@@ -371,6 +371,7 @@ var API = "https://script.google.com/macros/s/AKfycbx2guidy0u1vQRr2BnMNkCDSw9pCP
 
 var globalRawData = null;
 var _currentWeekVal = null;
+var _pendingRegistry = [];
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function ini(n) {
@@ -739,6 +740,7 @@ function populateFmsFilters(opts) {
 }
 
 function applyFmsFilters() {
+  _pendingRegistry = [];
   var typeFilter = document.getElementById('fmsFilterType').value;
   var doerFilter = document.getElementById('fmsFilterDoer').value;
   var groups = globalRawData ? (globalRawData.fmsGroups || []) : [];
@@ -764,9 +766,9 @@ function applyFmsFilters() {
         missedCell = '<span class="mb-ok">OK</span>';
       } else {
         var tasks = s.pendingTasks || [];
-        var encoded = encodeURIComponent(JSON.stringify(tasks));
-        missedCell = '<span class="mb-num" style="cursor:pointer" onclick="showPendingModal(\'' +
-          s.step.replace(/'/g, "\\'") + '\',\'' + s.doer.replace(/'/g, "\\'") + '\',\'' + encoded + '\')">' + s.missed + '</span>';
+        var mIdx = _pendingRegistry.length;
+        _pendingRegistry.push({ step: s.step, doer: s.doer, tasks: tasks });
+        missedCell = '<span class="mb-num" style="cursor:pointer" onclick="showPendingModal(' + mIdx + ')">' + s.missed + '</span>';
       }
       return '<tr>' +
         '<td style="width:40px">' + (idx + 1) + '</td>' +
@@ -1064,10 +1066,12 @@ function showRefreshing(on) {
 // Store modal state for mail/print/download
 var _modalStep = '', _modalDoer = '', _modalTasks = [];
 
-function showPendingModal(step, doer, encoded) {
-  _modalTasks = JSON.parse(decodeURIComponent(encoded));
-  _modalStep = step;
-  _modalDoer = doer;
+function showPendingModal(idx) {
+  var reg = _pendingRegistry[idx];
+  if (!reg) return;
+  _modalTasks = reg.tasks;
+  _modalStep = reg.step;
+  _modalDoer = reg.doer;
   document.getElementById('modalTitle').textContent = step + '  —  Pending Tasks';
   document.getElementById('modalSubtitle').textContent = 'Doer: ' + doer + '  ·  ' + _modalTasks.length + ' pending';
   document.getElementById('modalBody').innerHTML = _modalTasks.map(function(t, i) {
