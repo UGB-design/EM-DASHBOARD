@@ -434,12 +434,15 @@ function onWeekChange(val) {
   if (!val || val === _currentWeekVal) return;
   _currentWeekVal = val;
   var parsed = JSON.parse(val);
+  try { localStorage.removeItem(CACHE_KEY); } catch(e) {}
+  document.getElementById('savingTxt').textContent = ' Please Wait...';
   document.getElementById('savingTxt').classList.add('show');
   document.getElementById('ldiv').style.display = 'block';
   document.getElementById('mdiv').style.display = 'none';
   fetch(API + '?action=setDates&from=' + encodeURIComponent(parsed.from) + '&to=' + encodeURIComponent(parsed.to) + '&cb=' + Date.now(), { redirect: 'follow' })
     .then(function(r) { return r.json(); })
     .then(function(data) {
+      saveCache(data);
       document.getElementById('savingTxt').classList.remove('show');
       document.getElementById('ldiv').style.display = 'none';
       document.getElementById('mdiv').style.display = 'block';
@@ -522,8 +525,10 @@ function renderAll(data) {
       return null;
     }
 
-    // Compute per-doer per-day plan/actual from checklist rows (for doers not in heatmap sheet)
-    var computedHmMap = {}; // doerName(lower) -> array of {plan, actual} per date index
+    // Compute per-doer per-day plan/actual from checklistData
+    // Used for doers NOT in DAILY_HEATMAP sheet (e.g. Shrikant who is checklist-only)
+    // checklistData has every row's plannedDate (yyyy-MM-dd) and status — most reliable source
+    var computedHmMap = {};
 
     function ensureDoer(name) {
       var key = name.toLowerCase().trim();
@@ -534,47 +539,15 @@ function renderAll(data) {
       return key;
     }
 
-    // Checklist rows
     if (data.checklistData) {
       data.checklistData.forEach(function(r) {
-        var ddmm = toDDMM(r.plannedDate);
+        var ddmm = toDDMM(r.plannedDate); // yyyy-MM-dd → dd/MM
         if (!ddmm) return;
         var colIdx = dateIndexMap[ddmm];
         if (colIdx === undefined) return;
         var key = ensureDoer(r.doer);
         computedHmMap[key][colIdx].plan += 1;
         if (r.status === 'Done') computedHmMap[key][colIdx].actual += 1;
-      });
-    }
-
-    // FMS rows (from fmsGroups steps)
-    if (data.fmsGroups) {
-      data.fmsGroups.forEach(function(g) {
-        (g.steps || []).forEach(function(s) {
-          // pendingTasks have plannedDate; completed ones we don't have individual dates
-          // We can use group totalActual/totalPlan but not per-day easily
-          // So only use pendingTasks dates for plan count of pending
-          (s.pendingTasks || []).forEach(function(pt) {
-            var ddmm = toDDMM(pt.plannedDate.split('/').length === 3
-              ? pt.plannedDate.split('/')[0] + '/' + pt.plannedDate.split('/')[1]
-              : null);
-            // pt.plannedDate is "dd/MM/yyyy" format from Apps Script
-            var ptParts = pt.plannedDate.split('/');
-            if (ptParts.length === 3) {
-              ddmm = ptParts[0] + '/' + ptParts[1];
-            } else {
-              ddmm = null;
-            }
-            if (!ddmm) return;
-            var colIdx = dateIndexMap[ddmm];
-            if (colIdx === undefined) return;
-            var doerKey = (pt.finalDoer || s.doer || '').toLowerCase().trim();
-            if (!doerKey) return;
-            var key = ensureDoer(pt.finalDoer || s.doer);
-            computedHmMap[key][colIdx].plan += 1;
-            // pending so actual += 0
-          });
-        });
       });
     }
 
@@ -885,18 +858,67 @@ function switchTab(name, el) {
   document.getElementById('tab-' + name).classList.add('active');
 }
 
-// ── Initial load ──────────────────────────────────────────────────────────────
+// ── Cache helpers ─────────────────────────────────────────────────────────────
+var CACHE_KEY = 'emDashCache_v1';
+var CACHE_TTL = 5 * 60 * 1000; // 5 minutes — fresh enough, fast enough
+
+function saveCache(data) {
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: data }));
+  } catch(e) {}
+}
+
+function loadCache() {
+  try {
+    var raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    var obj = JSON.parse(raw);
+    if (Date.now() - obj.ts > CACHE_TTL) return null; // expired
+    return obj.data;
+  } catch(e) { return null; }
+}
+
+// ── Refresh indicator (small badge top-right) ─────────────────────────────────
+function showRefreshing(on) {
+  var el = document.getElementById('savingTxt');
+  el.textContent = on ? ' Refreshing...' : ' Updated!';
+  el.classList.toggle('show', on);
+  if (!on) setTimeout(function() { el.classList.remove('show'); }, 1800);
+}
+
+// ── Initial load — cache first, then background refresh ──────────────────────
 (function() {
-  fetch(API + '?cb=' + Date.now(), { redirect: 'follow' })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      document.getElementById('ldiv').style.display = 'none';
-      document.getElementById('mdiv').style.display = 'block';
-      renderAll(data);
-    })
-    .catch(function(err) {
-      document.getElementById('ldiv').innerHTML = '<div class="ebox">Error loading data. Please refresh.<br><small>' + err + '</small></div>';
-    });
+  var cached = loadCache();
+
+  if (cached) {
+    // Instant render from cache
+    document.getElementById('ldiv').style.display = 'none';
+    document.getElementById('mdiv').style.display = 'block';
+    renderAll(cached);
+    // Background fetch for fresh data
+    showRefreshing(true);
+    fetch(API + '?cb=' + Date.now(), { redirect: 'follow' })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        saveCache(data);
+        renderAll(data);
+        showRefreshing(false);
+      })
+      .catch(function() { showRefreshing(false); });
+  } else {
+    // No cache — normal load with spinner
+    fetch(API + '?cb=' + Date.now(), { redirect: 'follow' })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        saveCache(data);
+        document.getElementById('ldiv').style.display = 'none';
+        document.getElementById('mdiv').style.display = 'block';
+        renderAll(data);
+      })
+      .catch(function(err) {
+        document.getElementById('ldiv').innerHTML = '<div class="ebox">Error loading data. Please refresh.<br><small>' + err + '</small></div>';
+      });
+  }
 })();
 </script>
 
