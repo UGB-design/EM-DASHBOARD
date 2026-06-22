@@ -768,7 +768,7 @@ function applyFmsFilters() {
         var tasks = s.pendingTasks || [];
         var mIdx = _pendingRegistry.length;
         _pendingRegistry.push({ step: s.step, doer: s.doer, tasks: tasks });
-        missedCell = '<span class="mb-num" style="cursor:pointer" onclick="showPendingModal(' + mIdx + ')">' + s.missed + '</span>';
+        missedCell = '<span class="mb-num pend-click" style="cursor:pointer" data-idx="' + mIdx + '">' + s.missed + '</span>';
       }
       return '<tr>' +
         '<td style="width:40px">' + (idx + 1) + '</td>' +
@@ -1150,6 +1150,15 @@ function modalDownload() {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+
+// Event delegation for missed cell clicks
+document.addEventListener('click', function(e) {
+  var el = e.target.closest ? e.target.closest('.pend-click') : (e.target.className.indexOf('pend-click') !== -1 ? e.target : null);
+  if (el) {
+    var idx = parseInt(el.getAttribute('data-idx'));
+    showPendingModal(idx);
+  }
+});
 
 document.getElementById('pendingModal').addEventListener('click', function(e) {
   if (e.target === this) closePendingModal();
