@@ -396,6 +396,13 @@ function pg(p) {
 }
 function ovCls(v) { return 'green'; }
 
+// negCard: shows value as negative, green if abs<=5, red otherwise
+function negCard(label, pct) {
+  var num = parseFloat(pct) || 0;
+  var color = num <= 5 ? 'green' : 'red';
+  var display = '-' + num.toFixed(2) + '%';
+  return '<div class="stat-card"><div class="stat-label">' + label + '</div><div class="stat-value ' + color + '">' + display + '</div></div>';
+}
 function statCard(label, value, color) {
   return '<div class="stat-card"><div class="stat-label">' + label + '</div><div class="stat-value ' + color + '">' + value + '</div></div>';
 }
@@ -796,8 +803,8 @@ function applyFmsFilters() {
   var fmsWorkNotDoneOnTimePct = totalActual > 0 ? Math.max(0, 100 - (totalOnTime / totalActual * 100)) : 0;
   document.getElementById('fmsStatsGrid').innerHTML =
     statCard('On Time Completed', totalOnTime, 'blue') +
-    statCard('Work Not Done %', fmsWorkNotDonePct.toFixed(2) + '%', 'red') +
-    statCard('Work Not Done On Time %', fmsWorkNotDoneOnTimePct.toFixed(2) + '%', 'orange');
+    negCard('Work Not Done %', fmsWorkNotDonePct) +
+    negCard('Work Not Done On Time %', fmsWorkNotDoneOnTimePct);
 
   document.getElementById('fmsCardsContainer').innerHTML = html ||
     '<div style="text-align:center;padding:40px;color:#bbb">No FMS data matches the selected filters</div>';
@@ -871,8 +878,8 @@ function applyChecklistFilters() {
   var clWorkNotDoneOnTimePct = doneCount > 0 ? Math.max(0, 100 - (onTimeCount / doneCount * 100)) : 0;
   document.getElementById('clStatsGrid').innerHTML =
     statCard('On Time Completed', onTimeCount, 'blue') +
-    statCard('Work Not Done %', clWorkNotDonePct.toFixed(2) + '%', 'red') +
-    statCard('Work Not Done On Time %', clWorkNotDoneOnTimePct.toFixed(2) + '%', 'orange');
+    negCard('Work Not Done %', clWorkNotDonePct) +
+    negCard('Work Not Done On Time %', clWorkNotDoneOnTimePct);
 
   document.getElementById('clTableBody').innerHTML = filtered.map(function(r, i) {
     return '<tr><td>' + (i + 1) + '</td>' +
@@ -1007,7 +1014,9 @@ function showRefreshing(on) {
 
 <!-- ── PENDING TASKS MODAL ── -->
 <div id="pendingModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center">
-  <div style="background:#fff;border-radius:14px;width:90%;max-width:620px;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
+  <div style="background:#fff;border-radius:14px;width:90%;max-width:660px;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
+
+    <!-- Modal Header -->
     <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e8eaed">
       <div>
         <div id="modalTitle" style="font-size:15px;font-weight:700;color:#1a1a1a"></div>
@@ -1015,8 +1024,10 @@ function showRefreshing(on) {
       </div>
       <button onclick="closePendingModal()" style="background:#f3f4f6;border:none;border-radius:8px;width:30px;height:30px;font-size:16px;cursor:pointer;color:#555;display:flex;align-items:center;justify-content:center">✕</button>
     </div>
-    <div style="overflow-y:auto;padding:0">
-      <table style="width:100%;border-collapse:collapse">
+
+    <!-- Modal Table -->
+    <div style="overflow-y:auto;padding:0" id="modalTableWrap">
+      <table style="width:100%;border-collapse:collapse" id="modalTable">
         <thead>
           <tr>
             <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa">#</th>
@@ -1029,18 +1040,37 @@ function showRefreshing(on) {
         <tbody id="modalBody"></tbody>
       </table>
     </div>
-    <div style="padding:12px 20px;border-top:1px solid #e8eaed;text-align:right">
+
+    <!-- Modal Footer: Mail + Print + Download + Close -->
+    <div style="padding:12px 20px;border-top:1px solid #e8eaed;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+      <div style="display:flex;gap:8px">
+        <button onclick="modalSendMail()" style="background:#2563eb;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px">
+          ✉ Send Mail
+        </button>
+        <button onclick="modalPrint()" style="background:#059669;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px">
+          🖨 Print
+        </button>
+        <button onclick="modalDownload()" style="background:#7c3aed;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px">
+          ⬇ Download
+        </button>
+      </div>
       <button onclick="closePendingModal()" style="background:#1a1a1a;color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:13px;font-weight:600;cursor:pointer">Close</button>
     </div>
+
   </div>
 </div>
 
 <script>
+// Store modal state for mail/print/download
+var _modalStep = '', _modalDoer = '', _modalTasks = [];
+
 function showPendingModal(step, doer, encoded) {
-  var tasks = JSON.parse(decodeURIComponent(encoded));
+  _modalTasks = JSON.parse(decodeURIComponent(encoded));
+  _modalStep = step;
+  _modalDoer = doer;
   document.getElementById('modalTitle').textContent = step + '  —  Pending Tasks';
-  document.getElementById('modalSubtitle').textContent = 'Doer: ' + doer + '  ·  ' + tasks.length + ' pending';
-  document.getElementById('modalBody').innerHTML = tasks.map(function(t, i) {
+  document.getElementById('modalSubtitle').textContent = 'Doer: ' + doer + '  ·  ' + _modalTasks.length + ' pending';
+  document.getElementById('modalBody').innerHTML = _modalTasks.map(function(t, i) {
     return '<tr>' +
       '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#555">' + (i+1) + '</td>' +
       '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151;font-weight:600">' + t.plannedDate + '</td>' +
@@ -1049,12 +1079,74 @@ function showPendingModal(step, doer, encoded) {
       '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6"><span style="background:#fef2f2;color:#dc2626;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600">Pending</span></td>' +
       '</tr>';
   }).join('');
-  var modal = document.getElementById('pendingModal');
-  modal.style.display = 'flex';
+  document.getElementById('pendingModal').style.display = 'flex';
 }
+
 function closePendingModal() {
   document.getElementById('pendingModal').style.display = 'none';
 }
+
+// ── SEND MAIL ─────────────────────────────────────────────────────────────────
+function modalSendMail() {
+  var subject = encodeURIComponent('Pending Tasks: ' + _modalStep + ' — ' + _modalDoer);
+  var body = 'Hi ' + _modalDoer + ',
+
+The following tasks are pending for: ' + _modalStep + '
+
+';
+  _modalTasks.forEach(function(t, i) {
+    body += (i+1) + '. Client: ' + t.client + ' | Planned: ' + t.plannedDate + ' | Status: Pending
+';
+  });
+  body += '
+Please complete these at the earliest.
+
+Regards,
+ugbolmalassociates.com';
+  window.open('mailto:?subject=' + subject + '&body=' + encodeURIComponent(body));
+}
+
+// ── PRINT ─────────────────────────────────────────────────────────────────────
+function modalPrint() {
+  var rows = _modalTasks.map(function(t, i) {
+    return '<tr><td>' + (i+1) + '</td><td>' + t.plannedDate + '</td><td>' + t.client + '</td><td>' + t.finalDoer + '</td><td>Pending</td></tr>';
+  }).join('');
+  var win = window.open('', '_blank');
+  win.document.write('<html><head><title>Pending — ' + _modalStep + '</title>' +
+    '<style>body{font-family:sans-serif;padding:24px}h2{font-size:16px;margin-bottom:4px}p{font-size:12px;color:#666;margin-bottom:16px}' +
+    'table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:8px 12px;font-size:12px;text-align:left}' +
+    'th{background:#f5f5f5;font-weight:700}tr:nth-child(even){background:#fafafa}' +
+    '@media print{button{display:none}}</style></head><body>' +
+    '<h2>Pending Tasks: ' + _modalStep + '</h2>' +
+    '<p>Doer: ' + _modalDoer + ' &nbsp;·&nbsp; ' + _modalTasks.length + ' pending</p>' +
+    '<table><thead><tr><th>#</th><th>Planned Date</th><th>Client Name</th><th>Final Doer</th><th>Status</th></tr></thead>' +
+    '<tbody>' + rows + '</tbody></table>' +
+    '<br><button onclick="window.print()">🖨 Print</button>' +
+    '</body></html>');
+  win.document.close();
+  win.focus();
+  setTimeout(function() { win.print(); }, 400);
+}
+
+// ── DOWNLOAD CSV ─────────────────────────────────────────────────────────────
+function modalDownload() {
+  var csv = '#,Planned Date,Client Name,Final Doer,Status
+';
+  _modalTasks.forEach(function(t, i) {
+    csv += (i+1) + ',"' + t.plannedDate + '","' + t.client + '","' + t.finalDoer + '","Pending"
+';
+  });
+  var blob = new Blob([csv], { type: 'text/csv' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'pending_' + _modalStep.replace(/[^a-z0-9]/gi,'_') + '_' + _modalDoer.replace(/[^a-z0-9]/gi,'_') + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 document.getElementById('pendingModal').addEventListener('click', function(e) {
   if (e.target === this) closePendingModal();
 });
