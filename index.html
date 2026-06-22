@@ -515,19 +515,27 @@ function renderAll(data) {
     var dateIndexMap = {};
     hmDates.forEach(function(d, idx) { dateIndexMap[d] = idx; });
 
-    // Helper: format a yyyy-MM-dd or Date to dd/MM
+    // Helper: convert any date string to dd/MM for heatmap column matching
+    // Handles: "yyyy-MM-dd", "dd/MM/yyyy", "dd/MM/yyyy HH:MM:SS"
     function toDDMM(ds) {
       if (!ds || ds === '-') return null;
-      var parts = String(ds).split('-');
-      if (parts.length === 3 && parts[0].length === 4) {
-        return parts[2] + '/' + parts[1]; // dd/MM
+      var s = String(ds).trim().split(' ')[0]; // strip time part if any
+      // Format: dd/MM/yyyy
+      var slashParts = s.split('/');
+      if (slashParts.length === 3 && slashParts[0].length <= 2) {
+        return slashParts[0].padStart(2,'0') + '/' + slashParts[1].padStart(2,'0');
+      }
+      // Format: yyyy-MM-dd
+      var dashParts = s.split('-');
+      if (dashParts.length === 3 && dashParts[0].length === 4) {
+        return dashParts[2].padStart(2,'0') + '/' + dashParts[1].padStart(2,'0');
       }
       return null;
     }
 
-    // Compute per-doer per-day plan/actual from checklistData
-    // Used for doers NOT in DAILY_HEATMAP sheet (e.g. Shrikant who is checklist-only)
-    // checklistData has every row's plannedDate (yyyy-MM-dd) and status — most reliable source
+    // Compute per-doer per-day plan/actual from ALL 3 sources:
+    // checklistData, fmsGroups (pending tasks), delegationData
+    // Used for doers NOT in DAILY_HEATMAP sheet
     var computedHmMap = {};
 
     function ensureDoer(name) {
@@ -539,15 +547,56 @@ function renderAll(data) {
       return key;
     }
 
+    // SOURCE 1: Checklist — plannedDate is "yyyy-MM-dd", status "Done"/"Pending"
     if (data.checklistData) {
       data.checklistData.forEach(function(r) {
-        var ddmm = toDDMM(r.plannedDate); // yyyy-MM-dd → dd/MM
+        var ddmm = toDDMM(r.plannedDate);
         if (!ddmm) return;
         var colIdx = dateIndexMap[ddmm];
         if (colIdx === undefined) return;
         var key = ensureDoer(r.doer);
         computedHmMap[key][colIdx].plan += 1;
         if (r.status === 'Done') computedHmMap[key][colIdx].actual += 1;
+      });
+    }
+
+    // SOURCE 2: FMS pending tasks — plannedDate is "dd/MM/yyyy", finalDoer is the doer
+    // (Only pending tasks have individual dates available in fmsGroups)
+    if (data.fmsGroups) {
+      data.fmsGroups.forEach(function(g) {
+        (g.steps || []).forEach(function(s) {
+          (s.pendingTasks || []).forEach(function(pt) {
+            var ptParts = String(pt.plannedDate).split('/');
+            if (ptParts.length !== 3) return;
+            var ddmm = ptParts[0] + '/' + ptParts[1]; // dd/MM
+            var colIdx = dateIndexMap[ddmm];
+            if (colIdx === undefined) return;
+            var doerName = (pt.finalDoer || s.doer || '').trim();
+            if (!doerName) return;
+            var key = ensureDoer(doerName);
+            computedHmMap[key][colIdx].plan += 1;
+            // pending = not done, actual stays 0
+          });
+        });
+      });
+    }
+
+    // SOURCE 3: Delegation — use latestRevision only (yyyy-MM-dd)
+    // If latestRevision is blank or "-", skip that row
+    if (data.delegationData) {
+      data.delegationData.forEach(function(r) {
+        var dateStr = r.latestRevision;
+        if (!dateStr || dateStr === '-') return; // skip if no latest revision
+        var ddmm = toDDMM(dateStr);
+        if (!ddmm) return;
+        var colIdx = dateIndexMap[ddmm];
+        if (colIdx === undefined) return;
+        var doerName = (r.doer || '').trim();
+        if (!doerName) return;
+        var key = ensureDoer(doerName);
+        computedHmMap[key][colIdx].plan += 1;
+        var statusLow = (r.status || '').trim().toLowerCase();
+        if (statusLow === 'completed') computedHmMap[key][colIdx].actual += 1;
       });
     }
 
