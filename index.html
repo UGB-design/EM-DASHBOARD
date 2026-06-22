@@ -484,8 +484,42 @@ function renderAll(data) {
     '<span class="cs-pend">' + bd.dlPending + ' pending</span>';
 
   // Heatmap date header
+  // Normalize all heatmap dates to strict "dd/MM" format
+  // Apps Script sends dates as "dd/MM" strings (already formatted via Utilities.formatDate)
   if (data.heatmap && data.heatmap.dates) {
     var M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+    // Robust normalizer — handles all possible formats Apps Script might send:
+    // "22/06", "22/06/2026", "2026-06-22", "Mon Jun 22 2026...", number (serial date)
+    function normalizeHmDate(d) {
+      if (!d && d !== 0) return null;
+      var s = String(d).trim();
+      // Already "dd/MM" — most common case from Apps Script Utilities.formatDate("dd/MM")
+      var slash = s.split('/');
+      if (slash.length === 2) {
+        return slash[0].padStart(2,'0') + '/' + slash[1].padStart(2,'0');
+      }
+      // "dd/MM/yyyy"
+      if (slash.length === 3 && slash[0].length <= 2) {
+        return slash[0].padStart(2,'0') + '/' + slash[1].padStart(2,'0');
+      }
+      // "yyyy-MM-dd"
+      var dash = s.split('-');
+      if (dash.length === 3 && dash[0].length === 4) {
+        return dash[2].padStart(2,'0') + '/' + dash[1].padStart(2,'0');
+      }
+      // JS Date string e.g. "Mon Jun 22 2026 00:00:00 GMT+0530"
+      var parsed = new Date(s);
+      if (!isNaN(parsed.getTime())) {
+        var dd = String(parsed.getDate()).padStart(2,'0');
+        var mm = String(parsed.getMonth() + 1).padStart(2,'0');
+        return dd + '/' + mm;
+      }
+      return null;
+    }
+
+    data.heatmap.dates = data.heatmap.dates.map(normalizeHmDate).filter(Boolean);
+
     var html = '';
     data.heatmap.dates.forEach(function(d) {
       var pts = d.split('/');
