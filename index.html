@@ -63,7 +63,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .m-badge.b-green{background:#f0fdf4;color:#16a34a}
 .m-badge.b-red{background:#fef2f2;color:#dc2626}
 
-/* ── NEW: STAT CARD ROW (On Time Completed / Work Not Done % / Work Not Done On Time % / Red-Yellow-Green Score) ── */
+/* ── STAT CARD ROW ── */
 .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px}
 .stat-card{background:linear-gradient(160deg,#ffffff 0%,#fbf8f3 100%);border-radius:14px;padding:14px 18px;box-shadow:0 4px 14px rgba(60,50,30,.06);border:1px solid rgba(255,255,255,.8)}
 .stat-label{font-size:10px;color:#9aa0ac;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:6px}
@@ -73,7 +73,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .stat-value.orange{color:#d97706}
 .stat-value.red{color:#dc2626}
 
-/* FMS GROUP CARDS (FMS Steps tab) */
+/* FMS GROUP CARDS */
 .fms-card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed;margin-bottom:16px;padding:18px 22px}
 .fms-card-top{display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:1px solid #f0f0f0;margin-bottom:12px;flex-wrap:wrap;gap:10px}
 .fms-card-title{font-size:14px;font-weight:700;color:#1a1a1a;display:flex;align-items:center;gap:8px}
@@ -100,7 +100,7 @@ tr:hover td{background:#fafbfc}
 .freq-pill{background:#fff7ed;color:#ea580c;font-size:11px;padding:2px 7px;border-radius:20px;font-weight:700;border:1px solid #fed7aa}
 .fms-type-pill{background:#f0fdf4;color:#166534;font-size:11px;padding:4px 12px;border-radius:20px;font-weight:600;display:inline-block;white-space:nowrap}
 
-/* AVATARS - colorful unique per person */
+/* AVATARS */
 .dc{display:flex;align-items:center;gap:10px}
 .av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
 .av0{background:#3B82F6;color:#fff}.av1{background:#10B981;color:#fff}
@@ -140,7 +140,7 @@ tr:hover td{background:#fafbfc}
 .hbad{display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:26px;border-radius:8px;font-size:10px;font-weight:700;padding:0 6px;background:#fee2e2;color:#991b1b}
 .hdash{color:#d1d5db;font-size:16px}
 
-/* ── BOTTOM SUMMARY PANELS (FMS by Process + Checklist by Doer) ── */
+/* BOTTOM SUMMARY PANELS */
 .summary-panels{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
 .sp-card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed;overflow:hidden}
 .sp-head{padding:14px 20px;border-bottom:1px solid #e8eaed;display:flex;align-items:center;justify-content:space-between}
@@ -210,19 +210,16 @@ tr:hover td{background:#fafbfc}
           <div class="cv green" id="cTA">—</div>
           <div class="cs" id="cTAs">—</div>
         </div>
-        <!-- FMS PLAN with done/pending sub-stats -->
         <div class="card">
           <div class="cl">FMS Plan</div>
           <div class="cv blue" id="cFP">—</div>
           <div class="cs-detail" id="cFPdetail"></div>
         </div>
-        <!-- CHECKLIST PLAN with done/pending sub-stats -->
         <div class="card">
           <div class="cl">Checklist Plan</div>
           <div class="cv blue" id="cCP">—</div>
           <div class="cs-detail" id="cCPdetail"></div>
         </div>
-        <!-- DELEGATION PLAN with done/pending sub-stats -->
         <div class="card">
           <div class="cl">Delegation Plan</div>
           <div class="cv blue" id="cDP">—</div>
@@ -262,10 +259,8 @@ tr:hover td{background:#fafbfc}
         </div>
       </div>
 
-      <!-- ── BOTTOM PANELS: FMS by Process + Checklist by Doer ── -->
+      <!-- BOTTOM PANELS -->
       <div class="summary-panels">
-
-        <!-- FMS BY PROCESS -->
         <div class="sp-card">
           <div class="sp-head">
             <div class="sp-title">FMS by Process</div>
@@ -274,21 +269,12 @@ tr:hover td{background:#fafbfc}
           <div style="overflow-x:auto">
             <table>
               <thead>
-                <tr>
-                  <th>#</th>
-                  <th>FMS</th>
-                  <th>Plan</th>
-                  <th>Actual</th>
-                  <th>Miss</th>
-                  <th>Progress</th>
-                </tr>
+                <tr><th>#</th><th>FMS</th><th>Plan</th><th>Actual</th><th>Miss</th><th>Progress</th></tr>
               </thead>
               <tbody id="fmsByProcessBody"></tbody>
             </table>
           </div>
         </div>
-
-        <!-- CHECKLIST BY DOER -->
         <div class="sp-card">
           <div class="sp-head">
             <div class="sp-title">Checklist by Doer</div>
@@ -297,27 +283,18 @@ tr:hover td{background:#fafbfc}
           <div style="overflow-x:auto">
             <table>
               <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Doer</th>
-                  <th>Dept</th>
-                  <th>Plan</th>
-                  <th>Actual</th>
-                  <th>Progress</th>
-                </tr>
+                <tr><th>#</th><th>Doer</th><th>Dept</th><th>Plan</th><th>Actual</th><th>Progress</th></tr>
               </thead>
               <tbody id="clByDoerBody"></tbody>
             </table>
           </div>
         </div>
-
-      </div><!-- /summary-panels -->
-    </div><!-- /mdiv -->
-  </div><!-- /tab-summary -->
+      </div>
+    </div>
+  </div>
 
   <!-- ══════════════ FMS STEPS TAB ══════════════ -->
   <div class="tab-content" id="tab-fms">
-    <!-- Filter bar with Type + Doer dropdowns -->
     <div class="filter-bar">
       <label>FMS Type:</label>
       <select id="fmsFilterType" onchange="applyFmsFilters()">
@@ -329,7 +306,6 @@ tr:hover td{background:#fafbfc}
       </select>
     </div>
     <div class="meta-info-badge" id="fmsMetaBadges"></div>
-    <!-- NEW: On Time Completed / Work Not Done % / Work Not Done On Time % -->
     <div class="stat-grid" id="fmsStatsGrid"></div>
     <div id="fmsCardsContainer"><div class="loading">Fetching FMS structured groups...</div></div>
   </div>
@@ -349,7 +325,6 @@ tr:hover td{background:#fafbfc}
       </select>
     </div>
     <div class="meta-info-badge" id="clMetaBadges"></div>
-    <!-- NEW: On Time Completed / Work Not Done % / Work Not Done On Time % -->
     <div class="stat-grid" id="clStatsGrid"></div>
     <div class="tc">
       <div style="overflow-x:auto">
@@ -369,15 +344,12 @@ tr:hover td{background:#fafbfc}
       <label>Doer:</label>
       <select id="dlFilterDoer" onchange="applyDelegationFilters()"><option value="All">All Doers</option></select>
       <label>Status:</label>
+      <!-- FIX: Status options now populated dynamically from actual data in JS -->
       <select id="dlFilterStatus" onchange="applyDelegationFilters()">
         <option value="All">All Status</option>
-        <option value="Completed">Completed</option>
-        <option value="Week Shifted">Week Shifted</option>
-        <option value="Pending">Pending</option>
       </select>
     </div>
     <div class="meta-info-badge" id="dlMetaBadges"></div>
-    <!-- NEW: Red Score / Yellow Score / Green Score -->
     <div class="stat-grid" id="dlStatsGrid"></div>
     <div class="tc">
       <div style="overflow-x:auto">
@@ -399,6 +371,7 @@ var API = "https://script.google.com/macros/s/AKfycbx2guidy0u1vQRr2BnMNkCDSw9pCP
 
 var globalRawData = null;
 var _currentWeekVal = null;
+var _pendingRegistry = [];
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function ini(n) {
@@ -424,7 +397,13 @@ function pg(p) {
 }
 function ovCls(v) { return 'green'; }
 
-// NEW: small stat card builder, used by FMS Steps / Checklist / Delegation tabs
+// negCard: shows value as negative, green if abs<=5, red otherwise
+function negCard(label, pct) {
+  var num = parseFloat(pct) || 0;
+  var color = num <= 5 ? 'green' : 'red';
+  var display = '-' + num.toFixed(2) + '%';
+  return '<div class="stat-card"><div class="stat-label">' + label + '</div><div class="stat-value ' + color + '">' + display + '</div></div>';
+}
 function statCard(label, value, color) {
   return '<div class="stat-card"><div class="stat-label">' + label + '</div><div class="stat-value ' + color + '">' + value + '</div></div>';
 }
@@ -463,12 +442,15 @@ function onWeekChange(val) {
   if (!val || val === _currentWeekVal) return;
   _currentWeekVal = val;
   var parsed = JSON.parse(val);
+  try { localStorage.removeItem(CACHE_KEY); } catch(e) {}
+  document.getElementById('savingTxt').textContent = ' Please Wait...';
   document.getElementById('savingTxt').classList.add('show');
   document.getElementById('ldiv').style.display = 'block';
   document.getElementById('mdiv').style.display = 'none';
   fetch(API + '?action=setDates&from=' + encodeURIComponent(parsed.from) + '&to=' + encodeURIComponent(parsed.to) + '&cb=' + Date.now(), { redirect: 'follow' })
     .then(function(r) { return r.json(); })
     .then(function(data) {
+      saveCache(data);
       document.getElementById('savingTxt').classList.remove('show');
       document.getElementById('ldiv').style.display = 'none';
       document.getElementById('mdiv').style.display = 'block';
@@ -485,7 +467,6 @@ function renderAll(data) {
 
   if (data.weeks && data.weeks.length) buildWeekDropdown(data.weeks, em.week ? em.week.from : '', em.week ? em.week.to : '');
 
-  // ── Top metric cards ──
   document.getElementById('cTP').textContent = t.totalPlan || 0;
   document.getElementById('cTA').textContent = t.totalActual || 0;
   document.getElementById('cFP').textContent = t.fmsPlan || 0;
@@ -493,7 +474,6 @@ function renderAll(data) {
   document.getElementById('cDP').textContent = t.delegationPlan || 0;
 
   var ov = t.overall || '0%';
-  // Round to 0 decimal: "97.65%" → "97%"
   var ovNum = parseFloat(ov) || 0;
   var ovRounded = Math.round(ovNum) + '%';
   document.getElementById('cTAs').textContent = ovRounded + ' complete';
@@ -501,22 +481,53 @@ function renderAll(data) {
   ovEl.textContent = ovRounded;
   ovEl.className = 'cv ' + ovCls(ovNum);
 
-  // ── Done / Pending sub-stats under FMS, CL, DL cards ──
   document.getElementById('cFPdetail').innerHTML =
     '<span class="cs-done">' + bd.fmsDone + ' done</span>' +
     '<span class="cs-pend">' + bd.fmsPending + ' pending</span>';
-
   document.getElementById('cCPdetail').innerHTML =
     '<span class="cs-done">' + bd.clDone + ' done</span>' +
     '<span class="cs-pend">' + bd.clPending + ' pending</span>';
-
   document.getElementById('cDPdetail').innerHTML =
     '<span class="cs-done">' + bd.dlDone + ' done</span>' +
     '<span class="cs-pend">' + bd.dlPending + ' pending</span>';
 
-  // ── Heatmap date header ──
+  // Heatmap date header
+  // Normalize all heatmap dates to strict "dd/MM" format
+  // Apps Script sends dates as "dd/MM" strings (already formatted via Utilities.formatDate)
   if (data.heatmap && data.heatmap.dates) {
     var M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+    // Robust normalizer — handles all possible formats Apps Script might send:
+    // "22/06", "22/06/2026", "2026-06-22", "Mon Jun 22 2026...", number (serial date)
+    function normalizeHmDate(d) {
+      if (!d && d !== 0) return null;
+      var s = String(d).trim();
+      // Already "dd/MM" — most common case from Apps Script Utilities.formatDate("dd/MM")
+      var slash = s.split('/');
+      if (slash.length === 2) {
+        return slash[0].padStart(2,'0') + '/' + slash[1].padStart(2,'0');
+      }
+      // "dd/MM/yyyy"
+      if (slash.length === 3 && slash[0].length <= 2) {
+        return slash[0].padStart(2,'0') + '/' + slash[1].padStart(2,'0');
+      }
+      // "yyyy-MM-dd"
+      var dash = s.split('-');
+      if (dash.length === 3 && dash[0].length === 4) {
+        return dash[2].padStart(2,'0') + '/' + dash[1].padStart(2,'0');
+      }
+      // JS Date string e.g. "Mon Jun 22 2026 00:00:00 GMT+0530"
+      var parsed = new Date(s);
+      if (!isNaN(parsed.getTime())) {
+        var dd = String(parsed.getDate()).padStart(2,'0');
+        var mm = String(parsed.getMonth() + 1).padStart(2,'0');
+        return dd + '/' + mm;
+      }
+      return null;
+    }
+
+    data.heatmap.dates = data.heatmap.dates.map(normalizeHmDate).filter(Boolean);
+
     var html = '';
     data.heatmap.dates.forEach(function(d) {
       var pts = d.split('/');
@@ -526,14 +537,136 @@ function renderAll(data) {
     document.getElementById('hmThLabel').setAttribute('colspan', data.heatmap.dates.length);
   }
 
-  // ── All Doers Master table ──
+  // All Doers Master table
+  // FIX: Build heatmap data from COMBINED sources — heatmap sheet + computed from checklist/fms/delegation rows
   if (em.doers) {
     var hmMap = {};
-    if (data.heatmap && data.heatmap.doers) data.heatmap.doers.forEach(function(hd) { hmMap[hd.name.toLowerCase().trim()] = hd.days; });
-    var numDates = data.heatmap && data.heatmap.dates ? data.heatmap.dates.length : 0;
+    if (data.heatmap && data.heatmap.doers) {
+      data.heatmap.doers.forEach(function(hd) {
+        hmMap[hd.name.toLowerCase().trim()] = hd.days;
+      });
+    }
+
+    // FIX: For doers missing from heatmap (e.g. checklist-only doers like Shrikant),
+    // build daily totals from checklistData + fmsGroups + delegationData by planned date
+    // using the heatmap date list as column headers
+    var hmDates = (data.heatmap && data.heatmap.dates) ? data.heatmap.dates : [];
+    var numDates = hmDates.length;
+
+    // Build a date-index map: "dd/MM" -> column index
+    var dateIndexMap = {};
+    hmDates.forEach(function(d, idx) { dateIndexMap[d] = idx; });
+
+    // Helper: convert any date string to dd/MM for heatmap column matching
+    // Handles: "yyyy-MM-dd", "dd/MM/yyyy", "dd/MM/yyyy HH:MM:SS"
+    function toDDMM(ds) {
+      if (!ds || ds === '-') return null;
+      var s = String(ds).trim().split(' ')[0]; // strip time part if any
+      // Format: dd/MM/yyyy
+      var slashParts = s.split('/');
+      if (slashParts.length === 3 && slashParts[0].length <= 2) {
+        return slashParts[0].padStart(2,'0') + '/' + slashParts[1].padStart(2,'0');
+      }
+      // Format: yyyy-MM-dd
+      var dashParts = s.split('-');
+      if (dashParts.length === 3 && dashParts[0].length === 4) {
+        return dashParts[2].padStart(2,'0') + '/' + dashParts[1].padStart(2,'0');
+      }
+      return null;
+    }
+
+    // Compute per-doer per-day plan/actual from ALL 3 sources:
+    // checklistData, fmsGroups (pending tasks), delegationData
+    // Used for doers NOT in DAILY_HEATMAP sheet
+    var computedHmMap = {};
+
+    function ensureDoer(name) {
+      var key = name.toLowerCase().trim();
+      if (!computedHmMap[key]) {
+        computedHmMap[key] = [];
+        for (var x = 0; x < numDates; x++) computedHmMap[key].push({ plan: 0, actual: 0 });
+      }
+      return key;
+    }
+
+    // SOURCE 1: Checklist — plannedDate is "yyyy-MM-dd", status "Done"/"Pending"
+    if (data.checklistData) {
+      data.checklistData.forEach(function(r) {
+        var ddmm = toDDMM(r.plannedDate);
+        if (!ddmm) return;
+        var colIdx = dateIndexMap[ddmm];
+        if (colIdx === undefined) return;
+        var key = ensureDoer(r.doer);
+        computedHmMap[key][colIdx].plan += 1;
+        if (r.status === 'Done') computedHmMap[key][colIdx].actual += 1;
+      });
+    }
+
+    // SOURCE 2: FMS pending tasks — plannedDate is "dd/MM/yyyy", finalDoer is the doer
+    // (Only pending tasks have individual dates available in fmsGroups)
+    if (data.fmsGroups) {
+      data.fmsGroups.forEach(function(g) {
+        (g.steps || []).forEach(function(s) {
+          (s.pendingTasks || []).forEach(function(pt) {
+            var ptParts = String(pt.plannedDate).split('/');
+            if (ptParts.length !== 3) return;
+            var ddmm = ptParts[0] + '/' + ptParts[1]; // dd/MM
+            var colIdx = dateIndexMap[ddmm];
+            if (colIdx === undefined) return;
+            var doerName = (pt.finalDoer || s.doer || '').trim();
+            if (!doerName) return;
+            var key = ensureDoer(doerName);
+            computedHmMap[key][colIdx].plan += 1;
+            // pending = not done, actual stays 0
+          });
+        });
+      });
+    }
+
+    // SOURCE 3: Delegation — use latestRevision only (yyyy-MM-dd)
+    // If latestRevision is blank or "-", skip that row
+    if (data.delegationData) {
+      data.delegationData.forEach(function(r) {
+        var dateStr = r.latestRevision;
+        if (!dateStr || dateStr === '-') return; // skip if no latest revision
+        var ddmm = toDDMM(dateStr);
+        if (!ddmm) return;
+        var colIdx = dateIndexMap[ddmm];
+        if (colIdx === undefined) return;
+        var doerName = (r.doer || '').trim();
+        if (!doerName) return;
+        var key = ensureDoer(doerName);
+        computedHmMap[key][colIdx].plan += 1;
+        var statusLow = (r.status || '').trim().toLowerCase();
+        if (statusLow === 'completed') computedHmMap[key][colIdx].actual += 1;
+      });
+    }
+
     document.getElementById('dBody').innerHTML = em.doers.map(function(d, i) {
+      var doerKey = d.name.toLowerCase().trim();
       var cells = '';
-      for (var j = 0; j < numDates; j++) cells += '<td style="text-align:center;padding:6px 2px">' + hmCell((hmMap[d.name.toLowerCase().trim()] || [])[j]) + '</td>';
+
+      if (numDates > 0) {
+        if (hmMap[doerKey]) {
+          // Doer IS in heatmap sheet — use sheet data directly (most accurate)
+          for (var j = 0; j < numDates; j++) {
+            cells += '<td style="text-align:center;padding:6px 2px">' + hmCell((hmMap[doerKey] || [])[j]) + '</td>';
+          }
+        } else if (computedHmMap[doerKey]) {
+          // Doer NOT in heatmap sheet — show computed plan/actual from checklist/fms data
+          for (var j = 0; j < numDates; j++) {
+            var dayData = computedHmMap[doerKey][j];
+            var cellVal = (dayData.plan === 0 && dayData.actual === 0) ? null : (dayData.actual + '/' + dayData.plan);
+            cells += '<td style="text-align:center;padding:6px 2px">' + hmCell(cellVal) + '</td>';
+          }
+        } else {
+          // No data at all for this doer
+          for (var j = 0; j < numDates; j++) {
+            cells += '<td style="text-align:center;padding:6px 2px"><span class="hdash">–</span></td>';
+          }
+        }
+      }
+
       return '<tr><td style="text-align:center">' + (i + 1) + '</td>' +
         '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(d.name) + '</div>' + d.name + '</div></td>' +
         '<td style="text-align:center">' + nbB(d.fmsPlan) + '</td><td style="text-align:center">' + nbG(d.fmsActual) + '</td>' +
@@ -543,23 +676,16 @@ function renderAll(data) {
     }).join('');
   }
 
-  // ── FMS by Process panel ──
   renderFmsByProcess(data.fmsByProcess || []);
-
-  // ── Checklist by Doer panel ──
   renderClByDoer(data.checklistByDoer || []);
-
-  // ── FMS Steps tab: populate filter dropdowns ──
   populateFmsFilters(data.fmsFilterOptions || {});
   applyFmsFilters();
-
-  // ── Checklist + Delegation tabs ──
   populateChecklistDelegationFilters();
   applyChecklistFilters();
   applyDelegationFilters();
 }
 
-// ── FMS by Process panel render ───────────────────────────────────────────────
+// ── FMS by Process panel ──────────────────────────────────────────────────────
 function renderFmsByProcess(rows) {
   document.getElementById('fmsByProcessCount').textContent = rows.length + ' process types';
   document.getElementById('fmsByProcessBody').innerHTML = rows.map(function(r, i) {
@@ -574,7 +700,7 @@ function renderFmsByProcess(rows) {
   }).join('') || '<tr><td colspan="6" style="text-align:center;color:#bbb;padding:20px">No FMS data for this week</td></tr>';
 }
 
-// ── Checklist by Doer panel render ───────────────────────────────────────────
+// ── Checklist by Doer panel ───────────────────────────────────────────────────
 function renderClByDoer(rows) {
   document.getElementById('clByDoerCount').textContent = rows.length + ' doers';
   document.getElementById('clByDoerBody').innerHTML = rows.map(function(r, i) {
@@ -614,6 +740,7 @@ function populateFmsFilters(opts) {
 }
 
 function applyFmsFilters() {
+  _pendingRegistry = [];
   var typeFilter = document.getElementById('fmsFilterType').value;
   var doerFilter = document.getElementById('fmsFilterDoer').value;
   var groups = globalRawData ? (globalRawData.fmsGroups || []) : [];
@@ -621,10 +748,7 @@ function applyFmsFilters() {
   var totalPlan = 0, totalActual = 0, totalOnTime = 0, groupCount = 0;
 
   var html = groups.map(function(g) {
-    // Filter by type
     if (typeFilter !== 'All' && g.groupName !== typeFilter) return '';
-
-    // Filter steps by doer
     var filteredSteps = g.steps.filter(function(s) {
       return doerFilter === 'All' || s.doer === doerFilter;
     });
@@ -642,9 +766,9 @@ function applyFmsFilters() {
         missedCell = '<span class="mb-ok">OK</span>';
       } else {
         var tasks = s.pendingTasks || [];
-        var encoded = encodeURIComponent(JSON.stringify(tasks));
-        missedCell = '<span class="mb-num" style="cursor:pointer" onclick="showPendingModal(\'' +
-          s.step.replace(/'/g, "\\'") + '\',\'' + s.doer.replace(/'/g, "\\'") + '\',\'' + encoded + '\')">' + s.missed + '</span>';
+        var mIdx = _pendingRegistry.length;
+        _pendingRegistry.push({ step: s.step, doer: s.doer, tasks: tasks });
+        missedCell = '<span class="mb-num pend-click" style="cursor:pointer" data-idx="' + mIdx + '">' + s.missed + '</span>';
       }
       return '<tr>' +
         '<td style="width:40px">' + (idx + 1) + '</td>' +
@@ -671,48 +795,61 @@ function applyFmsFilters() {
       '</div>';
   }).join('');
 
-  // Meta badges
   var missed = totalPlan - totalActual;
   document.getElementById('fmsMetaBadges').innerHTML =
     '<span class="m-badge b-blue">' + groupCount + ' groups</span>' +
     '<span class="m-badge b-green">' + totalActual + ' done</span>' +
     '<span class="m-badge b-red">' + Math.max(0, missed) + ' pending</span>';
 
-  // NEW: On Time Completed / Work Not Done % / Work Not Done On Time %
   var fmsWorkNotDonePct       = totalPlan   > 0 ? (Math.max(0,missed) / totalPlan * 100) : 0;
   var fmsWorkNotDoneOnTimePct = totalActual > 0 ? Math.max(0, 100 - (totalOnTime / totalActual * 100)) : 0;
   document.getElementById('fmsStatsGrid').innerHTML =
     statCard('On Time Completed', totalOnTime, 'blue') +
-    statCard('Work Not Done %', fmsWorkNotDonePct.toFixed(2) + '%', 'red') +
-    statCard('Work Not Done On Time %', fmsWorkNotDoneOnTimePct.toFixed(2) + '%', 'orange');
+    negCard('Work Not Done %', fmsWorkNotDonePct) +
+    negCard('Work Not Done On Time %', fmsWorkNotDoneOnTimePct);
 
   document.getElementById('fmsCardsContainer').innerHTML = html ||
     '<div style="text-align:center;padding:40px;color:#bbb">No FMS data matches the selected filters</div>';
 }
 
 // ── Checklist & Delegation filter population ──────────────────────────────────
+// FIX: Now also populates delegation STATUS dropdown dynamically from actual data
 function populateChecklistDelegationFilters() {
   var clDoers = new Set(), clDepts = new Set();
   if (globalRawData.checklistData) {
-    globalRawData.checklistData.forEach(function(r) { clDoers.add(r.doer); clDepts.add(r.dept); });
+    globalRawData.checklistData.forEach(function(r) {
+      clDoers.add(r.doer);
+      clDepts.add(r.dept);
+    });
   }
-  updateSelectOptions('clFilterDoer', clDoers);
-  updateSelectOptions('clFilterDept', clDepts);
+  updateSelectOptions('clFilterDoer', clDoers, 'All Doers');
+  updateSelectOptions('clFilterDept', clDepts, 'All Depts');
 
   var dlDoers = new Set();
+  // FIX: Collect unique delegation statuses from actual data so filter matches exactly
+  var dlStatuses = new Set();
   if (globalRawData.delegationData) {
-    globalRawData.delegationData.forEach(function(r) { dlDoers.add(r.client); });
+    globalRawData.delegationData.forEach(function(r) {
+      dlDoers.add(r.client);
+      if (r.status && r.status.trim()) {
+        dlStatuses.add(r.status.trim());
+      }
+    });
   }
-  updateSelectOptions('dlFilterDoer', dlDoers);
+  updateSelectOptions('dlFilterDoer', dlDoers, 'All Doers');
+  // FIX: Populate status dropdown from real data values (not hardcoded)
+  updateSelectOptions('dlFilterStatus', dlStatuses, 'All Status');
 }
 
-function updateSelectOptions(id, setObj) {
+// FIX: Added allLabel parameter so "All Status" / "All Doers" / "All Depts" render correctly
+function updateSelectOptions(id, setObj, allLabel) {
   var sel = document.getElementById(id);
   var currentVal = sel.value;
-  sel.innerHTML = '<option value="All">' + (id.includes('Doer') ? 'All Doers' : id.includes('Dept') ? 'All Depts' : 'All') + '</option>';
+  sel.innerHTML = '<option value="All">' + (allLabel || 'All') + '</option>';
   Array.from(setObj).sort().forEach(function(v) {
     var o = document.createElement('option');
-    o.value = v; o.textContent = v;
+    o.value = v;
+    o.textContent = v;
     if (v === currentVal) o.selected = true;
     sel.appendChild(o);
   });
@@ -736,8 +873,6 @@ function applyChecklistFilters() {
     '<span class="m-badge b-green">' + doneCount + ' done</span>' +
     '<span class="m-badge b-red">' + pendCount + ' pending</span>';
 
-  // NEW: On Time Completed / Work Not Done % / Work Not Done On Time %
-  // On time = status Done AND actualDate <= plannedDate (yyyy-MM-dd strings compare lexicographically)
   var onTimeCount = filtered.filter(function(r) {
     return r.status === 'Done' && r.actualDate && r.actualDate !== '-' && r.plannedDate && r.plannedDate !== '-' && r.actualDate <= r.plannedDate;
   }).length;
@@ -745,8 +880,8 @@ function applyChecklistFilters() {
   var clWorkNotDoneOnTimePct = doneCount > 0 ? Math.max(0, 100 - (onTimeCount / doneCount * 100)) : 0;
   document.getElementById('clStatsGrid').innerHTML =
     statCard('On Time Completed', onTimeCount, 'blue') +
-    statCard('Work Not Done %', clWorkNotDonePct.toFixed(2) + '%', 'red') +
-    statCard('Work Not Done On Time %', clWorkNotDoneOnTimePct.toFixed(2) + '%', 'orange');
+    negCard('Work Not Done %', clWorkNotDonePct) +
+    negCard('Work Not Done On Time %', clWorkNotDoneOnTimePct);
 
   document.getElementById('clTableBody').innerHTML = filtered.map(function(r, i) {
     return '<tr><td>' + (i + 1) + '</td>' +
@@ -765,31 +900,37 @@ function applyDelegationFilters() {
   var dFilter = document.getElementById('dlFilterDoer').value;
   var sFilter = document.getElementById('dlFilterStatus').value;
   var data = globalRawData ? (globalRawData.delegationData || []) : [];
+
+  // FIX: Use exact trim + toLowerCase match so "Week Shifted" never leaks into "Pending"
   var filtered = data.filter(function(r) {
+    var rowStatus = (r.status || '').trim().toLowerCase();
+    var selStatus = sFilter.trim().toLowerCase();
     return (dFilter === 'All' || r.client === dFilter) &&
-           (sFilter === 'All' || r.status.toLowerCase() === sFilter.toLowerCase());
+           (sFilter === 'All' || rowStatus === selStatus);
   });
-  var doneCount = filtered.filter(function(r) { return r.status.toLowerCase() === 'completed'; }).length;
+
+  var doneCount        = filtered.filter(function(r) { return r.status.trim().toLowerCase() === 'completed'; }).length;
+  var weekShiftedCount = filtered.filter(function(r) { return r.status.trim().toLowerCase() === 'week shifted'; }).length;
+  var pendingOnlyCount = filtered.filter(function(r) { return r.status.trim().toLowerCase() === 'pending'; }).length;
+
   document.getElementById('dlMetaBadges').innerHTML =
     '<span class="m-badge b-blue">' + filtered.length + ' planned</span>' +
-    '<span class="m-badge b-green">' + doneCount + ' done</span>' +
-    '<span class="m-badge b-red">' + (filtered.length - doneCount) + ' pending</span>';
+    '<span class="m-badge b-green">' + doneCount + ' completed</span>' +
+    '<span class="m-badge b-red">' + pendingOnlyCount + ' pending</span>' +
+    (weekShiftedCount > 0 ? '<span class="m-badge" style="background:#fffbeb;color:#d97706">' + weekShiftedCount + ' week shifted</span>' : '');
 
-  // NEW: Red Score (Week Shifted/total) / Yellow Score (Pending/total) / Green Score (Completed/total)
-  var totalCount       = filtered.length;
-  var weekShiftedCount = filtered.filter(function(r) { return r.status.toLowerCase() === 'week shifted'; }).length;
-  var pendingOnlyCount = filtered.filter(function(r) { return r.status.toLowerCase() === 'pending'; }).length;
-  var completedCount   = filtered.filter(function(r) { return r.status.toLowerCase() === 'completed'; }).length;
+  var totalCount  = filtered.length;
   var redScore    = totalCount > 0 ? (weekShiftedCount / totalCount * 100) : 0;
   var yellowScore = totalCount > 0 ? (pendingOnlyCount / totalCount * 100) : 0;
-  var greenScore  = totalCount > 0 ? (completedCount   / totalCount * 100) : 0;
+  var greenScore  = totalCount > 0 ? (doneCount        / totalCount * 100) : 0;
   document.getElementById('dlStatsGrid').innerHTML =
-    statCard('Red Score', redScore.toFixed(2) + '%', 'red') +
+    statCard('Red Score',    redScore.toFixed(2)    + '%', 'red') +
     statCard('Yellow Score', yellowScore.toFixed(2) + '%', 'orange') +
-    statCard('Green Score', greenScore.toFixed(2) + '%', 'green');
+    statCard('Green Score',  greenScore.toFixed(2)  + '%', 'green');
 
   document.getElementById('dlTableBody').innerHTML = filtered.map(function(r, i) {
-    var sCls = r.status.toLowerCase() === 'completed' ? 'st-done' : r.status.toLowerCase() === 'week shifted' ? 'st-shift' : 'st-pend';
+    var statusLow = r.status.trim().toLowerCase();
+    var sCls = statusLow === 'completed' ? 'st-done' : statusLow === 'week shifted' ? 'st-shift' : 'st-pend';
     return '<tr><td>' + (i + 1) + '</td>' +
       '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(r.client) + '</div>' + r.client + '</div></td>' +
       '<td>' + r.task + '</td>' +
@@ -809,23 +950,75 @@ function switchTab(name, el) {
   document.getElementById('tab-' + name).classList.add('active');
 }
 
-// ── Initial load ──────────────────────────────────────────────────────────────
+// ── Cache helpers ─────────────────────────────────────────────────────────────
+var CACHE_KEY = 'emDashCache_v1';
+var CACHE_TTL = 5 * 60 * 1000; // 5 minutes — fresh enough, fast enough
+
+function saveCache(data) {
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: data }));
+  } catch(e) {}
+}
+
+function loadCache() {
+  try {
+    var raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    var obj = JSON.parse(raw);
+    if (Date.now() - obj.ts > CACHE_TTL) return null; // expired
+    return obj.data;
+  } catch(e) { return null; }
+}
+
+// ── Refresh indicator (small badge top-right) ─────────────────────────────────
+function showRefreshing(on) {
+  var el = document.getElementById('savingTxt');
+  el.textContent = on ? ' Refreshing...' : ' Updated!';
+  el.classList.toggle('show', on);
+  if (!on) setTimeout(function() { el.classList.remove('show'); }, 1800);
+}
+
+// ── Initial load — cache first, then background refresh ──────────────────────
 (function() {
-  fetch(API + '?cb=' + Date.now(), { redirect: 'follow' })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      document.getElementById('ldiv').style.display = 'none';
-      document.getElementById('mdiv').style.display = 'block';
-      renderAll(data);
-    })
-    .catch(function(err) {
-      document.getElementById('ldiv').innerHTML = '<div class="ebox">Error loading data. Please refresh.<br><small>' + err + '</small></div>';
-    });
+  var cached = loadCache();
+
+  if (cached) {
+    // Instant render from cache
+    document.getElementById('ldiv').style.display = 'none';
+    document.getElementById('mdiv').style.display = 'block';
+    renderAll(cached);
+    // Background fetch for fresh data
+    showRefreshing(true);
+    fetch(API + '?cb=' + Date.now(), { redirect: 'follow' })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        saveCache(data);
+        renderAll(data);
+        showRefreshing(false);
+      })
+      .catch(function() { showRefreshing(false); });
+  } else {
+    // No cache — normal load with spinner
+    fetch(API + '?cb=' + Date.now(), { redirect: 'follow' })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        saveCache(data);
+        document.getElementById('ldiv').style.display = 'none';
+        document.getElementById('mdiv').style.display = 'block';
+        renderAll(data);
+      })
+      .catch(function(err) {
+        document.getElementById('ldiv').innerHTML = '<div class="ebox">Error loading data. Please refresh.<br><small>' + err + '</small></div>';
+      });
+  }
 })();
 </script>
+
 <!-- ── PENDING TASKS MODAL ── -->
 <div id="pendingModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center">
-  <div style="background:#fff;border-radius:14px;width:90%;max-width:620px;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
+  <div style="background:#fff;border-radius:14px;width:90%;max-width:660px;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
+
+    <!-- Modal Header -->
     <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e8eaed">
       <div>
         <div id="modalTitle" style="font-size:15px;font-weight:700;color:#1a1a1a"></div>
@@ -833,8 +1026,10 @@ function switchTab(name, el) {
       </div>
       <button onclick="closePendingModal()" style="background:#f3f4f6;border:none;border-radius:8px;width:30px;height:30px;font-size:16px;cursor:pointer;color:#555;display:flex;align-items:center;justify-content:center">✕</button>
     </div>
-    <div style="overflow-y:auto;padding:0">
-      <table style="width:100%;border-collapse:collapse">
+
+    <!-- Modal Table -->
+    <div style="overflow-y:auto;padding:0" id="modalTableWrap">
+      <table style="width:100%;border-collapse:collapse" id="modalTable">
         <thead>
           <tr>
             <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa">#</th>
@@ -847,18 +1042,39 @@ function switchTab(name, el) {
         <tbody id="modalBody"></tbody>
       </table>
     </div>
-    <div style="padding:12px 20px;border-top:1px solid #e8eaed;text-align:right">
+
+    <!-- Modal Footer: Mail + Print + Download + Close -->
+    <div style="padding:12px 20px;border-top:1px solid #e8eaed;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+      <div style="display:flex;gap:8px">
+        <button onclick="modalSendMail()" style="background:#2563eb;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px">
+          ✉ Send Mail
+        </button>
+        <button onclick="modalPrint()" style="background:#059669;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px">
+          🖨 Print
+        </button>
+        <button onclick="modalDownload()" style="background:#7c3aed;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px">
+          ⬇ Download
+        </button>
+      </div>
       <button onclick="closePendingModal()" style="background:#1a1a1a;color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:13px;font-weight:600;cursor:pointer">Close</button>
     </div>
+
   </div>
 </div>
 
 <script>
-function showPendingModal(step, doer, encoded) {
-  var tasks = JSON.parse(decodeURIComponent(encoded));
+// Store modal state for mail/print/download
+var _modalStep = '', _modalDoer = '', _modalTasks = [];
+
+function showPendingModal(idx) {
+  var reg = _pendingRegistry[idx];
+  if (!reg) return;
+  _modalTasks = reg.tasks;
+  _modalStep = reg.step;
+  _modalDoer = reg.doer;
   document.getElementById('modalTitle').textContent = step + '  —  Pending Tasks';
-  document.getElementById('modalSubtitle').textContent = 'Doer: ' + doer + '  ·  ' + tasks.length + ' pending';
-  document.getElementById('modalBody').innerHTML = tasks.map(function(t, i) {
+  document.getElementById('modalSubtitle').textContent = 'Doer: ' + doer + '  ·  ' + _modalTasks.length + ' pending';
+  document.getElementById('modalBody').innerHTML = _modalTasks.map(function(t, i) {
     return '<tr>' +
       '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#555">' + (i+1) + '</td>' +
       '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151;font-weight:600">' + t.plannedDate + '</td>' +
@@ -867,12 +1083,83 @@ function showPendingModal(step, doer, encoded) {
       '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6"><span style="background:#fef2f2;color:#dc2626;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600">Pending</span></td>' +
       '</tr>';
   }).join('');
-  var modal = document.getElementById('pendingModal');
-  modal.style.display = 'flex';
+  document.getElementById('pendingModal').style.display = 'flex';
 }
+
 function closePendingModal() {
   document.getElementById('pendingModal').style.display = 'none';
 }
+
+// ── SEND MAIL ─────────────────────────────────────────────────────────────────
+function modalSendMail() {
+  var subject = encodeURIComponent('Pending Tasks: ' + _modalStep + ' — ' + _modalDoer);
+  var body = 'Hi ' + _modalDoer + ',
+
+The following tasks are pending for: ' + _modalStep + '
+
+';
+  _modalTasks.forEach(function(t, i) {
+    body += (i+1) + '. Client: ' + t.client + ' | Planned: ' + t.plannedDate + ' | Status: Pending
+';
+  });
+  body += '
+Please complete these at the earliest.
+
+Regards,
+ugbolmalassociates.com';
+  window.open('mailto:?subject=' + subject + '&body=' + encodeURIComponent(body));
+}
+
+// ── PRINT ─────────────────────────────────────────────────────────────────────
+function modalPrint() {
+  var rows = _modalTasks.map(function(t, i) {
+    return '<tr><td>' + (i+1) + '</td><td>' + t.plannedDate + '</td><td>' + t.client + '</td><td>' + t.finalDoer + '</td><td>Pending</td></tr>';
+  }).join('');
+  var win = window.open('', '_blank');
+  win.document.write('<html><head><title>Pending — ' + _modalStep + '</title>' +
+    '<style>body{font-family:sans-serif;padding:24px}h2{font-size:16px;margin-bottom:4px}p{font-size:12px;color:#666;margin-bottom:16px}' +
+    'table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:8px 12px;font-size:12px;text-align:left}' +
+    'th{background:#f5f5f5;font-weight:700}tr:nth-child(even){background:#fafafa}' +
+    '@media print{button{display:none}}</style></head><body>' +
+    '<h2>Pending Tasks: ' + _modalStep + '</h2>' +
+    '<p>Doer: ' + _modalDoer + ' &nbsp;·&nbsp; ' + _modalTasks.length + ' pending</p>' +
+    '<table><thead><tr><th>#</th><th>Planned Date</th><th>Client Name</th><th>Final Doer</th><th>Status</th></tr></thead>' +
+    '<tbody>' + rows + '</tbody></table>' +
+    '<br><button onclick="window.print()">🖨 Print</button>' +
+    '</body></html>');
+  win.document.close();
+  win.focus();
+  setTimeout(function() { win.print(); }, 400);
+}
+
+// ── DOWNLOAD CSV ─────────────────────────────────────────────────────────────
+function modalDownload() {
+  var csv = '#,Planned Date,Client Name,Final Doer,Status
+';
+  _modalTasks.forEach(function(t, i) {
+    csv += (i+1) + ',"' + t.plannedDate + '","' + t.client + '","' + t.finalDoer + '","Pending"
+';
+  });
+  var blob = new Blob([csv], { type: 'text/csv' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'pending_' + _modalStep.replace(/[^a-z0-9]/gi,'_') + '_' + _modalDoer.replace(/[^a-z0-9]/gi,'_') + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// Event delegation for missed cell clicks
+document.addEventListener('click', function(e) {
+  var el = e.target.closest ? e.target.closest('.pend-click') : (e.target.className.indexOf('pend-click') !== -1 ? e.target : null);
+  if (el) {
+    var idx = parseInt(el.getAttribute('data-idx'));
+    showPendingModal(idx);
+  }
+});
+
 document.getElementById('pendingModal').addEventListener('click', function(e) {
   if (e.target === this) closePendingModal();
 });
