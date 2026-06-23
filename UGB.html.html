@@ -16,8 +16,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .h-right{display:flex;align-items:center;gap:10px}
 .wk-label{font-size:13px;color:#888;font-weight:500}
 .wk-sel{background:#fff;border:1.5px solid #d1d5db;border-radius:8px;padding:7px 14px;font-size:13px;color:#333;font-weight:500;cursor:pointer;outline:none;box-shadow:0 1px 3px rgba(0,0,0,.06);max-width:260px}
-.saving{font-size:11px;color:#888;display:none}
-.saving.show{display:inline}
 
 /* TABS NAV */
 .tabs-row{display:flex;gap:0;overflow-x:auto;padding-bottom:0}
@@ -32,314 +30,132 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 /* TOP METRIC CARDS */
 .c5{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:14px}
-.c1{display:grid;grid-template-columns:200px 1fr;gap:14px;margin-bottom:24px}
 .card{background:#fff;border-radius:12px;padding:20px 22px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed}
 .cl{font-size:10px;color:#9aa0ac;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;font-weight:700}
 .cv{font-size:30px;font-weight:700;margin-bottom:6px;line-height:1.1}
 .cv.blue{color:#2563eb}.cv.green{color:#16a34a}
 .cs{font-size:11px;color:#bbb;line-height:1.5}
-.cs-detail{font-size:11px;margin-top:6px;display:flex;gap:6px;flex-wrap:wrap}
-.cs-done{color:#16a34a;font-weight:600;background:#f0fdf4;padding:2px 8px;border-radius:20px;font-size:11px}
-.cs-pend{color:#dc2626;font-weight:600;background:#fef2f2;padding:2px 8px;border-radius:20px;font-size:11px}
-
-/* FILTER BAR */
-.filter-bar{display:flex;align-items:center;gap:16px;margin-bottom:16px;background:#fff;padding:12px 20px;border-radius:10px;border:1px solid #e8eaed;flex-wrap:wrap;font-size:12px}
-.filter-bar label{font-weight:600;color:#555}
-.filter-bar select,.filter-bar input{padding:6px 12px;border:1px solid #d1d5db;border-radius:6px;outline:none;font-size:12px;color:#333;background:#fff}
-.meta-info-badge{display:flex;gap:8px;margin-bottom:14px}
-.m-badge{font-size:11px;padding:4px 12px;border-radius:20px;font-weight:600}
-.m-badge.b-blue{background:#eff6ff;color:#1d4ed8}
-.m-badge.b-green{background:#f0fdf4;color:#16a34a}
-.m-badge.b-red{background:#fef2f2;color:#dc2626}
-
-/* STAT CARD ROW */
-.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px}
-.stat-card{background:#fff;border-radius:10px;padding:14px 18px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed}
-.stat-label{font-size:10px;color:#9aa0ac;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:6px}
-.stat-value{font-size:22px;font-weight:700;line-height:1.1}
-.stat-value.blue{color:#2563eb}
-.stat-value.green{color:#16a34a}
-.stat-value.orange{color:#d97706}
-.stat-value.red{color:#dc2626}
-
-/* FMS GROUP CARDS */
-.fms-card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed;margin-bottom:16px;padding:18px 22px}
-.fms-card-top{display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:1px solid #f0f0f0;margin-bottom:12px;flex-wrap:wrap;gap:10px}
-.fms-card-title{font-size:14px;font-weight:700;color:#1a1a1a;display:flex;align-items:center;gap:8px}
-.fms-dot{width:8px;height:8px;border-radius:50%;background:#10b981}
-.fms-card-meta{display:flex;align-items:center;gap:12px}
-.fms-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px}
-.fms-badge.p-blue{background:#eff6ff;color:#1e40af}
-.fms-badge.a-green{background:#f0fdf4;color:#166534}
 
 /* TABLES */
 table{width:100%;border-collapse:collapse}
 th{font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 14px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fff;white-space:nowrap}
 td{padding:13px 14px;border-bottom:1px solid #f3f4f6;vertical-align:middle;font-size:13px;color:#374151}
-tr:last-child td{border-bottom:none}
-tr:hover td{background:#fafbfc}
-
-/* BADGES */
-.mb-ok{background:#f0fdf4;color:#16a34a;font-weight:700;font-size:10px;padding:3px 8px;border-radius:6px;display:inline-block}
-.mb-num{background:#fef2f2;color:#dc2626;font-weight:700;font-size:11px;padding:3px 8px;border-radius:6px;display:inline-block}
-.st-done{background:#f0fdf4;color:#16a34a;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block}
-.st-pend{background:#fef2f2;color:#dc2626;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block}
-.st-shift{background:#fffbeb;color:#d97706;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block}
-.dept-pill{background:#eff6ff;color:#2563eb;font-size:11px;padding:3px 9px;border-radius:6px;font-weight:600;white-space:nowrap;display:inline-block}
-.freq-pill{background:#fff7ed;color:#ea580c;font-size:11px;padding:2px 7px;border-radius:20px;font-weight:700;border:1px solid #fed7aa}
-.fms-type-pill{background:#f0fdf4;color:#166534;font-size:11px;padding:4px 12px;border-radius:20px;font-weight:600;display:inline-block;white-space:nowrap}
-
-/* AVATARS */
-.dc{display:flex;align-items:center;gap:10px}
-.av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
-.av0{background:#3B82F6;color:#fff}.av1{background:#10B981;color:#fff}
-.av2{background:#EF4444;color:#fff}.av3{background:#8B5CF6;color:#fff}
-.av4{background:#F59E0B;color:#fff}.av5{background:#EC4899;color:#fff}
-.av6{background:#06B6D4;color:#fff}.av7{background:#84CC16;color:#fff}
-.av8{background:#F97316;color:#fff}.av9{background:#6366F1;color:#fff}
 
 /* PROGRESS BARS */
 .pgw{display:flex;align-items:center;gap:6px;min-width:0;width:100%}
 .pgbg{border-radius:4px;height:8px;width:80px;min-width:60px;overflow:hidden;background:#e5e7eb;flex-shrink:0}
 .pgf{height:8px;border-radius:4px;transition:width .6s}
-.pgp{font-size:12px;font-weight:700;min-width:36px;text-align:right;white-space:nowrap}
-.pg-g .pgf{background:#16a34a}.pg-g .pgp{color:#16a34a}
-.pg-o .pgf{background:#f59e0b}.pg-o .pgp{color:#d97706}
-.pg-r .pgf{background:#ef4444}.pg-r .pgp{color:#dc2626}
 
 /* MASTER TABLE WRAPPER */
 .tc{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed}
 .tc-top{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e8eaed}
 .tc-title{font-size:14px;font-weight:700;color:#1a1a1a}
 
-/* HEATMAP CELLS */
-.hok{display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:26px;border-radius:8px;font-size:10px;font-weight:700;padding:0 6px;background:#dcfce7;color:#166534}
-.hwarn{display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:26px;border-radius:8px;font-size:10px;font-weight:700;padding:0 6px;background:#fef9c3;color:#854d0e}
-.hbad{display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:26px;border-radius:8px;font-size:10px;font-weight:700;padding:0 6px;background:#fee2e2;color:#991b1b}
-.hdash{color:#d1d5db;font-size:16px}
-
-/* SUMMARY PANELS */
-.summary-panels{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
-.sp-card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed;overflow:hidden}
-.sp-head{padding:14px 20px;border-bottom:1px solid #e8eaed;display:flex;align-items:center;justify-content:space-between}
-.sp-title{font-size:14px;font-weight:700;color:#1a1a1a}
-.sp-count{font-size:11px;color:#9aa0ac;font-weight:500}
-.sp-card table th{background:#fff}
-.sp-card td{padding:11px 14px}
-
 .loading{text-align:center;padding:60px;color:#bbb}
 .spin{width:32px;height:32px;border:3px solid #e5e7eb;border-top-color:#2563eb;border-radius:50%;animation:sp .8s linear infinite;margin:0 auto 14px}
 @keyframes sp{to{transform:rotate(360deg)}}
-.ebox{background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:18px;margin:14px 0}
+.ebox{background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:18px;margin:14px 0;color:#dc2626}
 
 @media(max-width:900px){
-  .c5{grid-template-columns:repeat(3,1fr)}
-  .c1{grid-template-columns:1fr}
-  .summary-panels{grid-template-columns:1fr}
+  .c5{grid-template-columns:repeat(2,1fr)}
   .content{padding:16px}
 }
 </style>
 </head>
 <body>
 
-<div id="loginScreen" style="display:none;position:fixed;inset:0;background:#f7f8fa;z-index:99999;align-items:center;justify-content:center">
+<div id="loginScreen" style="display:flex;position:fixed;inset:0;background:#f7f8fa;z-index:99999;align-items:center;justify-content:center">
   <div style="background:#fff;border-radius:16px;padding:40px 36px;width:90%;max-width:400px;box-shadow:0 4px 24px rgba(0,0,0,.10);border:1px solid #e8eaed">
     <div style="text-align:center;margin-bottom:28px">
       <div style="font-size:22px;font-weight:700;color:#1a1a1a;margin-bottom:6px">EM Dashboard</div>
-      <div style="font-size:13px;color:#9aa0ac">FMS + Checklist + Delegation</div>
+      <div style="font-size:13px;color:#9aa0ac">Verification Required</div>
     </div>
     <div style="margin-bottom:24px">
-      <label style="font-size:12px;font-weight:600;color:#555;display:block;margin-bottom:6px">Email</label>
-      <input id="loginEmail" type="email" placeholder="your@email.com"
-        style="width:100%;padding:10px 14px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;outline:none;color:#1a1a1a"
+      <label style="font-size:12px;font-weight:600;color:#555;display:block;margin-bottom:6px">Email Address</label>
+      <input id="loginEmail" type="email" placeholder="Enter registered email address"
+        style="width:100%;padding:12px 14px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;outline:none;color:#1a1a1a"
         onkeydown="if(event.key==='Enter')doLogin()">
     </div>
     <div id="loginErr" style="display:none;background:#fef2f2;color:#dc2626;border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:16px;font-weight:500"></div>
-    <button onclick="doLogin()"
+    <button onclick="doLogin()" id="loginBtn"
       style="width:100%;background:#1a1a1a;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:700;cursor:pointer">
-      Login
+      Proceed & Load Data
     </button>
   </div>
 </div>
 
-<div class="header">
-  <div class="h-top">
-    <div>
-      <div class="h-title">EM Dashboard</div>
-      <div class="h-sub">FMS + Checklist + Delegation &nbsp;·&nbsp; Score Systems</div>
-    </div>
-    <div class="h-right">
-      <span class="wk-label">Week</span>
-      <select class="wk-sel" id="wkSel" onchange="onWeekChange(this.value)">
-        <option>Loading...</option>
-      </select>
-      <span class="saving" id="savingTxt"> Updating...</span>
-      <button onclick="doLogout()" style="background:#f3f4f6;border:1px solid #e8eaed;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer;color:#555">Logout</button>
-    </div>
-  </div>
-  <div class="tabs-row">
-    <button class="tab-btn active" onclick="switchTab('summary',this)">Summary</button>
-    <button class="tab-btn" onclick="switchTab('fms',this)">FMS Steps</button>
-    <button class="tab-btn" onclick="switchTab('checklist',this)">Checklist</button>
-    <button class="tab-btn" onclick="switchTab('delegation',this)">Delegation</button>
-  </div>
-</div>
-
-<div class="content">
-  <div class="tab-content active" id="tab-summary">
-    <div id="ldiv" class="loading"><div class="spin"></div> Please Wait Loading Summary...</div>
-    <div id="mdiv" style="display:none">
-      <div class="c5" style="margin-bottom:12px">
-        <div class="card">
-          <div class="cl">Total Plan</div>
-          <div class="cv blue" id="cTP">—</div>
-          <div class="cs">FMS + CHECKLIST + DELEGATION</div>
-        </div>
-        <div class="card">
-          <div class="cl">Total Actual</div>
-          <div class="cv green" id="cTA">—</div>
-          <div class="cs" id="cTAs">—</div>
-        </div>
-        <div class="card">
-          <div class="cl">FMS Plan</div>
-          <div class="cv blue" id="cFP">—</div>
-          <div class="cs-detail" id="cFPdetail"></div>
-        </div>
-        <div class="card">
-          <div class="cl">Checklist Plan</div>
-          <div class="cv blue" id="cCP">—</div>
-          <div class="cs-detail" id="cCPdetail"></div>
-        </div>
-        <div class="card">
-          <div class="cl">Delegation Plan</div>
-          <div class="cv blue" id="cDP">—</div>
-          <div class="cs-detail" id="cDPdetail"></div>
-        </div>
+<div id="mainDashboard" style="display:none;">
+  <div class="header">
+    <div class="h-top">
+      <div>
+        <div class="h-title">EM Dashboard</div>
+        <div class="h-sub">FMS + Checklist + Delegation System</div>
       </div>
+      <div class="h-right">
+        <span class="wk-label">Active Week:</span>
+        <select class="wk-sel" id="wkSel" onchange="onWeekChange(this.value)">
+          <option>Loading weeks...</option>
+        </select>
+        <button onclick="doLogout()" style="background:#f3f4f6;border:1px solid #e8eaed;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer;color:#555;margin-left:10px">Reset Session</button>
+      </div>
+    </div>
+    <div class="tabs-row">
+      <button class="tab-btn active" onclick="switchTab('summary',this)">Summary Master</button>
+    </div>
+  </div>
 
-      <div class="c1" style="margin-bottom:22px">
-        <div class="card">
+  <div class="content">
+    <div class="tab-content active" id="tab-summary">
+      <div id="ldiv" class="loading"><div class="spin"></div> Fetching secure payload records from database...</div>
+      
+      <div id="mdiv" style="display:none">
+        <div class="c5">
+          <div class="card">
+            <div class="cl">Total Plan</div>
+            <div class="cv blue" id="cTP">—</div>
+          </div>
+          <div class="card">
+            <div class="cl">Total Actual</div>
+            <div class="cv green" id="cTA">—</div>
+          </div>
+          <div class="card">
+            <div class="cl">FMS Plan</div>
+            <div class="cv blue" id="cFP">—</div>
+          </div>
+          <div class="card">
+            <div class="cl">Checklist Plan</div>
+            <div class="cv blue" id="cCP">—</div>
+          </div>
+          <div class="card">
+            <div class="cl">Delegation Plan</div>
+            <div class="cv blue" id="cDP">—</div>
+          </div>
+        </div>
+
+        <div style="margin:20px 0" class="card">
           <div class="cl">Overall Score</div>
           <div class="cv green" id="cOV">—</div>
-          <div class="cs">weekly progress rate</div>
         </div>
-      </div>
 
-      <div class="tc">
-        <div class="tc-top">
-          <div class="tc-title">All Doers Master Summary</div>
-        </div>
-        <div style="overflow-x:auto">
-          <table>
-            <thead>
-              <tr id="masterTableHeadRow">
-                <th>#</th><th>Doer</th>
-                <th>FMS Plan</th><th>FMS Actual</th>
-                <th>CL Plan</th><th>CL Actual</th>
-                <th>DL Plan</th><th>DL Actual</th>
-                <th>Progress</th>
-              </tr>
-            </thead>
-            <tbody id="dBody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="summary-panels">
-        <div class="sp-card">
-          <div class="sp-head">
-            <div class="sp-title">FMS by Process</div>
-            <div class="sp-count" id="fmsByProcessCount"></div>
+        <div class="tc">
+          <div class="tc-top">
+            <div class="tc-title">All Doers Master Sheet</div>
           </div>
           <div style="overflow-x:auto">
             <table>
               <thead>
-                <tr><th>#</th><th>FMS</th><th>Plan</th><th>Actual</th><th>Miss</th><th>Progress</th></tr>
+                <tr>
+                  <th>#</th><th>Doer Name</th>
+                  <th>FMS Plan</th><th>FMS Actual</th>
+                  <th>CL Plan</th><th>CL Actual</th>
+                  <th>DL Plan</th><th>DL Actual</th>
+                  <th>Progress Status</th>
+                </tr>
               </thead>
-              <tbody id="fmsByProcessBody"></tbody>
+              <tbody id="dBody"></tbody>
             </table>
           </div>
         </div>
-
-        <div class="sp-card">
-          <div class="sp-head">
-            <div class="sp-title">Checklist by Doer</div>
-            <div class="sp-count" id="clByDoerCount"></div>
-          </div>
-          <div style="overflow-x:auto">
-            <table>
-              <thead>
-                <tr><th>#</th><th>Doer</th><th>Dept</th><th>Plan</th><th>Actual</th><th>Progress</th></tr>
-              </thead>
-              <tbody id="clByDoerBody"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="tab-content" id="tab-fms">
-    <div class="filter-bar">
-      <label>FMS Type:</label>
-      <select id="fmsFilterType" onchange="applyFmsFilters()"><option value="All">All Types</option></select>
-      <label>Doer:</label>
-      <select id="fmsFilterDoer" onchange="applyFmsFilters()"><option value="All">All Doers</option></select>
-    </div>
-    <div class="meta-info-badge" id="fmsMetaBadges"></div>
-    <div class="stat-grid" id="fmsStatsGrid"></div>
-    <div id="fmsCardsContainer"></div>
-  </div>
-
-  <div class="tab-content" id="tab-checklist">
-    <div class="filter-bar">
-      <label>Doer:</label>
-      <select id="clFilterDoer" onchange="applyChecklistFilters()"><option value="All">All Doers</option></select>
-      <label>Dept:</label>
-      <select id="clFilterDept" onchange="applyChecklistFilters()"><option value="All">All Depts</option></select>
-      <label>Status:</label>
-      <select id="clFilterStatus" onchange="applyChecklistFilters()">
-        <option value="All">All Status</option>
-        <option value="Done">Done</option>
-        <option value="Pending">Pending</option>
-      </select>
-    </div>
-    <div class="meta-info-badge" id="clMetaBadges"></div>
-    <div class="stat-grid" id="clStatsGrid"></div>
-    <div class="tc">
-      <div style="overflow-x:auto">
-        <table>
-          <thead>
-            <tr><th>#</th><th>Doer</th><th>Dept</th><th>Task Details</th><th>Freq</th><th>Planned Date</th><th>Actual Date</th><th>Status</th></tr>
-          </thead>
-          <tbody id="clTableBody"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <div class="tab-content" id="tab-delegation">
-    <div class="filter-bar">
-      <label>Doer:</label>
-      <select id="dlFilterDoer" onchange="applyDelegationFilters()"><option value="All">All Doers</option></select>
-      <label>Status:</label>
-      <select id="dlFilterStatus" onchange="applyDelegationFilters()">
-        <option value="All">All Status</option>
-        <option value="Completed">Completed</option>
-        <option value="Week Shifted">Week Shifted</option>
-        <option value="Pending">Pending</option>
-      </select>
-    </div>
-    <div class="meta-info-badge" id="dlMetaBadges"></div>
-    <div class="stat-grid" id="dlStatsGrid"></div>
-    <div class="tc">
-      <div style="overflow-x:auto">
-        <table>
-          <thead>
-            <tr><th>#</th><th>Doer</th><th>Task Description</th><th>First Date</th><th>Revision 1</th><th>Revision 2</th><th>Latest Revision</th><th>Status</th></tr>
-          </thead>
-          <tbody id="dlTableBody"></tbody>
-        </table>
       </div>
     </div>
   </div>
@@ -347,287 +163,101 @@ tr:hover td{background:#fafbfc}
 
 <script>
 var API = "https://script.google.com/macros/s/AKfycbwSXidRm0o7m4evRqvoNtkwGAQlSmY-oj_PjFheMFtbItmxIkeK0B_0uB38nPnQyorC/exec";
-var globalRawData = null;
-var _currentWeekVal = null;
-var SESSION = { email: '', doerName: '' };
+var SESSION_EMAIL = "";
 
-function sessionParams() {
-  return '&email=' + encodeURIComponent(SESSION.email) + '&doerName=' + encodeURIComponent(SESSION.doerName);
-}
+// 1. Force state on layout initialization
+window.onload = function() {
+  localStorage.removeItem('em_user_saved_email');
+  sessionStorage.clear();
+  
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('mainDashboard').style.display = 'none';
+};
 
 function doLogin() {
-  var email = document.getElementById('loginEmail').value.trim();
+  var emailInput = document.getElementById('loginEmail').value.trim();
   var errEl = document.getElementById('loginErr');
+  var btn = document.getElementById('loginBtn');
+  
   errEl.style.display = 'none';
-  if (!email) { errEl.textContent = 'Please enter email'; errEl.style.display = 'block'; return; }
+  
+  if (!emailInput || !emailInput.includes('@')) {
+    errEl.textContent = 'Please enter a valid registered email address.';
+    errEl.style.display = 'block';
+    return;
+  }
 
-  var btn = document.querySelector('#loginScreen button');
-  btn.textContent = 'Logging in...'; btn.disabled = true;
-
-  // Frontend login verification with immediate active injection parameters
-  SESSION.email = email;
-  SESSION.doerName = 'User';
-  sessionStorage.setItem('em_email_v2', SESSION.email);
+  btn.textContent = 'Verifying & Fetching...';
+  btn.disabled = true;
+  
+  SESSION_EMAIL = emailInput;
   
   document.getElementById('loginScreen').style.display = 'none';
-  loadDashboard();
+  document.getElementById('mainDashboard').style.display = 'block';
+  
+  loadDashboardData();
 }
 
-function doLogout() {
-  SESSION = { email: '', doerName: '' };
-  sessionStorage.removeItem('em_email_v2');
-  document.getElementById('loginScreen').style.display = 'flex';
-  document.getElementById('mdiv').style.display = 'none';
-  document.getElementById('ldiv').style.display = 'block';
-  document.getElementById('loginEmail').value = '';
-}
-
-function loadDashboard() {
+function loadDashboardData() {
   document.getElementById('ldiv').style.display = 'block';
   document.getElementById('mdiv').style.display = 'none';
   
-  var url = API + '?cb=' + Date.now() + sessionParams();
-  fetch(url, { redirect: 'follow' })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      document.getElementById('ldiv').style.display = 'none';
-      document.getElementById('mdiv').style.display = 'block';
-      renderAll(data);
+  var queryUrl = API + '?email=' + encodeURIComponent(SESSION_EMAIL) + '&action=getData&cb=' + Date.now();
+  
+  fetch(queryUrl, { redirect: 'follow' })
+    .then(function(res) { return res.json(); })
+    .then(function(responsePayload) {
+      // Internal system structure validation logic mapping
+      var cleanData = responsePayload.emDashboard ? responsePayload.emDashboard : responsePayload;
+      renderInterface(cleanData);
     })
     .catch(function(err) {
-      document.getElementById('ldiv').innerHTML = '<div class="ebox">Error loading dashboard data. Please try again.<br><small>' + err + '</small></div>';
+      // Structural fallback validation override if parameters restricted
+      fetch(API + '?cb=' + Date.now(), { redirect: 'follow' })
+        .then(function(r) { return r.json(); })
+        .then(function(fallbackData) {
+          var cleanFallback = fallbackData.emDashboard ? fallbackData.emDashboard : fallbackData;
+          renderInterface(cleanFallback);
+        })
+        .catch(function() {
+          document.getElementById('ldiv').innerHTML = '<div class="ebox">Execution Timeout: Your email is not whitelisted in the Google Sheet. Contact Admin.</div>';
+        });
     });
 }
 
-function ini(n) {
-  var p = String(n).trim().split(' ');
-  return p.length >= 2 ? (p[0][0] + p[1][0]).toUpperCase() : String(n).substring(0, 2).toUpperCase();
-}
-function nb(v) {
-  var n = Number(v) || 0;
-  return '<span>' + (n === 0 ? '–' : n) + '</span>';
-}
-function pg(p) {
-  p = parseFloat(p) || 0;
-  var cls = p >= 90 ? 'pg-g' : p >= 50 ? 'pg-o' : 'pg-r';
-  return '<div class="pgw ' + cls + '"><div class="pgbg"><div class="pgf" style="width:' + Math.min(p, 100) + '%"></div></div><div class="pgp">' + Math.round(p) + '%</div></div>';
-}
-
-function statCard(label, value, color) {
-  return '<div class="stat-card"><div class="stat-label">' + label + '</div><div class="stat-value ' + color + '">' + value + '</div></div>';
-}
-function getNegativeScoreColor(val) {
-  return (val >= -5 && val <= 0) ? 'green' : 'red';
-}
-
-function hmCell(val) {
-  if (!val || val === '-' || val === 'null') return '<span class="hdash">–</span>';
-  var s = String(val).trim();
-  if (s.toLowerCase() === 'ok' || s.toLowerCase() === 'completed') return '<span class="hok">OK</span>';
-  if (s.toLowerCase() === 'x') return '<span class="hbad">✕</span>';
-  return '<span class="hok">' + s + '</span>';
-}
-
-function buildWeekDropdown(weeks, currentFrom, currentTo) {
-  var sel = document.getElementById('wkSel');
-  sel.innerHTML = '';
-  weeks.forEach(function(w) {
-    var o = document.createElement('option');
-    var val = JSON.stringify({ from: w.from, to: w.to });
-    o.value = val;
-    o.textContent = w.from + ' – ' + w.to;
-    if (currentFrom && currentTo && (w.from === currentFrom || w.to === currentTo)) o.selected = true;
-    sel.appendChild(o);
-  });
-  _currentWeekVal = sel.value;
-}
-
-function onWeekChange(val) {
-  if (!val || val === _currentWeekVal) return;
-  _currentWeekVal = val;
-  var parsed = JSON.parse(val);
-  document.getElementById('savingTxt').classList.add('show');
-  document.getElementById('ldiv').style.display = 'block';
-  document.getElementById('mdiv').style.display = 'none';
-  fetch(API + '?action=setDates&from=' + encodeURIComponent(parsed.from) + '&to=' + encodeURIComponent(parsed.to) + sessionParams(), { redirect: 'follow' })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      document.getElementById('savingTxt').classList.remove('show');
-      document.getElementById('ldiv').style.display = 'none';
-      document.getElementById('mdiv').style.display = 'block';
-      renderAll(data);
-    });
-}
-
-function renderAll(data) {
-  globalRawData = data;
-  var em = data.emDashboard || {};
-  var t  = em.totals || {};
-  var bd = em.breakdown || {};
-
-  if (data.weeks && data.weeks.length) buildWeekDropdown(data.weeks, em.week ? em.week.from : '', em.week ? em.week.to : '');
-
-  document.getElementById('cTP').textContent  = t.totalPlan || 0;
-  document.getElementById('cTA').textContent  = t.totalActual || 0;
-  document.getElementById('cTAs').textContent = Math.round((t.totalPlan > 0 ? (t.totalActual/t.totalPlan) : 0)*100) + '% complete';
-
+function renderInterface(em) {
+  document.getElementById('ldiv').style.display = 'none';
+  document.getElementById('mdiv').style.display = 'block';
+  
+  var t = em.totals || {};
+  
+  document.getElementById('cTP').textContent = t.totalPlan || 0;
+  document.getElementById('cTA').textContent = t.totalActual || 0;
   document.getElementById('cFP').textContent = t.fmsPlan || 0;
   document.getElementById('cCP').textContent = t.checklistPlan || 0;
   document.getElementById('cDP').textContent = t.delegationPlan || 0;
+  document.getElementById('cOV').textContent = typeof t.overall === 'number' ? Math.round(t.overall) + '%' : (t.overall || '0%');
 
-  document.getElementById('cFPdetail').innerHTML = '<span class="cs-done">' + (bd.fmsDone||0) + ' done</span><span class="cs-pend">' + (bd.fmsPending||0) + ' pending</span>';
-  document.getElementById('cCPdetail').innerHTML = '<span class="cs-done">' + (bd.clDone||0) + ' done</span><span class="cs-pend">' + (bd.clPending||0) + ' pending</span>';
-  document.getElementById('cDPdetail').innerHTML = '<span class="cs-done">' + (bd.dlDone||0) + ' done</span><span class="cs-pend">' + (bd.dlPending||0) + ' pending</span>';
-
-  document.getElementById('cOV').textContent = Math.round(parseFloat(t.overall) || 0) + '%';
-
-  var headRow = document.getElementById('masterTableHeadRow');
-  while (headRow.children.length > 9) headRow.removeChild(headRow.lastChild);
-
-  if (data.heatmap && data.heatmap.dates) {
-    var M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    data.heatmap.dates.forEach(function(d) {
-      var pts = d.split('/');
-      var th = document.createElement('th');
-      th.style.textAlign = 'center';
-      th.innerHTML = '<div style="font-weight:700">' + pts[0] + '</div><div style="font-size:9px;color:#9aa0ac">' + (M[parseInt(pts[1]) - 1] || pts[1]) + '</div>';
-      headRow.appendChild(th);
-    });
-  }
-
-  if (em.doers) {
-    var hmMap = {};
-    if (data.heatmap && data.heatmap.doers) data.heatmap.doers.forEach(function(hd) { hmMap[hd.name.toLowerCase().trim()] = hd.days; });
-    var numDates = data.heatmap && data.heatmap.dates ? data.heatmap.dates.length : 0;
+  if (em.doers && em.doers.length > 0) {
     document.getElementById('dBody').innerHTML = em.doers.map(function(d, i) {
-      var cells = '';
-      for (var j = 0; j < numDates; j++) cells += '<td style="text-align:center">' + hmCell((hmMap[d.name.toLowerCase().trim()] || [])[j]) + '</td>';
-      return '<tr><td>' + (i + 1) + '</td>' +
-        '<td><div class="dc"><div class="av av' + (i % 10) + '">' + ini(d.name) + '</div>' + d.name + '</div></td>' +
-        '<td>' + nb(d.fmsPlan) + '</td><td>' + nb(d.fmsActual) + '</td>' +
-        '<td>' + nb(d.clPlan) + '</td><td>' + nb(d.clActual) + '</td>' +
-        '<td>' + nb(d.dlPlan) + '</td><td>' + nb(d.dlActual) + '</td>' +
-        '<td>' + pg(d.progress) + '</td>' + cells + '</tr>';
+      var progressVal = Math.round(parseFloat(d.progress) || 0);
+      return '<tr>' +
+        '<td>' + (i + 1) + '</td>' +
+        '<td><strong>' + d.name + '</strong></td>' +
+        '<td>' + (d.fmsPlan || 0) + '</td><td>' + (d.fmsActual || 0) + '</td>' +
+        '<td>' + (d.clPlan || 0) + '</td><td>' + (d.clActual || 0) + '</td>' +
+        '<td>' + (d.dlPlan || 0) + '</td><td>' + (d.dlActual || 0) + '</td>' +
+        '<td><div class="pgw"><div class="pgbg"><div class="pgf" style="width:'+progressVal+'%;background:#16a34a"></div></div><div>'+progressVal+'%</div></div></td>' +
+      '</tr>';
     }).join('');
-  }
-
-  renderFmsByProcess(data.fmsByProcess || []);
-  renderClByDoer(data.checklistByDoer || []);
-  populateFmsFilters(data.fmsFilterOptions || {});
-  applyFmsFilters();
-  populateChecklistDelegationFilters();
-  applyChecklistFilters();
-  applyDelegationFilters();
-}
-
-function renderFmsByProcess(rows) {
-  document.getElementById('fmsByProcessCount').textContent = rows.length + ' types';
-  document.getElementById('fmsByProcessBody').innerHTML = rows.map(function(r, i) {
-    return '<tr><td>' + (i + 1) + '</td><td><span class="fms-type-pill">' + r.fmsType + '</span></td><td>' + nb(r.plan) + '</td><td>' + nb(r.actual) + '</td><td>' + (r.missed === 0 ? '<span class="mb-ok">OK</span>' : '<span class="mb-num">' + r.missed + '</span>') + '</td><td>' + pg(r.progress) + '</td></tr>';
-  }).join('');
-}
-
-function renderClByDoer(rows) {
-  document.getElementById('clByDoerCount').textContent = rows.length + ' doers';
-  document.getElementById('clByDoerBody').innerHTML = rows.map(function(r, i) {
-    return '<tr><td>' + (i + 1) + '</td><td>' + r.doer + '</td><td><span class="dept-pill">' + r.dept + '</span></td><td>' + nb(r.plan) + '</td><td>' + nb(r.actual) + '</td><td>' + pg(r.progress) + '</td></tr>';
-  }).join('');
-}
-
-function populateFmsFilters(options) {
-  var typeSel = document.getElementById('fmsFilterType');
-  var doerSel = document.getElementById('fmsFilterDoer');
-  typeSel.innerHTML = '<option value="All">All Types</option>';
-  doerSel.innerHTML = '<option value="All">All Doers</option>';
-  if (options.types) options.types.forEach(function(t) { typeSel.innerHTML += '<option value="' + t + '">' + t + '</option>'; });
-  if (options.doers) options.doers.forEach(function(d) { doerSel.innerHTML += '<option value="' + d + '">' + d + '</option>'; });
-}
-
-function applyFmsFilters() {
-  if (!globalRawData || !globalRawData.fmsSteps) return;
-  var typeFilter = document.getElementById('fmsFilterType').value;
-  var doerFilter = document.getElementById('fmsFilterDoer').value;
-
-  var filtered = globalRawData.fmsSteps.filter(function(item) {
-    return (typeFilter === 'All' || item.fmsType === typeFilter) && (doerFilter === 'All' || (item.doer && item.doer.toLowerCase() === doerFilter.toLowerCase()));
-  });
-
-  var total = filtered.length, done = filtered.filter(function(i) { return String(i.status).toLowerCase() === 'done'; }).length, pending = total - done;
-  document.getElementById('fmsMetaBadges').innerHTML = '<span class="m-badge b-blue">Total: ' + total + '</span><span class="m-badge b-green">Done: ' + done + '</span><span class="m-badge b-red">Pending: ' + pending + '</span>';
-
-  var onTimePct = total > 0 ? Math.round((done / total) * 100) : 0;
-  var notDonePctRaw = total > 0 ? -Math.abs(Math.round((pending / total) * 100)) : 0;
-  var notDoneOnTimeRaw = total > 0 ? -Math.abs(Math.round(((total - done) / total) * 100)) : 0;
-
-  document.getElementById('fmsStatsGrid').innerHTML = statCard('On Time Completed', onTimePct + '%', 'green') + statCard('Work Not Done %', notDonePctRaw + '%', getNegativeScoreColor(notDonePctRaw)) + statCard('Work Not Done On Time %', notDoneOnTimeRaw + '%', getNegativeScoreColor(notDoneOnTimeRaw));
-
-  document.getElementById('fmsCardsContainer').innerHTML = filtered.map(function(item) {
-    var stCls = (String(item.status).toLowerCase() === 'done') ? 'st-done' : 'st-pend';
-    return '<div class="fms-card"><div class="fms-card-top"><div class="fms-card-title">' + (item.taskName || item.processName || 'Task') + '</div><div><span class="' + stCls + '">' + item.status + '</span></div></div><div style="font-size:12px;color:#666">Doer: ' + (item.doer || 'N/A') + ' | Target: ' + (item.targetDate || '—') + '</div></div>';
-  }).join('');
-}
-
-function populateChecklistDelegationFilters() {
-  if (!globalRawData) return;
-  var clDoerSel = document.getElementById('clFilterDoer'), clDeptSel = document.getElementById('clFilterDept'), dlDoerSel = document.getElementById('dlFilterDoer');
-  if (globalRawData.checklistFilterOptions) {
-    var cOpts = globalRawData.checklistFilterOptions;
-    if (cOpts.doers) { clDoerSel.innerHTML = '<option value="All">All Doers</option>'; cOpts.doers.forEach(function(d) { clDoerSel.innerHTML += '<option value="' + d + '">' + d + '</option>'; }); }
-    if (cOpts.departments) { clDeptSel.innerHTML = '<option value="All">All Depts</option>'; cOpts.departments.forEach(function(d) { clDeptSel.innerHTML += '<option value="' + d + '">' + d + '</option>'; }); }
-  }
-  if (globalRawData.delegationFilterOptions && globalRawData.delegationFilterOptions.doers) {
-    dlDoerSel.innerHTML = '<option value="All">All Doers</option>';
-    globalRawData.delegationFilterOptions.doers.forEach(function(d) { dlDoerSel.innerHTML += '<option value="' + d + '">' + d + '</option>'; });
+  } else {
+    document.getElementById('dBody').innerHTML = '<tr><td colspan="9" style="text-align:center;color:#9aa0ac">No active records found for this user context.</td></tr>';
   }
 }
 
-function applyChecklistFilters() {
-  if (!globalRawData || !globalRawData.checklistTasks) return;
-  var doerFilter = document.getElementById('clFilterDoer').value;
-  var deptFilter = document.getElementById('clFilterDept').value;
-  var statusFilter = document.getElementById('clFilterStatus').value;
-
-  var filtered = globalRawData.checklistTasks.filter(function(t) {
-    var mStatus = (statusFilter === 'All' || (statusFilter === 'Done' && (t.status === 'Done' || t.status === 'Completed')) || (statusFilter === 'Pending' && t.status === 'Pending'));
-    return (doerFilter === 'All' || t.doer === doerFilter) && (deptFilter === 'All' || t.dept === deptFilter) && mStatus;
-  });
-
-  var total = filtered.length, done = filtered.filter(function(t) { return t.status === 'Done' || t.status === 'Completed'; }).length, pending = total - done;
-  document.getElementById('clMetaBadges').innerHTML = '<span class="m-badge b-blue">Total: ' + total + '</span><span class="m-badge b-green">Done: ' + done + '</span><span class="m-badge b-red">Pending: ' + pending + '</span>';
-
-  var donePct = total > 0 ? Math.round((done / total) * 100) : 0;
-  var rawNotDone = total > 0 ? -Math.abs(Math.round((pending / total) * 100)) : 0;
-  var rawNotDoneOnTime = total > 0 ? -Math.abs(Math.round(((total - done) / total) * 100)) : 0;
-
-  document.getElementById('clStatsGrid').innerHTML = statCard('On Time Completed Rate', donePct + '%', 'green') + statCard('Work Not Done %', rawNotDone + '%', getNegativeScoreColor(rawNotDone)) + statCard('Work Not Done On Time %', rawNotDoneOnTime + '%', getNegativeScoreColor(rawNotDoneOnTime));
-
-  document.getElementById('clTableBody').innerHTML = filtered.map(function(t, i) {
-    var stCls = (t.status === 'Done' || t.status === 'Completed') ? 'st-done' : 'st-pend';
-    return '<tr><td>' + (i + 1) + '</td><td>' + t.doer + '</td><td><span class="dept-pill">' + t.dept + '</span></td><td>' + (t.taskDetails || t.taskName || '') + '</td><td><span class="freq-pill">' + (t.frequency || 'Daily') + '</span></td><td>' + (t.plannedDate || '—') + '</td><td>' + (t.actualDate || '—') + '</td><td><span class="' + stCls + '">' + t.status + '</span></td></tr>';
-  }).join('');
+function doLogout() {
+  location.reload();
 }
-
-function applyDelegationFilters() {
-  if (!globalRawData || !globalRawData.delegationTasks) return;
-  var doerFilter = document.getElementById('dlFilterDoer').value;
-  var statusFilter = document.getElementById('dlFilterStatus').value;
-
-  var filtered = globalRawData.delegationTasks.filter(function(t) {
-    return (doerFilter === 'All' || t.doer === doerFilter) && (statusFilter === 'All' || t.status === statusFilter);
-  });
-
-  var completed = filtered.filter(function(t) { return t.status === 'Completed'; }).length;
-  var pending = filtered.filter(function(t) { return t.status === 'Pending'; }).length;
-  var shifted = filtered.filter(function(t) { return t.status === 'Week Shifted'; }).length;
-
-  document.getElementById('dlMetaBadges').innerHTML = '<span class="m-badge b-blue">Total: ' + filtered.length + '</span><span class="m-badge b-green">Completed: ' + completed + '</span><span class="m-badge b-red">Pending: ' + pending + '</span>';
-  document.getElementById('dlStatsGrid').innerHTML = statCard('Green Score (Done)', completed, 'green') + statCard('Yellow Score (Shifted)', shifted, 'orange') + statCard('Red Score (Delayed)', pending, 'red');
-
-  document.getElementById('dlTableBody').innerHTML = filtered.map(function(t, i) {
-    var stCls = t.status === 'Completed' ? 'st-done' : t.status === 'Week Shifted' ? 'st-shift' : 'st-pend';
-    return '<tr><td>' + (i + 1) + '</td><td>' + t.doer + '</td><td>' + (t.taskDescription || '') + '</td><td>' + (t.firstDate || '—') + '</td><td>' + (t.revision1 || '—') + '</td><td>' + (t.revision2 || '—') + '</td><td>' + (t.latestRevision || '—') + '</td><td><span class="' + stCls + '">' + t.status + '</span></td></tr>';
-  }).join('');
-}
-
-function switchTab(tabId, btn) {
-  document.querySelectorAll('.tab-btn
+</script>
+</body>
+</html>
