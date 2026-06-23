@@ -727,10 +727,20 @@ function applyDelegationFilters() {
   var pendingOnlyCount = filtered.filter(function(r) { return r.status.toLowerCase() === 'pending'; }).length;
   var totalCount       = filtered.length;
 
-  document.getElementById('dlMetaBadges').innerHTML =
-    '<span class="m-badge b-blue">' + totalCount + ' planned</span>' +
-    '<span class="m-badge b-green">' + doneCount + ' done</span>' +
-    '<span class="m-badge b-red">' + (totalCount - doneCount) + ' pending</span>';
+  // Badge: show context-aware label based on which filter is selected
+  var badgeHTML = '<span class="m-badge b-blue">' + totalCount + ' total</span>';
+  if (sFilter === 'All') {
+    badgeHTML += '<span class="m-badge b-green">' + doneCount + ' completed</span>' +
+      '<span class="m-badge b-red">' + weekShiftedCount + ' week shifted</span>' +
+      '<span class="m-badge" style="background:#fffbeb;color:#d97706">' + pendingOnlyCount + ' pending</span>';
+  } else if (sFilter === 'Completed') {
+    badgeHTML += '<span class="m-badge b-green">' + doneCount + ' completed</span>';
+  } else if (sFilter === 'Week Shifted') {
+    badgeHTML += '<span class="m-badge b-red">' + weekShiftedCount + ' week shifted</span>';
+  } else if (sFilter === 'Pending') {
+    badgeHTML += '<span class="m-badge" style="background:#fffbeb;color:#d97706">' + pendingOnlyCount + ' pending</span>';
+  }
+  document.getElementById('dlMetaBadges').innerHTML = badgeHTML;
 
   var redScore    = totalCount > 0 ? (weekShiftedCount / totalCount * 100) : 0;
   var yellowScore = totalCount > 0 ? (pendingOnlyCount / totalCount * 100) : 0;
