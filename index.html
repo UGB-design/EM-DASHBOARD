@@ -19,7 +19,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .saving{font-size:11px;color:#888;display:none}
 .saving.show{display:inline}
 
-/* TABS NAV — sticky rounded segmented control */
+/* TABS NAV */
 .tabs-row{display:flex;gap:4px;overflow-x:auto;width:fit-content;max-width:100%;background:rgba(255,255,255,.6);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-radius:14px;padding:6px;margin:0 0 18px;box-shadow:0 6px 18px rgba(60,50,30,.07);position:sticky;top:14px;z-index:60}
 .tab-btn{padding:10px 22px;border-radius:10px;font-size:13px;cursor:pointer;color:#8a8478;border:none;background:transparent;font-weight:600;transition:all .2s;white-space:nowrap}
 .tab-btn.active{color:#1a1a1a;font-weight:700;background:#fff;box-shadow:0 3px 10px rgba(0,0,0,.08)}
@@ -47,7 +47,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .c5 .card:nth-child(4){animation-delay:.14s}
 .c5 .card:nth-child(5){animation-delay:.18s}
 .c1 .card{animation-delay:.22s}
-/* Sub-stat line under card value */
 .cs{font-size:11px;color:#bbb;line-height:1.5}
 .cs-detail{font-size:11px;margin-top:6px;display:flex;gap:6px;flex-wrap:wrap}
 .cs-done{color:#16a34a;font-weight:600;background:#f0fdf4;padding:2px 8px;border-radius:20px;font-size:11px}
@@ -63,7 +62,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .m-badge.b-green{background:#f0fdf4;color:#16a34a}
 .m-badge.b-red{background:#fef2f2;color:#dc2626}
 
-/* ── NEW: STAT CARD ROW (On Time Completed / Work Not Done % / Work Not Done On Time % / Red-Yellow-Green Score) ── */
+/* STAT CARD ROW */
 .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px}
 .stat-card{background:linear-gradient(160deg,#ffffff 0%,#fbf8f3 100%);border-radius:14px;padding:14px 18px;box-shadow:0 4px 14px rgba(60,50,30,.06);border:1px solid rgba(255,255,255,.8)}
 .stat-label{font-size:10px;color:#9aa0ac;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:6px}
@@ -73,7 +72,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .stat-value.orange{color:#d97706}
 .stat-value.red{color:#dc2626}
 
-/* FMS GROUP CARDS (FMS Steps tab) */
+/* FMS GROUP CARDS */
 .fms-card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed;margin-bottom:16px;padding:18px 22px}
 .fms-card-top{display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:1px solid #f0f0f0;margin-bottom:12px;flex-wrap:wrap;gap:10px}
 .fms-card-title{font-size:14px;font-weight:700;color:#1a1a1a;display:flex;align-items:center;gap:8px}
@@ -100,7 +99,7 @@ tr:hover td{background:#fafbfc}
 .freq-pill{background:#fff7ed;color:#ea580c;font-size:11px;padding:2px 7px;border-radius:20px;font-weight:700;border:1px solid #fed7aa}
 .fms-type-pill{background:#f0fdf4;color:#166534;font-size:11px;padding:4px 12px;border-radius:20px;font-weight:600;display:inline-block;white-space:nowrap}
 
-/* AVATARS - colorful unique per person */
+/* AVATARS */
 .dc{display:flex;align-items:center;gap:10px}
 .av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
 .av0{background:#3B82F6;color:#fff}.av1{background:#10B981;color:#fff}
@@ -140,7 +139,7 @@ tr:hover td{background:#fafbfc}
 .hbad{display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:26px;border-radius:8px;font-size:10px;font-weight:700;padding:0 6px;background:#fee2e2;color:#991b1b}
 .hdash{color:#d1d5db;font-size:16px}
 
-/* ── BOTTOM SUMMARY PANELS (FMS by Process + Checklist by Doer) ── */
+/* BOTTOM SUMMARY PANELS */
 .summary-panels{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
 .sp-card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed;overflow:hidden}
 .sp-head{padding:14px 20px;border-bottom:1px solid #e8eaed;display:flex;align-items:center;justify-content:space-between}
@@ -193,12 +192,10 @@ tr:hover td{background:#fafbfc}
 
 <div class="content">
 
-  <!-- ══════════════ SUMMARY TAB ══════════════ -->
+  <!-- SUMMARY TAB -->
   <div class="tab-content active" id="tab-summary">
     <div id="ldiv" class="loading"><div class="spin"></div> Please Wait Loading Summary...</div>
     <div id="mdiv" style="display:none">
-
-      <!-- TOP 5 METRIC CARDS -->
       <div class="c5">
         <div class="card">
           <div class="cl">Total Plan</div>
@@ -210,27 +207,22 @@ tr:hover td{background:#fafbfc}
           <div class="cv green" id="cTA">—</div>
           <div class="cs" id="cTAs">—</div>
         </div>
-        <!-- FMS PLAN with done/pending sub-stats -->
         <div class="card">
           <div class="cl">FMS Plan</div>
           <div class="cv blue" id="cFP">—</div>
           <div class="cs-detail" id="cFPdetail"></div>
         </div>
-        <!-- CHECKLIST PLAN with done/pending sub-stats -->
         <div class="card">
           <div class="cl">Checklist Plan</div>
           <div class="cv blue" id="cCP">—</div>
           <div class="cs-detail" id="cCPdetail"></div>
         </div>
-        <!-- DELEGATION PLAN with done/pending sub-stats -->
         <div class="card">
           <div class="cl">Delegation Plan</div>
           <div class="cv blue" id="cDP">—</div>
           <div class="cs-detail" id="cDPdetail"></div>
         </div>
       </div>
-
-      <!-- OVERALL SCORE -->
       <div class="c1">
         <div class="card">
           <div class="cl">Overall Score</div>
@@ -238,8 +230,6 @@ tr:hover td{background:#fafbfc}
           <div class="cs">weekly progress rate</div>
         </div>
       </div>
-
-      <!-- ALL DOERS MASTER SUMMARY TABLE -->
       <div class="tc">
         <div class="tc-top">
           <div class="tc-title">All Doers Master Summary</div>
@@ -261,11 +251,7 @@ tr:hover td{background:#fafbfc}
           </table>
         </div>
       </div>
-
-      <!-- ── BOTTOM PANELS: FMS by Process + Checklist by Doer ── -->
       <div class="summary-panels">
-
-        <!-- FMS BY PROCESS -->
         <div class="sp-card">
           <div class="sp-head">
             <div class="sp-title">FMS by Process</div>
@@ -273,22 +259,11 @@ tr:hover td{background:#fafbfc}
           </div>
           <div style="overflow-x:auto">
             <table>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>FMS</th>
-                  <th>Plan</th>
-                  <th>Actual</th>
-                  <th>Miss</th>
-                  <th>Progress</th>
-                </tr>
-              </thead>
+              <thead><tr><th>#</th><th>FMS</th><th>Plan</th><th>Actual</th><th>Miss</th><th>Progress</th></tr></thead>
               <tbody id="fmsByProcessBody"></tbody>
             </table>
           </div>
         </div>
-
-        <!-- CHECKLIST BY DOER -->
         <div class="sp-card">
           <div class="sp-head">
             <div class="sp-title">Checklist by Doer</div>
@@ -296,45 +271,29 @@ tr:hover td{background:#fafbfc}
           </div>
           <div style="overflow-x:auto">
             <table>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Doer</th>
-                  <th>Dept</th>
-                  <th>Plan</th>
-                  <th>Actual</th>
-                  <th>Progress</th>
-                </tr>
-              </thead>
+              <thead><tr><th>#</th><th>Doer</th><th>Dept</th><th>Plan</th><th>Actual</th><th>Progress</th></tr></thead>
               <tbody id="clByDoerBody"></tbody>
             </table>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
 
-      </div><!-- /summary-panels -->
-    </div><!-- /mdiv -->
-  </div><!-- /tab-summary -->
-
-  <!-- ══════════════ FMS STEPS TAB ══════════════ -->
+  <!-- FMS STEPS TAB -->
   <div class="tab-content" id="tab-fms">
-    <!-- Filter bar with Type + Doer dropdowns -->
     <div class="filter-bar">
       <label>FMS Type:</label>
-      <select id="fmsFilterType" onchange="applyFmsFilters()">
-        <option value="All">All Types</option>
-      </select>
+      <select id="fmsFilterType" onchange="applyFmsFilters()"><option value="All">All Types</option></select>
       <label>Doer:</label>
-      <select id="fmsFilterDoer" onchange="applyFmsFilters()">
-        <option value="All">All Doers</option>
-      </select>
+      <select id="fmsFilterDoer" onchange="applyFmsFilters()"><option value="All">All Doers</option></select>
     </div>
     <div class="meta-info-badge" id="fmsMetaBadges"></div>
-    <!-- NEW: On Time Completed / Work Not Done % / Work Not Done On Time % -->
     <div class="stat-grid" id="fmsStatsGrid"></div>
     <div id="fmsCardsContainer"><div class="loading">Fetching FMS structured groups...</div></div>
   </div>
 
-  <!-- ══════════════ CHECKLIST TAB ══════════════ -->
+  <!-- CHECKLIST TAB -->
   <div class="tab-content" id="tab-checklist">
     <div class="filter-bar">
       <label>Doer:</label>
@@ -349,7 +308,6 @@ tr:hover td{background:#fafbfc}
       </select>
     </div>
     <div class="meta-info-badge" id="clMetaBadges"></div>
-    <!-- NEW: On Time Completed / Work Not Done % / Work Not Done On Time % -->
     <div class="stat-grid" id="clStatsGrid"></div>
     <div class="tc">
       <div style="overflow-x:auto">
@@ -363,7 +321,7 @@ tr:hover td{background:#fafbfc}
     </div>
   </div>
 
-  <!-- ══════════════ DELEGATION TAB ══════════════ -->
+  <!-- DELEGATION TAB -->
   <div class="tab-content" id="tab-delegation">
     <div class="filter-bar">
       <label>Doer:</label>
@@ -377,7 +335,6 @@ tr:hover td{background:#fafbfc}
       </select>
     </div>
     <div class="meta-info-badge" id="dlMetaBadges"></div>
-    <!-- NEW: Red Score / Yellow Score / Green Score -->
     <div class="stat-grid" id="dlStatsGrid"></div>
     <div class="tc">
       <div style="overflow-x:auto">
@@ -424,9 +381,17 @@ function pg(p) {
 }
 function ovCls(v) { return 'green'; }
 
-// NEW: small stat card builder, used by FMS Steps / Checklist / Delegation tabs
+// Stat card builder — supports negative-score variant (negScore mode)
+// negScore: value shown as negative, green if abs <= 5%, red if abs > 5%
 function statCard(label, value, color) {
   return '<div class="stat-card"><div class="stat-label">' + label + '</div><div class="stat-value ' + color + '">' + value + '</div></div>';
+}
+
+// Build a negative-score stat card: raw pct number (positive), displayed as -X.XX%, color by threshold
+function negScoreCard(label, rawPct) {
+  var color = rawPct <= 5 ? 'green' : 'red';
+  var display = rawPct === 0 ? '0.00%' : '-' + rawPct.toFixed(2) + '%';
+  return statCard(label, display, color);
 }
 
 function hmCell(val) {
@@ -485,7 +450,6 @@ function renderAll(data) {
 
   if (data.weeks && data.weeks.length) buildWeekDropdown(data.weeks, em.week ? em.week.from : '', em.week ? em.week.to : '');
 
-  // ── Top metric cards ──
   document.getElementById('cTP').textContent = t.totalPlan || 0;
   document.getElementById('cTA').textContent = t.totalActual || 0;
   document.getElementById('cFP').textContent = t.fmsPlan || 0;
@@ -493,7 +457,6 @@ function renderAll(data) {
   document.getElementById('cDP').textContent = t.delegationPlan || 0;
 
   var ov = t.overall || '0%';
-  // Round to 0 decimal: "97.65%" → "97%"
   var ovNum = parseFloat(ov) || 0;
   var ovRounded = Math.round(ovNum) + '%';
   document.getElementById('cTAs').textContent = ovRounded + ' complete';
@@ -501,20 +464,16 @@ function renderAll(data) {
   ovEl.textContent = ovRounded;
   ovEl.className = 'cv ' + ovCls(ovNum);
 
-  // ── Done / Pending sub-stats under FMS, CL, DL cards ──
   document.getElementById('cFPdetail').innerHTML =
     '<span class="cs-done">' + bd.fmsDone + ' done</span>' +
     '<span class="cs-pend">' + bd.fmsPending + ' pending</span>';
-
   document.getElementById('cCPdetail').innerHTML =
     '<span class="cs-done">' + bd.clDone + ' done</span>' +
     '<span class="cs-pend">' + bd.clPending + ' pending</span>';
-
   document.getElementById('cDPdetail').innerHTML =
     '<span class="cs-done">' + bd.dlDone + ' done</span>' +
     '<span class="cs-pend">' + bd.dlPending + ' pending</span>';
 
-  // ── Heatmap date header ──
   if (data.heatmap && data.heatmap.dates) {
     var M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     var html = '';
@@ -526,7 +485,6 @@ function renderAll(data) {
     document.getElementById('hmThLabel').setAttribute('colspan', data.heatmap.dates.length);
   }
 
-  // ── All Doers Master table ──
   if (em.doers) {
     var hmMap = {};
     if (data.heatmap && data.heatmap.doers) data.heatmap.doers.forEach(function(hd) { hmMap[hd.name.toLowerCase().trim()] = hd.days; });
@@ -543,23 +501,16 @@ function renderAll(data) {
     }).join('');
   }
 
-  // ── FMS by Process panel ──
   renderFmsByProcess(data.fmsByProcess || []);
-
-  // ── Checklist by Doer panel ──
   renderClByDoer(data.checklistByDoer || []);
-
-  // ── FMS Steps tab: populate filter dropdowns ──
   populateFmsFilters(data.fmsFilterOptions || {});
   applyFmsFilters();
-
-  // ── Checklist + Delegation tabs ──
   populateChecklistDelegationFilters();
   applyChecklistFilters();
   applyDelegationFilters();
 }
 
-// ── FMS by Process panel render ───────────────────────────────────────────────
+// ── FMS by Process panel ──────────────────────────────────────────────────────
 function renderFmsByProcess(rows) {
   document.getElementById('fmsByProcessCount').textContent = rows.length + ' process types';
   document.getElementById('fmsByProcessBody').innerHTML = rows.map(function(r, i) {
@@ -574,7 +525,7 @@ function renderFmsByProcess(rows) {
   }).join('') || '<tr><td colspan="6" style="text-align:center;color:#bbb;padding:20px">No FMS data for this week</td></tr>';
 }
 
-// ── Checklist by Doer panel render ───────────────────────────────────────────
+// ── Checklist by Doer panel ───────────────────────────────────────────────────
 function renderClByDoer(rows) {
   document.getElementById('clByDoerCount').textContent = rows.length + ' doers';
   document.getElementById('clByDoerBody').innerHTML = rows.map(function(r, i) {
@@ -589,7 +540,7 @@ function renderClByDoer(rows) {
   }).join('') || '<tr><td colspan="6" style="text-align:center;color:#bbb;padding:20px">No checklist data for this week</td></tr>';
 }
 
-// ── FMS Steps Tab Filters ─────────────────────────────────────────────────────
+// ── FMS Steps Tab ─────────────────────────────────────────────────────────────
 function populateFmsFilters(opts) {
   var typesSel = document.getElementById('fmsFilterType');
   var doersSel = document.getElementById('fmsFilterDoer');
@@ -621,10 +572,7 @@ function applyFmsFilters() {
   var totalPlan = 0, totalActual = 0, totalOnTime = 0, groupCount = 0;
 
   var html = groups.map(function(g) {
-    // Filter by type
     if (typeFilter !== 'All' && g.groupName !== typeFilter) return '';
-
-    // Filter steps by doer
     var filteredSteps = g.steps.filter(function(s) {
       return doerFilter === 'All' || s.doer === doerFilter;
     });
@@ -671,20 +619,20 @@ function applyFmsFilters() {
       '</div>';
   }).join('');
 
-  // Meta badges
   var missed = totalPlan - totalActual;
   document.getElementById('fmsMetaBadges').innerHTML =
     '<span class="m-badge b-blue">' + groupCount + ' groups</span>' +
     '<span class="m-badge b-green">' + totalActual + ' done</span>' +
     '<span class="m-badge b-red">' + Math.max(0, missed) + ' pending</span>';
 
-  // NEW: On Time Completed / Work Not Done % / Work Not Done On Time %
-  var fmsWorkNotDonePct       = totalPlan   > 0 ? (Math.max(0,missed) / totalPlan * 100) : 0;
+  // FMS stat cards: Work Not Done % and Work Not Done On Time % shown as negative
+  var fmsWorkNotDonePct       = totalPlan   > 0 ? (Math.max(0, missed) / totalPlan * 100) : 0;
   var fmsWorkNotDoneOnTimePct = totalActual > 0 ? Math.max(0, 100 - (totalOnTime / totalActual * 100)) : 0;
+
   document.getElementById('fmsStatsGrid').innerHTML =
     statCard('On Time Completed', totalOnTime, 'blue') +
-    statCard('Work Not Done %', fmsWorkNotDonePct.toFixed(2) + '%', 'red') +
-    statCard('Work Not Done On Time %', fmsWorkNotDoneOnTimePct.toFixed(2) + '%', 'orange');
+    negScoreCard('Work Not Done %', fmsWorkNotDonePct) +
+    negScoreCard('Work Not Done On Time %', fmsWorkNotDoneOnTimePct);
 
   document.getElementById('fmsCardsContainer').innerHTML = html ||
     '<div style="text-align:center;padding:40px;color:#bbb">No FMS data matches the selected filters</div>';
@@ -736,17 +684,18 @@ function applyChecklistFilters() {
     '<span class="m-badge b-green">' + doneCount + ' done</span>' +
     '<span class="m-badge b-red">' + pendCount + ' pending</span>';
 
-  // NEW: On Time Completed / Work Not Done % / Work Not Done On Time %
-  // On time = status Done AND actualDate <= plannedDate (yyyy-MM-dd strings compare lexicographically)
   var onTimeCount = filtered.filter(function(r) {
     return r.status === 'Done' && r.actualDate && r.actualDate !== '-' && r.plannedDate && r.plannedDate !== '-' && r.actualDate <= r.plannedDate;
   }).length;
+
+  // Checklist stat cards: Work Not Done % and Work Not Done On Time % shown as negative
   var clWorkNotDonePct       = filtered.length > 0 ? (pendCount / filtered.length * 100) : 0;
   var clWorkNotDoneOnTimePct = doneCount > 0 ? Math.max(0, 100 - (onTimeCount / doneCount * 100)) : 0;
+
   document.getElementById('clStatsGrid').innerHTML =
     statCard('On Time Completed', onTimeCount, 'blue') +
-    statCard('Work Not Done %', clWorkNotDonePct.toFixed(2) + '%', 'red') +
-    statCard('Work Not Done On Time %', clWorkNotDoneOnTimePct.toFixed(2) + '%', 'orange');
+    negScoreCard('Work Not Done %', clWorkNotDonePct) +
+    negScoreCard('Work Not Done On Time %', clWorkNotDoneOnTimePct);
 
   document.getElementById('clTableBody').innerHTML = filtered.map(function(r, i) {
     return '<tr><td>' + (i + 1) + '</td>' +
@@ -765,28 +714,31 @@ function applyDelegationFilters() {
   var dFilter = document.getElementById('dlFilterDoer').value;
   var sFilter = document.getElementById('dlFilterStatus').value;
   var data = globalRawData ? (globalRawData.delegationData || []) : [];
-  var filtered = data.filter(function(r) {
-    return (dFilter === 'All' || r.client === dFilter) &&
-           (sFilter === 'All' || r.status.toLowerCase() === sFilter.toLowerCase());
-  });
-  var doneCount = filtered.filter(function(r) { return r.status.toLowerCase() === 'completed'; }).length;
-  document.getElementById('dlMetaBadges').innerHTML =
-    '<span class="m-badge b-blue">' + filtered.length + ' planned</span>' +
-    '<span class="m-badge b-green">' + doneCount + ' done</span>' +
-    '<span class="m-badge b-red">' + (filtered.length - doneCount) + ' pending</span>';
 
-  // NEW: Red Score (Week Shifted/total) / Yellow Score (Pending/total) / Green Score (Completed/total)
-  var totalCount       = filtered.length;
+  // FIX: strict status filter — each option shows ONLY that status, no fallthrough
+  var filtered = data.filter(function(r) {
+    if (dFilter !== 'All' && r.client !== dFilter) return false;
+    if (sFilter === 'All') return true;
+    return r.status.toLowerCase() === sFilter.toLowerCase();
+  });
+
+  var doneCount        = filtered.filter(function(r) { return r.status.toLowerCase() === 'completed'; }).length;
   var weekShiftedCount = filtered.filter(function(r) { return r.status.toLowerCase() === 'week shifted'; }).length;
   var pendingOnlyCount = filtered.filter(function(r) { return r.status.toLowerCase() === 'pending'; }).length;
-  var completedCount   = filtered.filter(function(r) { return r.status.toLowerCase() === 'completed'; }).length;
+  var totalCount       = filtered.length;
+
+  document.getElementById('dlMetaBadges').innerHTML =
+    '<span class="m-badge b-blue">' + totalCount + ' planned</span>' +
+    '<span class="m-badge b-green">' + doneCount + ' done</span>' +
+    '<span class="m-badge b-red">' + (totalCount - doneCount) + ' pending</span>';
+
   var redScore    = totalCount > 0 ? (weekShiftedCount / totalCount * 100) : 0;
   var yellowScore = totalCount > 0 ? (pendingOnlyCount / totalCount * 100) : 0;
-  var greenScore  = totalCount > 0 ? (completedCount   / totalCount * 100) : 0;
+  var greenScore  = totalCount > 0 ? (doneCount        / totalCount * 100) : 0;
   document.getElementById('dlStatsGrid').innerHTML =
-    statCard('Red Score', redScore.toFixed(2) + '%', 'red') +
+    statCard('Red Score',    redScore.toFixed(2)    + '%', 'red') +
     statCard('Yellow Score', yellowScore.toFixed(2) + '%', 'orange') +
-    statCard('Green Score', greenScore.toFixed(2) + '%', 'green');
+    statCard('Green Score',  greenScore.toFixed(2)  + '%', 'green');
 
   document.getElementById('dlTableBody').innerHTML = filtered.map(function(r, i) {
     var sCls = r.status.toLowerCase() === 'completed' ? 'st-done' : r.status.toLowerCase() === 'week shifted' ? 'st-shift' : 'st-pend';
@@ -823,7 +775,8 @@ function switchTab(name, el) {
     });
 })();
 </script>
-<!-- ── PENDING TASKS MODAL ── -->
+
+<!-- PENDING TASKS MODAL -->
 <div id="pendingModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center">
   <div style="background:#fff;border-radius:14px;width:90%;max-width:620px;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
     <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e8eaed">
