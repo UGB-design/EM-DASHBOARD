@@ -569,8 +569,12 @@ function renderAll(data) {
   applyChecklistFilters();
   applyDelegationFilters();
 
-  // Scores tab
-  populateScoreFilters(data.scoresData || []);
+  // Scores tab — reset filter on fresh load
+  document.getElementById('scFilterPerf').value = 'All';
+  var scData = data.scoresData || [];
+  if (!data.scoresData) console.warn('⚠️ scoresData missing from API response — check code.gs SCORES section');
+  else console.log('✅ scoresData received:', scData.length, 'rows');
+  populateScoreFilters(scData);
   applyScoreFilters();
 }
 
@@ -949,6 +953,11 @@ function switchTab(name, el) {
   document.querySelectorAll('.tab-content').forEach(function(t) { t.classList.remove('active'); });
   el.classList.add('active');
   document.getElementById('tab-' + name).classList.add('active');
+  // Scores tab pe aate waqt Performance filter reset karo
+  if (name === 'scores') {
+    document.getElementById('scFilterPerf').value = 'All';
+    applyScoreFilters();
+  }
 }
 
 // ── Initial load ──────────────────────────────────────────────────────────────
