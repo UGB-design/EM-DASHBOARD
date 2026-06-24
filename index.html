@@ -378,11 +378,10 @@ tr:hover td{background:#fafbfc}
       <select id="scFilterDoer" onchange="applyScoreFilters()"><option value="All">All Employees</option></select>
       <label>Performance:</label>
       <select id="scFilterPerf" onchange="applyScoreFilters()">
-        <option value="All">All Grades</option>
-        <option value="S">S Grade (≥90%)</option>
-        <option value="A">A Grade (70–89%)</option>
-        <option value="B">B Grade (50–69%)</option>
-        <option value="C">C Grade (&lt;50%)</option>
+        <option value="All">All Performance</option>
+        <option value="high">High (≥90%)</option>
+        <option value="mid">Mid (50–89%)</option>
+        <option value="low">Low (&lt;50%)</option>
       </select>
     </div>
     <div class="meta-info-badge" id="scMetaBadges"></div>
@@ -416,7 +415,7 @@ tr:hover td{background:#fafbfc}
 </div>
 
 <script>
-var API = "https://script.google.com/macros/s/AKfycbwImG-aGbVaWU6bLatAJOfTjKom32WM5v-oZx_UEfS47m3tgC4OPs0mQZJuz8QlteGy/exec";
+var API = "https://script.google.com/macros/s/AKfycbx2guidy0u1vQRr2BnMNkCDSw9pCPK8gGLrOGdZfHImupjAh_5IgAc_EN9I7W1NEMs5/exec";
 
 var globalRawData = null;
 var _currentWeekVal = null;
@@ -826,19 +825,17 @@ function applyDelegationFilters() {
 
 // ── SCORES TAB ────────────────────────────────────────────────────────────────
 
-// Determine performance grade from percentage (0-100 numeric)
-function perfGrade(pct) {
-  if (pct >= 90) return 'S';
-  if (pct >= 70) return 'A';
-  if (pct >= 50) return 'B';
-  return 'C';
+// Performance color only — no grade letter
+function perfColor(pct) {
+  if (pct >= 90) return { bg:'#dcfce7', color:'#166534', bar:'#16a34a' };
+  if (pct >= 70) return { bg:'#dbeafe', color:'#1e40af', bar:'#2563eb' };
+  if (pct >= 50) return { bg:'#fef9c3', color:'#854d0e', bar:'#f59e0b' };
+  return { bg:'#fee2e2', color:'#991b1b', bar:'#ef4444' };
 }
 
-// Render performance badge with grade label
 function perfBadge(pct) {
-  var g = perfGrade(pct);
-  var cls = g === 'S' ? 'perf-s' : g === 'A' ? 'perf-a' : g === 'B' ? 'perf-b' : 'perf-c';
-  return '<span class="' + cls + '">' + g + ' &nbsp;' + pct.toFixed(2) + '%</span>';
+  var c = perfColor(pct);
+  return '<span style="background:' + c.bg + ';color:' + c.color + ';padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block;white-space:nowrap">' + pct.toFixed(2) + '%</span>';
 }
 
 // Format a pct cell (Work Not Done % values — shown negative in sheet)
@@ -885,40 +882,36 @@ function applyScoreFilters() {
     if (isScoreRowAllZero(r)) return false;
     if (dFilter !== 'All' && r.employee !== dFilter) return false;
     if (gFilter !== 'All') {
-      var perfPct = parseFloat(String(r.performance || '0').replace('%','')) || 0;
-      if (perfGrade(perfPct) !== gFilter) return false;
+      var perfPctF = parseFloat(String(r.performance || '0').replace('%','')) || 0;
+      if (gFilter === 'high' && perfPctF < 90) return false;
+      if (gFilter === 'mid' && (perfPctF < 50 || perfPctF >= 90)) return false;
+      if (gFilter === 'low' && perfPctF >= 50) return false;
     }
     return true;
   });
 
   // Hero summary cards
-  var totalEmployees  = filtered.length;
-  var totalPlanSum    = filtered.reduce(function(s, r) { return s + (Number(r.totalPlan) || 0); }, 0);
-  var totalDoneSum    = filtered.reduce(function(s, r) { return s + (Number(r.totalCompleted) || 0); }, 0);
-  var onTimeSum       = filtered.reduce(function(s, r) { return s + (Number(r.onTimeCompleted) || 0); }, 0);
-  var avgPerf         = filtered.length > 0 ? filtered.reduce(function(s, r) {
+  var totalEmployees = filtered.length;
+  var totalPlanSum   = filtered.reduce(function(s, r) { return s + (Number(r.totalPlan) || 0); }, 0);
+  var totalDoneSum   = filtered.reduce(function(s, r) { return s + (Number(r.totalCompleted) || 0); }, 0);
+  var onTimeSum      = filtered.reduce(function(s, r) { return s + (Number(r.onTimeCompleted) || 0); }, 0);
+  var avgPerf        = filtered.length > 0 ? filtered.reduce(function(s, r) {
     return s + (parseFloat(String(r.performance || '0').replace('%','')) || 0);
   }, 0) / filtered.length : 0;
 
-  var sCount = filtered.filter(function(r) { return perfGrade(parseFloat(String(r.performance||'0').replace('%',''))||0) === 'S'; }).length;
-  var aCount = filtered.filter(function(r) { return perfGrade(parseFloat(String(r.performance||'0').replace('%',''))||0) === 'A'; }).length;
-  var bCount = filtered.filter(function(r) { return perfGrade(parseFloat(String(r.performance||'0').replace('%',''))||0) === 'B'; }).length;
-  var cCount = filtered.filter(function(r) { return perfGrade(parseFloat(String(r.performance||'0').replace('%',''))||0) === 'C'; }).length;
+  var avgColor = avgPerf >= 90 ? '#16a34a' : avgPerf >= 70 ? '#2563eb' : avgPerf >= 50 ? '#d97706' : '#dc2626';
 
   document.getElementById('scHeroCards').innerHTML =
     '<div class="score-hero-card"><div class="score-hero-label">Active Employees</div><div class="score-hero-val" style="color:#2563eb">' + totalEmployees + '</div></div>' +
     '<div class="score-hero-card"><div class="score-hero-label">Total Plan</div><div class="score-hero-val" style="color:#2563eb">' + totalPlanSum + '</div></div>' +
     '<div class="score-hero-card"><div class="score-hero-label">Total Completed</div><div class="score-hero-val" style="color:#16a34a">' + totalDoneSum + '</div></div>' +
     '<div class="score-hero-card"><div class="score-hero-label">On Time Completed</div><div class="score-hero-val" style="color:#16a34a">' + onTimeSum + '</div></div>' +
-    '<div class="score-hero-card"><div class="score-hero-label">Avg Performance</div><div class="score-hero-val" style="color:' + (avgPerf>=70?'#16a34a':avgPerf>=50?'#d97706':'#dc2626') + '">' + avgPerf.toFixed(1) + '%</div></div>' +
-    '<div class="score-hero-card"><div class="score-hero-label">S Grade</div><div class="score-hero-val" style="color:#16a34a">' + sCount + '</div></div>' +
-    '<div class="score-hero-card"><div class="score-hero-label">A Grade</div><div class="score-hero-val" style="color:#2563eb">' + aCount + '</div></div>' +
-    '<div class="score-hero-card"><div class="score-hero-label">B / C Grade</div><div class="score-hero-val" style="color:#d97706">' + (bCount+cCount) + '</div></div>';
+    '<div class="score-hero-card"><div class="score-hero-label">Avg Performance</div><div class="score-hero-val" style="color:' + avgColor + '">' + avgPerf.toFixed(1) + '%</div></div>';
 
   document.getElementById('scMetaBadges').innerHTML =
     '<span class="m-badge b-blue">' + totalEmployees + ' employees</span>' +
-    '<span class="m-badge b-green">' + sCount + ' S-grade</span>' +
-    (cCount > 0 ? '<span class="m-badge b-red">' + cCount + ' need attention</span>' : '');
+    '<span class="m-badge b-green">' + totalDoneSum + ' completed</span>' +
+    '<span class="m-badge" style="background:#eff6ff;color:#1d4ed8">' + onTimeSum + ' on time</span>';
 
   document.getElementById('scTableCount').textContent = filtered.length + ' employees shown';
 
