@@ -154,6 +154,27 @@ tr:hover td{background:#fafbfc}
 @keyframes sp{to{transform:rotate(360deg)}}
 .ebox{background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:18px;margin:14px 0}
 
+/* ── SCORE TAB STYLES ─────────────────────────────────────────── */
+.score-hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:22px}
+.score-hero-card{background:linear-gradient(160deg,#ffffff 0%,#fbf8f3 100%);border-radius:16px;padding:18px 20px;box-shadow:0 4px 18px rgba(60,50,30,.07);border:1px solid rgba(255,255,255,.8);text-align:center}
+.score-hero-label{font-size:10px;color:#9aa0ac;text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:8px}
+.score-hero-val{font-size:28px;font-weight:700;line-height:1.1}
+
+/* Performance badge colors */
+.perf-s{background:#dcfce7;color:#166534;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block;white-space:nowrap}   /* >=90 */
+.perf-a{background:#dbeafe;color:#1e40af;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block;white-space:nowrap}   /* 70-89 */
+.perf-b{background:#fef9c3;color:#854d0e;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block;white-space:nowrap}   /* 50-69 */
+.perf-c{background:#fee2e2;color:#991b1b;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block;white-space:nowrap}   /* <50  */
+
+/* Neg/pos pct cells */
+.pct-neg{color:#dc2626;font-weight:700}
+.pct-pos{color:#16a34a;font-weight:700}
+.pct-zer{color:#9aa0ac;font-weight:600}
+
+/* Score rank bar */
+.score-rank-bar{height:10px;border-radius:5px;background:#e5e7eb;overflow:hidden;width:100px;display:inline-block;vertical-align:middle;margin-right:6px}
+.score-rank-fill{height:10px;border-radius:5px}
+
 @media(max-width:900px){
   .c5{grid-template-columns:repeat(3,1fr)}
   .c1{grid-template-columns:1fr}
@@ -163,6 +184,7 @@ tr:hover td{background:#fafbfc}
 @media(max-width:600px){
   .c5{grid-template-columns:1fr 1fr}
   .header{padding:16px 16px 0}
+  .score-hero{grid-template-columns:1fr 1fr}
 }
 </style>
 </head>
@@ -172,7 +194,7 @@ tr:hover td{background:#fafbfc}
   <div class="h-top">
     <div>
       <div class="h-title">EM Dashboard</div>
-      <div class="h-sub">FMS + Checklist + Delegation &nbsp;·&nbsp; ugbolmalassociates.com</div>
+      <div class="h-sub">FMS + Checklist + Delegation + Scores &nbsp;·&nbsp; ugbolmalassociates.com</div>
     </div>
     <div class="h-right">
       <span class="wk-label">Week</span>
@@ -187,6 +209,7 @@ tr:hover td{background:#fafbfc}
     <button class="tab-btn" onclick="switchTab('fms',this)">FMS Steps</button>
     <button class="tab-btn" onclick="switchTab('checklist',this)">Checklist</button>
     <button class="tab-btn" onclick="switchTab('delegation',this)">Delegation</button>
+    <button class="tab-btn" onclick="switchTab('scores',this)">Scores</button>
   </div>
 </div>
 
@@ -348,11 +371,52 @@ tr:hover td{background:#fafbfc}
     </div>
   </div>
 
+  <!-- SCORES TAB -->
+  <div class="tab-content" id="tab-scores">
+    <div class="filter-bar">
+      <label>Employee:</label>
+      <select id="scFilterDoer" onchange="applyScoreFilters()"><option value="All">All Employees</option></select>
+      <label>Performance:</label>
+      <select id="scFilterPerf" onchange="applyScoreFilters()">
+        <option value="All">All Grades</option>
+        <option value="S">S Grade (≥90%)</option>
+        <option value="A">A Grade (70–89%)</option>
+        <option value="B">B Grade (50–69%)</option>
+        <option value="C">C Grade (&lt;50%)</option>
+      </select>
+    </div>
+    <div class="meta-info-badge" id="scMetaBadges"></div>
+    <div class="score-hero" id="scHeroCards"></div>
+    <div class="tc">
+      <div class="tc-top">
+        <div class="tc-title">Employee Score Board</div>
+        <div id="scTableCount" style="font-size:12px;color:#9aa0ac;font-weight:500"></div>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th style="text-align:center">#</th>
+              <th>Employee</th>
+              <th style="text-align:center">Total Plan</th>
+              <th style="text-align:center">Total Completed</th>
+              <th style="text-align:center">On Time Completed</th>
+              <th style="text-align:center">Work Not Done %</th>
+              <th style="text-align:center">Work Not Done On Time %</th>
+              <th style="text-align:center">Performance</th>
+            </tr>
+          </thead>
+          <tbody id="scTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
   <div id="ediv" style="display:none"></div>
 </div>
 
 <script>
-var API = "https://script.google.com/macros/s/AKfycbx2guidy0u1vQRr2BnMNkCDSw9pCPK8gGLrOGdZfHImupjAh_5IgAc_EN9I7W1NEMs5/exec";
+var API = "https://script.google.com/macros/s/AKfycbwImG-aGbVaWU6bLatAJOfTjKom32WM5v-oZx_UEfS47m3tgC4OPs0mQZJuz8QlteGy/exec";
 
 var globalRawData = null;
 var _currentWeekVal = null;
@@ -381,13 +445,10 @@ function pg(p) {
 }
 function ovCls(v) { return 'green'; }
 
-// Stat card builder — supports negative-score variant (negScore mode)
-// negScore: value shown as negative, green if abs <= 5%, red if abs > 5%
 function statCard(label, value, color) {
   return '<div class="stat-card"><div class="stat-label">' + label + '</div><div class="stat-value ' + color + '">' + value + '</div></div>';
 }
 
-// Build a negative-score stat card: raw pct number (positive), displayed as -X.XX%, color by threshold
 function negScoreCard(label, rawPct) {
   var color = rawPct <= 5 ? 'green' : 'red';
   var display = rawPct === 0 ? '0.00%' : '-' + rawPct.toFixed(2) + '%';
@@ -508,6 +569,10 @@ function renderAll(data) {
   populateChecklistDelegationFilters();
   applyChecklistFilters();
   applyDelegationFilters();
+
+  // Scores tab
+  populateScoreFilters(data.scoresData || []);
+  applyScoreFilters();
 }
 
 // ── FMS by Process panel ──────────────────────────────────────────────────────
@@ -625,7 +690,6 @@ function applyFmsFilters() {
     '<span class="m-badge b-green">' + totalActual + ' done</span>' +
     '<span class="m-badge b-red">' + Math.max(0, missed) + ' pending</span>';
 
-  // FMS stat cards: Work Not Done % and Work Not Done On Time % shown as negative
   var fmsWorkNotDonePct       = totalPlan   > 0 ? (Math.max(0, missed) / totalPlan * 100) : 0;
   var fmsWorkNotDoneOnTimePct = totalActual > 0 ? Math.max(0, 100 - (totalOnTime / totalActual * 100)) : 0;
 
@@ -688,7 +752,6 @@ function applyChecklistFilters() {
     return r.status === 'Done' && r.actualDate && r.actualDate !== '-' && r.plannedDate && r.plannedDate !== '-' && r.actualDate <= r.plannedDate;
   }).length;
 
-  // Checklist stat cards: Work Not Done % and Work Not Done On Time % shown as negative
   var clWorkNotDonePct       = filtered.length > 0 ? (pendCount / filtered.length * 100) : 0;
   var clWorkNotDoneOnTimePct = doneCount > 0 ? Math.max(0, 100 - (onTimeCount / doneCount * 100)) : 0;
 
@@ -715,7 +778,6 @@ function applyDelegationFilters() {
   var sFilter = document.getElementById('dlFilterStatus').value;
   var data = globalRawData ? (globalRawData.delegationData || []) : [];
 
-  // FIX: strict status filter — each option shows ONLY that status, no fallthrough
   var filtered = data.filter(function(r) {
     if (dFilter !== 'All' && r.client !== dFilter) return false;
     if (sFilter === 'All') return true;
@@ -727,7 +789,6 @@ function applyDelegationFilters() {
   var pendingOnlyCount = filtered.filter(function(r) { return r.status.toLowerCase() === 'pending'; }).length;
   var totalCount       = filtered.length;
 
-  // Badge: show context-aware label based on which filter is selected
   var badgeHTML = '<span class="m-badge b-blue">' + totalCount + ' total</span>';
   if (sFilter === 'All') {
     badgeHTML += '<span class="m-badge b-green">' + doneCount + ' completed</span>' +
@@ -761,6 +822,132 @@ function applyDelegationFilters() {
       '<td style="white-space:nowrap">' + r.latestRevision + '</td>' +
       '<td><span class="' + sCls + '">' + r.status + '</span></td></tr>';
   }).join('');
+}
+
+// ── SCORES TAB ────────────────────────────────────────────────────────────────
+
+// Determine performance grade from percentage (0-100 numeric)
+function perfGrade(pct) {
+  if (pct >= 90) return 'S';
+  if (pct >= 70) return 'A';
+  if (pct >= 50) return 'B';
+  return 'C';
+}
+
+// Render performance badge with grade label
+function perfBadge(pct) {
+  var g = perfGrade(pct);
+  var cls = g === 'S' ? 'perf-s' : g === 'A' ? 'perf-a' : g === 'B' ? 'perf-b' : 'perf-c';
+  return '<span class="' + cls + '">' + g + ' &nbsp;' + pct.toFixed(2) + '%</span>';
+}
+
+// Format a pct cell (Work Not Done % values — shown negative in sheet)
+function pctCell(raw) {
+  // raw is a string like "-100.00%" or "0.00%" or "-12.26%"
+  var s = String(raw || '').trim();
+  if (!s || s === '' || s === '-') return '<span class="pct-zer">—</span>';
+  var num = parseFloat(s.replace('%','')) || 0;
+  if (num === 0) return '<span class="pct-zer">0.00%</span>';
+  if (num < 0)   return '<span class="pct-neg">' + num.toFixed(2) + '%</span>';
+  return '<span class="pct-pos">+' + num.toFixed(2) + '%</span>';
+}
+
+// Check if a scores row is all-zero (hide these)
+function isScoreRowAllZero(r) {
+  return (Number(r.totalPlan) || 0) === 0 &&
+         (Number(r.totalCompleted) || 0) === 0 &&
+         (Number(r.onTimeCompleted) || 0) === 0;
+}
+
+function populateScoreFilters(rows) {
+  // Only populate with employees that have any data
+  var active = rows.filter(function(r) { return !isScoreRowAllZero(r) && String(r.employee || '').trim() !== ''; });
+  var sel = document.getElementById('scFilterDoer');
+  var currentVal = sel.value;
+  sel.innerHTML = '<option value="All">All Employees</option>';
+  active.forEach(function(r) {
+    var o = document.createElement('option');
+    o.value = r.employee; o.textContent = r.employee;
+    if (r.employee === currentVal) o.selected = true;
+    sel.appendChild(o);
+  });
+}
+
+function applyScoreFilters() {
+  var dFilter = document.getElementById('scFilterDoer').value;
+  var gFilter = document.getElementById('scFilterPerf').value;
+  var rows = globalRawData ? (globalRawData.scoresData || []) : [];
+
+  // Auto-hide: skip rows with no employee name OR all zeros
+  var filtered = rows.filter(function(r) {
+    var name = String(r.employee || '').trim();
+    if (!name) return false;
+    if (isScoreRowAllZero(r)) return false;
+    if (dFilter !== 'All' && r.employee !== dFilter) return false;
+    if (gFilter !== 'All') {
+      var perfPct = parseFloat(String(r.performance || '0').replace('%','')) || 0;
+      if (perfGrade(perfPct) !== gFilter) return false;
+    }
+    return true;
+  });
+
+  // Hero summary cards
+  var totalEmployees  = filtered.length;
+  var totalPlanSum    = filtered.reduce(function(s, r) { return s + (Number(r.totalPlan) || 0); }, 0);
+  var totalDoneSum    = filtered.reduce(function(s, r) { return s + (Number(r.totalCompleted) || 0); }, 0);
+  var onTimeSum       = filtered.reduce(function(s, r) { return s + (Number(r.onTimeCompleted) || 0); }, 0);
+  var avgPerf         = filtered.length > 0 ? filtered.reduce(function(s, r) {
+    return s + (parseFloat(String(r.performance || '0').replace('%','')) || 0);
+  }, 0) / filtered.length : 0;
+
+  var sCount = filtered.filter(function(r) { return perfGrade(parseFloat(String(r.performance||'0').replace('%',''))||0) === 'S'; }).length;
+  var aCount = filtered.filter(function(r) { return perfGrade(parseFloat(String(r.performance||'0').replace('%',''))||0) === 'A'; }).length;
+  var bCount = filtered.filter(function(r) { return perfGrade(parseFloat(String(r.performance||'0').replace('%',''))||0) === 'B'; }).length;
+  var cCount = filtered.filter(function(r) { return perfGrade(parseFloat(String(r.performance||'0').replace('%',''))||0) === 'C'; }).length;
+
+  document.getElementById('scHeroCards').innerHTML =
+    '<div class="score-hero-card"><div class="score-hero-label">Active Employees</div><div class="score-hero-val" style="color:#2563eb">' + totalEmployees + '</div></div>' +
+    '<div class="score-hero-card"><div class="score-hero-label">Total Plan</div><div class="score-hero-val" style="color:#2563eb">' + totalPlanSum + '</div></div>' +
+    '<div class="score-hero-card"><div class="score-hero-label">Total Completed</div><div class="score-hero-val" style="color:#16a34a">' + totalDoneSum + '</div></div>' +
+    '<div class="score-hero-card"><div class="score-hero-label">On Time Completed</div><div class="score-hero-val" style="color:#16a34a">' + onTimeSum + '</div></div>' +
+    '<div class="score-hero-card"><div class="score-hero-label">Avg Performance</div><div class="score-hero-val" style="color:' + (avgPerf>=70?'#16a34a':avgPerf>=50?'#d97706':'#dc2626') + '">' + avgPerf.toFixed(1) + '%</div></div>' +
+    '<div class="score-hero-card"><div class="score-hero-label">S Grade</div><div class="score-hero-val" style="color:#16a34a">' + sCount + '</div></div>' +
+    '<div class="score-hero-card"><div class="score-hero-label">A Grade</div><div class="score-hero-val" style="color:#2563eb">' + aCount + '</div></div>' +
+    '<div class="score-hero-card"><div class="score-hero-label">B / C Grade</div><div class="score-hero-val" style="color:#d97706">' + (bCount+cCount) + '</div></div>';
+
+  document.getElementById('scMetaBadges').innerHTML =
+    '<span class="m-badge b-blue">' + totalEmployees + ' employees</span>' +
+    '<span class="m-badge b-green">' + sCount + ' S-grade</span>' +
+    (cCount > 0 ? '<span class="m-badge b-red">' + cCount + ' need attention</span>' : '');
+
+  document.getElementById('scTableCount').textContent = filtered.length + ' employees shown';
+
+  // Sort by performance descending
+  var sorted = filtered.slice().sort(function(a, b) {
+    var pa = parseFloat(String(a.performance||'0').replace('%','')) || 0;
+    var pb = parseFloat(String(b.performance||'0').replace('%','')) || 0;
+    return pb - pa;
+  });
+
+  document.getElementById('scTableBody').innerHTML = sorted.map(function(r, i) {
+    var perfPct = parseFloat(String(r.performance || '0').replace('%','')) || 0;
+    // Mini rank bar fill color based on grade
+    var barColor = perfPct >= 90 ? '#16a34a' : perfPct >= 70 ? '#2563eb' : perfPct >= 50 ? '#f59e0b' : '#ef4444';
+    var barW = Math.min(Math.max(perfPct, 0), 100);
+    return '<tr>' +
+      '<td style="text-align:center;font-weight:700;color:#9aa0ac">' + (i + 1) + '</td>' +
+      '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(r.employee) + '</div><strong>' + r.employee + '</strong></div></td>' +
+      '<td style="text-align:center">' + nbB(r.totalPlan) + '</td>' +
+      '<td style="text-align:center">' + nbG(r.totalCompleted) + '</td>' +
+      '<td style="text-align:center">' + nbG(r.onTimeCompleted) + '</td>' +
+      '<td style="text-align:center">' + pctCell(r.workNotDonePct) + '</td>' +
+      '<td style="text-align:center">' + pctCell(r.workNotDoneOnTimePct) + '</td>' +
+      '<td><div style="display:flex;align-items:center;gap:8px">' +
+        '<div class="score-rank-bar"><div class="score-rank-fill" style="width:' + barW + '%;background:' + barColor + '"></div></div>' +
+        perfBadge(perfPct) +
+      '</div></td>' +
+      '</tr>';
+  }).join('') || '<tr><td colspan="8" style="text-align:center;color:#bbb;padding:30px">No score data matches the selected filters</td></tr>';
 }
 
 // ── Tab switch ────────────────────────────────────────────────────────────────
