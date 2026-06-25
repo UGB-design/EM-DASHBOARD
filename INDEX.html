@@ -4,15 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EM Dashboard</title>
-
-<!-- Google Identity Services — One Tap auto-login -->
 <script src="https://accounts.google.com/gsi/client" async defer></script>
-
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f7f8fa;color:#1a1a1a;min-height:100vh}
-
-/* AUTH OVERLAY — shown while checking login */
 #authOverlay{position:fixed;inset:0;background:#f7f8fa;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
 #authOverlay .spin{width:36px;height:36px;border:3px solid #e5e7eb;border-top-color:#2563eb;border-radius:50%;animation:sp .8s linear infinite}
 #authOverlay .auth-msg{font-size:14px;color:#9aa0ac;font-weight:500}
@@ -23,15 +18,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #authOverlay .manual-signin.show{opacity:1}
 #authOverlay .manual-signin-label{font-size:12px;color:#9aa0ac;font-weight:500}
 #authOverlay .retry-link{font-size:12px;color:#2563eb;font-weight:600;cursor:pointer;text-decoration:underline;background:none;border:none}
-
-/* HEADER */
 .header{background:#fff;padding:20px 32px 0;border-bottom:1px solid #e8eaed}
 .h-top{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;flex-wrap:wrap;gap:10px}
 .h-title{font-size:24px;font-weight:700;color:#1a1a1a;letter-spacing:-0.3px}
 .h-sub{font-size:12px;color:#9aa0ac;margin-top:3px}
-.h-right{display:flex;align-items:center;gap:10px}
-.wk-label{font-size:13px;color:#888;font-weight:500}
-.wk-sel{background:#fff;border:1.5px solid #d1d5db;border-radius:8px;padding:7px 14px;font-size:13px;color:#333;font-weight:500;cursor:pointer;outline:none;box-shadow:0 1px 3px rgba(0,0,0,.06);max-width:260px}
+.h-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+
+/* DATE RANGE PICKER */
+.date-range-wrap{display:flex;align-items:center;gap:8px;background:#f9fafb;border:1.5px solid #d1d5db;border-radius:10px;padding:6px 14px}
+.date-range-wrap .dr-label{font-size:11px;color:#9aa0ac;font-weight:700;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.date-range-wrap .dr-sep{font-size:13px;color:#9aa0ac;font-weight:500;padding:0 2px}
+.date-input-wrap{display:flex;flex-direction:column;gap:2px}
+.date-input-wrap label{font-size:10px;color:#9aa0ac;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.dr-date-input{border:1px solid #e5e7eb;border-radius:6px;padding:5px 10px;font-size:13px;color:#1a1a1a;font-weight:600;background:#fff;outline:none;cursor:pointer;width:130px;transition:border-color .15s}
+.dr-date-input:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.dr-apply-btn{background:#2563eb;color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .15s}
+.dr-apply-btn:hover{background:#1d4ed8}
+.dr-apply-btn:disabled{background:#9ca3af;cursor:not-allowed}
+
 .saving{font-size:11px;color:#888;display:none}
 .saving.show{display:inline}
 .user-chip{display:flex;align-items:center;gap:8px;background:#f3f4f6;border:1px solid #e8eaed;border-radius:20px;padding:5px 12px 5px 6px;font-size:12px;font-weight:600;color:#374151}
@@ -39,19 +43,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .user-chip span{max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .admin-pill{display:none;background:#111827;color:#fff;font-size:9px;font-weight:800;letter-spacing:.04em;padding:3px 8px;border-radius:20px;flex-shrink:0}
 .admin-pill.show{display:inline-block}
-
-/* TABS NAV */
 .tabs-row{display:flex;gap:0;overflow-x:auto;padding-bottom:0}
 .tab-btn{padding:11px 24px;border-radius:0;font-size:13px;cursor:pointer;color:#9aa0ac;border:none;border-bottom:2px solid transparent;background:transparent;font-weight:500;transition:all .15s;white-space:nowrap}
 .tab-btn.active{color:#1a1a1a;font-weight:700;border-bottom:2px solid #1a1a1a}
 .tab-btn:hover:not(.active){color:#555;background:#f7f8fa}
-
-/* LAYOUT */
 .content{padding:24px 32px}
 .tab-content{display:none}
 .tab-content.active{display:block}
-
-/* TOP METRIC CARDS */
 .c5{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:14px}
 .c1{display:grid;grid-template-columns:200px 1fr;gap:14px;margin-bottom:24px}
 .card{background:#fff;border-radius:12px;padding:20px 22px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed}
@@ -62,8 +60,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .cs-detail{font-size:11px;margin-top:6px;display:flex;gap:6px;flex-wrap:wrap}
 .cs-done{color:#16a34a;font-weight:600;background:#f0fdf4;padding:2px 8px;border-radius:20px;font-size:11px}
 .cs-pend{color:#dc2626;font-weight:600;background:#fef2f2;padding:2px 8px;border-radius:20px;font-size:11px}
-
-/* FILTER BAR */
 .filter-bar{display:flex;align-items:center;gap:16px;margin-bottom:16px;background:#fff;padding:12px 20px;border-radius:10px;border:1px solid #e8eaed;flex-wrap:wrap;font-size:12px}
 .filter-bar label{font-weight:600;color:#555}
 .filter-bar select{padding:6px 12px;border:1px solid #d1d5db;border-radius:6px;outline:none;font-size:12px;color:#333;background:#fff}
@@ -72,8 +68,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .m-badge.b-blue{background:#eff6ff;color:#1d4ed8}
 .m-badge.b-green{background:#f0fdf4;color:#16a34a}
 .m-badge.b-red{background:#fef2f2;color:#dc2626}
-
-/* STAT CARDS */
 .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px}
 .stat-card{background:#fff;border-radius:10px;padding:14px 18px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed}
 .stat-label{font-size:10px;color:#9aa0ac;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:6px}
@@ -82,8 +76,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .stat-value.green{color:#16a34a}
 .stat-value.orange{color:#d97706}
 .stat-value.red{color:#dc2626}
-
-/* FMS CARDS */
 .fms-card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed;margin-bottom:16px;padding:18px 22px}
 .fms-card-top{display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:1px solid #f0f0f0;margin-bottom:12px;flex-wrap:wrap;gap:10px}
 .fms-card-title{font-size:14px;font-weight:700;color:#1a1a1a;display:flex;align-items:center;gap:8px}
@@ -92,15 +84,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .fms-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px}
 .fms-badge.p-blue{background:#eff6ff;color:#1e40af}
 .fms-badge.a-green{background:#f0fdf4;color:#166534}
-
-/* TABLES */
 table{width:100%;border-collapse:collapse}
 th{font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 14px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fff;white-space:nowrap}
 td{padding:13px 14px;border-bottom:1px solid #f3f4f6;vertical-align:middle;font-size:13px;color:#374151}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:#fafbfc}
-
-/* BADGES */
 .mb-ok{background:#f0fdf4;color:#16a34a;font-weight:700;font-size:10px;padding:3px 8px;border-radius:6px;display:inline-block}
 .mb-num{background:#fef2f2;color:#dc2626;font-weight:700;font-size:11px;padding:3px 8px;border-radius:6px;display:inline-block}
 .st-done{background:#f0fdf4;color:#16a34a;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block}
@@ -109,8 +97,6 @@ tr:hover td{background:#fafbfc}
 .dept-pill{background:#eff6ff;color:#2563eb;font-size:11px;padding:3px 9px;border-radius:6px;font-weight:600;white-space:nowrap;display:inline-block}
 .freq-pill{background:#fff7ed;color:#ea580c;font-size:11px;padding:2px 7px;border-radius:20px;font-weight:700;border:1px solid #fed7aa}
 .fms-type-pill{background:#f0fdf4;color:#166534;font-size:11px;padding:4px 12px;border-radius:20px;font-weight:600;display:inline-block;white-space:nowrap}
-
-/* AVATARS */
 .dc{display:flex;align-items:center;gap:10px}
 .av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
 .av0{background:#3B82F6;color:#fff}.av1{background:#10B981;color:#fff}
@@ -121,8 +107,6 @@ tr:hover td{background:#fafbfc}
 .av10{background:#14B8A6;color:#fff}.av11{background:#A855F7;color:#fff}
 .av12{background:#0EA5E9;color:#fff}.av13{background:#D946EF;color:#fff}
 .av14{background:#22C55E;color:#fff}.av15{background:#FB923C;color:#fff}
-
-/* PROGRESS BARS */
 .pgw{display:flex;align-items:center;gap:6px;min-width:0;width:100%}
 .pgbg{border-radius:4px;height:8px;width:80px;min-width:60px;overflow:hidden;background:#e5e7eb;flex-shrink:0}
 .pgf{height:8px;border-radius:4px;transition:width .6s}
@@ -130,21 +114,15 @@ tr:hover td{background:#fafbfc}
 .pg-g .pgf{background:#16a34a}.pg-g .pgp{color:#16a34a}
 .pg-o .pgf{background:#f59e0b}.pg-o .pgp{color:#d97706}
 .pg-r .pgf{background:#ef4444}.pg-r .pgp{color:#dc2626}
-
-/* MASTER TABLE */
 .tc{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed}
 .tc-top{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e8eaed}
 .tc-title{font-size:14px;font-weight:700;color:#1a1a1a}
 .nb{background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:3px 8px;font-size:12px;display:inline-block;min-width:32px;text-align:center;color:#374151;font-weight:600}
 .nb.z{color:#d1d5db;background:#fff;border-color:#f3f4f6}
-
-/* HEATMAP */
 .hok{display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:26px;border-radius:8px;font-size:10px;font-weight:700;padding:0 6px;background:#dcfce7;color:#166534}
 .hwarn{display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:26px;border-radius:8px;font-size:10px;font-weight:700;padding:0 6px;background:#fef9c3;color:#854d0e}
 .hbad{display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:26px;border-radius:8px;font-size:10px;font-weight:700;padding:0 6px;background:#fee2e2;color:#991b1b}
 .hdash{color:#d1d5db;font-size:16px}
-
-/* SUMMARY PANELS */
 .summary-panels{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
 .sp-card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed;overflow:hidden}
 .sp-head{padding:14px 20px;border-bottom:1px solid #e8eaed;display:flex;align-items:center;justify-content:space-between}
@@ -152,28 +130,30 @@ tr:hover td{background:#fafbfc}
 .sp-count{font-size:11px;color:#9aa0ac;font-weight:500}
 .sp-card table th{background:#fff}
 .sp-card td{padding:11px 14px}
-
-/* LOADING */
 .loading{text-align:center;padding:60px;color:#bbb}
 .spin{width:32px;height:32px;border:3px solid #e5e7eb;border-top-color:#2563eb;border-radius:50%;animation:sp .8s linear infinite;margin:0 auto 14px}
 @keyframes sp{to{transform:rotate(360deg)}}
 .ebox{background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:18px;margin:14px 0}
+
+/* Date range display badge in header sub */
+.dr-active-badge{display:inline-flex;align-items:center;gap:6px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:3px 10px;font-size:11px;font-weight:700;color:#1d4ed8}
 
 @media(max-width:900px){
   .c5{grid-template-columns:repeat(3,1fr)}
   .c1{grid-template-columns:1fr}
   .summary-panels{grid-template-columns:1fr}
   .content{padding:16px}
+  .date-range-wrap{flex-wrap:wrap;gap:6px}
 }
 @media(max-width:600px){
   .c5{grid-template-columns:1fr 1fr}
   .header{padding:16px 16px 0}
+  .dr-date-input{width:110px}
 }
 </style>
 </head>
 <body>
 
-<!-- AUTH OVERLAY: shown while Google silent sign-in is happening -->
 <div id="authOverlay">
   <div class="auth-title">EM Dashboard</div>
   <div class="auth-sub">FMS + Checklist + Delegation</div>
@@ -187,7 +167,6 @@ tr:hover td{background:#fafbfc}
   <div class="auth-err" id="authErr"></div>
 </div>
 
-<!-- One Tap container (renders the popup if needed) -->
 <div id="g_id_onload"
   data-client_id="567925868040-kv22o4qhj5rmreiaka4odpth50v99ndf.apps.googleusercontent.com"
   data-context="signin"
@@ -198,7 +177,6 @@ tr:hover td{background:#fafbfc}
   data-itp_support="true">
 </div>
 
-<!-- MAIN DASHBOARD (hidden until auth done) -->
 <div id="dashboardWrap" style="display:none">
 
 <div class="header">
@@ -208,12 +186,22 @@ tr:hover td{background:#fafbfc}
       <div class="h-sub" id="hSub">FMS + Checklist + Delegation &nbsp;·&nbsp; Score Systems</div>
     </div>
     <div class="h-right">
-      <span class="wk-label">Month</span>
-      <select class="wk-sel" id="wkSel" onchange="onPeriodChange(this.value)">
-        <option>Loading...</option>
-      </select>
+
+      <!-- ── NEW: FROM / TO Date Pickers ── -->
+      <div class="date-range-wrap">
+        <div class="date-input-wrap">
+          <label>FROM</label>
+          <input type="date" id="drFrom" class="dr-date-input" onchange="onDateInputChange()">
+        </div>
+        <div class="dr-sep">→</div>
+        <div class="date-input-wrap">
+          <label>TO</label>
+          <input type="date" id="drTo" class="dr-date-input" onchange="onDateInputChange()">
+        </div>
+        <button class="dr-apply-btn" id="drApplyBtn" onclick="applyDateRange()" disabled>Apply</button>
+      </div>
+
       <span class="saving" id="savingTxt"> Updating...</span>
-      <!-- User chip shows logged-in user -->
       <div class="user-chip" id="userChip" style="display:none">
         <img id="userAvatar" src="" alt="">
         <span id="userName"></span>
@@ -233,7 +221,6 @@ tr:hover td{background:#fafbfc}
 
 <div class="content">
 
-  <!-- SUMMARY TAB -->
   <div class="tab-content active" id="tab-summary">
     <div id="ldiv" class="loading"><div class="spin"></div> Loading Summary...</div>
     <div id="mdiv" style="display:none">
@@ -283,7 +270,6 @@ tr:hover td{background:#fafbfc}
     </div>
   </div>
 
-  <!-- FMS STEPS TAB -->
   <div class="tab-content" id="tab-fms">
     <div class="filter-bar">
       <label>FMS Type:</label>
@@ -296,7 +282,6 @@ tr:hover td{background:#fafbfc}
     <div id="fmsCardsContainer"><div class="loading">Fetching FMS structured groups...</div></div>
   </div>
 
-  <!-- CHECKLIST TAB -->
   <div class="tab-content" id="tab-checklist">
     <div class="filter-bar">
       <label>Doer:</label>
@@ -318,7 +303,6 @@ tr:hover td{background:#fafbfc}
     </div></div>
   </div>
 
-  <!-- DELEGATION TAB -->
   <div class="tab-content" id="tab-delegation">
     <div class="filter-bar">
       <label>Doer:</label>
@@ -339,14 +323,13 @@ tr:hover td{background:#fafbfc}
     </div></div>
   </div>
 
-  <!-- MY SCORE TAB -->
   <div class="tab-content" id="tab-myscore">
     <div id="myScoreContainer"><div class="loading"><div class="spin"></div> Loading your score...</div></div>
   </div>
 
   <div id="ediv" style="display:none"></div>
 </div>
-</div><!-- /dashboardWrap -->
+</div>
 
 <script>
 var API = "https://script.google.com/macros/s/AKfycbxSWZmcwiFR5sFxULuGIK7QIjbXBdu-QwcqJkCnvu_lNx5n2GJk8oUXfJP_P9B6eCFm/exec";
@@ -354,16 +337,96 @@ var ALLOWED_DOMAIN = "ugbolmalassociates.com";
 var CLIENT_ID = "567925868040-kv22o4qhj5rmreiaka4odpth50v99ndf.apps.googleusercontent.com";
 
 var globalRawData = null;
-var _currentPeriodVal = null;
 var SESSION = { email: '', doerName: '', picture: '', name: '', isAdmin: false };
 
+// ── Date helpers ──────────────────────────────────────────────────────────────
+
+// Convert YYYY-MM-DD (input value) → DD/MM/YYYY (display & API)
+function inputToDisplay(val) {
+  if (!val) return '';
+  var p = val.split('-');
+  if (p.length !== 3) return val;
+  return p[2] + '/' + p[1] + '/' + p[0];
+}
+
+// Convert DD/MM/YYYY → YYYY-MM-DD (for input value)
+function displayToInput(val) {
+  if (!val) return '';
+  // Handle DD-MM-YYYY too
+  var sep = val.includes('/') ? '/' : '-';
+  var p = val.split(sep);
+  if (p.length !== 3) return val;
+  // p[0]=DD, p[1]=MM, p[2]=YYYY
+  return p[2] + '-' + p[1].padStart(2,'0') + '-' + p[0].padStart(2,'0');
+}
+
+// Set FROM/TO inputs from period data (from/to in any supported format)
+function setDateInputs(fromVal, toVal) {
+  var fi = document.getElementById('drFrom');
+  var ti = document.getElementById('drTo');
+  fi.value = displayToInput(fromVal);
+  ti.value = displayToInput(toVal);
+  updateApplyBtn();
+  updateHeaderBadge(fromVal, toVal);
+}
+
+function updateApplyBtn() {
+  var f = document.getElementById('drFrom').value;
+  var t = document.getElementById('drTo').value;
+  var btn = document.getElementById('drApplyBtn');
+  btn.disabled = !(f && t && f <= t);
+}
+
+function updateHeaderBadge(from, to) {
+  var sub = document.getElementById('hSub');
+  if (from && to) {
+    sub.innerHTML = 'FMS + Checklist + Delegation &nbsp;·&nbsp; <span class="dr-active-badge">📅 ' + from + ' → ' + to + '</span>';
+  } else {
+    sub.textContent = 'FMS + Checklist + Delegation · Score Systems';
+  }
+}
+
+function onDateInputChange() {
+  updateApplyBtn();
+}
+
+function applyDateRange() {
+  var f = document.getElementById('drFrom').value;
+  var t = document.getElementById('drTo').value;
+  if (!f || !t || f > t) return;
+
+  var fromDisplay = inputToDisplay(f);
+  var toDisplay   = inputToDisplay(t);
+
+  document.getElementById('savingTxt').classList.add('show');
+  document.getElementById('ldiv').style.display = 'block';
+  document.getElementById('mdiv').style.display = 'none';
+  document.getElementById('drApplyBtn').disabled = true;
+
+  fetch(API + '?action=setDates&from=' + encodeURIComponent(fromDisplay) + '&to=' + encodeURIComponent(toDisplay) + '&cb=' + Date.now() + sessionParams(), { redirect: 'follow' })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      document.getElementById('savingTxt').classList.remove('show');
+      document.getElementById('ldiv').style.display = 'none';
+      document.getElementById('mdiv').style.display = 'block';
+      document.getElementById('drApplyBtn').disabled = false;
+      SESSION.isAdmin = !!data.isAdmin;
+      updateHeaderBadge(fromDisplay, toDisplay);
+      renderAll(data);
+    })
+    .catch(function(err) {
+      document.getElementById('savingTxt').classList.remove('show');
+      document.getElementById('drApplyBtn').disabled = false;
+      alert('Error applying date range: ' + err);
+    });
+}
+
+// ── Session helpers ───────────────────────────────────────────────────────────
 function sessionParams() {
   return '&email=' + encodeURIComponent(SESSION.email) + '&doerName=' + encodeURIComponent(SESSION.doerName);
 }
 
-// ── Google One Tap callback ───────────────────────────────────────────────────
 function onGoogleToken(response) {
-  // Decode JWT to get user info (no server call needed for basic info)
   var payload = JSON.parse(atob(response.credential.split('.')[1]));
   var email   = payload.email || '';
   var name    = payload.name  || '';
@@ -379,15 +442,11 @@ function onGoogleToken(response) {
   SESSION.name    = name;
   SESSION.picture = picture;
 
-  // Save session
   sessionStorage.setItem('em_email',   email);
   sessionStorage.setItem('em_name',    name);
   sessionStorage.setItem('em_picture', picture);
 
-  // Update user chip in header
   showUserChip(name, picture);
-
-  // Load dashboard — backend will match email to doerName / admin status
   loadDashboard();
 }
 
@@ -396,7 +455,7 @@ function showUserChip(name, picture) {
   var img  = document.getElementById('userAvatar');
   var span = document.getElementById('userName');
   if (picture) { img.src = picture; img.style.display = 'block'; } else { img.style.display = 'none'; }
-  span.textContent = name.split(' ')[0]; // first name only
+  span.textContent = name.split(' ')[0];
   chip.style.display = 'flex';
 }
 
@@ -413,7 +472,6 @@ function showAuthErr(msg) {
 function doLogout() {
   SESSION = { email: '', doerName: '', picture: '', name: '', isAdmin: false };
   sessionStorage.clear();
-  // Revoke Google session and reload
   if (window.google && google.accounts && google.accounts.id) {
     google.accounts.id.disableAutoSelect();
   }
@@ -429,7 +487,6 @@ function loadDashboard() {
   fetch(API + '?cb=' + Date.now() + sessionParams(), { redirect: 'follow' })
     .then(function(r) { return r.json(); })
     .then(function(data) {
-      // If backend returns doerName / isAdmin, save it
       if (data.doerName) {
         SESSION.doerName = data.doerName;
         sessionStorage.setItem('em_doerName', data.doerName);
@@ -461,7 +518,6 @@ function pg(p) {
 function statCard(label, value, color) {
   return '<div class="stat-card"><div class="stat-label">' + label + '</div><div class="stat-value ' + color + '">' + value + '</div></div>';
 }
-// Negative score: 0-5% green, >5% red, shown as -X.XX%
 function negScoreCard(label, rawPct) {
   var color = rawPct <= 5 ? 'green' : 'red';
   var display = rawPct === 0 ? '0.00%' : '-' + rawPct.toFixed(2) + '%';
@@ -482,37 +538,29 @@ function hmCell(val) {
   return '<span class="hok">' + s + '</span>';
 }
 
-// ── Month Dropdown (was Week dropdown — WEEK_MASTER now holds monthly ranges) ──
-function buildPeriodDropdown(periods, currentFrom, currentTo) {
-  var sel = document.getElementById('wkSel');
-  sel.innerHTML = '';
-  periods.forEach(function(p) {
-    var o = document.createElement('option');
-    var val = JSON.stringify({ from: p.from, to: p.to });
-    o.value = val;
-    o.textContent = p.label ? p.label : (p.from + ' – ' + p.to);
-    if (currentFrom && currentTo && (p.from === currentFrom || p.to === currentTo)) o.selected = true;
-    sel.appendChild(o);
-  });
-  _currentPeriodVal = sel.value;
-}
+// ── Set date inputs from periods returned by backend ─────────────────────────
+function initDateInputsFromPeriods(periods, currentFrom, currentTo) {
+  if (!periods || !periods.length) return;
 
-function onPeriodChange(val) {
-  if (!val || val === _currentPeriodVal) return;
-  _currentPeriodVal = val;
-  var parsed = JSON.parse(val);
-  document.getElementById('savingTxt').classList.add('show');
-  document.getElementById('ldiv').style.display = 'block';
-  document.getElementById('mdiv').style.display = 'none';
-  fetch(API + '?action=setDates&from=' + encodeURIComponent(parsed.from) + '&to=' + encodeURIComponent(parsed.to) + '&cb=' + Date.now() + sessionParams(), { redirect: 'follow' })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      document.getElementById('savingTxt').classList.remove('show');
-      document.getElementById('ldiv').style.display = 'none';
-      document.getElementById('mdiv').style.display = 'block';
-      SESSION.isAdmin = !!data.isAdmin;
-      renderAll(data);
-    });
+  // Find min date across all periods
+  var allFroms = periods.map(function(p) { return displayToInput(p.from); }).filter(Boolean).sort();
+  var allTos   = periods.map(function(p) { return displayToInput(p.to);   }).filter(Boolean).sort();
+  var minDate  = allFroms[0];
+  var maxDate  = allTos[allTos.length - 1];
+
+  var fi = document.getElementById('drFrom');
+  var ti = document.getElementById('drTo');
+  if (minDate) { fi.min = minDate; ti.min = minDate; }
+  if (maxDate) { fi.max = maxDate; ti.max = maxDate; }
+
+  // Set current active range
+  if (currentFrom && currentTo) {
+    setDateInputs(currentFrom, currentTo);
+  } else if (periods.length) {
+    // Default to last (most recent) period
+    var last = periods[periods.length - 1];
+    setDateInputs(last.from, last.to);
+  }
 }
 
 // ── Main Render ───────────────────────────────────────────────────────────────
@@ -526,7 +574,11 @@ function renderAll(data) {
   document.getElementById('adminBadge').classList.toggle('show', isAdmin);
   document.getElementById('masterTableTitle').textContent = isAdmin ? 'All Doers Master Summary' : 'My Summary';
 
-  if (data.periods && data.periods.length) buildPeriodDropdown(data.periods, em.week ? em.week.from : '', em.week ? em.week.to : '');
+  // Init date pickers from backend periods
+  if (data.periods && data.periods.length) {
+    var wk = em.week || {};
+    initDateInputsFromPeriods(data.periods, wk.from || '', wk.to || '');
+  }
 
   var totalPlan = t.totalPlan || 0, totalActual = t.totalActual || 0;
   var ovNum = parseFloat(t.overall || '0') || 0;
@@ -542,21 +594,22 @@ function renderAll(data) {
   var ovEl = document.getElementById('cOV');
   ovEl.textContent = Math.round(ovNum) + '%'; ovEl.className = 'cv green';
 
-  // Heatmap header
+  // Heatmap header dates
   var headRow = document.getElementById('masterTableHeadRow');
   while (headRow.children.length > 9) headRow.removeChild(headRow.lastChild);
   if (data.heatmap && data.heatmap.dates) {
     var M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     data.heatmap.dates.forEach(function(d) {
+      // d may be DD/MM or similar
       var pts = d.split('/');
       var th = document.createElement('th');
       th.style.cssText = 'text-align:center;min-width:46px';
-      th.innerHTML = '<div style="font-weight:700;font-size:12px;color:#374151">' + pts[0] + '</div><div style="font-size:9px;color:#9aa0ac;text-transform:none;letter-spacing:0">' + (M[parseInt(pts[1])-1]||pts[1]) + '</div>';
+      th.innerHTML = '<div style="font-weight:700;font-size:12px;color:#374151">' + pts[0] + '</div>' +
+        '<div style="font-size:9px;color:#9aa0ac;text-transform:none;letter-spacing:0">' + (M[parseInt(pts[1])-1]||pts[1]) + '</div>';
       headRow.appendChild(th);
     });
   }
 
-  // Doers table (1 row for a normal doer, all doers if admin)
   if (em.doers) {
     var hmMap = {};
     if (data.heatmap && data.heatmap.doers) data.heatmap.doers.forEach(function(hd) { hmMap[hd.name.toLowerCase().trim()] = hd.days; });
@@ -598,12 +651,9 @@ function renderClByDoer(rows) {
   }).join('') || '<tr><td colspan="6" style="text-align:center;color:#bbb;padding:20px">No checklist data</td></tr>';
 }
 
-// "My Score" tab — shows the logged-in user's own row from ADMIN_SCORE.
-// If the logged-in user is an Admin, also shows the full org-wide score table below.
 function renderMyScore(ms, debugEmail, debugDoerName, isAdmin, allScores) {
   var c = document.getElementById('myScoreContainer');
   var html = '';
-
   if (!ms) {
     html += '<div style="text-align:center;padding:50px 20px;color:#bbb">'+
       '<div style="margin-bottom:14px">No score record found for your account in the ADMIN_SCORE sheet.</div>'+
@@ -627,7 +677,6 @@ function renderMyScore(ms, debugEmail, debugDoerName, isAdmin, allScores) {
     html += negScoreCard('Work Not Done On Time %', Math.abs(ms.workNotDoneOnTimePct));
     html += '</div>';
   }
-
   if (isAdmin && allScores && allScores.length) {
     html += '<div class="tc" style="margin-top:24px">';
     html += '<div class="tc-top"><div class="tc-title">Team Scores (All Doers)</div></div>';
@@ -642,7 +691,6 @@ function renderMyScore(ms, debugEmail, debugDoerName, isAdmin, allScores) {
     }).join('');
     html += '</tbody></table></div></div>';
   }
-
   c.innerHTML = html;
 }
 
@@ -660,7 +708,6 @@ function applyFmsFilters() {
   var df = document.getElementById('fmsFilterDoer').value;
   var groups = globalRawData ? (globalRawData.fmsGroups||[]) : [];
   var tPlan=0,tActual=0,tOnTime=0,gCount=0;
-
   var html = groups.map(function(g) {
     if (tf!=='All' && g.groupName!==tf) return '';
     var steps = g.steps.filter(function(s){return df==='All'||s.doer===df;});
@@ -675,7 +722,6 @@ function applyFmsFilters() {
     }).join('');
     return '<div class="fms-card"><div class="fms-card-top"><div class="fms-card-title"><span class="fms-dot"></span>'+g.groupName+'</div><div class="fms-card-meta"><span class="fms-badge p-blue">'+gP+' plan</span><span class="fms-badge a-green">'+gA+' actual</span><div style="width:120px">'+pg(gP>0?(gA/gP)*100:0)+'</div></div></div><table><thead><tr><th>#</th><th>Step</th><th>Doer</th><th>Plan</th><th>Actual</th><th>Missed</th><th>Progress</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
   }).join('');
-
   var missed=tPlan-tActual;
   document.getElementById('fmsMetaBadges').innerHTML='<span class="m-badge b-blue">'+gCount+' groups</span><span class="m-badge b-green">'+tActual+' done</span><span class="m-badge b-red">'+Math.max(0,missed)+' pending</span>';
   var wndPct=tPlan>0?(Math.max(0,missed)/tPlan*100):0;
@@ -726,14 +772,12 @@ function applyDelegationFilters() {
   var done=filtered.filter(function(r){return r.status.toLowerCase()==='completed';}).length;
   var shifted=filtered.filter(function(r){return r.status.toLowerCase()==='week shifted';}).length;
   var pend=filtered.filter(function(r){return r.status.toLowerCase()==='pending';}).length;
-
   var badge='<span class="m-badge b-blue">'+total+' total</span>';
   if(sf==='All') badge+='<span class="m-badge b-green">'+done+' completed</span><span class="m-badge b-red">'+shifted+' week shifted</span><span class="m-badge" style="background:#fffbeb;color:#d97706">'+pend+' pending</span>';
   else if(sf==='Completed') badge+='<span class="m-badge b-green">'+done+' completed</span>';
   else if(sf==='Week Shifted') badge+='<span class="m-badge b-red">'+shifted+' week shifted</span>';
   else if(sf==='Pending') badge+='<span class="m-badge" style="background:#fffbeb;color:#d97706">'+pend+' pending</span>';
   document.getElementById('dlMetaBadges').innerHTML=badge;
-
   var rs=total>0?(shifted/total*100):0,ys=total>0?(pend/total*100):0,gs=total>0?(done/total*100):0;
   document.getElementById('dlStatsGrid').innerHTML=statCard('Red Score',rs.toFixed(2)+'%','red')+statCard('Yellow Score',ys.toFixed(2)+'%','orange')+statCard('Green Score',gs.toFixed(2)+'%','green');
   document.getElementById('dlTableBody').innerHTML=filtered.map(function(r,i){
@@ -750,12 +794,11 @@ function switchTab(name,el) {
   document.getElementById('tab-'+name).classList.add('active');
 }
 
-// ── Init: try session restore first, else wait for Google One Tap ─────────────
+// ── Init ──────────────────────────────────────────────────────────────────────
 (function() {
   var savedEmail   = sessionStorage.getItem('em_email');
   var savedName    = sessionStorage.getItem('em_name');
   var savedPicture = sessionStorage.getItem('em_picture');
-
   if (savedEmail && savedEmail.split('@')[1] === ALLOWED_DOMAIN) {
     SESSION.email   = savedEmail;
     SESSION.name    = savedName || '';
@@ -763,11 +806,7 @@ function switchTab(name,el) {
     showUserChip(SESSION.name, SESSION.picture);
     loadDashboard();
   } else {
-    // Wait for Google GSI to initialise and fire One Tap
     document.getElementById('authMsg').textContent = 'Signing you in with your Google account...';
-    // GSI will call onGoogleToken() automatically via data-callback.
-    // If it doesn't fire quickly (blocked One Tap, third-party cookies off, etc.),
-    // reveal a manual "Sign in with Google" button so the user is never stuck.
     setTimeout(function() {
       var w = document.getElementById('manualSigninWrap');
       if (w) w.classList.add('show');
@@ -777,8 +816,6 @@ function switchTab(name,el) {
 </script>
 
 <script>
-// Safety net: if GSI fails to load/init at all within a few seconds, still show the button area
-// and a helpful message instead of leaving the user on a spinner forever.
 setTimeout(function() {
   var overlay = document.getElementById('authOverlay');
   if (overlay && overlay.style.display !== 'none') {
