@@ -1,1 +1,1144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EM Dashboard</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:linear-gradient(135deg,#f7ead9 0%,#f3ede3 28%,#eef1ea 58%,#e6ece8 100%);background-attachment:fixed;color:#1a1a1a;min-height:100vh}
 
+/* HEADER */
+.header{background:transparent;padding:20px 32px 0}
+.h-top{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;flex-wrap:wrap;gap:10px}
+.h-title{font-size:24px;font-weight:700;color:#1a1a1a;letter-spacing:-0.3px}
+.h-sub{font-size:12px;color:#8a8478;margin-top:3px}
+.h-right{display:flex;align-items:center;gap:10px}
+.wk-label{font-size:13px;color:#7a756a;font-weight:500}
+.wk-sel{background:#fff;border:1.5px solid #e3ddd2;border-radius:10px;padding:7px 14px;font-size:13px;color:#333;font-weight:500;cursor:pointer;outline:none;box-shadow:0 2px 8px rgba(60,50,30,.08);max-width:260px}
+.saving{font-size:11px;color:#888;display:none}
+.saving.show{display:inline}
+
+/* TABS NAV */
+.tabs-row{display:flex;gap:4px;overflow-x:auto;width:fit-content;max-width:100%;background:rgba(255,255,255,.6);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-radius:14px;padding:6px;margin:0 0 18px;box-shadow:0 6px 18px rgba(60,50,30,.07);position:sticky;top:14px;z-index:60}
+.tab-btn{padding:10px 22px;border-radius:10px;font-size:13px;cursor:pointer;color:#8a8478;border:none;background:transparent;font-weight:600;transition:all .2s;white-space:nowrap}
+.tab-btn.active{color:#1a1a1a;font-weight:700;background:#fff;box-shadow:0 3px 10px rgba(0,0,0,.08)}
+.tab-btn:hover:not(.active){color:#4b4538}
+
+/* LAYOUT */
+.content{padding:24px 32px}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* TOP METRIC CARDS */
+.c5{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:14px}
+.c1{display:grid;grid-template-columns:200px 1fr;gap:14px;margin-bottom:24px}
+.card{background:linear-gradient(160deg,#ffffff 0%,#fbf8f3 100%);border-radius:16px;padding:20px 22px;box-shadow:0 4px 18px rgba(60,50,30,.07);border:1px solid rgba(255,255,255,.8);animation:cardPop .4s ease-out both}
+.cl{font-size:10px;color:#9aa0ac;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;font-weight:700}
+.cv{font-size:30px;font-weight:700;margin-bottom:6px;line-height:1.1}
+.cv.blue{color:#2563eb}.cv.green{color:#16a34a}
+@keyframes cardPop{
+  0%{opacity:0;transform:translateY(8px)}
+  100%{opacity:1;transform:translateY(0)}
+}
+.c5 .card:nth-child(1){animation-delay:.02s}
+.c5 .card:nth-child(2){animation-delay:.06s}
+.c5 .card:nth-child(3){animation-delay:.1s}
+.c5 .card:nth-child(4){animation-delay:.14s}
+.c5 .card:nth-child(5){animation-delay:.18s}
+.c1 .card{animation-delay:.22s}
+.cs{font-size:11px;color:#bbb;line-height:1.5}
+.cs-detail{font-size:11px;margin-top:6px;display:flex;gap:6px;flex-wrap:wrap}
+.cs-done{color:#16a34a;font-weight:600;background:#f0fdf4;padding:2px 8px;border-radius:20px;font-size:11px}
+.cs-pend{color:#dc2626;font-weight:600;background:#fef2f2;padding:2px 8px;border-radius:20px;font-size:11px}
+
+/* FILTER BAR */
+.filter-bar{display:flex;align-items:center;gap:16px;margin-bottom:16px;background:#fff;padding:12px 20px;border-radius:10px;border:1px solid #e8eaed;flex-wrap:wrap;font-size:12px}
+.filter-bar label{font-weight:600;color:#555}
+.filter-bar select,.filter-bar input{padding:6px 12px;border:1px solid #d1d5db;border-radius:6px;outline:none;font-size:12px;color:#333;background:#fff}
+.meta-info-badge{display:flex;gap:8px;margin-bottom:14px}
+.m-badge{font-size:11px;padding:4px 12px;border-radius:20px;font-weight:600}
+.m-badge.b-blue{background:#eff6ff;color:#1d4ed8}
+.m-badge.b-green{background:#f0fdf4;color:#16a34a}
+.m-badge.b-red{background:#fef2f2;color:#dc2626}
+
+/* STAT CARD ROW */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px}
+.stat-card{background:linear-gradient(160deg,#ffffff 0%,#fbf8f3 100%);border-radius:14px;padding:14px 18px;box-shadow:0 4px 14px rgba(60,50,30,.06);border:1px solid rgba(255,255,255,.8)}
+.stat-label{font-size:10px;color:#9aa0ac;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:6px}
+.stat-value{font-size:22px;font-weight:700;line-height:1.1}
+.stat-value.blue{color:#2563eb}
+.stat-value.green{color:#16a34a}
+.stat-value.orange{color:#d97706}
+.stat-value.red{color:#dc2626}
+
+/* FMS GROUP CARDS */
+.fms-card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed;margin-bottom:16px;padding:18px 22px}
+.fms-card-top{display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:1px solid #f0f0f0;margin-bottom:12px;flex-wrap:wrap;gap:10px}
+.fms-card-title{font-size:14px;font-weight:700;color:#1a1a1a;display:flex;align-items:center;gap:8px}
+.fms-dot{width:8px;height:8px;border-radius:50%;background:#10b981}
+.fms-card-meta{display:flex;align-items:center;gap:12px}
+.fms-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px}
+.fms-badge.p-blue{background:#eff6ff;color:#1e40af}
+.fms-badge.a-green{background:#f0fdf4;color:#166534}
+
+/* TABLES */
+table{width:100%;border-collapse:collapse}
+th{font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 14px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fdfbf7;white-space:nowrap}
+td{padding:13px 14px;border-bottom:1px solid #f3f4f6;vertical-align:middle;font-size:13px;color:#374151}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafbfc}
+
+/* BADGES */
+.mb-ok{background:#f0fdf4;color:#16a34a;font-weight:700;font-size:10px;padding:3px 8px;border-radius:6px;display:inline-block}
+.mb-num{background:#fef2f2;color:#dc2626;font-weight:700;font-size:11px;padding:3px 8px;border-radius:6px;display:inline-block}
+.st-done{background:#f0fdf4;color:#16a34a;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block}
+.st-pend{background:#fef2f2;color:#dc2626;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block}
+.st-shift{background:#fffbeb;color:#d97706;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block}
+.dept-pill{background:#eff6ff;color:#2563eb;font-size:11px;padding:3px 9px;border-radius:6px;font-weight:600;white-space:nowrap;display:inline-block}
+.freq-pill{background:#fff7ed;color:#ea580c;font-size:11px;padding:2px 7px;border-radius:20px;font-weight:700;border:1px solid #fed7aa}
+.fms-type-pill{background:#f0fdf4;color:#166534;font-size:11px;padding:4px 12px;border-radius:20px;font-weight:600;display:inline-block;white-space:nowrap}
+
+/* AVATARS */
+.dc{display:flex;align-items:center;gap:10px}
+.av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.av0{background:#3B82F6;color:#fff}.av1{background:#10B981;color:#fff}
+.av2{background:#EF4444;color:#fff}.av3{background:#8B5CF6;color:#fff}
+.av4{background:#F59E0B;color:#fff}.av5{background:#EC4899;color:#fff}
+.av6{background:#06B6D4;color:#fff}.av7{background:#84CC16;color:#fff}
+.av8{background:#F97316;color:#fff}.av9{background:#6366F1;color:#fff}
+.av10{background:#14B8A6;color:#fff}.av11{background:#A855F7;color:#fff}
+.av12{background:#0EA5E9;color:#fff}.av13{background:#D946EF;color:#fff}
+.av14{background:#22C55E;color:#fff}.av15{background:#FB923C;color:#fff}
+
+/* PROGRESS BARS */
+.pgw{display:flex;align-items:center;gap:6px;min-width:0;width:100%}
+.pgbg{border-radius:4px;height:8px;width:80px;min-width:60px;overflow:hidden;background:#e5e7eb;flex-shrink:0}
+.pgf{height:8px;border-radius:4px;transition:width .6s}
+.pgp{font-size:12px;font-weight:700;min-width:36px;text-align:right;white-space:nowrap}
+.pg-g .pgf{background:#16a34a}.pg-g .pgp{color:#16a34a}
+.pg-o .pgf{background:#f59e0b}.pg-o .pgp{color:#d97706}
+.pg-r .pgf{background:#ef4444}.pg-r .pgp{color:#dc2626}
+
+/* MASTER TABLE WRAPPER */
+.tc{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed}
+.tc-top{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e8eaed}
+.tc-title{font-size:14px;font-weight:700;color:#1a1a1a}
+.date-cols-wrap{display:flex;align-items:flex-end;gap:2px}
+.dcol{font-size:10px;color:#9aa0ac;text-align:center;width:42px;line-height:1.4}
+.dcol-day{font-weight:700;font-size:12px;color:#374151}
+.nb{background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:3px 8px;font-size:12px;display:inline-block;min-width:32px;text-align:center;color:#374151;font-weight:600}
+.nb.z{color:#d1d5db;background:#fff;border-color:#f3f4f6}
+.nb-blue{background:#eff6ff;border:1px solid #dbeafe;border-radius:6px;padding:3px 9px;font-size:12px;display:inline-block;min-width:32px;text-align:center;color:#1d4ed8;font-weight:700}
+.nb-green{background:#f0fdf4;border:1px solid #dcfce7;border-radius:6px;padding:3px 9px;font-size:12px;display:inline-block;min-width:32px;text-align:center;color:#15803d;font-weight:700}
+.nb-blue.z,.nb-green.z{color:#d1d5db;background:#fff;border-color:#f3f4f6}
+
+/* HEATMAP CELLS */
+.hok{display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:26px;border-radius:8px;font-size:10px;font-weight:700;padding:0 6px;background:#dcfce7;color:#166534}
+.hwarn{display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:26px;border-radius:8px;font-size:10px;font-weight:700;padding:0 6px;background:#fef9c3;color:#854d0e}
+.hbad{display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:26px;border-radius:8px;font-size:10px;font-weight:700;padding:0 6px;background:#fee2e2;color:#991b1b}
+.hdash{color:#d1d5db;font-size:16px}
+
+/* BOTTOM SUMMARY PANELS */
+.summary-panels{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+.sp-card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed;overflow:hidden}
+.sp-head{padding:14px 20px;border-bottom:1px solid #e8eaed;display:flex;align-items:center;justify-content:space-between}
+.sp-title{font-size:14px;font-weight:700;color:#1a1a1a}
+.sp-count{font-size:11px;color:#9aa0ac;font-weight:500}
+.sp-card table th{background:#fff}
+.sp-card td{padding:11px 14px}
+
+/* LOADING / ERROR */
+.loading{text-align:center;padding:60px;color:#bbb}
+.spin{width:32px;height:32px;border:3px solid #e5e7eb;border-top-color:#2563eb;border-radius:50%;animation:sp .8s linear infinite;margin:0 auto 14px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.ebox{background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:18px;margin:14px 0}
+
+/* ── SCORE TAB STYLES ─────────────────────────────────────────── */
+.score-hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:22px}
+.score-hero-card{background:linear-gradient(160deg,#ffffff 0%,#fbf8f3 100%);border-radius:16px;padding:18px 20px;box-shadow:0 4px 18px rgba(60,50,30,.07);border:1px solid rgba(255,255,255,.8);text-align:center}
+.score-hero-label{font-size:10px;color:#9aa0ac;text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:8px}
+.score-hero-val{font-size:28px;font-weight:700;line-height:1.1}
+
+/* Performance badge colors */
+.perf-s{background:#dcfce7;color:#166534;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block;white-space:nowrap}   /* >=90 */
+.perf-a{background:#dbeafe;color:#1e40af;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block;white-space:nowrap}   /* 70-89 */
+.perf-b{background:#fef9c3;color:#854d0e;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block;white-space:nowrap}   /* 50-69 */
+.perf-c{background:#fee2e2;color:#991b1b;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block;white-space:nowrap}   /* <50  */
+
+/* Neg/pos pct cells */
+.pct-neg{color:#dc2626;font-weight:700}
+.pct-pos{color:#16a34a;font-weight:700}
+.pct-zer{color:#9aa0ac;font-weight:600}
+
+/* Score rank bar */
+.score-rank-bar{height:10px;border-radius:5px;background:#e5e7eb;overflow:hidden;width:100px;display:inline-block;vertical-align:middle;margin-right:6px}
+.score-rank-fill{height:10px;border-radius:5px}
+
+@media(max-width:900px){
+  .c5{grid-template-columns:repeat(3,1fr)}
+  .c1{grid-template-columns:1fr}
+  .summary-panels{grid-template-columns:1fr}
+  .content{padding:16px}
+}
+@media(max-width:600px){
+  .c5{grid-template-columns:1fr 1fr}
+  .header{padding:16px 16px 0}
+  .score-hero{grid-template-columns:1fr 1fr}
+}
+
+/* ── LOGIN SCREEN ─────────────────────────────────────────────── */
+#loginScreen{position:fixed;inset:0;background:linear-gradient(135deg,#f7ead9 0%,#f3ede3 28%,#eef1ea 58%,#e6ece8 100%);z-index:9000;display:flex;align-items:center;justify-content:center}
+.login-box{background:#fff;border-radius:24px;padding:48px 44px;box-shadow:0 20px 60px rgba(60,50,30,.13);width:100%;max-width:420px;text-align:center}
+.login-logo{font-size:28px;font-weight:800;color:#1a1a1a;letter-spacing:-0.5px;margin-bottom:6px}
+.login-sub{font-size:13px;color:#9aa0ac;margin-bottom:36px}
+.login-label{font-size:12px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.06em;text-align:left;display:block;margin-bottom:8px}
+.login-input{width:100%;padding:14px 18px;border:2px solid #e5e7eb;border-radius:12px;font-size:16px;font-weight:600;color:#1a1a1a;outline:none;transition:border .2s;background:#fafafa;text-transform:uppercase}
+.login-input:focus{border-color:#2563eb;background:#fff}
+.login-input::placeholder{color:#d1d5db;font-weight:400;text-transform:none}
+.login-btn{width:100%;margin-top:18px;padding:15px;background:#1a1a1a;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;transition:background .2s;letter-spacing:.02em}
+.login-btn:hover{background:#2563eb}
+.login-err{color:#dc2626;font-size:13px;margin-top:12px;display:none;font-weight:600}
+.login-user-badge{display:inline-flex;align-items:center;gap:8px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:20px;padding:4px 14px 4px 8px;font-size:12px;font-weight:700;color:#166534;cursor:pointer;margin-left:8px}
+.login-user-badge:hover{background:#fef2f2;border-color:#fecaca;color:#991b1b}
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN SCREEN ─────────────────────────────────────────────────────── -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">EM Dashboard</div>
+    <div class="login-sub">ugbolmalassociates.com</div>
+    <label class="login-label">Apna naam likhein</label>
+    <input class="login-input" id="loginInput" type="text" placeholder="e.g. SAPNA" autocomplete="off" autocorrect="off" spellcheck="false"
+      onkeydown="if(event.key==='Enter') doLogin()" oninput="this.value=this.value.toUpperCase()">
+    <button class="login-btn" onclick="doLogin()">Dashboard Kholein →</button>
+    <div class="login-err" id="loginErr">Naam nahi mila. Sahi naam likhein.</div>
+  </div>
+</div>
+
+<!-- ── MAIN DASHBOARD (hidden until login) ──────────────────────────────── -->
+<div id="mainApp" style="display:none">
+
+<div class="header">
+  <div class="h-top">
+    <div>
+      <div class="h-title">EM Dashboard</div>
+      <div class="h-sub" id="hSub">FMS + Checklist + Delegation + Scores &nbsp;·&nbsp; ugbolmalassociates.com</div>
+    </div>
+    <div class="h-right">
+      <span class="wk-label">Week</span>
+      <select class="wk-sel" id="wkSel" onchange="onWeekChange(this.value)">
+        <option>Loading...</option>
+      </select>
+      <span class="saving" id="savingTxt"> Please Wait...</span>
+      <span class="login-user-badge" id="userBadge" onclick="logoutUser()" title="Click to logout">
+        <span id="userBadgeAvatar" style="width:20px;height:20px;border-radius:50%;background:#2563eb;color:#fff;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center"></span>
+        <span id="userBadgeName"></span>
+        &nbsp;✕
+      </span>
+    </div>
+  </div>
+  <div class="tabs-row">
+    <button class="tab-btn active" onclick="switchTab('summary',this)">Summary</button>
+    <button class="tab-btn" onclick="switchTab('fms',this)">FMS Steps</button>
+    <button class="tab-btn" onclick="switchTab('checklist',this)">Checklist</button>
+    <button class="tab-btn" onclick="switchTab('delegation',this)">Delegation</button>
+    <button class="tab-btn" onclick="switchTab('scores',this)">Scores</button>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- SUMMARY TAB -->
+  <div class="tab-content active" id="tab-summary">
+    <div id="ldiv" class="loading"><div class="spin"></div> Please Wait Loading Summary...</div>
+    <div id="mdiv" style="display:none">
+      <div class="c5">
+        <div class="card">
+          <div class="cl">Total Plan</div>
+          <div class="cv blue" id="cTP">—</div>
+          <div class="cs">FMS + CHECKLIST + DELEGATION</div>
+        </div>
+        <div class="card">
+          <div class="cl">Total Actual</div>
+          <div class="cv green" id="cTA">—</div>
+          <div class="cs" id="cTAs">—</div>
+        </div>
+        <div class="card">
+          <div class="cl">FMS Plan</div>
+          <div class="cv blue" id="cFP">—</div>
+          <div class="cs-detail" id="cFPdetail"></div>
+        </div>
+        <div class="card">
+          <div class="cl">Checklist Plan</div>
+          <div class="cv blue" id="cCP">—</div>
+          <div class="cs-detail" id="cCPdetail"></div>
+        </div>
+        <div class="card">
+          <div class="cl">Delegation Plan</div>
+          <div class="cv blue" id="cDP">—</div>
+          <div class="cs-detail" id="cDPdetail"></div>
+        </div>
+      </div>
+      <div class="c1">
+        <div class="card">
+          <div class="cl">Overall Score</div>
+          <div class="cv green" id="cOV">—</div>
+          <div class="cs">weekly progress rate</div>
+        </div>
+      </div>
+      <div class="tc">
+        <div class="tc-top">
+          <div class="tc-title">All Doers Master Summary</div>
+          <div class="date-cols-wrap" id="hmDateCols"></div>
+        </div>
+        <div style="overflow-x:auto">
+          <table id="masterDoerTable">
+            <thead>
+              <tr>
+                <th style="text-align:center">#</th><th>Doer</th>
+                <th style="text-align:center">FMS Plan</th><th style="text-align:center">FMS Actual</th>
+                <th style="text-align:center">CL Plan</th><th style="text-align:center">CL Actual</th>
+                <th style="text-align:center">DL Plan</th><th style="text-align:center">DL Actual</th>
+                <th style="text-align:center">Progress</th>
+                <th style="text-align:center" id="hmThLabel">Daily Heatmap</th>
+              </tr>
+            </thead>
+            <tbody id="dBody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="summary-panels">
+        <div class="sp-card">
+          <div class="sp-head">
+            <div class="sp-title">FMS by Process</div>
+            <div class="sp-count" id="fmsByProcessCount"></div>
+          </div>
+          <div style="overflow-x:auto">
+            <table>
+              <thead><tr><th>#</th><th>FMS</th><th>Plan</th><th>Actual</th><th>Miss</th><th>Progress</th></tr></thead>
+              <tbody id="fmsByProcessBody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="sp-card">
+          <div class="sp-head">
+            <div class="sp-title">Checklist by Doer</div>
+            <div class="sp-count" id="clByDoerCount"></div>
+          </div>
+          <div style="overflow-x:auto">
+            <table>
+              <thead><tr><th>#</th><th>Doer</th><th>Dept</th><th>Plan</th><th>Actual</th><th>Progress</th></tr></thead>
+              <tbody id="clByDoerBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FMS STEPS TAB -->
+  <div class="tab-content" id="tab-fms">
+    <div class="filter-bar">
+      <label>FMS Type:</label>
+      <select id="fmsFilterType" onchange="applyFmsFilters()"><option value="All">All Types</option></select>
+      <label>Doer:</label>
+      <select id="fmsFilterDoer" onchange="applyFmsFilters()"><option value="All">All Doers</option></select>
+    </div>
+    <div class="meta-info-badge" id="fmsMetaBadges"></div>
+    <div class="stat-grid" id="fmsStatsGrid"></div>
+    <div id="fmsCardsContainer"><div class="loading">Fetching FMS structured groups...</div></div>
+  </div>
+
+  <!-- CHECKLIST TAB -->
+  <div class="tab-content" id="tab-checklist">
+    <div class="filter-bar">
+      <label>Doer:</label>
+      <select id="clFilterDoer" onchange="applyChecklistFilters()"><option value="All">All Doers</option></select>
+      <label>Dept:</label>
+      <select id="clFilterDept" onchange="applyChecklistFilters()"><option value="All">All Depts</option></select>
+      <label>Status:</label>
+      <select id="clFilterStatus" onchange="applyChecklistFilters()">
+        <option value="All">All Status</option>
+        <option value="Done">Done</option>
+        <option value="Pending">Pending</option>
+      </select>
+    </div>
+    <div class="meta-info-badge" id="clMetaBadges"></div>
+    <div class="stat-grid" id="clStatsGrid"></div>
+    <div class="tc">
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Doer</th><th>Dept</th><th>Task Details</th><th>Freq</th><th>Planned Date</th><th>Actual Date</th><th>Status</th></tr>
+          </thead>
+          <tbody id="clTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- DELEGATION TAB -->
+  <div class="tab-content" id="tab-delegation">
+    <div class="filter-bar">
+      <label>Doer:</label>
+      <select id="dlFilterDoer" onchange="applyDelegationFilters()"><option value="All">All Doers</option></select>
+      <label>Status:</label>
+      <select id="dlFilterStatus" onchange="applyDelegationFilters()">
+        <option value="All">All Status</option>
+        <option value="Completed">Completed</option>
+        <option value="Week Shifted">Week Shifted</option>
+        <option value="Pending">Pending</option>
+      </select>
+    </div>
+    <div class="meta-info-badge" id="dlMetaBadges"></div>
+    <div class="stat-grid" id="dlStatsGrid"></div>
+    <div class="tc">
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Doer</th><th>Task Description</th><th>First Date</th><th>Revision 1</th><th>Revision 2</th><th>Latest Revision</th><th>Status</th></tr>
+          </thead>
+          <tbody id="dlTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCORES TAB -->
+  <div class="tab-content" id="tab-scores">
+    <div class="filter-bar">
+      <label>Employee:</label>
+      <select id="scFilterDoer" onchange="applyScoreFilters()"><option value="All">All Employees</option></select>
+      <label>Performance:</label>
+      <select id="scFilterPerf" onchange="applyScoreFilters()">
+        <option value="All">All Performance</option>
+        <option value="high">High (≥90%)</option>
+        <option value="mid">Mid (50–89%)</option>
+        <option value="low">Low (&lt;50%)</option>
+      </select>
+    </div>
+    <div class="meta-info-badge" id="scMetaBadges"></div>
+    <div class="score-hero" id="scHeroCards"></div>
+    <div class="tc">
+      <div class="tc-top">
+        <div class="tc-title">Employee Score Board</div>
+        <div id="scTableCount" style="font-size:12px;color:#9aa0ac;font-weight:500"></div>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th style="text-align:center">#</th>
+              <th>Employee</th>
+              <th style="text-align:center">Total Plan</th>
+              <th style="text-align:center">Total Completed</th>
+              <th style="text-align:center">On Time Completed</th>
+              <th style="text-align:center">Work Not Done %</th>
+              <th style="text-align:center">Work Not Done On Time %</th>
+              <th style="text-align:center">Performance</th>
+            </tr>
+          </thead>
+          <tbody id="scTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="ediv" style="display:none"></div>
+</div><!-- /.content -->
+</div><!-- /#mainApp -->
+
+<script>
+var API = "https://script.google.com/macros/s/AKfycbwP7IKhtFC5v73BsF1IPBW0tYko6ruHQoStZoYLNdF6XB-EtsMJATwPGaJzjdjcwJ6_/exec";
+
+// ── Valid staff list — naam EXACTLY waise likhein jaise sheet mein hain ──────
+var VALID_USERS     = ['SHAM','DIGAMBAR','DEEPAK','SHRIKANT','SAPNA','AISHWARYA','SUDHA','JAYASHREE','DEEPAK KAMAL','SAMRUDHI','NIKUNJ','YOGESH','YALLALING'];
+var MGMT_USERS_LIST = ['MANAGEMENT','ADMIN'];
+
+var CURRENT_USER  = '';
+var IS_MANAGEMENT = false;
+
+// ── Login logic ───────────────────────────────────────────────────────────────
+function doLogin() {
+  var name = (document.getElementById('loginInput').value || '').trim().toUpperCase();
+  if (!name) return;
+
+  var validAll = VALID_USERS.concat(MGMT_USERS_LIST);
+  var matched  = validAll.filter(function(u) { return u === name; })[0] || null;
+
+  // Partial match — allow if typed name is contained in a valid name
+  if (!matched) {
+    matched = validAll.filter(function(u) { return u.indexOf(name) === 0; })[0] || null;
+  }
+
+  if (!matched) {
+    var errEl = document.getElementById('loginErr');
+    errEl.style.display = 'block';
+    errEl.textContent   = '"' + name + '" nahi mila. Sahi naam likhein.';
+    document.getElementById('loginInput').focus();
+    return;
+  }
+
+  CURRENT_USER  = matched;
+  IS_MANAGEMENT = MGMT_USERS_LIST.indexOf(matched) !== -1;
+
+  // Remember in sessionStorage (stays for this browser tab, clears on close)
+  try { sessionStorage.setItem('em_user', matched); } catch(e) {}
+
+  showDashboard();
+}
+
+function logoutUser() {
+  try { sessionStorage.removeItem('em_user'); } catch(e) {}
+  CURRENT_USER = ''; IS_MANAGEMENT = false;
+  document.getElementById('mainApp').style.display    = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('loginInput').value = '';
+  document.getElementById('loginErr').style.display   = 'none';
+}
+
+function showDashboard() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('mainApp').style.display     = 'block';
+
+  // Update header badge
+  var initials = CURRENT_USER.split(' ').map(function(w){return w[0];}).join('').substring(0,2);
+  document.getElementById('userBadgeAvatar').textContent = initials;
+  document.getElementById('userBadgeName').textContent   = IS_MANAGEMENT ? 'Management' : CURRENT_USER;
+  document.getElementById('hSub').innerHTML =
+    'FMS + Checklist + Delegation + Scores &nbsp;·&nbsp; ugbolmalassociates.com &nbsp;·&nbsp; <strong>' +
+    (IS_MANAGEMENT ? '👔 Management' : '👤 ' + CURRENT_USER) + '</strong>';
+
+  // Load data
+  loadDashboard();
+}
+
+function loadDashboard() {
+  document.getElementById('ldiv').style.display = 'block';
+  document.getElementById('mdiv').style.display = 'none';
+  fetch(API + '?user=' + encodeURIComponent(CURRENT_USER) + '&cb=' + Date.now(), { redirect: 'follow' })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      document.getElementById('ldiv').style.display = 'none';
+      document.getElementById('mdiv').style.display = 'block';
+      renderAll(data);
+    })
+    .catch(function(err) {
+      document.getElementById('ldiv').innerHTML = '<div class="ebox">Error loading data. Please refresh.<br><small>' + err + '</small></div>';
+    });
+}
+
+// ── Auto-login if session exists ──────────────────────────────────────────────
+(function() {
+  try {
+    var saved = sessionStorage.getItem('em_user');
+    if (saved) {
+      document.getElementById('loginInput').value = saved;
+      doLogin();
+    }
+  } catch(e) {}
+})();
+
+var globalRawData = null;
+var _currentWeekVal = null;
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+function ini(n) {
+  var p = String(n).trim().split(' ');
+  return p.length >= 2 ? (p[0][0] + p[1][0]).toUpperCase() : String(n).substring(0, 2).toUpperCase();
+}
+function nb(v) {
+  var n = Number(v) || 0;
+  return '<span class="nb' + (n === 0 ? ' z' : '') + '">' + (n === 0 ? '–' : n) + '</span>';
+}
+function nbB(v) {
+  var n = Number(v) || 0;
+  return '<span class="nb-blue' + (n === 0 ? ' z' : '') + '">' + (n === 0 ? '–' : n) + '</span>';
+}
+function nbG(v) {
+  var n = Number(v) || 0;
+  return '<span class="nb-green' + (n === 0 ? ' z' : '') + '">' + (n === 0 ? '–' : n) + '</span>';
+}
+function pgCls(p) { return p >= 90 ? 'pg-g' : p >= 50 ? 'pg-o' : 'pg-r'; }
+function pg(p) {
+  p = parseFloat(p) || 0;
+  return '<div class="pgw ' + pgCls(p) + '"><div class="pgbg"><div class="pgf" style="width:' + Math.min(p, 100) + '%"></div></div><div class="pgp">' + Math.round(p) + '%</div></div>';
+}
+function ovCls(v) { return 'green'; }
+
+function statCard(label, value, color) {
+  return '<div class="stat-card"><div class="stat-label">' + label + '</div><div class="stat-value ' + color + '">' + value + '</div></div>';
+}
+
+function negScoreCard(label, rawPct) {
+  var color = rawPct <= 5 ? 'green' : 'red';
+  var display = rawPct === 0 ? '0.00%' : '-' + rawPct.toFixed(2) + '%';
+  return statCard(label, display, color);
+}
+
+function hmCell(val) {
+  if (!val || val === '-' || val === 'null' || val === 'undefined') return '<span class="hdash">–</span>';
+  var s = String(val).trim();
+  if (!s || s === '-') return '<span class="hdash">–</span>';
+  if (s.toLowerCase() === 'ok' || s.toLowerCase() === 'completed') return '<span class="hok">OK</span>';
+  if (s.toLowerCase() === 'x') return '<span class="hbad">✕</span>';
+  var pts = s.split('/');
+  if (pts.length === 2) {
+    var d = parseInt(pts[0]) || 0, t = parseInt(pts[1]) || 0;
+    if (t === 0) return '<span class="hdash">–</span>';
+    return d === t ? '<span class="hok">' + s + '</span>' : d === 0 ? '<span class="hbad">' + s + '</span>' : '<span class="hwarn">' + s + '</span>';
+  }
+  return '<span class="hok">' + s + '</span>';
+}
+
+// ── Week Dropdown ─────────────────────────────────────────────────────────────
+function buildWeekDropdown(weeks, currentFrom, currentTo) {
+  var sel = document.getElementById('wkSel');
+  sel.innerHTML = '';
+  weeks.forEach(function(w) {
+    var o = document.createElement('option');
+    var val = JSON.stringify({ from: w.from, to: w.to });
+    o.value = val;
+    o.textContent = w.from + ' – ' + w.to;
+    if (currentFrom && currentTo && (w.from === currentFrom || w.to === currentTo)) o.selected = true;
+    sel.appendChild(o);
+  });
+  _currentWeekVal = sel.value;
+}
+
+function onWeekChange(val) {
+  if (!val || val === _currentWeekVal) return;
+  _currentWeekVal = val;
+  var parsed = JSON.parse(val);
+  document.getElementById('savingTxt').classList.add('show');
+  document.getElementById('ldiv').style.display = 'block';
+  document.getElementById('mdiv').style.display = 'none';
+  fetch(API + '?action=setDates&from=' + encodeURIComponent(parsed.from) + '&to=' + encodeURIComponent(parsed.to) + '&user=' + encodeURIComponent(CURRENT_USER) + '&cb=' + Date.now(), { redirect: 'follow' })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      document.getElementById('savingTxt').classList.remove('show');
+      document.getElementById('ldiv').style.display = 'none';
+      document.getElementById('mdiv').style.display = 'block';
+      renderAll(data);
+    });
+}
+
+// ── Main Render ───────────────────────────────────────────────────────────────
+function renderAll(data) {
+  globalRawData = data;
+  var em = data.emDashboard || {};
+  var t  = em.totals || {};
+  var bd = em.breakdown || {};
+
+  if (data.weeks && data.weeks.length) buildWeekDropdown(data.weeks, em.week ? em.week.from : '', em.week ? em.week.to : '');
+
+  document.getElementById('cTP').textContent = t.totalPlan || 0;
+  document.getElementById('cTA').textContent = t.totalActual || 0;
+  document.getElementById('cFP').textContent = t.fmsPlan || 0;
+  document.getElementById('cCP').textContent = t.checklistPlan || 0;
+  document.getElementById('cDP').textContent = t.delegationPlan || 0;
+
+  var ov = t.overall || '0%';
+  var ovNum = parseFloat(ov) || 0;
+  var ovRounded = Math.round(ovNum) + '%';
+  document.getElementById('cTAs').textContent = ovRounded + ' complete';
+  var ovEl = document.getElementById('cOV');
+  ovEl.textContent = ovRounded;
+  ovEl.className = 'cv ' + ovCls(ovNum);
+
+  document.getElementById('cFPdetail').innerHTML =
+    '<span class="cs-done">' + bd.fmsDone + ' done</span>' +
+    '<span class="cs-pend">' + bd.fmsPending + ' pending</span>';
+  document.getElementById('cCPdetail').innerHTML =
+    '<span class="cs-done">' + bd.clDone + ' done</span>' +
+    '<span class="cs-pend">' + bd.clPending + ' pending</span>';
+  document.getElementById('cDPdetail').innerHTML =
+    '<span class="cs-done">' + bd.dlDone + ' done</span>' +
+    '<span class="cs-pend">' + bd.dlPending + ' pending</span>';
+
+  if (data.heatmap && data.heatmap.dates) {
+    var M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var html = '';
+    data.heatmap.dates.forEach(function(d) {
+      var pts = d.split('/');
+      html += '<div class="dcol"><div class="dcol-day">' + pts[0] + '</div><div style="font-size:9px">' + (M[parseInt(pts[1]) - 1] || pts[1]) + '</div></div>';
+    });
+    document.getElementById('hmDateCols').innerHTML = html;
+    document.getElementById('hmThLabel').setAttribute('colspan', data.heatmap.dates.length);
+  }
+
+  if (em.doers) {
+    var hmMap = {};
+    if (data.heatmap && data.heatmap.doers) data.heatmap.doers.forEach(function(hd) { hmMap[hd.name.toLowerCase().trim()] = hd.days; });
+    var numDates = data.heatmap && data.heatmap.dates ? data.heatmap.dates.length : 0;
+    document.getElementById('dBody').innerHTML = em.doers.map(function(d, i) {
+      var cells = '';
+      for (var j = 0; j < numDates; j++) cells += '<td style="text-align:center;padding:6px 2px">' + hmCell((hmMap[d.name.toLowerCase().trim()] || [])[j]) + '</td>';
+      return '<tr><td style="text-align:center">' + (i + 1) + '</td>' +
+        '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(d.name) + '</div>' + d.name + '</div></td>' +
+        '<td style="text-align:center">' + nbB(d.fmsPlan) + '</td><td style="text-align:center">' + nbG(d.fmsActual) + '</td>' +
+        '<td style="text-align:center">' + nbB(d.clPlan) + '</td><td style="text-align:center">' + nbG(d.clActual) + '</td>' +
+        '<td style="text-align:center">' + nbB(d.dlPlan) + '</td><td style="text-align:center">' + nbG(d.dlActual) + '</td>' +
+        '<td>' + pg(d.progress) + '</td>' + cells + '</tr>';
+    }).join('');
+  }
+
+  renderFmsByProcess(data.fmsByProcess || []);
+  renderClByDoer(data.checklistByDoer || []);
+  populateFmsFilters(data.fmsFilterOptions || {});
+  applyFmsFilters();
+  populateChecklistDelegationFilters();
+  applyChecklistFilters();
+  applyDelegationFilters();
+
+  // Scores tab — reset filter on fresh load
+  document.getElementById('scFilterPerf').value = 'All';
+  var scData = data.scoresData || [];
+  if (!data.scoresData) console.warn('⚠️ scoresData missing from API response — check code.gs SCORES section');
+  else console.log('✅ scoresData received:', scData.length, 'rows');
+  populateScoreFilters(scData);
+  applyScoreFilters();
+}
+
+// ── FMS by Process panel ──────────────────────────────────────────────────────
+function renderFmsByProcess(rows) {
+  document.getElementById('fmsByProcessCount').textContent = rows.length + ' process types';
+  document.getElementById('fmsByProcessBody').innerHTML = rows.map(function(r, i) {
+    return '<tr>' +
+      '<td>' + (i + 1) + '</td>' +
+      '<td><span class="fms-type-pill">' + r.fmsType + '</span></td>' +
+      '<td>' + nb(r.plan) + '</td>' +
+      '<td>' + nb(r.actual) + '</td>' +
+      '<td>' + (r.missed === 0 ? '<span class="mb-ok">OK</span>' : '<span class="mb-num">' + r.missed + '</span>') + '</td>' +
+      '<td>' + pg(r.progress) + '</td>' +
+      '</tr>';
+  }).join('') || '<tr><td colspan="6" style="text-align:center;color:#bbb;padding:20px">No FMS data for this week</td></tr>';
+}
+
+// ── Checklist by Doer panel ───────────────────────────────────────────────────
+function renderClByDoer(rows) {
+  document.getElementById('clByDoerCount').textContent = rows.length + ' doers';
+  document.getElementById('clByDoerBody').innerHTML = rows.map(function(r, i) {
+    return '<tr>' +
+      '<td>' + (i + 1) + '</td>' +
+      '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(r.doer) + '</div>' + r.doer + '</div></td>' +
+      '<td><span class="dept-pill">' + r.dept + '</span></td>' +
+      '<td>' + nb(r.plan) + '</td>' +
+      '<td>' + nb(r.actual) + '</td>' +
+      '<td>' + pg(r.progress) + '</td>' +
+      '</tr>';
+  }).join('') || '<tr><td colspan="6" style="text-align:center;color:#bbb;padding:20px">No checklist data for this week</td></tr>';
+}
+
+// ── FMS Steps Tab ─────────────────────────────────────────────────────────────
+function populateFmsFilters(opts) {
+  var typesSel = document.getElementById('fmsFilterType');
+  var doersSel = document.getElementById('fmsFilterDoer');
+  var prevType = typesSel.value;
+  var prevDoer = doersSel.value;
+
+  typesSel.innerHTML = '<option value="All">All Types</option>';
+  (opts.types || []).forEach(function(t) {
+    var o = document.createElement('option');
+    o.value = t; o.textContent = t;
+    if (t === prevType) o.selected = true;
+    typesSel.appendChild(o);
+  });
+
+  doersSel.innerHTML = '<option value="All">All Doers</option>';
+  (opts.doers || []).forEach(function(d) {
+    var o = document.createElement('option');
+    o.value = d; o.textContent = d;
+    if (d === prevDoer) o.selected = true;
+    doersSel.appendChild(o);
+  });
+}
+
+function applyFmsFilters() {
+  var typeFilter = document.getElementById('fmsFilterType').value;
+  var doerFilter = document.getElementById('fmsFilterDoer').value;
+  var groups = globalRawData ? (globalRawData.fmsGroups || []) : [];
+
+  var totalPlan = 0, totalActual = 0, totalOnTime = 0, groupCount = 0;
+
+  var html = groups.map(function(g) {
+    if (typeFilter !== 'All' && g.groupName !== typeFilter) return '';
+    var filteredSteps = g.steps.filter(function(s) {
+      return doerFilter === 'All' || s.doer === doerFilter;
+    });
+    if (filteredSteps.length === 0) return '';
+
+    var gPlan = filteredSteps.reduce(function(s, r) { return s + r.plan; }, 0);
+    var gActual = filteredSteps.reduce(function(s, r) { return s + r.actual; }, 0);
+    var gOnTime = filteredSteps.reduce(function(s, r) { return s + (r.onTime || 0); }, 0);
+    var gProg = gPlan > 0 ? (gActual / gPlan) * 100 : 0;
+    totalPlan += gPlan; totalActual += gActual; totalOnTime += gOnTime; groupCount++;
+
+    var rows = filteredSteps.map(function(s, idx) {
+      var missedCell;
+      if (s.missed === 0) {
+        missedCell = '<span class="mb-ok">OK</span>';
+      } else {
+        var tasks = s.pendingTasks || [];
+        var encoded = encodeURIComponent(JSON.stringify(tasks));
+        missedCell = '<span class="mb-num" style="cursor:pointer" onclick="showPendingModal(\'' +
+          s.step.replace(/'/g, "\\'") + '\',\'' + s.doer.replace(/'/g, "\\'") + '\',\'' + encoded + '\')">' + s.missed + '</span>';
+      }
+      return '<tr>' +
+        '<td style="width:40px">' + (idx + 1) + '</td>' +
+        '<td>' + s.step + '</td>' +
+        '<td style="width:180px"><div class="dc"><div class="av av' + (idx % 16) + '">' + ini(s.doer) + '</div>' + s.doer + '</div></td>' +
+        '<td style="width:70px">' + nb(s.plan) + '</td>' +
+        '<td style="width:70px">' + nb(s.actual) + '</td>' +
+        '<td style="width:80px">' + missedCell + '</td>' +
+        '<td style="width:160px">' + pg(s.progress) + '</td>' +
+        '</tr>';
+    }).join('');
+
+    return '<div class="fms-card">' +
+      '<div class="fms-card-top">' +
+        '<div class="fms-card-title"><span class="fms-dot"></span>' + g.groupName + '</div>' +
+        '<div class="fms-card-meta">' +
+          '<span class="fms-badge p-blue">' + gPlan + ' plan</span>' +
+          '<span class="fms-badge a-green">' + gActual + ' actual</span>' +
+          '<div style="width:120px">' + pg(gProg) + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<table><thead><tr><th>#</th><th>Step</th><th>Doer</th><th>Plan</th><th>Actual</th><th>Missed</th><th>Progress</th></tr></thead>' +
+      '<tbody>' + rows + '</tbody></table>' +
+      '</div>';
+  }).join('');
+
+  var missed = totalPlan - totalActual;
+  document.getElementById('fmsMetaBadges').innerHTML =
+    '<span class="m-badge b-blue">' + groupCount + ' groups</span>' +
+    '<span class="m-badge b-green">' + totalActual + ' done</span>' +
+    '<span class="m-badge b-red">' + Math.max(0, missed) + ' pending</span>';
+
+  var fmsWorkNotDonePct       = totalPlan   > 0 ? (Math.max(0, missed) / totalPlan * 100) : 0;
+  var fmsWorkNotDoneOnTimePct = totalActual > 0 ? Math.max(0, 100 - (totalOnTime / totalActual * 100)) : 0;
+
+  document.getElementById('fmsStatsGrid').innerHTML =
+    statCard('On Time Completed', totalOnTime, 'blue') +
+    negScoreCard('Work Not Done %', fmsWorkNotDonePct) +
+    negScoreCard('Work Not Done On Time %', fmsWorkNotDoneOnTimePct);
+
+  document.getElementById('fmsCardsContainer').innerHTML = html ||
+    '<div style="text-align:center;padding:40px;color:#bbb">No FMS data matches the selected filters</div>';
+}
+
+// ── Checklist & Delegation filter population ──────────────────────────────────
+function populateChecklistDelegationFilters() {
+  var clDoers = new Set(), clDepts = new Set();
+  if (globalRawData.checklistData) {
+    globalRawData.checklistData.forEach(function(r) { clDoers.add(r.doer); clDepts.add(r.dept); });
+  }
+  updateSelectOptions('clFilterDoer', clDoers);
+  updateSelectOptions('clFilterDept', clDepts);
+
+  var dlDoers = new Set();
+  if (globalRawData.delegationData) {
+    globalRawData.delegationData.forEach(function(r) { dlDoers.add(r.client); });
+  }
+  updateSelectOptions('dlFilterDoer', dlDoers);
+}
+
+function updateSelectOptions(id, setObj) {
+  var sel = document.getElementById(id);
+  var currentVal = sel.value;
+  sel.innerHTML = '<option value="All">' + (id.includes('Doer') ? 'All Doers' : id.includes('Dept') ? 'All Depts' : 'All') + '</option>';
+  Array.from(setObj).sort().forEach(function(v) {
+    var o = document.createElement('option');
+    o.value = v; o.textContent = v;
+    if (v === currentVal) o.selected = true;
+    sel.appendChild(o);
+  });
+}
+
+// ── Checklist Tab ─────────────────────────────────────────────────────────────
+function applyChecklistFilters() {
+  var dFilter    = document.getElementById('clFilterDoer').value;
+  var deptFilter = document.getElementById('clFilterDept').value;
+  var sFilter    = document.getElementById('clFilterStatus').value;
+  var data = globalRawData ? (globalRawData.checklistData || []) : [];
+  var filtered = data.filter(function(r) {
+    return (dFilter === 'All' || r.doer === dFilter) &&
+           (deptFilter === 'All' || r.dept === deptFilter) &&
+           (sFilter === 'All' || r.status === sFilter);
+  });
+  var doneCount = filtered.filter(function(r) { return r.status === 'Done'; }).length;
+  var pendCount = filtered.length - doneCount;
+  document.getElementById('clMetaBadges').innerHTML =
+    '<span class="m-badge b-blue">' + filtered.length + ' planned</span>' +
+    '<span class="m-badge b-green">' + doneCount + ' done</span>' +
+    '<span class="m-badge b-red">' + pendCount + ' pending</span>';
+
+  var onTimeCount = filtered.filter(function(r) {
+    return r.status === 'Done' && r.actualDate && r.actualDate !== '-' && r.plannedDate && r.plannedDate !== '-' && r.actualDate <= r.plannedDate;
+  }).length;
+
+  var clWorkNotDonePct       = filtered.length > 0 ? (pendCount / filtered.length * 100) : 0;
+  var clWorkNotDoneOnTimePct = doneCount > 0 ? Math.max(0, 100 - (onTimeCount / doneCount * 100)) : 0;
+
+  document.getElementById('clStatsGrid').innerHTML =
+    statCard('On Time Completed', onTimeCount, 'blue') +
+    negScoreCard('Work Not Done %', clWorkNotDonePct) +
+    negScoreCard('Work Not Done On Time %', clWorkNotDoneOnTimePct);
+
+  document.getElementById('clTableBody').innerHTML = filtered.map(function(r, i) {
+    return '<tr><td>' + (i + 1) + '</td>' +
+      '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(r.doer) + '</div>' + r.doer + '</div></td>' +
+      '<td><span class="dept-pill">' + r.dept + '</span></td>' +
+      '<td>' + r.task + '</td>' +
+      '<td><span class="freq-pill">' + r.freq + '</span></td>' +
+      '<td style="white-space:nowrap">' + r.plannedDate + '</td>' +
+      '<td style="white-space:nowrap">' + r.actualDate + '</td>' +
+      '<td><span class="' + (r.status === 'Done' ? 'st-done' : 'st-pend') + '">' + r.status + '</span></td></tr>';
+  }).join('');
+}
+
+// ── Delegation Tab ────────────────────────────────────────────────────────────
+function applyDelegationFilters() {
+  var dFilter = document.getElementById('dlFilterDoer').value;
+  var sFilter = document.getElementById('dlFilterStatus').value;
+  var data = globalRawData ? (globalRawData.delegationData || []) : [];
+
+  var filtered = data.filter(function(r) {
+    if (dFilter !== 'All' && r.client !== dFilter) return false;
+    if (sFilter === 'All') return true;
+    return r.status.toLowerCase() === sFilter.toLowerCase();
+  });
+
+  var doneCount        = filtered.filter(function(r) { return r.status.toLowerCase() === 'completed'; }).length;
+  var weekShiftedCount = filtered.filter(function(r) { return r.status.toLowerCase() === 'week shifted'; }).length;
+  var pendingOnlyCount = filtered.filter(function(r) { return r.status.toLowerCase() === 'pending'; }).length;
+  var totalCount       = filtered.length;
+
+  var badgeHTML = '<span class="m-badge b-blue">' + totalCount + ' total</span>';
+  if (sFilter === 'All') {
+    badgeHTML += '<span class="m-badge b-green">' + doneCount + ' completed</span>' +
+      '<span class="m-badge b-red">' + weekShiftedCount + ' week shifted</span>' +
+      '<span class="m-badge" style="background:#fffbeb;color:#d97706">' + pendingOnlyCount + ' pending</span>';
+  } else if (sFilter === 'Completed') {
+    badgeHTML += '<span class="m-badge b-green">' + doneCount + ' completed</span>';
+  } else if (sFilter === 'Week Shifted') {
+    badgeHTML += '<span class="m-badge b-red">' + weekShiftedCount + ' week shifted</span>';
+  } else if (sFilter === 'Pending') {
+    badgeHTML += '<span class="m-badge" style="background:#fffbeb;color:#d97706">' + pendingOnlyCount + ' pending</span>';
+  }
+  document.getElementById('dlMetaBadges').innerHTML = badgeHTML;
+
+  var redScore    = totalCount > 0 ? (weekShiftedCount / totalCount * 100) : 0;
+  var yellowScore = totalCount > 0 ? (pendingOnlyCount / totalCount * 100) : 0;
+  var greenScore  = totalCount > 0 ? (doneCount        / totalCount * 100) : 0;
+  document.getElementById('dlStatsGrid').innerHTML =
+    statCard('Red Score',    redScore.toFixed(2)    + '%', 'red') +
+    statCard('Yellow Score', yellowScore.toFixed(2) + '%', 'orange') +
+    statCard('Green Score',  greenScore.toFixed(2)  + '%', 'green');
+
+  document.getElementById('dlTableBody').innerHTML = filtered.map(function(r, i) {
+    var sCls = r.status.toLowerCase() === 'completed' ? 'st-done' : r.status.toLowerCase() === 'week shifted' ? 'st-shift' : 'st-pend';
+    return '<tr><td>' + (i + 1) + '</td>' +
+      '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(r.client) + '</div>' + r.client + '</div></td>' +
+      '<td>' + r.task + '</td>' +
+      '<td style="white-space:nowrap">' + r.firstDate + '</td>' +
+      '<td style="white-space:nowrap">' + r.revision1 + '</td>' +
+      '<td style="white-space:nowrap">' + r.revision2 + '</td>' +
+      '<td style="white-space:nowrap">' + r.latestRevision + '</td>' +
+      '<td><span class="' + sCls + '">' + r.status + '</span></td></tr>';
+  }).join('');
+}
+
+// ── SCORES TAB ────────────────────────────────────────────────────────────────
+
+// Performance color only — no grade letter
+function perfColor(pct) {
+  if (pct >= 90) return { bg:'#dcfce7', color:'#166534', bar:'#16a34a' };
+  if (pct >= 70) return { bg:'#dbeafe', color:'#1e40af', bar:'#2563eb' };
+  if (pct >= 50) return { bg:'#fef9c3', color:'#854d0e', bar:'#f59e0b' };
+  return { bg:'#fee2e2', color:'#991b1b', bar:'#ef4444' };
+}
+
+function perfBadge(pct) {
+  var c = perfColor(pct);
+  return '<span style="background:' + c.bg + ';color:' + c.color + ';padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block;white-space:nowrap">' + pct.toFixed(2) + '%</span>';
+}
+
+// Format a pct cell (Work Not Done % values — shown negative in sheet)
+function pctCell(raw) {
+  // raw is a string like "-100.00%" or "0.00%" or "-12.26%"
+  var s = String(raw || '').trim();
+  if (!s || s === '' || s === '-') return '<span class="pct-zer">—</span>';
+  var num = parseFloat(s.replace('%','')) || 0;
+  if (num === 0) return '<span class="pct-zer">0.00%</span>';
+  if (num < 0)   return '<span class="pct-neg">' + num.toFixed(2) + '%</span>';
+  return '<span class="pct-pos">+' + num.toFixed(2) + '%</span>';
+}
+
+// Check if a scores row is all-zero (hide these)
+function isScoreRowAllZero(r) {
+  return (Number(r.totalPlan) || 0) === 0 &&
+         (Number(r.totalCompleted) || 0) === 0 &&
+         (Number(r.onTimeCompleted) || 0) === 0;
+}
+
+function populateScoreFilters(rows) {
+  // Only populate with employees that have any data
+  var active = rows.filter(function(r) { return !isScoreRowAllZero(r) && String(r.employee || '').trim() !== ''; });
+  var sel = document.getElementById('scFilterDoer');
+  var currentVal = sel.value;
+  sel.innerHTML = '<option value="All">All Employees</option>';
+  active.forEach(function(r) {
+    var o = document.createElement('option');
+    o.value = r.employee; o.textContent = r.employee;
+    if (r.employee === currentVal) o.selected = true;
+    sel.appendChild(o);
+  });
+}
+
+function applyScoreFilters() {
+  var dFilter = document.getElementById('scFilterDoer').value;
+  var gFilter = document.getElementById('scFilterPerf').value;
+  var rows = globalRawData ? (globalRawData.scoresData || []) : [];
+
+  // Auto-hide: skip rows with no employee name OR all zeros
+  var filtered = rows.filter(function(r) {
+    var name = String(r.employee || '').trim();
+    if (!name) return false;
+    if (isScoreRowAllZero(r)) return false;
+    if (dFilter !== 'All' && r.employee !== dFilter) return false;
+    if (gFilter !== 'All') {
+      var perfPctF = parseFloat(String(r.performance || '0').replace('%','')) || 0;
+      if (gFilter === 'high' && perfPctF < 90) return false;
+      if (gFilter === 'mid' && (perfPctF < 50 || perfPctF >= 90)) return false;
+      if (gFilter === 'low' && perfPctF >= 50) return false;
+    }
+    return true;
+  });
+
+  // Hero summary cards
+  var totalEmployees = filtered.length;
+  var totalPlanSum   = filtered.reduce(function(s, r) { return s + (Number(r.totalPlan) || 0); }, 0);
+  var totalDoneSum   = filtered.reduce(function(s, r) { return s + (Number(r.totalCompleted) || 0); }, 0);
+  var onTimeSum      = filtered.reduce(function(s, r) { return s + (Number(r.onTimeCompleted) || 0); }, 0);
+  var avgPerf        = filtered.length > 0 ? filtered.reduce(function(s, r) {
+    return s + (parseFloat(String(r.performance || '0').replace('%','')) || 0);
+  }, 0) / filtered.length : 0;
+
+  var avgColor = avgPerf >= 90 ? '#16a34a' : avgPerf >= 70 ? '#2563eb' : avgPerf >= 50 ? '#d97706' : '#dc2626';
+
+  document.getElementById('scHeroCards').innerHTML =
+    '<div class="score-hero-card"><div class="score-hero-label">Active Employees</div><div class="score-hero-val" style="color:#2563eb">' + totalEmployees + '</div></div>' +
+    '<div class="score-hero-card"><div class="score-hero-label">Total Plan</div><div class="score-hero-val" style="color:#2563eb">' + totalPlanSum + '</div></div>' +
+    '<div class="score-hero-card"><div class="score-hero-label">Total Completed</div><div class="score-hero-val" style="color:#16a34a">' + totalDoneSum + '</div></div>' +
+    '<div class="score-hero-card"><div class="score-hero-label">On Time Completed</div><div class="score-hero-val" style="color:#16a34a">' + onTimeSum + '</div></div>' +
+    '<div class="score-hero-card"><div class="score-hero-label">Avg Performance</div><div class="score-hero-val" style="color:' + avgColor + '">' + avgPerf.toFixed(1) + '%</div></div>';
+
+  document.getElementById('scMetaBadges').innerHTML =
+    '<span class="m-badge b-blue">' + totalEmployees + ' employees</span>' +
+    '<span class="m-badge b-green">' + totalDoneSum + ' completed</span>' +
+    '<span class="m-badge" style="background:#eff6ff;color:#1d4ed8">' + onTimeSum + ' on time</span>';
+
+  document.getElementById('scTableCount').textContent = filtered.length + ' employees shown';
+
+  // Sort by performance descending
+  var sorted = filtered.slice().sort(function(a, b) {
+    var pa = parseFloat(String(a.performance||'0').replace('%','')) || 0;
+    var pb = parseFloat(String(b.performance||'0').replace('%','')) || 0;
+    return pb - pa;
+  });
+
+  document.getElementById('scTableBody').innerHTML = sorted.map(function(r, i) {
+    var perfPct = parseFloat(String(r.performance || '0').replace('%','')) || 0;
+    // Mini rank bar fill color based on grade
+    var barColor = perfPct >= 90 ? '#16a34a' : perfPct >= 70 ? '#2563eb' : perfPct >= 50 ? '#f59e0b' : '#ef4444';
+    var barW = Math.min(Math.max(perfPct, 0), 100);
+    return '<tr>' +
+      '<td style="text-align:center;font-weight:700;color:#9aa0ac">' + (i + 1) + '</td>' +
+      '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(r.employee) + '</div><strong>' + r.employee + '</strong></div></td>' +
+      '<td style="text-align:center">' + nbB(r.totalPlan) + '</td>' +
+      '<td style="text-align:center">' + nbG(r.totalCompleted) + '</td>' +
+      '<td style="text-align:center">' + nbG(r.onTimeCompleted) + '</td>' +
+      '<td style="text-align:center">' + pctCell(r.workNotDonePct) + '</td>' +
+      '<td style="text-align:center">' + pctCell(r.workNotDoneOnTimePct) + '</td>' +
+      '<td><div style="display:flex;align-items:center;gap:8px">' +
+        '<div class="score-rank-bar"><div class="score-rank-fill" style="width:' + barW + '%;background:' + barColor + '"></div></div>' +
+        perfBadge(perfPct) +
+      '</div></td>' +
+      '</tr>';
+  }).join('') || '<tr><td colspan="8" style="text-align:center;color:#bbb;padding:30px">No score data matches the selected filters</td></tr>';
+}
+
+// ── Tab switch ────────────────────────────────────────────────────────────────
+function switchTab(name, el) {
+  document.querySelectorAll('.tab-btn').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.tab-content').forEach(function(t) { t.classList.remove('active'); });
+  el.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+  // Scores tab pe aate waqt Performance filter reset karo
+  if (name === 'scores') {
+    document.getElementById('scFilterPerf').value = 'All';
+    applyScoreFilters();
+  }
+}
+</script>
+
+<!-- PENDING TASKS MODAL -->
+<div id="pendingModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:14px;width:90%;max-width:620px;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e8eaed">
+      <div>
+        <div id="modalTitle" style="font-size:15px;font-weight:700;color:#1a1a1a"></div>
+        <div id="modalSubtitle" style="font-size:12px;color:#9aa0ac;margin-top:2px"></div>
+      </div>
+      <button onclick="closePendingModal()" style="background:#f3f4f6;border:none;border-radius:8px;width:30px;height:30px;font-size:16px;cursor:pointer;color:#555;display:flex;align-items:center;justify-content:center">✕</button>
+    </div>
+    <div style="overflow-y:auto;padding:0">
+      <table style="width:100%;border-collapse:collapse">
+        <thead>
+          <tr>
+            <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa">#</th>
+            <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa">Planned Date</th>
+            <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa">Client Name</th>
+            <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa">Final Doer</th>
+            <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa">Status</th>
+          </tr>
+        </thead>
+        <tbody id="modalBody"></tbody>
+      </table>
+    </div>
+    <div style="padding:12px 20px;border-top:1px solid #e8eaed;text-align:right">
+      <button onclick="closePendingModal()" style="background:#1a1a1a;color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:13px;font-weight:600;cursor:pointer">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function showPendingModal(step, doer, encoded) {
+  var tasks = JSON.parse(decodeURIComponent(encoded));
+  document.getElementById('modalTitle').textContent = step + '  —  Pending Tasks';
+  document.getElementById('modalSubtitle').textContent = 'Doer: ' + doer + '  ·  ' + tasks.length + ' pending';
+  document.getElementById('modalBody').innerHTML = tasks.map(function(t, i) {
+    return '<tr>' +
+      '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#555">' + (i+1) + '</td>' +
+      '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151;font-weight:600">' + t.plannedDate + '</td>' +
+      '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151">' + t.client + '</td>' +
+      '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151">' + t.finalDoer + '</td>' +
+      '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6"><span style="background:#fef2f2;color:#dc2626;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600">Pending</span></td>' +
+      '</tr>';
+  }).join('');
+  var modal = document.getElementById('pendingModal');
+  modal.style.display = 'flex';
+}
+function closePendingModal() {
+  document.getElementById('pendingModal').style.display = 'none';
+}
+document.getElementById('pendingModal').addEventListener('click', function(e) {
+  if (e.target === this) closePendingModal();
+});
+</script>
+</body>
+</html>
