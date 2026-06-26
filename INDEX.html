@@ -215,7 +215,7 @@ tr:hover td{background:#fafbfc}
     <button class="tab-btn" onclick="switchTab('fms',this)">FMS Steps</button>
     <button class="tab-btn" onclick="switchTab('checklist',this)">Checklist</button>
     <button class="tab-btn" onclick="switchTab('delegation',this)">Delegation</button>
-    <button class="tab-btn" onclick="switchTab('myscore',this)">My Score</button>
+    <button class="tab-btn" onclick="switchTab('myscore',this)">Score</button>
   </div>
 </div>
 
@@ -324,7 +324,7 @@ tr:hover td{background:#fafbfc}
   </div>
 
   <div class="tab-content" id="tab-myscore">
-    <div id="myScoreContainer"><div class="loading"><div class="spin"></div> Loading your score...</div></div>
+    <div id="myScoreContainer"><div class="loading"><div class="spin"></div> Loading scores...</div></div>
   </div>
 
   <div id="ediv" style="display:none"></div>
@@ -332,7 +332,7 @@ tr:hover td{background:#fafbfc}
 </div>
 
 <script>
-var API = "https://script.google.com/macros/s/AKfycbwF_uCpSpLZ6a8I_jAmBlxa3hG8BRenHZgzso4BIO8icQujfCRXGgsN-rurudroWiigLw/exec";
+var API = "https://script.google.com/macros/s/AKfycbwDpGRBNQH5_hpeOCXTAU1gdtI9eBCwDes4DtJ-_SPpp85-0VaHKkeuaGx3whd0Jl2GIg/exec";
 var ALLOWED_DOMAIN = "ugbolmalassociates.com";
 var CLIENT_ID = "567925868040-kv22o4qhj5rmreiaka4odpth50v99ndf.apps.googleusercontent.com";
 
@@ -654,43 +654,67 @@ function renderClByDoer(rows) {
 function renderMyScore(ms, debugEmail, debugDoerName, isAdmin, allScores) {
   var c = document.getElementById('myScoreContainer');
   var html = '';
-  if (!ms) {
-    html += '<div style="text-align:center;padding:50px 20px;color:#bbb">'+
-      '<div style="margin-bottom:14px">No score record found for your account in the ADMIN_SCORE sheet.</div>'+
-      '<div style="display:inline-block;text-align:left;background:#fff;border:1px solid #e8eaed;border-radius:10px;padding:14px 18px;font-size:12px;color:#555">'+
-        '<div><b>Detected login email:</b> '+(debugEmail||'-')+'</div>'+
-        '<div style="margin-top:4px"><b>Detected doer name:</b> '+(debugDoerName||'NOT FOUND — check DOER_EMAIL sheet')+'</div>'+
-        '<div style="margin-top:8px;color:#9aa0ac">This name must exactly match a row in the EMPLOYEE column of the ADMIN_SCORE sheet.</div>'+
-      '</div></div>';
-  } else {
-    var perfColor = ms.performance >= 50 ? '#16a34a' : ms.performance >= 25 ? '#d97706' : '#dc2626';
-    var pct = ms.totalPlan > 0 ? (ms.totalCompleted / ms.totalPlan * 100) : 0;
-    html += '<div class="c1" style="margin-bottom:22px;grid-template-columns:220px 1fr">';
-    html += '<div class="card"><div class="cl">My Performance</div><div class="cv" style="color:'+perfColor+'">'+ms.performance.toFixed(2)+'%</div><div class="cs">'+ms.employee+'</div></div>';
-    html += '<div class="card"><div class="cl">Plan vs Completed</div>'+pg(pct)+'<div class="cs" style="margin-top:10px">'+ms.totalCompleted+' of '+ms.totalPlan+' total tasks completed</div></div>';
-    html += '</div>';
-    html += '<div class="stat-grid">';
-    html += statCard('Total Plan', ms.totalPlan, 'blue');
-    html += statCard('Total Completed', ms.totalCompleted, 'green');
-    html += statCard('On Time Completed', ms.onTimeCompleted, 'blue');
-    html += negScoreCard('Work Not Done %', Math.abs(ms.workNotDonePct));
-    html += negScoreCard('Work Not Done On Time %', Math.abs(ms.workNotDoneOnTimePct));
-    html += '</div>';
+
+  // Always show ADMIN_SCORE full table (A:G columns)
+  var scores = allScores && allScores.length ? allScores : (ms ? [ms] : []);
+
+  if (!scores.length) {
+    html = '<div style="text-align:center;padding:60px;color:#bbb">No score data found in ADMIN_SCORE sheet.</div>';
+    c.innerHTML = html;
+    return;
   }
+
+  // Summary stat cards across all scores (for admin)
   if (isAdmin && allScores && allScores.length) {
-    html += '<div class="tc" style="margin-top:24px">';
-    html += '<div class="tc-top"><div class="tc-title">Team Scores (All Doers)</div></div>';
-    html += '<div style="overflow-x:auto"><table><thead><tr><th>#</th><th>Employee</th><th>Total Plan</th><th>Total Completed</th><th>On Time</th><th>Work Not Done %</th><th>Work Not Done On Time %</th><th>Performance</th></tr></thead><tbody>';
-    html += allScores.map(function(s,i) {
-      var pColor = s.performance >= 50 ? '#16a34a' : s.performance >= 25 ? '#d97706' : '#dc2626';
-      return '<tr><td>'+(i+1)+'</td><td><div class="dc"><div class="av av'+(i%16)+'">'+ini(s.employee)+'</div>'+s.employee+'</div></td>'+
-        '<td>'+nb(s.totalPlan)+'</td><td>'+nb(s.totalCompleted)+'</td><td>'+nb(s.onTimeCompleted)+'</td>'+
-        '<td>'+(s.workNotDonePct===0?'0.00%':'-'+Math.abs(s.workNotDonePct).toFixed(2)+'%')+'</td>'+
-        '<td>'+(s.workNotDoneOnTimePct===0?'0.00%':'-'+Math.abs(s.workNotDoneOnTimePct).toFixed(2)+'%')+'</td>'+
-        '<td style="color:'+pColor+';font-weight:700">'+s.performance.toFixed(2)+'%</td></tr>';
-    }).join('');
-    html += '</tbody></table></div></div>';
+    var totalEmp  = allScores.length;
+    var avgPerf   = allScores.reduce(function(a,s){return a+s.performance;},0) / totalEmp;
+    var totalPlan = allScores.reduce(function(a,s){return a+s.totalPlan;},0);
+    var totalDone = allScores.reduce(function(a,s){return a+s.totalCompleted;},0);
+    html += '<div class="stat-grid" style="margin-bottom:20px">';
+    html += statCard('Total Employees', totalEmp, 'blue');
+    html += statCard('Avg Performance', avgPerf.toFixed(1)+'%', avgPerf>=50?'green':avgPerf>=25?'orange':'red');
+    html += statCard('Total Plan', totalPlan, 'blue');
+    html += statCard('Total Completed', totalDone, 'green');
+    html += '</div>';
   }
+
+  // Full ADMIN_SCORE table — A:G
+  html += '<div class="tc">';
+  html += '<div class="tc-top"><div class="tc-title">Score — ADMIN_SCORE</div><div style="font-size:12px;color:#9aa0ac">'+scores.length+' employees</div></div>';
+  html += '<div style="overflow-x:auto"><table><thead><tr>';
+  html += '<th>#</th>';
+  html += '<th>Employee</th>';
+  html += '<th>Total Plan</th>';
+  html += '<th>Total Completed</th>';
+  html += '<th>On Time Completed</th>';
+  html += '<th>Work Not Done %</th>';
+  html += '<th>Work Not Done On Time %</th>';
+  html += '<th>Performance</th>';
+  html += '</tr></thead><tbody>';
+
+  html += scores.map(function(s, i) {
+    var pColor = s.performance >= 50 ? '#16a34a' : s.performance >= 25 ? '#d97706' : '#dc2626';
+    var pBg    = s.performance >= 50 ? '#f0fdf4' : s.performance >= 25 ? '#fffbeb' : '#fef2f2';
+    var wnd    = typeof s.workNotDonePct === 'number' ? s.workNotDonePct : 0;
+    var wndot  = typeof s.workNotDoneOnTimePct === 'number' ? s.workNotDoneOnTimePct : 0;
+    // Work Not Done % — shown as-is (sheet already has negative/percentage value)
+    var wndDisplay   = wnd === 0   ? '<span style="color:#16a34a;font-weight:700">0.00%</span>'
+                     : '<span style="color:#dc2626;font-weight:700">' + wnd.toFixed(2) + '%</span>';
+    var wndotDisplay = wndot === 0 ? '<span style="color:#16a34a;font-weight:700">0.00%</span>'
+                     : '<span style="color:#dc2626;font-weight:700">' + wndot.toFixed(2) + '%</span>';
+    return '<tr>' +
+      '<td style="color:#9aa0ac;font-size:12px">'+(i+1)+'</td>' +
+      '<td><div class="dc"><div class="av av'+(i%16)+'">'+ini(s.employee)+'</div><span style="font-weight:600">'+s.employee+'</span></div></td>' +
+      '<td>'+nb(s.totalPlan)+'</td>' +
+      '<td>'+nb(s.totalCompleted)+'</td>' +
+      '<td>'+nb(s.onTimeCompleted)+'</td>' +
+      '<td>'+wndDisplay+'</td>' +
+      '<td>'+wndotDisplay+'</td>' +
+      '<td><span style="background:'+pBg+';color:'+pColor+';font-weight:800;font-size:13px;padding:4px 12px;border-radius:20px;display:inline-block">'+s.performance.toFixed(2)+'%</span></td>' +
+      '</tr>';
+  }).join('');
+
+  html += '</tbody></table></div></div>';
   c.innerHTML = html;
 }
 
