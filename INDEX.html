@@ -28,7 +28,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .h-sub{font-size:12px;color:#9aa0ac;margin-top:3px}
 .h-right{display:flex;align-items:center;gap:10px}
 .wk-label{font-size:13px;color:#888;font-weight:500}
-.wk-sel{background:#fff;border:1.5px solid #d1d5db;border-radius:8px;padding:7px 14px;font-size:13px;color:#333;font-weight:500;cursor:pointer;outline:none;box-shadow:0 1px 3px rgba(0,0,0,.06);max-width:260px}
+.wk-sel{background:#fff;border:1.5px solid #d1d5db;border-radius:8px;padding:7px 14px;font-size:13px;color:#333;font-weight:500;cursor:pointer;outline:none;box-shadow:0 1px 3px rgba(0,0,0,.06);max-width:320px}
 .saving{font-size:11px;color:#888;display:none}
 .saving.show{display:inline}
 .user-chip{display:flex;align-items:center;gap:8px;background:#f3f4f6;border:1px solid #e8eaed;border-radius:20px;padding:5px 12px 5px 6px;font-size:12px;font-weight:600;color:#374151}
@@ -345,7 +345,7 @@ tr:hover td{background:#fafbfc}
 </div>
 
 <script>
-var API = "https://script.google.com/macros/s/AKfycbwTyTjhXPH8wgtSp4NjjVUX6o2u5O-4_ebtQZBN34XsirK4H-Z0xJX9hKTE1sViEVoj/exec";
+var API = "https://script.google.com/macros/s/AKfycbxXPBoy87zF8teiW03K-ThqcmwLRA8CIFpNuICKyH4xNh3r6rf4tmSzBEvZBymOof57/exec";
 var ALLOWED_DOMAIN = "ugbolmalassociates.com";
 var globalRawData = null;
 var _currentPeriodVal = null;
@@ -472,7 +472,7 @@ function buildPeriodDropdown(periods,currentFrom,currentTo){
   periods.forEach(function(p){
     var o=document.createElement('option');
     o.value=JSON.stringify({from:p.from,to:p.to});
-    o.textContent=p.label?p.label:(p.from+' – '+p.to);
+    o.textContent=(p.label?p.label+'  ':'')+'('+p.from+' – '+p.to+')';
     if(currentFrom&&currentTo&&(p.from===currentFrom||p.to===currentTo))o.selected=true;
     sel.appendChild(o);
   });
