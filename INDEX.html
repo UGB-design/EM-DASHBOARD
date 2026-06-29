@@ -142,12 +142,6 @@ tr:hover td{background:#fafbfc}
 .nb{background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:3px 8px;font-size:12px;display:inline-block;min-width:32px;text-align:center;color:#374151;font-weight:600}
 .nb.z{color:#d1d5db;background:#fff;border-color:#f3f4f6}
 
-/* HEATMAP */
-.hok{display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:26px;border-radius:8px;font-size:10px;font-weight:700;padding:0 6px;background:#dcfce7;color:#166534}
-.hwarn{display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:26px;border-radius:8px;font-size:10px;font-weight:700;padding:0 6px;background:#fef9c3;color:#854d0e}
-.hbad{display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:26px;border-radius:8px;font-size:10px;font-weight:700;padding:0 6px;background:#fee2e2;color:#991b1b}
-.hdash{color:#d1d5db;font-size:16px}
-
 /* SUMMARY PANELS */
 .summary-panels{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
 .sp-card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed;overflow:hidden}
@@ -343,8 +337,9 @@ tr:hover td{background:#fafbfc}
   <div id="ediv" style="display:none"></div>
 </div>
 </div>
+
 <script>
-var API = "https://script.google.com/macros/s/AKfycbykEOrN69NDu-R3cDPpAwlnmnl8yk3CtzsKWffDMOADXzmUZKYnUpH0k8HTB288aVgURQ/exec";
+var API = "https://script.google.com/macros/s/AKfycbxJNxNvO-salg3ju1jH-Zj8rLMzGO0lAkHPGlWsx-uRrnDPiH-CCfU6IvkPVXYNsOUP/exec";
 var ALLOWED_DOMAIN = "ugbolmalassociates.com";
 var globalRawData = null;
 var _currentPeriodVal = null;
@@ -451,19 +446,6 @@ function formatPct(v){
   return n.toFixed(2)+'%';
 }
 
-function hmCell(val){
-  if(!val||val==='-'||val==='null'||val==='undefined')return '<span class="hdash">–</span>';
-  var s=String(val).trim();
-  if(!s||s==='-')return '<span class="hdash">–</span>';
-  if(s.toLowerCase()==='ok'||s.toLowerCase()==='completed')return '<span class="hok">OK</span>';
-  if(s.toLowerCase()==='x')return '<span class="hbad">✕</span>';
-  var pts=s.split('/');
-  if(pts.length===2){var d=parseInt(pts[0])||0,t=parseInt(pts[1])||0;
-    if(t===0)return '<span class="hdash">–</span>';
-    return d===t?'<span class="hok">'+s+'</span>':d===0?'<span class="hbad">'+s+'</span>':'<span class="hwarn">'+s+'</span>';}
-  return '<span class="hok">'+s+'</span>';
-}
-
 // ── Period Dropdown ──
 function buildPeriodDropdown(periods,currentFrom,currentTo){
   var sel=document.getElementById('wkSel');
@@ -538,41 +520,22 @@ function renderAll(data){
     pg(ovNum)+
     '<div style="margin-top:8px;font-size:12px;color:#555">'+totalActual+' completed of '+totalPlan+' planned</div>';
 
-  // Heatmap header columns
-  var headRow=document.getElementById('masterTableHeadRow');
-  while(headRow.children.length>9)headRow.removeChild(headRow.lastChild);
-  if(data.heatmap&&data.heatmap.dates){
-    var M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    data.heatmap.dates.forEach(function(d){
-      var pts=d.split('/');
-      var th=document.createElement('th');
-      th.style.cssText='text-align:center;min-width:46px';
-      th.innerHTML='<div style="font-weight:700;font-size:12px;color:#374151">'+pts[0]+'</div><div style="font-size:9px;color:#9aa0ac;text-transform:none;letter-spacing:0">'+(M[parseInt(pts[1])-1]||pts[1])+'</div>';
-      headRow.appendChild(th);
-    });
-  }
-
   // Doers master table
+  // (Daily Heatmap columns removed — table now has a fixed 9 columns only)
   if(em.doers){
-    var hmMap={};
-    if(data.heatmap&&data.heatmap.doers)data.heatmap.doers.forEach(function(hd){hmMap[hd.name.toLowerCase().trim()]=hd.days;});
-    var numDates=data.heatmap&&data.heatmap.dates?data.heatmap.dates.length:0;
     document.getElementById('dBody').innerHTML=em.doers.map(function(d,i){
-      // FIX: Calculate progress properly
       var tP=d.fmsPlan+d.clPlan+d.dlPlan;
       var tA=d.fmsActual+d.clActual+d.dlActual;
       var prog=parseFloat(d.progress)||0;
       if(prog>0&&prog<=1)prog=prog*100;
       if(!prog&&tP>0)prog=(tA/tP)*100;
-      
-      var cells='';
-      for(var j=0;j<numDates;j++)cells+='<td style="text-align:center;padding:6px 2px;min-width:46px">'+hmCell((hmMap[d.name.toLowerCase().trim()]||[])[j])+'</td>';
+
       return '<tr><td>'+(i+1)+'</td>'+
         '<td><div class="dc"><div class="av av'+(i%16)+'">'+ini(d.name)+'</div>'+d.name+'</div></td>'+
         '<td>'+nb(d.fmsPlan)+'</td><td>'+nb(d.fmsActual)+'</td>'+
         '<td>'+nb(d.clPlan)+'</td><td>'+nb(d.clActual)+'</td>'+
         '<td>'+nb(d.dlPlan)+'</td><td>'+nb(d.dlActual)+'</td>'+
-        '<td>'+pg(prog)+'</td>'+cells+'</tr>';
+        '<td>'+pg(prog)+'</td></tr>';
     }).join('');
   }
 
@@ -640,11 +603,11 @@ function renderMyScore(ms,debugEmail,debugDoerName,isAdmin,allScores){
     html+='</div>';
   } else {
     html+='<div style="text-align:center;padding:50px 20px;color:#bbb">'+
-      '<div style="margin-bottom:14px;font-size:14px">No score record found for your account in ADMIN_SCORE sheet.</div>'+
+      '<div style="margin-bottom:14px;font-size:14px">No score record found for your account.</div>'+
       '<div style="display:inline-block;text-align:left;background:#fff;border:1px solid #e8eaed;border-radius:10px;padding:14px 18px;font-size:12px;color:#555">'+
       '<div><b>Login email:</b> '+(debugEmail||'-')+'</div>'+
       '<div style="margin-top:4px"><b>Doer name:</b> '+(debugDoerName||'NOT FOUND')+'</div>'+
-      '<div style="margin-top:8px;color:#9aa0ac">Name must match EMPLOYEE column in ADMIN_SCORE sheet.</div>'+
+      '<div style="margin-top:8px;color:#9aa0ac">Score is read from this doer\'s own tab (row 6, under the EMPLOYEE/TOTAL PLAN/... header).</div>'+
       '</div></div>';
   }
 
