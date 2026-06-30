@@ -594,26 +594,34 @@ function renderMyScore(ms,debugEmail,debugDoerName,isAdmin,allScores){
 
   if(ms){
     var tP=ms.totalPlan||0, tC=ms.totalCompleted||0, onT=ms.onTimeCompleted||0;
-    var pct=tP>0?(tC/tP*100):0;
-    var perfColor=ms.performance>=70?'#16a34a':ms.performance>=50?'#d97706':'#dc2626';
+    var pend=Math.max(0,tP-tC);
+    var perfColor=ms.performance>=70?'green':ms.performance>=50?'orange':'red';
+    var wnd=Math.abs(ms.workNotDonePct||0);
+    var wndot=Math.abs(ms.workNotDoneOnTimePct||0);
 
-    html+='<div class="score-hero">';
-    html+='<div class="score-hero-card"><div class="score-hero-label">Active Employee</div><div class="score-hero-value" style="font-size:22px;color:#1a1a1a">'+ms.employee+'</div><div class="score-hero-sub">Current period</div></div>';
-    html+='<div class="score-hero-card"><div class="score-hero-label">Total Plan</div><div class="score-hero-value" style="color:#2563eb">'+tP+'</div><div class="score-hero-sub">tasks planned</div></div>';
-    html+='<div class="score-hero-card"><div class="score-hero-label">Total Completed</div><div class="score-hero-value" style="color:#16a34a">'+tC+'</div><div class="score-hero-sub">of '+tP+' planned</div></div>';
-    html+='<div class="score-hero-card"><div class="score-hero-label">On Time</div><div class="score-hero-value" style="color:#2563eb">'+onT+'</div><div class="score-hero-sub">completed on time</div></div>';
-    html+='<div class="score-hero-card"><div class="score-hero-label">Avg Performance</div><div class="score-hero-value" style="color:'+perfColor+'">'+ms.performance.toFixed(1)+'%</div><div class="score-hero-sub">overall score</div></div>';
-    html+='</div>';
-    
-    html+='<div style="margin-bottom:20px;background:#fff;border-radius:12px;padding:20px 24px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed">';
-    html+='<div style="font-size:11px;font-weight:700;color:#9aa0ac;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">Plan vs Actual Progress</div>';
-    html+=pg(pct);
-    html+='</div>';
-    
-    html+='<div class="stat-grid">';
-    html+=negScoreCard('Work Not Done %',ms.workNotDonePct);
-    html+=negScoreCard('Work Not Done On Time %',ms.workNotDoneOnTimePct);
-    html+='</div>';
+    // Meta badges row — same pattern as Delegation tab
+    html+='<div class="meta-info-badge">'+
+      '<span class="m-badge b-blue">'+tP+' total plan</span>'+
+      '<span class="m-badge b-green">'+tC+' completed</span>'+
+      '<span class="m-badge b-blue" style="background:#eff6ff;color:#1d4ed8">'+onT+' on time</span>'+
+      '<span class="m-badge b-red">'+pend+' pending</span>'+
+      '</div>';
+
+    // Red / Yellow / Green style score cards — same visual language as Delegation tab
+    html+='<div class="stat-grid">'+
+      statCard('Work Not Done %', wnd.toFixed(2)+'%', 'red')+
+      statCard('Work Not Done On Time %', wndot.toFixed(2)+'%', 'orange')+
+      statCard('Performance Score', ms.performance.toFixed(2)+'%', perfColor)+
+      '</div>';
+
+    // Clean table — same look as Delegation table
+    html+='<div class="tc"><div style="overflow-x:auto">'+
+      '<table><thead><tr><th>#</th><th>Employee</th><th>Total Plan</th><th>Completed</th><th>On Time</th><th>Performance</th></tr></thead><tbody>'+
+      '<tr><td>1</td>'+
+      '<td><div class="dc"><div class="av av0">'+ini(ms.employee)+'</div>'+ms.employee+'</div></td>'+
+      '<td>'+nb(tP)+'</td><td>'+nb(tC)+'</td><td>'+nb(onT)+'</td>'+
+      '<td style="color:'+(perfColor==='green'?'#16a34a':perfColor==='orange'?'#d97706':'#dc2626')+';font-weight:700">'+ms.performance.toFixed(2)+'%</td>'+
+      '</tr></tbody></table></div></div>';
   } else {
     html+='<div style="text-align:center;padding:50px 20px;color:#bbb">'+
       '<div style="margin-bottom:14px;font-size:14px">No score record found for your account.</div>'+
