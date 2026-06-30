@@ -202,8 +202,11 @@ tr:hover td{background:#fafbfc}
       <div class="h-sub" id="hSub">FMS + Checklist + Delegation &nbsp;·&nbsp; Score Systems</div>
     </div>
     <div class="h-right">
-      <span class="wk-label">Month</span>
-      <select class="wk-sel" id="wkSel" onchange="onPeriodChange(this.value)"><option>Loading...</option></select>
+      <span class="wk-label">From</span>
+      <input type="date" class="wk-sel" id="dateFrom" style="max-width:155px;cursor:pointer">
+      <span class="wk-label">To</span>
+      <input type="date" class="wk-sel" id="dateTo" style="max-width:155px;cursor:pointer">
+      <button id="applyDateBtn" onclick="applyCustomDateRange()" style="background:#1a1a1a;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:12px;font-weight:600;cursor:pointer">Apply</button>
       <span class="saving" id="savingTxt"> Updating...</span>
       <div class="user-chip" id="userChip" style="display:none">
         <img id="userAvatar" src="" alt="">
@@ -339,7 +342,7 @@ tr:hover td{background:#fafbfc}
 </div>
 
 <script>
-var API = "https://script.google.com/macros/s/AKfycbyG2Qspfkt-igI4K9DbA3R_Cr-O0BPkJbHzcY-xOpfCGt0u9wkgxpaigXNDrPiKtHkj/exec";
+var API = "https://script.google.com/macros/s/AKfycbxhqgpIpElK71mRbeHu9LvqVsiQZUb7gRN5MkOkWNy7doQHtA67ONLszcWe5cFmWPCt/exec";
 var ALLOWED_DOMAIN = "ugbolmalassociates.com";
 var globalRawData = null;
 var _currentPeriodVal = null;
@@ -446,28 +449,38 @@ function formatPct(v){
   return n.toFixed(2)+'%';
 }
 
-// ── Period Dropdown ──
-function buildPeriodDropdown(periods,currentFrom,currentTo){
-  var sel=document.getElementById('wkSel');
-  sel.innerHTML='';
-  periods.forEach(function(p){
-    var o=document.createElement('option');
-    o.value=JSON.stringify({from:p.from,to:p.to});
-    o.textContent=(p.label?p.label+'  ':'')+'('+p.from+' – '+p.to+')';
-    if(currentFrom&&currentTo&&(p.from===currentFrom||p.to===currentTo))o.selected=true;
-    sel.appendChild(o);
-  });
-  _currentPeriodVal=sel.value;
+// ── Date Range Picker (From / To) ──
+// Convert "dd/MM/yyyy" (what the sheet/backend uses) -> "yyyy-MM-dd" (what <input type=date> needs)
+function ddmmyyyyToInput(s){
+  if(!s)return '';
+  var p=String(s).trim().split('/');
+  if(p.length!==3)return '';
+  return p[2]+'-'+p[1].padStart(2,'0')+'-'+p[0].padStart(2,'0');
+}
+// Convert "yyyy-MM-dd" (input value) -> "dd/MM/yyyy" (what backend expects)
+function inputToDdmmyyyy(s){
+  if(!s)return '';
+  var p=String(s).trim().split('-');
+  if(p.length!==3)return '';
+  return p[2]+'/'+p[1]+'/'+p[0];
 }
 
-function onPeriodChange(val){
-  if(!val||val===_currentPeriodVal)return;
-  _currentPeriodVal=val;
-  var parsed=JSON.parse(val);
+function setDateInputs(fromStr,toStr){
+  var fEl=document.getElementById('dateFrom'),tEl=document.getElementById('dateTo');
+  if(fromStr)fEl.value=ddmmyyyyToInput(fromStr);
+  if(toStr)tEl.value=ddmmyyyyToInput(toStr);
+}
+
+function applyCustomDateRange(){
+  var fEl=document.getElementById('dateFrom'),tEl=document.getElementById('dateTo');
+  if(!fEl.value||!tEl.value){alert('Please pick both From and To dates.');return;}
+  var fromStr=inputToDdmmyyyy(fEl.value);
+  var toStr=inputToDdmmyyyy(tEl.value);
+  if(fEl.value>tEl.value){alert('"From" date must be before "To" date.');return;}
   document.getElementById('savingTxt').classList.add('show');
   document.getElementById('ldiv').style.display='block';
   document.getElementById('mdiv').style.display='none';
-  fetch(API+'?action=setDates&from='+encodeURIComponent(parsed.from)+'&to='+encodeURIComponent(parsed.to)+'&cb='+Date.now()+sessionParams(),{redirect:'follow'})
+  fetch(API+'?action=setDates&from='+encodeURIComponent(fromStr)+'&to='+encodeURIComponent(toStr)+'&cb='+Date.now()+sessionParams(),{redirect:'follow'})
     .then(function(r){return r.json();})
     .then(function(data){
       document.getElementById('savingTxt').classList.remove('show');
@@ -489,7 +502,7 @@ function renderAll(data){
   document.getElementById('adminBadge').classList.toggle('show',isAdmin);
   document.getElementById('masterTableTitle').textContent=isAdmin?'All Doers Master Summary':'My Summary';
 
-  if(data.periods&&data.periods.length)buildPeriodDropdown(data.periods,em.week?em.week.from:'',em.week?em.week.to:'');
+  if(em.week)setDateInputs(em.week.from,em.week.to);
 
   var totalPlan=t.totalPlan||0, totalActual=t.totalActual||0;
   
