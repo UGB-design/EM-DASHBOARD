@@ -216,6 +216,21 @@ tr:hover td{background:#fafbfc}
           <div id="overallProgressBar" style="width:100%"></div>
         </div>
       </div>
+      <div class="tc" style="margin-bottom:16px">
+        <div class="tc-top"><div class="tc-title">My Summary</div></div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr>
+              <th>#</th><th>Doer</th>
+              <th>FMS Plan</th><th>FMS Actual</th>
+              <th>CL Plan</th><th>CL Actual</th>
+              <th>DL Plan</th><th>DL Actual</th>
+              <th>Progress</th>
+            </tr></thead>
+            <tbody id="mySummaryBody"></tbody>
+          </table>
+        </div>
+      </div>
       <div class="summary-panels">
         <div class="sp-card">
           <div class="sp-head"><div class="sp-title">FMS by Process</div><div class="sp-count" id="fmsByProcessCount"></div></div>
@@ -463,6 +478,22 @@ function renderAll(data){
     pg(ovNum)+
     '<div style="margin-top:8px;font-size:12px;color:#555">'+totalActual+' completed of '+totalPlan+' planned</div>';
 
+  if(em.doers){
+    document.getElementById('mySummaryBody').innerHTML=em.doers.map(function(d,i){
+      var tP=d.fmsPlan+d.clPlan+d.dlPlan;
+      var tA=d.fmsActual+d.clActual+d.dlActual;
+      var prog=parseFloat(d.progress)||0;
+      if(prog>0&&prog<=1)prog=prog*100;
+      if(!prog&&tP>0)prog=(tA/tP)*100;
+      return '<tr><td>'+(i+1)+'</td>'+
+        '<td><div class="dc"><div class="av av'+(i%16)+'">'+ini(d.name)+'</div>'+d.name+'</div></td>'+
+        '<td>'+nb(d.fmsPlan)+'</td><td>'+nb(d.fmsActual)+'</td>'+
+        '<td>'+nb(d.clPlan)+'</td><td>'+nb(d.clActual)+'</td>'+
+        '<td>'+nb(d.dlPlan)+'</td><td>'+nb(d.dlActual)+'</td>'+
+        '<td>'+pg(prog)+'</td></tr>';
+    }).join('');
+  }
+
   renderFmsByProcess(data.fmsByProcess||[]);
   renderClByDoer(data.checklistByDoer||[]);
   renderMyScore(data.myScore,data.debugEmail,data.debugDoerName);
@@ -502,31 +533,30 @@ function renderMyScore(ms,debugEmail,debugDoerName){
 
   if(ms){
     var tP=ms.totalPlan||0, tC=ms.totalCompleted||0, onT=ms.onTimeCompleted||0;
-    var pend=Math.max(0,tP-tC);
     var perfColor=ms.performance>=70?'green':ms.performance>=50?'orange':'red';
     var wnd=Math.abs(ms.workNotDonePct||0);
     var wndot=Math.abs(ms.workNotDoneOnTimePct||0);
+    var planVsCompletedPct=tP>0?(tC/tP*100):0;
 
-    html+='<div class="meta-info-badge">'+
-      '<span class="m-badge b-blue">'+tP+' total plan</span>'+
-      '<span class="m-badge b-green">'+tC+' completed</span>'+
-      '<span class="m-badge b-blue" style="background:#eff6ff;color:#1d4ed8">'+onT+' on time</span>'+
-      '<span class="m-badge b-red">'+pend+' pending</span>'+
+    // Top row: My Performance + Plan vs Completed
+    html+='<div class="c1" style="margin-bottom:16px">'+
+      '<div class="card"><div class="cl">My Performance</div>'+
+      '<div class="cv '+perfColor+'">'+ms.performance.toFixed(2)+'%</div>'+
+      '<div class="cs">'+ms.employee+'</div></div>'+
+      '<div class="card">'+
+      '<div class="cl">Plan vs Completed</div>'+
+      pg(planVsCompletedPct)+
+      '<div class="cs" style="margin-top:8px">'+tC+' of '+tP+' total tasks completed</div>'+
+      '</div></div>';
+
+    // Bottom row: 5 stat cards
+    html+='<div class="c5">'+
+      statCard('Total Plan', tP, 'blue')+
+      statCard('Total Completed', tC, 'green')+
+      statCard('On Time Completed', onT, 'blue')+
+      negScoreCard('Work Not Done %', wnd)+
+      negScoreCard('Work Not Done On Time %', wndot)+
       '</div>';
-
-    html+='<div class="stat-grid">'+
-      statCard('Work Not Done %', wnd.toFixed(2)+'%', 'red')+
-      statCard('Work Not Done On Time %', wndot.toFixed(2)+'%', 'orange')+
-      statCard('Performance Score', ms.performance.toFixed(2)+'%', perfColor)+
-      '</div>';
-
-    html+='<div class="tc"><div style="overflow-x:auto">'+
-      '<table><thead><tr><th>#</th><th>Employee</th><th>Total Plan</th><th>Completed</th><th>On Time</th><th>Performance</th></tr></thead><tbody>'+
-      '<tr><td>1</td>'+
-      '<td><div class="dc"><div class="av av0">'+ini(ms.employee)+'</div>'+ms.employee+'</div></td>'+
-      '<td>'+nb(tP)+'</td><td>'+nb(tC)+'</td><td>'+nb(onT)+'</td>'+
-      '<td style="color:'+(perfColor==='green'?'#16a34a':perfColor==='orange'?'#d97706':'#dc2626')+';font-weight:700">'+ms.performance.toFixed(2)+'%</td>'+
-      '</tr></tbody></table></div></div>';
   } else {
     html+='<div style="text-align:center;padding:50px 20px;color:#bbb">'+
       '<div style="margin-bottom:14px;font-size:14px">No score record found for your account.</div>'+
