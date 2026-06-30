@@ -9,7 +9,6 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f7f8fa;color:#1a1a1a;min-height:100vh}
 
-/* AUTH */
 #authOverlay{position:fixed;inset:0;background:#f7f8fa;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
 #authOverlay .spin{width:36px;height:36px;border:3px solid #e5e7eb;border-top-color:#2563eb;border-radius:50%;animation:sp .8s linear infinite}
 #authOverlay .auth-msg{font-size:14px;color:#9aa0ac;font-weight:500}
@@ -21,7 +20,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #authOverlay .manual-signin-label{font-size:12px;color:#9aa0ac;font-weight:500}
 #authOverlay .retry-link{font-size:12px;color:#2563eb;font-weight:600;cursor:pointer;text-decoration:underline;background:none;border:none}
 
-/* HEADER */
 .header{background:#fff;padding:20px 32px 0;border-bottom:1px solid #e8eaed}
 .h-top{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;flex-wrap:wrap;gap:10px}
 .h-title{font-size:24px;font-weight:700;color:#1a1a1a;letter-spacing:-.3px}
@@ -34,21 +32,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .user-chip{display:flex;align-items:center;gap:8px;background:#f3f4f6;border:1px solid #e8eaed;border-radius:20px;padding:5px 12px 5px 6px;font-size:12px;font-weight:600;color:#374151}
 .user-chip img{width:24px;height:24px;border-radius:50%;object-fit:cover}
 .user-chip span{max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.admin-pill{display:none;background:#111827;color:#fff;font-size:9px;font-weight:800;letter-spacing:.04em;padding:3px 8px;border-radius:20px;flex-shrink:0}
-.admin-pill.show{display:inline-block}
 
-/* TABS */
 .tabs-row{display:flex;gap:0;overflow-x:auto;padding-bottom:0}
 .tab-btn{padding:11px 24px;border-radius:0;font-size:13px;cursor:pointer;color:#9aa0ac;border:none;border-bottom:2px solid transparent;background:transparent;font-weight:500;transition:all .15s;white-space:nowrap}
 .tab-btn.active{color:#1a1a1a;font-weight:700;border-bottom:2px solid #1a1a1a}
 .tab-btn:hover:not(.active){color:#555;background:#f7f8fa}
 
-/* LAYOUT */
 .content{padding:24px 32px}
 .tab-content{display:none}
 .tab-content.active{display:block}
 
-/* METRIC CARDS */
 .c5{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:14px}
 .c1{display:grid;grid-template-columns:200px 1fr;gap:14px;margin-bottom:24px}
 .card{background:#fff;border-radius:12px;padding:20px 22px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed}
@@ -60,7 +53,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .cs-done{color:#16a34a;font-weight:600;background:#f0fdf4;padding:2px 8px;border-radius:20px;font-size:11px}
 .cs-pend{color:#dc2626;font-weight:600;background:#fef2f2;padding:2px 8px;border-radius:20px;font-size:11px}
 
-/* FILTER BAR */
 .filter-bar{display:flex;align-items:center;gap:16px;margin-bottom:16px;background:#fff;padding:12px 20px;border-radius:10px;border:1px solid #e8eaed;flex-wrap:wrap;font-size:12px}
 .filter-bar label{font-weight:600;color:#555}
 .filter-bar select{padding:6px 12px;border:1px solid #d1d5db;border-radius:6px;outline:none;font-size:12px;color:#333;background:#fff}
@@ -70,7 +62,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .m-badge.b-green{background:#f0fdf4;color:#16a34a}
 .m-badge.b-red{background:#fef2f2;color:#dc2626}
 
-/* STAT CARDS */
 .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px}
 .stat-card{background:#fff;border-radius:10px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed}
 .stat-label{font-size:10px;color:#9aa0ac;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:8px}
@@ -80,14 +71,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .stat-value.orange{color:#d97706}
 .stat-value.red{color:#dc2626}
 
-/* SCORE HERO CARDS */
-.score-hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:20px}
-.score-hero-card{background:#fff;border-radius:12px;padding:22px 24px;box-shadow:0 1px 4px rgba(0,0,0,.1);border:1px solid #e8eaed;text-align:center}
-.score-hero-label{font-size:10px;color:#9aa0ac;text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:10px}
-.score-hero-value{font-size:36px;font-weight:800;line-height:1;margin-bottom:4px}
-.score-hero-sub{font-size:11px;color:#9aa0ac}
-
-/* FMS CARDS */
 .fms-card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed;margin-bottom:16px;padding:18px 22px}
 .fms-card-top{display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:1px solid #f0f0f0;margin-bottom:12px;flex-wrap:wrap;gap:10px}
 .fms-card-title{font-size:14px;font-weight:700;color:#1a1a1a;display:flex;align-items:center;gap:8px}
@@ -97,14 +80,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .fms-badge.p-blue{background:#eff6ff;color:#1e40af}
 .fms-badge.a-green{background:#f0fdf4;color:#166534}
 
-/* TABLES */
 table{width:100%;border-collapse:collapse}
 th{font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 14px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fff;white-space:nowrap}
 td{padding:13px 14px;border-bottom:1px solid #f3f4f6;vertical-align:middle;font-size:13px;color:#374151}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:#fafbfc}
 
-/* BADGES */
 .mb-ok{background:#f0fdf4;color:#16a34a;font-weight:700;font-size:10px;padding:3px 8px;border-radius:6px;display:inline-block}
 .mb-num{background:#fef2f2;color:#dc2626;font-weight:700;font-size:11px;padding:3px 8px;border-radius:6px;display:inline-block;cursor:pointer}
 .st-done{background:#f0fdf4;color:#16a34a;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block}
@@ -114,7 +95,6 @@ tr:hover td{background:#fafbfc}
 .freq-pill{background:#fff7ed;color:#ea580c;font-size:11px;padding:2px 7px;border-radius:20px;font-weight:700;border:1px solid #fed7aa}
 .fms-type-pill{background:#f0fdf4;color:#166534;font-size:11px;padding:4px 12px;border-radius:20px;font-weight:600;display:inline-block;white-space:nowrap}
 
-/* AVATARS */
 .dc{display:flex;align-items:center;gap:10px}
 .av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
 .av0{background:#3B82F6;color:#fff}.av1{background:#10B981;color:#fff}
@@ -126,7 +106,6 @@ tr:hover td{background:#fafbfc}
 .av12{background:#0EA5E9;color:#fff}.av13{background:#D946EF;color:#fff}
 .av14{background:#22C55E;color:#fff}.av15{background:#FB923C;color:#fff}
 
-/* PROGRESS BARS */
 .pgw{display:flex;align-items:center;gap:8px;min-width:0;width:100%}
 .pgbg{border-radius:4px;height:8px;width:90px;min-width:70px;overflow:hidden;background:#e5e7eb;flex-shrink:0}
 .pgf{height:8px;border-radius:4px;transition:width .6s}
@@ -135,14 +114,12 @@ tr:hover td{background:#fafbfc}
 .pg-o .pgf{background:#f59e0b}.pg-o .pgp{color:#d97706}
 .pg-r .pgf{background:#ef4444}.pg-r .pgp{color:#dc2626}
 
-/* TABLE CONTAINERS */
 .tc{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed}
 .tc-top{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e8eaed}
 .tc-title{font-size:14px;font-weight:700;color:#1a1a1a}
 .nb{background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:3px 8px;font-size:12px;display:inline-block;min-width:32px;text-align:center;color:#374151;font-weight:600}
 .nb.z{color:#d1d5db;background:#fff;border-color:#f3f4f6}
 
-/* SUMMARY PANELS */
 .summary-panels{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
 .sp-card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed;overflow:hidden}
 .sp-head{padding:14px 20px;border-bottom:1px solid #e8eaed;display:flex;align-items:center;justify-content:space-between}
@@ -151,7 +128,6 @@ tr:hover td{background:#fafbfc}
 .sp-card table th{background:#fff}
 .sp-card td{padding:11px 14px}
 
-/* LOADING */
 .loading{text-align:center;padding:60px;color:#bbb}
 .spin{width:32px;height:32px;border:3px solid #e5e7eb;border-top-color:#2563eb;border-radius:50%;animation:sp .8s linear infinite;margin:0 auto 14px}
 @keyframes sp{to{transform:rotate(360deg)}}
@@ -163,12 +139,10 @@ tr:hover td{background:#fafbfc}
   .c1{grid-template-columns:1fr}
   .summary-panels{grid-template-columns:1fr}
   .content{padding:16px}
-  .score-hero{grid-template-columns:repeat(2,1fr)}
 }
 @media(max-width:600px){
   .c5{grid-template-columns:1fr 1fr}
   .header{padding:16px 16px 0}
-  .score-hero{grid-template-columns:1fr 1fr}
 }
 </style>
 </head>
@@ -199,7 +173,7 @@ tr:hover td{background:#fafbfc}
   <div class="h-top">
     <div>
       <div class="h-title">EM Dashboard</div>
-      <div class="h-sub" id="hSub">FMS + Checklist + Delegation &nbsp;·&nbsp; <span id="hSubEmail"></span></div>
+      <div class="h-sub" id="hSub">FMS + Checklist + Delegation &nbsp;&middot;&nbsp; <span id="hSubEmail"></span></div>
     </div>
     <div class="h-right">
       <span class="wk-label">From</span>
@@ -211,7 +185,6 @@ tr:hover td{background:#fafbfc}
       <div class="user-chip" id="userChip" style="display:none">
         <img id="userAvatar" src="" alt="">
         <span id="userName"></span>
-        <span class="admin-pill" id="adminBadge">ADMIN</span>
       </div>
       <button onclick="doLogout()" style="background:#f3f4f6;border:1px solid #e8eaed;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer;color:#555">Logout</button>
     </div>
@@ -227,36 +200,20 @@ tr:hover td{background:#fafbfc}
 
 <div class="content">
 
-  <!-- SUMMARY TAB -->
   <div class="tab-content active" id="tab-summary">
     <div id="ldiv" class="loading"><div class="spin"></div> Loading Summary...</div>
     <div id="mdiv" style="display:none">
       <div class="c5" style="margin-bottom:12px">
-        <div class="card"><div class="cl">Total Plan</div><div class="cv blue" id="cTP">—</div><div class="cs">FMS + CHECKLIST + DELEGATION</div></div>
-        <div class="card"><div class="cl">Total Actual</div><div class="cv green" id="cTA">—</div><div class="cs" id="cTAs">—</div></div>
-        <div class="card"><div class="cl">FMS Plan</div><div class="cv blue" id="cFP">—</div><div class="cs-detail" id="cFPdetail"></div></div>
-        <div class="card"><div class="cl">Checklist Plan</div><div class="cv blue" id="cCP">—</div><div class="cs-detail" id="cCPdetail"></div></div>
-        <div class="card"><div class="cl">Delegation Plan</div><div class="cv blue" id="cDP">—</div><div class="cs-detail" id="cDPdetail"></div></div>
+        <div class="card"><div class="cl">Total Plan</div><div class="cv blue" id="cTP">&mdash;</div><div class="cs">FMS + CHECKLIST + DELEGATION</div></div>
+        <div class="card"><div class="cl">Total Actual</div><div class="cv green" id="cTA">&mdash;</div><div class="cs" id="cTAs">&mdash;</div></div>
+        <div class="card"><div class="cl">FMS Plan</div><div class="cv blue" id="cFP">&mdash;</div><div class="cs-detail" id="cFPdetail"></div></div>
+        <div class="card"><div class="cl">Checklist Plan</div><div class="cv blue" id="cCP">&mdash;</div><div class="cs-detail" id="cCPdetail"></div></div>
+        <div class="card"><div class="cl">Delegation Plan</div><div class="cv blue" id="cDP">&mdash;</div><div class="cs-detail" id="cDPdetail"></div></div>
       </div>
       <div class="c1" style="margin-bottom:22px">
-        <div class="card"><div class="cl">Overall Score</div><div class="cv green" id="cOV">—</div><div class="cs">monthly progress rate</div></div>
+        <div class="card"><div class="cl">Overall Score</div><div class="cv green" id="cOV">&mdash;</div><div class="cs">monthly progress rate</div></div>
         <div class="card" style="display:flex;align-items:center;justify-content:center">
           <div id="overallProgressBar" style="width:100%"></div>
-        </div>
-      </div>
-      <div class="tc">
-        <div class="tc-top"><div class="tc-title" id="masterTableTitle">All Doers Master Summary</div></div>
-        <div style="overflow-x:auto">
-          <table>
-            <thead><tr id="masterTableHeadRow">
-              <th>#</th><th>Doer</th>
-              <th>FMS Plan</th><th>FMS Actual</th>
-              <th>CL Plan</th><th>CL Actual</th>
-              <th>DL Plan</th><th>DL Actual</th>
-              <th>Progress</th>
-            </tr></thead>
-            <tbody id="dBody"></tbody>
-          </table>
         </div>
       </div>
       <div class="summary-panels">
@@ -268,7 +225,7 @@ tr:hover td{background:#fafbfc}
           </div>
         </div>
         <div class="sp-card">
-          <div class="sp-head"><div class="sp-title">Checklist by Doer</div><div class="sp-count" id="clByDoerCount"></div></div>
+          <div class="sp-head"><div class="sp-title">Checklist Summary</div><div class="sp-count" id="clByDoerCount"></div></div>
           <div style="overflow-x:auto">
             <table><thead><tr><th>#</th><th>Doer</th><th>Dept</th><th>Plan</th><th>Actual</th><th>Progress</th></tr></thead>
             <tbody id="clByDoerBody"></tbody></table>
@@ -278,24 +235,18 @@ tr:hover td{background:#fafbfc}
     </div>
   </div>
 
-  <!-- FMS STEPS TAB -->
   <div class="tab-content" id="tab-fms">
     <div class="filter-bar">
       <label>FMS Type:</label>
       <select id="fmsFilterType" onchange="applyFmsFilters()"><option value="All">All Types</option></select>
-      <label>Doer:</label>
-      <select id="fmsFilterDoer" onchange="applyFmsFilters()"><option value="All">All Doers</option></select>
     </div>
     <div class="meta-info-badge" id="fmsMetaBadges"></div>
     <div class="stat-grid" id="fmsStatsGrid"></div>
     <div id="fmsCardsContainer"><div class="loading">Fetching FMS groups...</div></div>
   </div>
 
-  <!-- CHECKLIST TAB -->
   <div class="tab-content" id="tab-checklist">
     <div class="filter-bar">
-      <label>Doer:</label>
-      <select id="clFilterDoer" onchange="applyChecklistFilters()"><option value="All">All Doers</option></select>
       <label>Dept:</label>
       <select id="clFilterDept" onchange="applyChecklistFilters()"><option value="All">All Depts</option></select>
       <label>Status:</label>
@@ -311,11 +262,8 @@ tr:hover td{background:#fafbfc}
     </div></div>
   </div>
 
-  <!-- DELEGATION TAB -->
   <div class="tab-content" id="tab-delegation">
     <div class="filter-bar">
-      <label>Doer:</label>
-      <select id="dlFilterDoer" onchange="applyDelegationFilters()"><option value="All">All Doers</option></select>
       <label>Status:</label>
       <select id="dlFilterStatus" onchange="applyDelegationFilters()">
         <option value="All">All Status</option>
@@ -332,7 +280,6 @@ tr:hover td{background:#fafbfc}
     </div></div>
   </div>
 
-  <!-- MY SCORE TAB -->
   <div class="tab-content" id="tab-myscore">
     <div id="myScoreContainer"><div class="loading"><div class="spin"></div> Loading scores...</div></div>
   </div>
@@ -342,17 +289,15 @@ tr:hover td{background:#fafbfc}
 </div>
 
 <script>
-var API = "https://script.google.com/macros/s/AKfycbxXPBoy87zF8teiW03K-ThqcmwLRA8CIFpNuICKyH4xNh3r6rf4tmSzBEvZBymOof57/exec";
+var API = "https://script.google.com/macros/s/AKfycbxYjGOqNf_6FuGivAx3qBsBDx-nW5RzMCJlAeshC_ynIf1SdvPUg2NSKIB86bzYClAb/exec";
 var ALLOWED_DOMAIN = "ugbolmalassociates.com";
 var globalRawData = null;
-var _currentPeriodVal = null;
-var SESSION = { email:'', doerName:'', picture:'', name:'', isAdmin:false };
+var SESSION = { email:'', doerName:'', picture:'', name:'' };
 
 function sessionParams() {
   return '&email='+encodeURIComponent(SESSION.email)+'&doerName='+encodeURIComponent(SESSION.doerName);
 }
 
-// ── Auth ──
 function onGoogleToken(response) {
   var payload = JSON.parse(atob(response.credential.split('.')[1]));
   var email=payload.email||'', name=payload.name||'', picture=payload.picture||'';
@@ -386,7 +331,7 @@ function showAuthErr(msg) {
 }
 
 function doLogout() {
-  SESSION={email:'',doerName:'',picture:'',name:'',isAdmin:false};
+  SESSION={email:'',doerName:'',picture:'',name:''};
   sessionStorage.clear();
   if(window.google&&google.accounts&&google.accounts.id) google.accounts.id.disableAutoSelect();
   location.reload();
@@ -401,7 +346,6 @@ function loadDashboard() {
     .then(function(r){return r.json();})
     .then(function(data){
       if(data.doerName){SESSION.doerName=data.doerName;sessionStorage.setItem('em_doerName',data.doerName);}
-      SESSION.isAdmin=!!data.isAdmin;
       document.getElementById('ldiv').style.display='none';
       document.getElementById('mdiv').style.display='block';
       renderAll(data);
@@ -411,7 +355,6 @@ function loadDashboard() {
     });
 }
 
-// ── Helpers ──
 function ini(n) {
   var p=String(n).trim().split(' ');
   return p.length>=2?(p[0][0]+p[1][0]).toUpperCase():String(n).substring(0,2).toUpperCase();
@@ -422,7 +365,6 @@ function nb(v) {
 }
 function pgCls(p){return p>=90?'pg-g':p>=50?'pg-o':'pg-r';}
 
-// Convert "yyyy-MM-dd" (backend format) -> "dd/MM/yyyy" (display format). Leaves "-" / blank as-is.
 function fmtDMY(s){
   if(!s||s==='-')return '-';
   var p=String(s).trim().split('-');
@@ -430,10 +372,8 @@ function fmtDMY(s){
   return p[2]+'/'+p[1]+'/'+p[0];
 }
 
-// FIX: pg() now correctly formats percentage
 function pg(rawVal) {
   var p=parseFloat(rawVal)||0;
-  // Normalize: if value looks like fraction (0-1 range), multiply
   if(p>0&&p<=1)p=p*100;
   p=Math.min(p,100);
   var cls=pgCls(p);
@@ -444,7 +384,6 @@ function statCard(label,value,color){
   return '<div class="stat-card"><div class="stat-label">'+label+'</div><div class="stat-value '+color+'">'+value+'</div></div>';
 }
 
-// FIX: negScoreCard — always use Math.abs, green if <=5%, red if >5%
 function negScoreCard(label,rawPct){
   var val=Math.abs(parseFloat(rawPct)||0);
   var color=val<=5?'green':'red';
@@ -452,22 +391,12 @@ function negScoreCard(label,rawPct){
   return statCard(label,display,color);
 }
 
-// FIX: formatPct — robust percentage display
-function formatPct(v){
-  var n=parseFloat(v)||0;
-  if(n>0&&n<=1)n=n*100;
-  return n.toFixed(2)+'%';
-}
-
-// ── Date Range Picker (From / To) ──
-// Convert "dd/MM/yyyy" (what the sheet/backend uses) -> "yyyy-MM-dd" (what <input type=date> needs)
 function ddmmyyyyToInput(s){
   if(!s)return '';
   var p=String(s).trim().split('/');
   if(p.length!==3)return '';
   return p[2]+'-'+p[1].padStart(2,'0')+'-'+p[0].padStart(2,'0');
 }
-// Convert "yyyy-MM-dd" (input value) -> "dd/MM/yyyy" (what backend expects)
 function inputToDdmmyyyy(s){
   if(!s)return '';
   var p=String(s).trim().split('-');
@@ -496,31 +425,23 @@ function applyCustomDateRange(){
       document.getElementById('savingTxt').classList.remove('show');
       document.getElementById('ldiv').style.display='none';
       document.getElementById('mdiv').style.display='block';
-      SESSION.isAdmin=!!data.isAdmin;
       renderAll(data);
     });
 }
 
-// ── Main Render ──
 function renderAll(data){
   globalRawData=data;
   var em=data.emDashboard||{};
   var t=em.totals||{};
   var bd=em.breakdown||{};
-  var isAdmin=!!data.isAdmin;
-
-  document.getElementById('adminBadge').classList.toggle('show',isAdmin);
-  document.getElementById('masterTableTitle').textContent=isAdmin?'All Doers Master Summary':'My Summary';
 
   if(em.week)setDateInputs(em.week.from,em.week.to);
 
   var totalPlan=t.totalPlan||0, totalActual=t.totalActual||0;
-  
-  // FIX: Overall % — use overallNum if available, else calculate
+
   var ovNum=parseFloat(t.overallNum||0)||0;
   if(!ovNum&&t.overall){ovNum=parseFloat(String(t.overall).replace('%',''))||0;}
   if(!ovNum&&totalPlan>0){ovNum=(totalActual/totalPlan)*100;}
-  // Normalize if fraction
   if(ovNum>0&&ovNum<=1)ovNum=ovNum*100;
 
   document.getElementById('cTP').textContent=totalPlan;
@@ -536,35 +457,15 @@ function renderAll(data){
   var ovEl=document.getElementById('cOV');
   ovEl.textContent=ovNum.toFixed(1)+'%';
   ovEl.className='cv '+(ovNum>=90?'green':ovNum>=50?'orange':'red');
-  
-  // Overall progress bar in wide card
+
   document.getElementById('overallProgressBar').innerHTML=
     '<div style="font-size:11px;color:#9aa0ac;margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Actual vs Plan</div>'+
     pg(ovNum)+
     '<div style="margin-top:8px;font-size:12px;color:#555">'+totalActual+' completed of '+totalPlan+' planned</div>';
 
-  // Doers master table
-  // (Daily Heatmap columns removed — table now has a fixed 9 columns only)
-  if(em.doers){
-    document.getElementById('dBody').innerHTML=em.doers.map(function(d,i){
-      var tP=d.fmsPlan+d.clPlan+d.dlPlan;
-      var tA=d.fmsActual+d.clActual+d.dlActual;
-      var prog=parseFloat(d.progress)||0;
-      if(prog>0&&prog<=1)prog=prog*100;
-      if(!prog&&tP>0)prog=(tA/tP)*100;
-
-      return '<tr><td>'+(i+1)+'</td>'+
-        '<td><div class="dc"><div class="av av'+(i%16)+'">'+ini(d.name)+'</div>'+d.name+'</div></td>'+
-        '<td>'+nb(d.fmsPlan)+'</td><td>'+nb(d.fmsActual)+'</td>'+
-        '<td>'+nb(d.clPlan)+'</td><td>'+nb(d.clActual)+'</td>'+
-        '<td>'+nb(d.dlPlan)+'</td><td>'+nb(d.dlActual)+'</td>'+
-        '<td>'+pg(prog)+'</td></tr>';
-    }).join('');
-  }
-
   renderFmsByProcess(data.fmsByProcess||[]);
   renderClByDoer(data.checklistByDoer||[]);
-  renderMyScore(data.myScore,data.debugEmail,data.debugDoerName,isAdmin,data.allScores||[]);
+  renderMyScore(data.myScore,data.debugEmail,data.debugDoerName);
   populateFmsFilters(data.fmsFilterOptions||{});
   applyFmsFilters();
   populateChecklistDelegationFilters();
@@ -573,7 +474,6 @@ function renderAll(data){
 }
 
 function renderFmsByProcess(rows){
-  // FIX: Filter out zero-plan rows
   var filtered=rows.filter(function(r){return r.plan>0;});
   document.getElementById('fmsByProcessCount').textContent=filtered.length+' process types';
   document.getElementById('fmsByProcessBody').innerHTML=filtered.map(function(r,i){
@@ -586,9 +486,8 @@ function renderFmsByProcess(rows){
 }
 
 function renderClByDoer(rows){
-  // FIX: Filter out doers with plan=0
   var filtered=rows.filter(function(r){return r.plan>0;});
-  document.getElementById('clByDoerCount').textContent=filtered.length+' doers';
+  document.getElementById('clByDoerCount').textContent=filtered.length+' entries';
   document.getElementById('clByDoerBody').innerHTML=filtered.map(function(r,i){
     return '<tr><td>'+(i+1)+'</td>'+
       '<td><div class="dc"><div class="av av'+(i%16)+'">'+ini(r.doer)+'</div>'+r.doer+'</div></td>'+
@@ -597,8 +496,7 @@ function renderClByDoer(rows){
   }).join('')||'<tr><td colspan="6" class="empty-state">No checklist data for this period</td></tr>';
 }
 
-// ── My Score Tab ──
-function renderMyScore(ms,debugEmail,debugDoerName,isAdmin,allScores){
+function renderMyScore(ms,debugEmail,debugDoerName){
   var c=document.getElementById('myScoreContainer');
   var html='';
 
@@ -609,7 +507,6 @@ function renderMyScore(ms,debugEmail,debugDoerName,isAdmin,allScores){
     var wnd=Math.abs(ms.workNotDonePct||0);
     var wndot=Math.abs(ms.workNotDoneOnTimePct||0);
 
-    // Meta badges row — same pattern as Delegation tab
     html+='<div class="meta-info-badge">'+
       '<span class="m-badge b-blue">'+tP+' total plan</span>'+
       '<span class="m-badge b-green">'+tC+' completed</span>'+
@@ -617,14 +514,12 @@ function renderMyScore(ms,debugEmail,debugDoerName,isAdmin,allScores){
       '<span class="m-badge b-red">'+pend+' pending</span>'+
       '</div>';
 
-    // Red / Yellow / Green style score cards — same visual language as Delegation tab
     html+='<div class="stat-grid">'+
       statCard('Work Not Done %', wnd.toFixed(2)+'%', 'red')+
       statCard('Work Not Done On Time %', wndot.toFixed(2)+'%', 'orange')+
       statCard('Performance Score', ms.performance.toFixed(2)+'%', perfColor)+
       '</div>';
 
-    // Clean table — same look as Delegation table
     html+='<div class="tc"><div style="overflow-x:auto">'+
       '<table><thead><tr><th>#</th><th>Employee</th><th>Total Plan</th><th>Completed</th><th>On Time</th><th>Performance</th></tr></thead><tbody>'+
       '<tr><td>1</td>'+
@@ -638,64 +533,27 @@ function renderMyScore(ms,debugEmail,debugDoerName,isAdmin,allScores){
       '<div style="display:inline-block;text-align:left;background:#fff;border:1px solid #e8eaed;border-radius:10px;padding:14px 18px;font-size:12px;color:#555">'+
       '<div><b>Login email:</b> '+(debugEmail||'-')+'</div>'+
       '<div style="margin-top:4px"><b>Doer name:</b> '+(debugDoerName||'NOT FOUND')+'</div>'+
-      '<div style="margin-top:8px;color:#9aa0ac">Score is read from this doer\'s own tab (row 6, under the EMPLOYEE/TOTAL PLAN/... header).</div>'+
+      '<div style="margin-top:8px;color:#9aa0ac">Score is read from this doer&#39;s own tab (row 6, under the EMPLOYEE/TOTAL PLAN/... header).</div>'+
       '</div></div>';
-  }
-
-  // Admin: full org score table
-  if(isAdmin&&allScores&&allScores.length){
-    // FIX: Filter out zero-row employees
-    var filtered=allScores.filter(function(s){return s.totalPlan>0||s.totalCompleted>0;});
-    html+='<div class="tc" style="margin-top:24px">';
-    html+='<div class="tc-top"><div class="tc-title">Team Scores — All Employees</div><div style="font-size:12px;color:#9aa0ac">'+filtered.length+' members</div></div>';
-    html+='<div style="overflow-x:auto"><table><thead><tr>'+
-      '<th>#</th><th>Employee</th><th>Total Plan</th><th>Completed</th><th>On Time</th>'+
-      '<th>Work Not Done %</th><th>Not Done On Time %</th><th>Performance</th>'+
-      '</tr></thead><tbody>';
-    html+=filtered.map(function(s,i){
-      var pColor=s.performance>=70?'#16a34a':s.performance>=50?'#d97706':'#dc2626';
-      // FIX: proper % display using Math.abs
-      var wnd=Math.abs(s.workNotDonePct||0);
-      var wndot=Math.abs(s.workNotDoneOnTimePct||0);
-      var wndDisplay=wnd===0?'0.00%':'-'+wnd.toFixed(2)+'%';
-      var wndotDisplay=wndot===0?'0.00%':'-'+wndot.toFixed(2)+'%';
-      return '<tr>'+
-        '<td>'+(i+1)+'</td>'+
-        '<td><div class="dc"><div class="av av'+(i%16)+'">'+ini(s.employee)+'</div>'+s.employee+'</div></td>'+
-        '<td>'+nb(s.totalPlan)+'</td>'+
-        '<td>'+nb(s.totalCompleted)+'</td>'+
-        '<td>'+nb(s.onTimeCompleted)+'</td>'+
-        '<td style="color:'+(wnd<=5?'#16a34a':'#dc2626')+';font-weight:600">'+wndDisplay+'</td>'+
-        '<td style="color:'+(wndot<=5?'#16a34a':'#dc2626')+';font-weight:600">'+wndotDisplay+'</td>'+
-        '<td style="color:'+pColor+';font-weight:700">'+s.performance.toFixed(2)+'%</td>'+
-        '</tr>';
-    }).join('');
-    html+='</tbody></table></div></div>';
   }
   c.innerHTML=html;
 }
 
-// ── FMS Filters ──
 function populateFmsFilters(opts){
-  var ts=document.getElementById('fmsFilterType'),ds=document.getElementById('fmsFilterDoer');
-  var pt=ts.value,pd=ds.value;
+  var ts=document.getElementById('fmsFilterType');
+  var pt=ts.value;
   ts.innerHTML='<option value="All">All Types</option>';
   (opts.types||[]).forEach(function(t){var o=document.createElement('option');o.value=t;o.textContent=t;if(t===pt)o.selected=true;ts.appendChild(o);});
-  ds.innerHTML='<option value="All">All Doers</option>';
-  (opts.doers||[]).forEach(function(d){var o=document.createElement('option');o.value=d;o.textContent=d;if(d===pd)o.selected=true;ds.appendChild(o);});
 }
 
 function applyFmsFilters(){
   var tf=document.getElementById('fmsFilterType').value;
-  var df=document.getElementById('fmsFilterDoer').value;
   var groups=globalRawData?(globalRawData.fmsGroups||[]):[];
   var tPlan=0,tActual=0,tOnTime=0,gCount=0;
 
   var html=groups.map(function(g){
     if(tf!=='All'&&g.groupName!==tf)return '';
-    var steps=g.steps.filter(function(s){return df==='All'||s.doer===df;});
-    // FIX: Filter steps with plan>0
-    steps=steps.filter(function(s){return s.plan>0;});
+    var steps=g.steps.filter(function(s){return s.plan>0;});
     if(!steps.length)return '';
     var gP=steps.reduce(function(a,r){return a+r.plan;},0);
     var gA=steps.reduce(function(a,r){return a+r.actual;},0);
@@ -731,7 +589,7 @@ function applyFmsFilters(){
     '<span class="m-badge b-blue">'+gCount+' groups</span>'+
     '<span class="m-badge b-green">'+tActual+' done</span>'+
     '<span class="m-badge b-red">'+Math.max(0,missed)+' pending</span>';
-  
+
   var wndPct=tPlan>0?(Math.max(0,missed)/tPlan*100):0;
   var wndotPct=tActual>0?Math.max(0,100-(tOnTime/tActual*100)):0;
   document.getElementById('fmsStatsGrid').innerHTML=
@@ -743,15 +601,10 @@ function applyFmsFilters(){
 
 function escQ(s){return String(s).replace(/'/g,"\\'");}
 
-// ── Checklist & Delegation Filters ──
 function populateChecklistDelegationFilters(){
-  var cd=new Set(),ce=new Set();
-  if(globalRawData.checklistData)globalRawData.checklistData.forEach(function(r){cd.add(r.doer);ce.add(r.dept);});
-  updateSelectOptions('clFilterDoer',cd,'All Doers');
+  var ce=new Set();
+  if(globalRawData.checklistData)globalRawData.checklistData.forEach(function(r){ce.add(r.dept);});
   updateSelectOptions('clFilterDept',ce,'All Depts');
-  var dd=new Set();
-  if(globalRawData.delegationData)globalRawData.delegationData.forEach(function(r){if(r.doer)dd.add(r.doer);});
-  updateSelectOptions('dlFilterDoer',dd,'All Doers');
 }
 
 function updateSelectOptions(id,setObj,allLabel){
@@ -761,12 +614,11 @@ function updateSelectOptions(id,setObj,allLabel){
 }
 
 function applyChecklistFilters(){
-  var df=document.getElementById('clFilterDoer').value;
   var dept=document.getElementById('clFilterDept').value;
   var sf=document.getElementById('clFilterStatus').value;
   var data=globalRawData?(globalRawData.checklistData||[]):[];
   var filtered=data.filter(function(r){
-    return(df==='All'||r.doer===df)&&(dept==='All'||r.dept===dept)&&(sf==='All'||r.status===sf);
+    return(dept==='All'||r.dept===dept)&&(sf==='All'||r.status===sf);
   });
   var done=filtered.filter(function(r){return r.status==='Done';}).length;
   var pend=filtered.length-done;
@@ -795,11 +647,9 @@ function applyChecklistFilters(){
 }
 
 function applyDelegationFilters(){
-  var df=document.getElementById('dlFilterDoer').value;
   var sf=document.getElementById('dlFilterStatus').value;
   var data=globalRawData?(globalRawData.delegationData||[]):[];
   var filtered=data.filter(function(r){
-    if(df!=='All'&&r.doer!==df)return false;
     if(sf==='All')return true;
     return r.status.toLowerCase()===sf.toLowerCase();
   });
@@ -842,7 +692,6 @@ function switchTab(name,el){
   document.getElementById('tab-'+name).classList.add('active');
 }
 
-// ── Init ──
 (function(){
   var savedEmail=sessionStorage.getItem('em_email');
   var savedName=sessionStorage.getItem('em_name');
@@ -869,7 +718,6 @@ setTimeout(function(){
 },6000);
 </script>
 
-<!-- PENDING MODAL -->
 <div id="pendingModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center">
   <div style="background:#fff;border-radius:14px;width:90%;max-width:620px;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
     <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e8eaed">
@@ -877,7 +725,7 @@ setTimeout(function(){
         <div id="modalTitle" style="font-size:15px;font-weight:700;color:#1a1a1a"></div>
         <div id="modalSubtitle" style="font-size:12px;color:#9aa0ac;margin-top:2px"></div>
       </div>
-      <button onclick="closePendingModal()" style="background:#f3f4f6;border:none;border-radius:8px;width:30px;height:30px;font-size:16px;cursor:pointer;color:#555">✕</button>
+      <button onclick="closePendingModal()" style="background:#f3f4f6;border:none;border-radius:8px;width:30px;height:30px;font-size:16px;cursor:pointer;color:#555">&#10005;</button>
     </div>
     <div style="overflow-y:auto">
       <table style="width:100%;border-collapse:collapse">
@@ -899,8 +747,8 @@ setTimeout(function(){
 <script>
 function showPendingModal(step,doer,encoded){
   var tasks=JSON.parse(decodeURIComponent(encoded));
-  document.getElementById('modalTitle').textContent=step+' — Pending Tasks';
-  document.getElementById('modalSubtitle').textContent='Doer: '+doer+' · '+tasks.length+' pending';
+  document.getElementById('modalTitle').textContent=step+' \u2014 Pending Tasks';
+  document.getElementById('modalSubtitle').textContent='Doer: '+doer+' \u00b7 '+tasks.length+' pending';
   document.getElementById('modalBody').innerHTML=tasks.map(function(t,i){
     return '<tr>'+
       '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#555">'+(i+1)+'</td>'+
