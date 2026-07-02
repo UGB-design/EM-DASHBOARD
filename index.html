@@ -162,9 +162,9 @@ tr:hover td{background:#fafbfc}
 .score-hero-val{font-size:28px;font-weight:700;line-height:1.1}
 
 /* Performance badge colors */
-.perf-s{background:#dcfce7;color:#166534;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block;white-space:nowrap}   /* >=90 */
-.perf-a{background:#dbeafe;color:#1e40af;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block;white-space:nowrap}   /* 70-89 */
-.perf-b{background:#fef9c3;color:#854d0e;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block;white-space:nowrap}   /* 50-69 */
+.perf-s{background:#dcfce7;color:#166534;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block;white-space:nowrap}   /* >=95 */
+.perf-a{background:#fef9c3;color:#854d0e;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block;white-space:nowrap}   /* 90-95 */
+.perf-b{background:#ffedd5;color:#c2410c;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block;white-space:nowrap}   /* 50-90 */
 .perf-c{background:#fee2e2;color:#991b1b;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block;white-space:nowrap}   /* <50  */
 
 /* Neg/pos pct cells */
@@ -1001,12 +1001,12 @@ function applyDelegationFilters() {
 
 // ── SCORES TAB ────────────────────────────────────────────────────────────────
 
-// Performance color only — no grade letter
+// Performance color — no blue. <50 red, 50–90 orange, 90–95 amber, 95–100 green.
 function perfColor(pct) {
-  if (pct >= 90) return { bg:'#dcfce7', color:'#166534', bar:'#16a34a' };
-  if (pct >= 70) return { bg:'#dbeafe', color:'#1e40af', bar:'#2563eb' };
-  if (pct >= 50) return { bg:'#fef9c3', color:'#854d0e', bar:'#f59e0b' };
-  return { bg:'#fee2e2', color:'#991b1b', bar:'#ef4444' };
+  if (pct >= 95) return { bg:'#dcfce7', color:'#166534', bar:'#16a34a' }; // green
+  if (pct >= 90) return { bg:'#fef9c3', color:'#854d0e', bar:'#f59e0b' }; // amber
+  if (pct >= 50) return { bg:'#ffedd5', color:'#c2410c', bar:'#f97316' }; // orange
+  return { bg:'#fee2e2', color:'#991b1b', bar:'#ef4444' }; // red
 }
 
 function perfBadge(pct) {
@@ -1071,11 +1071,14 @@ function applyScoreFilters() {
   var totalPlanSum   = filtered.reduce(function(s, r) { return s + (Number(r.totalPlan) || 0); }, 0);
   var totalDoneSum   = filtered.reduce(function(s, r) { return s + (Number(r.totalCompleted) || 0); }, 0);
   var onTimeSum      = filtered.reduce(function(s, r) { return s + (Number(r.onTimeCompleted) || 0); }, 0);
-  var avgPerf        = filtered.length > 0 ? filtered.reduce(function(s, r) {
-    return s + (parseFloat(String(r.performance || '0').replace('%','')) || 0);
-  }, 0) / filtered.length : 0;
 
-  var avgColor = avgPerf >= 90 ? '#16a34a' : avgPerf >= 70 ? '#2563eb' : avgPerf >= 50 ? '#d97706' : '#dc2626';
+  // Avg Performance = Total Completed / Total Plan * 100 (weighted across the
+  // filtered group), NOT a simple average of each employee's individual %.
+  // A simple average lets low-volume employees (e.g. plan=1) skew the number
+  // just as much as high-volume employees (e.g. plan=692).
+  var avgPerf = totalPlanSum > 0 ? (totalDoneSum / totalPlanSum * 100) : 0;
+
+  var avgColor = avgPerf >= 95 ? '#16a34a' : avgPerf >= 90 ? '#f59e0b' : avgPerf >= 50 ? '#f97316' : '#dc2626';
 
   document.getElementById('scHeroCards').innerHTML =
     '<div class="score-hero-card"><div class="score-hero-label">Active Employees</div><div class="score-hero-val" style="color:#2563eb">' + totalEmployees + '</div></div>' +
@@ -1100,8 +1103,8 @@ function applyScoreFilters() {
 
   document.getElementById('scTableBody').innerHTML = sorted.map(function(r, i) {
     var perfPct = parseFloat(String(r.performance || '0').replace('%','')) || 0;
-    // Mini rank bar fill color based on grade
-    var barColor = perfPct >= 90 ? '#16a34a' : perfPct >= 70 ? '#2563eb' : perfPct >= 50 ? '#f59e0b' : '#ef4444';
+    // Mini rank bar fill color — same red/orange/amber/green scheme as the badge
+    var barColor = perfColor(perfPct).bar;
     var barW = Math.min(Math.max(perfPct, 0), 100);
     return '<tr>' +
       '<td style="text-align:center;font-weight:700;color:#9aa0ac">' + (i + 1) + '</td>' +
