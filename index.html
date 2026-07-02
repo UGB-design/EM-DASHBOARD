@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EM Dashboard</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:linear-gradient(135deg,#f7ead9 0%,#f3ede3 28%,#eef1ea 58%,#e6ece8 100%);background-attachment:fixed;color:#1a1a1a;min-height:100vh}
@@ -186,9 +187,57 @@ tr:hover td{background:#fafbfc}
   .header{padding:16px 16px 0}
   .score-hero{grid-template-columns:1fr 1fr}
 }
+
+/* ── AUTH / DATE RANGE / USER CHIP ───────────────────────────── */
+.auth-screen,.denied-screen{position:fixed;inset:0;background:linear-gradient(135deg,#f7ead9 0%,#f3ede3 28%,#eef1ea 58%,#e6ece8 100%);display:flex;align-items:center;justify-content:center;z-index:9999}
+.auth-box,.denied-box{background:#fff;border-radius:18px;padding:40px 44px;box-shadow:0 10px 40px rgba(60,50,30,.15);text-align:center;max-width:380px}
+.auth-title{font-size:20px;font-weight:700;margin-bottom:6px;color:#1a1a1a}
+.auth-sub{font-size:13px;color:#8a8478;margin-bottom:24px}
+.auth-btn-wrap{display:flex;justify-content:center;min-height:44px}
+.auth-loading{font-size:13px;color:#8a8478;margin-top:16px;display:none}
+.denied-icon{font-size:40px;margin-bottom:10px}
+.denied-title{font-size:18px;font-weight:700;color:#dc2626;margin-bottom:8px}
+.denied-sub{font-size:13px;color:#8a8478;margin-bottom:20px;line-height:1.6}
+.denied-email{font-size:12px;color:#555;background:#f9fafb;padding:6px 12px;border-radius:8px;margin-bottom:18px;display:inline-block}
+.btn-dark{background:#1a1a1a;color:#fff;border:none;border-radius:10px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer}
+.dt-input{max-width:150px;font-family:inherit}
+.apply-btn{background:#1a1a1a;color:#fff;border:none;border-radius:10px;padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;transition:background .2s}
+.apply-btn:hover{background:#333}
+.apply-btn:disabled{background:#ccc;cursor:not-allowed}
+.user-chip{display:none;align-items:center;gap:8px;background:#fff;border:1.5px solid #e3ddd2;border-radius:20px;padding:5px 14px 5px 5px;font-size:12px;font-weight:600;color:#333;box-shadow:0 2px 8px rgba(60,50,30,.08)}
+.user-avatar{width:24px;height:24px;border-radius:50%;background:#2563eb;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+.logout-btn{background:#fff;border:1.5px solid #e3ddd2;border-radius:10px;padding:7px 14px;font-size:12px;font-weight:600;color:#555;cursor:pointer}
+.logout-btn:hover{background:#f9fafb}
+#appRoot{display:none}
+@media(max-width:600px){
+  .auth-box,.denied-box{padding:28px 22px;max-width:88vw}
+}
 </style>
 </head>
 <body>
+
+<!-- SIGN-IN GATE -->
+<div class="auth-screen" id="authScreen">
+  <div class="auth-box">
+    <div class="auth-title">EM Dashboard</div>
+    <div class="auth-sub">Sign in with your company Google account to continue</div>
+    <div class="auth-btn-wrap" id="googleSignInBtn"></div>
+    <div class="auth-loading" id="authLoadingTxt">Verifying access…</div>
+  </div>
+</div>
+
+<!-- ACCESS DENIED -->
+<div class="denied-screen" id="deniedScreen" style="display:none">
+  <div class="denied-box">
+    <div class="denied-icon">🚫</div>
+    <div class="denied-title">Access Denied</div>
+    <div class="denied-sub">This dashboard is restricted. Your account does not have permission to view it.</div>
+    <div class="denied-email" id="deniedEmail"></div>
+    <button class="btn-dark" onclick="doLogout()">Try a Different Account</button>
+  </div>
+</div>
+
+<div id="appRoot">
 
 <div class="header">
   <div class="h-top">
@@ -197,11 +246,17 @@ tr:hover td{background:#fafbfc}
       <div class="h-sub">FMS + Checklist + Delegation + Scores &nbsp;·&nbsp; ugbolmalassociates.com</div>
     </div>
     <div class="h-right">
-      <span class="wk-label">Week</span>
-      <select class="wk-sel" id="wkSel" onchange="onWeekChange(this.value)">
-        <option>Loading...</option>
-      </select>
+      <span class="wk-label">From</span>
+      <input type="date" class="wk-sel dt-input" id="dtFrom">
+      <span class="wk-label">To</span>
+      <input type="date" class="wk-sel dt-input" id="dtTo">
+      <button class="apply-btn" id="applyBtn" onclick="applyDateRange()">Apply</button>
       <span class="saving" id="savingTxt"> Please Wait...</span>
+      <div class="user-chip" id="userChip">
+        <span class="user-avatar" id="userAvatar"></span>
+        <span id="userNameLabel"></span>
+      </div>
+      <button class="logout-btn" id="logoutBtn" style="display:none" onclick="doLogout()">Logout</button>
     </div>
   </div>
   <div class="tabs-row">
@@ -415,10 +470,14 @@ tr:hover td{background:#fafbfc}
 </div>
 
 <script>
-var API = "https://script.google.com/macros/s/AKfycbxBoQzcyTfmVbDCSPX6uihckNW6T5FaZyDFP5hJopmx1P22WSn0vj-LXrU4jDfbBXZF/exec";
+var API = "https://script.google.com/macros/s/AKfycbwXxDDWjvyHX5bAgDj7MzE9pPgXXLtBVOPsc62RmKiAw6gT101TyqEdD045ldAhrwjl/exec";
+
+// ⚠️ Replace with your Google Cloud OAuth 2.0 Web Client ID (see setup notes)
+var GOOGLE_CLIENT_ID = "PASTE_YOUR_GOOGLE_CLIENT_ID_HERE.apps.googleusercontent.com";
 
 var globalRawData = null;
-var _currentWeekVal = null;
+var currentIdToken = null;
+var currentUserEmail = null;
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function ini(n) {
@@ -469,36 +528,146 @@ function hmCell(val) {
   return '<span class="hok">' + s + '</span>';
 }
 
-// ── Week Dropdown ─────────────────────────────────────────────────────────────
-function buildWeekDropdown(weeks, currentFrom, currentTo) {
-  var sel = document.getElementById('wkSel');
-  sel.innerHTML = '';
-  weeks.forEach(function(w) {
-    var o = document.createElement('option');
-    var val = JSON.stringify({ from: w.from, to: w.to });
-    o.value = val;
-    o.textContent = w.from + ' – ' + w.to;
-    if (currentFrom && currentTo && (w.from === currentFrom || w.to === currentTo)) o.selected = true;
-    sel.appendChild(o);
-  });
-  _currentWeekVal = sel.value;
+// ── Date helpers ─────────────────────────────────────────────────────────────
+function toISO(ddmmyyyy) {
+  if (!ddmmyyyy) return '';
+  var p = String(ddmmyyyy).split('/');
+  if (p.length !== 3) return '';
+  return p[2] + '-' + p[1] + '-' + p[0];
+}
+function toDDMMYYYY(iso) {
+  if (!iso) return '';
+  var p = String(iso).split('-');
+  if (p.length !== 3) return '';
+  return p[2] + '/' + p[1] + '/' + p[0];
 }
 
-function onWeekChange(val) {
-  if (!val || val === _currentWeekVal) return;
-  _currentWeekVal = val;
-  var parsed = JSON.parse(val);
+// ── From/To Date Range ────────────────────────────────────────────────────────
+function applyDateRange() {
+  var fISO = document.getElementById('dtFrom').value;
+  var tISO = document.getElementById('dtTo').value;
+  if (!fISO || !tISO) { alert('Please select both From and To dates'); return; }
+  var from = toDDMMYYYY(fISO);
+  var to = toDDMMYYYY(tISO);
   document.getElementById('savingTxt').classList.add('show');
-  document.getElementById('ldiv').style.display = 'block';
-  document.getElementById('mdiv').style.display = 'none';
-  fetch(API + '?action=setDates&from=' + encodeURIComponent(parsed.from) + '&to=' + encodeURIComponent(parsed.to) + '&cb=' + Date.now(), { redirect: 'follow' })
+  document.getElementById('applyBtn').disabled = true;
+  fetch(API + '?action=setDates&from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to) + '&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now(), { redirect: 'follow' })
     .then(function(r) { return r.json(); })
     .then(function(data) {
       document.getElementById('savingTxt').classList.remove('show');
-      document.getElementById('ldiv').style.display = 'none';
-      document.getElementById('mdiv').style.display = 'block';
+      document.getElementById('applyBtn').disabled = false;
+      if (data.authorized === false) { showDenied(currentUserEmail); return; }
       renderAll(data);
+    })
+    .catch(function() {
+      document.getElementById('savingTxt').classList.remove('show');
+      document.getElementById('applyBtn').disabled = false;
     });
+}
+
+// ── Google Sign-In / Access Control ─────────────────────────────────────────────
+function decodeJwtPayload(token) {
+  try {
+    var base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(decodeURIComponent(atob(base64).split('').map(function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join('')));
+  } catch (e) { return null; }
+}
+
+function handleCredentialResponse(response) {
+  currentIdToken = response.credential;
+  try {
+    localStorage.setItem('emdash_idtoken', currentIdToken);
+  } catch (e) {}
+  verifyAndEnter();
+}
+
+function verifyAndEnter() {
+  if (!currentIdToken) return showSignIn();
+  var payload = decodeJwtPayload(currentIdToken);
+  if (!payload || !payload.exp || payload.exp * 1000 < Date.now()) {
+    try { localStorage.removeItem('emdash_idtoken'); } catch (e) {}
+    return showSignIn();
+  }
+  document.getElementById('authScreen').style.display = 'flex';
+  document.getElementById('deniedScreen').style.display = 'none';
+  document.getElementById('appRoot').style.display = 'none';
+  document.getElementById('authLoadingTxt').style.display = 'block';
+  fetch(API + '?action=auth&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now(), { redirect: 'follow' })
+    .then(function(r) { return r.json(); })
+    .then(function(res) {
+      document.getElementById('authLoadingTxt').style.display = 'none';
+      if (res.authorized) {
+        currentUserEmail = res.email || payload.email;
+        enterApp(res.name || payload.name || currentUserEmail, currentUserEmail);
+      } else {
+        showDenied(res.email || payload.email);
+      }
+    })
+    .catch(function() {
+      document.getElementById('authLoadingTxt').style.display = 'none';
+      showDenied(payload.email);
+    });
+}
+
+function showSignIn() {
+  document.getElementById('authScreen').style.display = 'flex';
+  document.getElementById('deniedScreen').style.display = 'none';
+  document.getElementById('appRoot').style.display = 'none';
+  if (window.google && google.accounts && google.accounts.id) {
+    google.accounts.id.renderButton(document.getElementById('googleSignInBtn'), { theme: 'outline', size: 'large', width: 260 });
+  }
+}
+
+function showDenied(email) {
+  document.getElementById('authScreen').style.display = 'none';
+  document.getElementById('appRoot').style.display = 'none';
+  document.getElementById('deniedScreen').style.display = 'flex';
+  document.getElementById('deniedEmail').textContent = email || '';
+}
+
+function enterApp(name, email) {
+  document.getElementById('authScreen').style.display = 'none';
+  document.getElementById('deniedScreen').style.display = 'none';
+  document.getElementById('appRoot').style.display = 'block';
+  document.getElementById('userChip').style.display = 'flex';
+  document.getElementById('logoutBtn').style.display = 'inline-block';
+  document.getElementById('userNameLabel').textContent = name;
+  document.getElementById('userAvatar').textContent = ini(name);
+  initialLoad();
+}
+
+function doLogout() {
+  try { localStorage.removeItem('emdash_idtoken'); } catch (e) {}
+  currentIdToken = null; currentUserEmail = null;
+  if (window.google && google.accounts && google.accounts.id) {
+    google.accounts.id.disableAutoSelect();
+  }
+  document.getElementById('userChip').style.display = 'none';
+  document.getElementById('logoutBtn').style.display = 'none';
+  showSignIn();
+}
+
+function initGoogleAuth() {
+  if (!window.google || !google.accounts || !google.accounts.id) {
+    setTimeout(initGoogleAuth, 200);
+    return;
+  }
+  google.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    callback: handleCredentialResponse,
+    auto_select: true
+  });
+  var saved = null;
+  try { saved = localStorage.getItem('emdash_idtoken'); } catch (e) {}
+  if (saved) {
+    currentIdToken = saved;
+    verifyAndEnter();
+  } else {
+    showSignIn();
+    google.accounts.id.prompt();
+  }
 }
 
 // ── Main Render ───────────────────────────────────────────────────────────────
@@ -508,7 +677,10 @@ function renderAll(data) {
   var t  = em.totals || {};
   var bd = em.breakdown || {};
 
-  if (data.weeks && data.weeks.length) buildWeekDropdown(data.weeks, em.week ? em.week.from : '', em.week ? em.week.to : '');
+  if (em.week) {
+    document.getElementById('dtFrom').value = toISO(em.week.from);
+    document.getElementById('dtTo').value = toISO(em.week.to);
+  }
 
   document.getElementById('cTP').textContent = t.totalPlan || 0;
   document.getElementById('cTA').textContent = t.totalActual || 0;
@@ -960,11 +1132,14 @@ function switchTab(name, el) {
   }
 }
 
-// ── Initial load ──────────────────────────────────────────────────────────────
-(function() {
-  fetch(API + '?cb=' + Date.now(), { redirect: 'follow' })
+// ── Initial load (after sign-in is verified) ────────────────────────────────────
+function initialLoad() {
+  document.getElementById('ldiv').style.display = 'block';
+  document.getElementById('mdiv').style.display = 'none';
+  fetch(API + '?action=getData&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now(), { redirect: 'follow' })
     .then(function(r) { return r.json(); })
     .then(function(data) {
+      if (data.authorized === false) { showDenied(currentUserEmail); return; }
       document.getElementById('ldiv').style.display = 'none';
       document.getElementById('mdiv').style.display = 'block';
       renderAll(data);
@@ -972,7 +1147,10 @@ function switchTab(name, el) {
     .catch(function(err) {
       document.getElementById('ldiv').innerHTML = '<div class="ebox">Error loading data. Please refresh.<br><small>' + err + '</small></div>';
     });
-})();
+}
+
+// ── Boot ─────────────────────────────────────────────────────────────────────
+initGoogleAuth();
 </script>
 
 <!-- PENDING TASKS MODAL -->
@@ -1029,5 +1207,8 @@ document.getElementById('pendingModal').addEventListener('click', function(e) {
   if (e.target === this) closePendingModal();
 });
 </script>
+
+</div><!-- /#appRoot -->
+
 </body>
 </html>
