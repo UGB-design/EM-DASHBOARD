@@ -243,7 +243,7 @@ tr:hover td{background:#fafbfc}
   <div class="h-top">
     <div>
       <div class="h-title">EM Dashboard</div>
-      <div class="h-sub">FMS + Checklist + Delegation + Scores &nbsp;·&nbsp; ugbolmalassociates.com</div>
+      <div class="h-sub">FMS + Checklist + Delegation + Scores &nbsp;·&nbsp; <span id="userEmailSub">ugbolmalassociates.com</span></div>
     </div>
     <div class="h-right">
       <span class="wk-label">From</span>
@@ -440,6 +440,7 @@ tr:hover td{background:#fafbfc}
       </select>
     </div>
     <div class="meta-info-badge" id="scMetaBadges"></div>
+    <div id="scMismatchBox" style="display:none;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:12px;color:#854d0e;line-height:1.6"></div>
     <div class="score-hero" id="scHeroCards"></div>
     <div class="tc">
       <div class="tc-top">
@@ -635,6 +636,8 @@ function enterApp(name, email) {
   document.getElementById('logoutBtn').style.display = 'inline-block';
   document.getElementById('userNameLabel').textContent = name;
   document.getElementById('userAvatar').textContent = ini(name);
+  var emailSub = document.getElementById('userEmailSub');
+  if (emailSub) emailSub.textContent = email || 'ugbolmalassociates.com';
   initialLoad();
 }
 
@@ -1066,7 +1069,7 @@ function applyScoreFilters() {
     return true;
   });
 
-  // Hero summary cards
+  // Hero summary cards — figures computed from the SCORES sheet rows
   var totalEmployees = filtered.length;
   var totalPlanSum   = filtered.reduce(function(s, r) { return s + (Number(r.totalPlan) || 0); }, 0);
   var totalDoneSum   = filtered.reduce(function(s, r) { return s + (Number(r.totalCompleted) || 0); }, 0);
@@ -1074,18 +1077,67 @@ function applyScoreFilters() {
 
   // Avg Performance = Total Completed / Total Plan * 100 (weighted across the
   // filtered group), NOT a simple average of each employee's individual %.
-  // A simple average lets low-volume employees (e.g. plan=1) skew the number
-  // just as much as high-volume employees (e.g. plan=692).
   var avgPerf = totalPlanSum > 0 ? (totalDoneSum / totalPlanSum * 100) : 0;
 
-  var avgColor = avgPerf >= 95 ? '#16a34a' : avgPerf >= 90 ? '#f59e0b' : avgPerf >= 50 ? '#f97316' : '#dc2626';
+  // ── Reconcile against Summary tab ────────────────────────────────────────
+  // The Summary tab's Total Plan (t.totalPlan) is the source of truth — it's
+  // read straight from the EM DASHBOARD sheet's own total cell. The SCORES
+  // sheet keeps its own separate totals per employee, and if that sheet's
+  // formulas/rows fall out of sync with EM DASHBOARD, the two tabs disagree.
+  // When no filter is applied, show the Summary's correct totals up top so
+  // the headline numbers always match — and flag exactly which employees
+  // are under/over-counted in the SCORES sheet so it can be corrected there.
+  var noFiltersApplied = (dFilter === 'All' && gFilter === 'All');
+  var emTotals = (globalRawData.emDashboard && globalRawData.emDashboard.totals) || {};
+  var heroTotalPlan = totalPlanSum;
+  var heroTotalDone = totalDoneSum;
+  var heroAvgPerf   = avgPerf;
+
+  var mismatchBox = document.getElementById('scMismatchBox');
+  mismatchBox.style.display = 'none';
+  mismatchBox.innerHTML = '';
+
+  if (noFiltersApplied && emTotals.totalPlan) {
+    var planDiff = (Number(emTotals.totalPlan) || 0) - totalPlanSum;
+    heroTotalPlan = emTotals.totalPlan;
+    heroTotalDone = emTotals.totalActual;
+    heroAvgPerf   = (typeof emTotals.overallNum === 'number') ? emTotals.overallNum : avgPerf;
+
+    if (planDiff !== 0) {
+      var emDoers = (globalRawData.emDashboard && globalRawData.emDashboard.doers) || [];
+      var scoreMap = {};
+      rows.forEach(function(r) { scoreMap[String(r.employee || '').toLowerCase().trim()] = r; });
+      var perEmployeeDiffs = [];
+      emDoers.forEach(function(d) {
+        var key = d.name.toLowerCase().trim();
+        var summaryPlan = (Number(d.fmsPlan) || 0) + (Number(d.clPlan) || 0) + (Number(d.dlPlan) || 0);
+        var sc = scoreMap[key];
+        var scorePlan = sc ? (Number(sc.totalPlan) || 0) : 0;
+        var diff = summaryPlan - scorePlan;
+        if (diff !== 0) perEmployeeDiffs.push({ name: d.name, summaryPlan: summaryPlan, scorePlan: scorePlan, diff: diff });
+      });
+      perEmployeeDiffs.sort(function(a, b) { return Math.abs(b.diff) - Math.abs(a.diff); });
+
+      var listHtml = perEmployeeDiffs.slice(0, 8).map(function(x) {
+        return '<li><strong>' + x.name + '</strong>: Summary shows ' + x.summaryPlan + ', Scores sheet shows ' + x.scorePlan + ' (diff ' + (x.diff > 0 ? '+' : '') + x.diff + ')</li>';
+      }).join('');
+
+      mismatchBox.style.display = 'block';
+      mismatchBox.innerHTML =
+        '⚠️ <strong>Total Plan mismatch:</strong> Summary tab shows ' + emTotals.totalPlan + ', but the SCORES sheet rows add up to ' + totalPlanSum + ' (diff ' + (planDiff > 0 ? '+' : '') + planDiff + '). ' +
+        'The card below now shows the correct Summary figure. This gap comes from the SCORES sheet itself, not this dashboard — the employees below need their SCORES sheet totals rechecked:' +
+        (listHtml ? '<ul style="margin:8px 0 0 18px">' + listHtml + '</ul>' : '');
+    }
+  }
+
+  var avgColor = heroAvgPerf >= 95 ? '#16a34a' : heroAvgPerf >= 90 ? '#f59e0b' : heroAvgPerf >= 50 ? '#f97316' : '#dc2626';
 
   document.getElementById('scHeroCards').innerHTML =
     '<div class="score-hero-card"><div class="score-hero-label">Active Employees</div><div class="score-hero-val" style="color:#2563eb">' + totalEmployees + '</div></div>' +
-    '<div class="score-hero-card"><div class="score-hero-label">Total Plan</div><div class="score-hero-val" style="color:#2563eb">' + totalPlanSum + '</div></div>' +
-    '<div class="score-hero-card"><div class="score-hero-label">Total Completed</div><div class="score-hero-val" style="color:#16a34a">' + totalDoneSum + '</div></div>' +
+    '<div class="score-hero-card"><div class="score-hero-label">Total Plan</div><div class="score-hero-val" style="color:#2563eb">' + heroTotalPlan + '</div></div>' +
+    '<div class="score-hero-card"><div class="score-hero-label">Total Completed</div><div class="score-hero-val" style="color:#16a34a">' + heroTotalDone + '</div></div>' +
     '<div class="score-hero-card"><div class="score-hero-label">On Time Completed</div><div class="score-hero-val" style="color:#16a34a">' + onTimeSum + '</div></div>' +
-    '<div class="score-hero-card"><div class="score-hero-label">Avg Performance</div><div class="score-hero-val" style="color:' + avgColor + '">' + avgPerf.toFixed(1) + '%</div></div>';
+    '<div class="score-hero-card"><div class="score-hero-label">Avg Performance</div><div class="score-hero-val" style="color:' + avgColor + '">' + heroAvgPerf.toFixed(1) + '%</div></div>';
 
   document.getElementById('scMetaBadges').innerHTML =
     '<span class="m-badge b-blue">' + totalEmployees + ' employees</span>' +
