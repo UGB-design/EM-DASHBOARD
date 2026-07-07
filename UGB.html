@@ -85,8 +85,9 @@
     display:grid;
     grid-template-columns:repeat(4,1fr);
     gap:16px;
-    margin-bottom:30px;
+    margin-bottom:14px;
   }
+  .stats + .stats{ margin-bottom:30px; }
   .stat{
     background:var(--card);
     border:1px solid var(--line);
@@ -99,8 +100,14 @@
   .stat .num{ font-size:28px; font-weight:700; color:var(--navy);}
   .stat.alert{ border-color:#F1D6A8; background:#FFF8EC; }
   .stat.alert .num{ color:var(--amber); }
+  .stat.warn{ border-color:#F1D6A8; background:#FFF8EC; }
+  .stat.warn .num{ color:var(--amber); }
+  .stat.info{ border-color:#CFE0EE; background:#F3F8FD; }
+  .stat.info .num{ color:var(--steel); }
   .stat .bar{ position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--steel); }
   .stat.alert .bar{ background:var(--amber); }
+  .stat.warn .bar{ background:var(--amber); }
+  .stat.info .bar{ background:var(--steel); }
 
   section{ margin-bottom:34px; }
   .section-head{
@@ -256,11 +263,20 @@
 
 <main>
 
+  <!-- Row 1: headline org stats -->
   <div class="stats" id="stats">
-    <div class="stat"><div class="bar"></div><div class="label">Total Staff</div><div class="num" id="statStaff">—</div></div>
+    <div class="stat"><div class="bar"></div><div class="label">Active Staff</div><div class="num" id="statStaff">—</div></div>
     <div class="stat alert"><div class="bar"></div><div class="label">Pending Requests</div><div class="num" id="statPending">—</div></div>
     <div class="stat"><div class="bar"></div><div class="label">Total CL Balance (org)</div><div class="num" id="statCL">—</div></div>
     <div class="stat"><div class="bar"></div><div class="label">Total SL Balance (org)</div><div class="num" id="statSL">—</div></div>
+  </div>
+
+  <!-- Row 2: usage stats, pulled directly from the TOTAL row (row 17) of Leave_Balance -->
+  <div class="stats" id="statsUsage">
+    <div class="stat info"><div class="bar"></div><div class="label">Total CL Used (org)</div><div class="num" id="statCLUsed">—</div></div>
+    <div class="stat info"><div class="bar"></div><div class="label">Total SL Used (org)</div><div class="num" id="statSLUsed">—</div></div>
+    <div class="stat warn"><div class="bar"></div><div class="label">Half Day Count (org)</div><div class="num" id="statHalfDay">—</div></div>
+    <div class="stat warn"><div class="bar"></div><div class="label">Unpaid Leave (org)</div><div class="num" id="statUnpaid">—</div></div>
   </div>
 
   <section>
@@ -298,11 +314,12 @@
           <th>CL Used / Total</th>
           <th>SL Used / Total</th>
           <th>Usage</th>
+          <th>Half Day</th>
           <th>Unpaid</th>
         </tr>
       </thead>
       <tbody id="balanceBody">
-        <tr><td colspan="5"><div class="loading">Loading balances…</div></td></tr>
+        <tr><td colspan="6"><div class="loading">Loading balances…</div></td></tr>
       </tbody>
     </table>
   </section>
@@ -339,7 +356,7 @@ function fmtNum(n){ return (Number(n) || 0).toLocaleString(); }
 
 async function loadData(){
   document.getElementById('reqList').innerHTML = '<div class="loading">Loading requests…</div>';
-  document.getElementById('balanceBody').innerHTML = '<tr><td colspan="5"><div class="loading">Loading balances…</div></td></tr>';
+  document.getElementById('balanceBody').innerHTML = '<tr><td colspan="6"><div class="loading">Loading balances…</div></td></tr>';
 
   if(!CONFIG.API_URL || CONFIG.API_URL.indexOf('PASTE_YOUR') === 0){
     document.getElementById('reqList').innerHTML =
@@ -350,6 +367,9 @@ async function loadData(){
 
   try{
     const res = await fetch(CONFIG.API_URL);
+    if(!res.ok){
+      throw new Error('HTTP ' + res.status + ' — check that the Apps Script deployment access is set to "Anyone"');
+    }
     const data = await res.json();
     if(!data.ok) throw new Error(data.error || 'Unknown error');
 
@@ -359,16 +379,23 @@ async function loadData(){
     document.getElementById('updatedAt').textContent =
       'Updated ' + new Date(data.generatedAt).toLocaleString();
 
-    document.getElementById('statStaff').textContent = fmtNum(data.summary.totalStaff);
+    document.getElementById('statStaff').textContent   = fmtNum(data.summary.totalStaff);
     document.getElementById('statPending').textContent = fmtNum(data.summary.pendingRequests);
-    document.getElementById('statCL').textContent = fmtNum(data.summary.totalCLBalance);
-    document.getElementById('statSL').textContent = fmtNum(data.summary.totalSLBalance);
+    document.getElementById('statCL').textContent       = fmtNum(data.summary.totalCLBalance);
+    document.getElementById('statSL').textContent       = fmtNum(data.summary.totalSLBalance);
+    document.getElementById('statCLUsed').textContent   = fmtNum(data.summary.totalCLUsed);
+    document.getElementById('statSLUsed').textContent   = fmtNum(data.summary.totalSLUsed);
+    document.getElementById('statHalfDay').textContent  = fmtNum(data.summary.totalHalfDay);
+    document.getElementById('statUnpaid').textContent   = fmtNum(data.summary.totalUnpaidLeave);
 
     renderRequests();
     renderBalances();
   }catch(err){
     document.getElementById('reqList').innerHTML =
-      '<div class="error">Could not load data: ' + err.message + '</div>';
+      '<div class="error">Could not load data: ' + err.message +
+      '<br><br>Tip: open the API_URL directly in a new browser tab — if it prompts a Google sign-in ' +
+      'or shows an "Authorization required" page instead of raw JSON, redeploy the Apps Script with ' +
+      '"Who has access: Anyone".</div>';
     document.getElementById('balanceBody').innerHTML = '';
   }
 }
@@ -386,7 +413,7 @@ function renderRequests(){
   }
 
   list.innerHTML = items.map(r => {
-    const status = r.Status || 'Pending';
+    const status = r.Status || 'Approved';
     const cls = badgeClass(status);
     const showApprove = cls === 'pending';
     return `
@@ -430,7 +457,7 @@ function renderBalances(){
   }
 
   if(items.length === 0){
-    tbody.innerHTML = '<tr><td colspan="5"><div class="empty">No staff found.</div></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6"><div class="empty">No staff found.</div></td></tr>';
     return;
   }
 
@@ -464,6 +491,7 @@ function renderBalances(){
             </div>
           </div>
         </td>
+        <td>${b.HalfDay_Count ?? 0}</td>
         <td>${b.Unpaid_Leave ?? 0}</td>
       </tr>`;
   }).join('');
