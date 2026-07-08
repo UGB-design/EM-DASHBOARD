@@ -8,8 +8,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --navy:#122C43;
-    --navy-deep:#0B1E30;
+    --navy:#1B5FAE;
+    --navy-deep:#154A87;
     --steel:#3E6E96;
     --amber:#DE9A32;
     --green:#3C8F5A;
@@ -20,6 +20,7 @@
     --text:#1B2733;
     --muted:#66788F;
     --radius:12px;
+    --avatar-colors: #1B5FAE, #3E6E96, #DE9A32, #3C8F5A, #8E5FBF, #C1503D, #0E8A82, #B0729A;
   }
   *{box-sizing:border-box;}
   body{
@@ -32,7 +33,7 @@
   h1,h2,h3, .num{ font-family:'Space Grotesk',sans-serif; }
 
   header.top{
-    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
+    background: linear-gradient(120deg, #2568B8 0%, #1B5FAE 45%, #154A87 100%);
     color:#fff;
     padding:22px 32px;
     display:flex;
@@ -148,8 +149,8 @@
     gap:14px;
     align-items:center;
   }
+  .req-card .staff-cell{ display:flex; align-items:center; gap:10px; }
   .req-card .staff{ font-weight:600; font-size:14px; }
-  .req-card .staff .email{ display:block; font-weight:400; font-size:11.5px; color:var(--muted); margin-top:1px; }
   .req-card .meta-label{ font-size:10.5px; text-transform:uppercase; letter-spacing:.4px; color:var(--muted); margin-bottom:2px;}
   .req-card .meta-value{ font-size:13px; font-weight:500; }
   .badge{
@@ -206,8 +207,16 @@
   }
   table.balance tbody tr:last-child td{ border-bottom:none; }
   table.balance tbody tr:hover{ background:#FAFBFD; }
+  .staff-cell{ display:flex; align-items:center; gap:11px; }
   .staff-name{ font-weight:600; }
-  .staff-email{ display:block; font-size:11.5px; color:var(--muted); font-weight:400; margin-top:1px;}
+
+  .avatar{
+    width:34px; height:34px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:12px;
+    flex-shrink:0; letter-spacing:.3px;
+  }
+  .avatar.sm{ width:30px; height:30px; font-size:11px; }
 
   .fingerprint{ display:flex; flex-direction:column; gap:5px; min-width:140px; }
   .fp-row{ display:flex; align-items:center; gap:6px; }
@@ -350,6 +359,26 @@ function badgeClass(status){
 
 function fmtNum(n){ return (Number(n) || 0).toLocaleString(); }
 
+const AVATAR_COLORS = ['#1B5FAE','#3E6E96','#DE9A32','#3C8F5A','#8E5FBF','#C1503D','#0E8A82','#B0729A'];
+
+function initials(name){
+  const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+  if(parts.length === 0) return '?';
+  if(parts.length === 1) return parts[0].substring(0,2).toUpperCase();
+  return (parts[0][0] + parts[1][0]).toUpperCase();
+}
+
+function avatarColor(name){
+  const s = String(name || '');
+  let hash = 0;
+  for(let i = 0; i < s.length; i++) hash = s.charCodeAt(i) + ((hash << 5) - hash);
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+}
+
+function avatarHtml(name, small){
+  return `<div class="avatar${small ? ' sm' : ''}" style="background:${avatarColor(name)}">${initials(name)}</div>`;
+}
+
 async function loadData(){
   document.getElementById('reqList').innerHTML = '<div class="loading">Loading requests…</div>';
   document.getElementById('balanceBody').innerHTML = '<tr><td colspan="6"><div class="loading">Loading balances…</div></td></tr>';
@@ -416,8 +445,9 @@ function renderRequests(){
     const showApprove = cls === 'pending';
     return `
       <div class="req-card">
-        <div>
-          <div class="staff">${r.Staff_Name || '—'}<span class="email">${r.Email || ''}</span></div>
+        <div class="staff-cell">
+          ${avatarHtml(r.Staff_Name, true)}
+          <div class="staff">${r.Staff_Name || '—'}</div>
         </div>
         <div>
           <div class="meta-label">Type</div>
@@ -470,8 +500,10 @@ function renderBalances(){
     return `
       <tr>
         <td>
-          <span class="staff-name">${b.Name}</span>
-          <span class="staff-email">${b.Email}</span>
+          <div class="staff-cell">
+            ${avatarHtml(b.Name)}
+            <span class="staff-name">${b.Name}</span>
+          </div>
         </td>
         <td>${usedCL} / ${totalCL} <span style="color:var(--muted); font-size:11.5px;">(bal ${b.Balance_CL ?? '—'})</span></td>
         <td>${usedSL} / ${totalSL} <span style="color:var(--muted); font-size:11.5px;">(bal ${b.Balance_SL ?? '—'})</span></td>
