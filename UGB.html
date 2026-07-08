@@ -271,22 +271,22 @@
 
   <!-- Row 1: from Leave_Balance!B30:D30 -->
   <div class="stats" id="stats">
-    <div class="stat"><div class="bar"></div><div class="label">Active Staff</div><div class="num" id="statStaff">—</div></div>
+    <div class="stat"><div class="bar"></div><div class="label">ACTIVE STAFF </div><div class="num" id="statStaff">—</div></div>
     <div class="stat alert"><div class="bar"></div><div class="label">Pending Requests</div><div class="num" id="statPending">—</div></div>
-    <div class="stat"><div class="bar"></div><div class="label">Total Paid_Leave Balance (org)</div><div class="num" id="statPaidBalance">—</div></div>
+    <div class="stat"><div class="bar"></div><div class="label">TOTAL PAID LEAVE BALANCE </div><div class="num" id="statPaidBalance">—</div></div>
   </div>
 
   <!-- Row 2: from Leave_Balance!B32:D32 -->
   <div class="stats" id="statsUsage">
-    <div class="stat info"><div class="bar"></div><div class="label">Total Paid Leave Used (org)</div><div class="num" id="statPaidUsed">—</div></div>
-    <div class="stat warn"><div class="bar"></div><div class="label">Half Day Count (org)</div><div class="num" id="statHalfDay">—</div></div>
-    <div class="stat warn"><div class="bar"></div><div class="label">Unpaid Leave (org)</div><div class="num" id="statUnpaid">—</div></div>
+    <div class="stat info"><div class="bar"></div><div class="label">TOTAL PAID LEAVE USED </div><div class="num" id="statPaidUsed">—</div></div>
+    <div class="stat warn"><div class="bar"></div><div class="label">HALF DAY </div><div class="num" id="statHalfDay">—</div></div>
+    <div class="stat warn"><div class="bar"></div><div class="label">UNPAID LEAVES </div><div class="num" id="statUnpaid">—</div></div>
   </div>
 
   <section>
     <div class="section-head">
       <div>
-        <h2>Leave Requests</h2>
+        <h2>LEAVE REQUESTS </h2>
         <div class="sub">Pending requests can be approved or rejected in the Approval App</div>
       </div>
       <div class="controls">
@@ -304,7 +304,7 @@
   <section>
     <div class="section-head">
       <div>
-        <h2>Staff Leave Balance</h2>
+        <h2>STAFF LEAVE BALANCE </h2>
         <div class="sub">Paid leave usage across the team</div>
       </div>
       <div class="controls">
@@ -337,7 +337,7 @@
 /* ================= CONFIG ================= */
 const CONFIG = {
   // Paste your deployed Apps Script Web App URL here (ends in /exec)
-  API_URL: "https://script.google.com/macros/s/AKfycbxOWqhLTx-vO8T7UufMEnSRFPVoPCNJJX1GOxncSnXX0wXrgXysOgs_hC_GSoVfsdix/exec",
+  API_URL: "https://script.google.com/macros/s/AKfycbyMp9Gbxuk-KYx2C_mga5BzK3ECOs6gbo541GwmcRYwaG8tfYx7m72PV6vyvNqnPoea/exec",
   // AppSheet Leave Approval view
   APPROVAL_URL: "https://www.appsheet.com/start/e593f206-628c-4174-a375-4012a703c619#view=Leave%20Approval"
 };
@@ -377,9 +377,53 @@ function avatarHtml(name, small){
   return `<div class="avatar${small ? ' sm' : ''}" style="background:${avatarColor(name)}">${initials(name)}</div>`;
 }
 
-async function loadData(){
-  document.getElementById('reqList').innerHTML = '<div class="loading">Loading requests…</div>';
-  document.getElementById('balanceBody').innerHTML = '<tr><td colspan="5"><div class="loading">Loading balances…</div></td></tr>';
+/* ---- local cache: paint instantly on repeat visits, then refresh in background ---- */
+const LOCAL_CACHE_KEY = 'ugb_leave_dashboard_cache_v1';
+const LOCAL_CACHE_MAX_AGE_MS = 20 * 60 * 1000; // 20 min — just for instant first paint
+
+function readLocalCache(){
+  try{
+    const raw = localStorage.getItem(LOCAL_CACHE_KEY);
+    if(!raw) return null;
+    const parsed = JSON.parse(raw);
+    if(!parsed || !parsed.data || (Date.now() - parsed.savedAt) > LOCAL_CACHE_MAX_AGE_MS) return null;
+    return parsed.data;
+  }catch(err){ return null; }
+}
+
+function writeLocalCache(data){
+  try{ localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify({ savedAt: Date.now(), data })); }
+  catch(err){ /* storage full or unavailable — ignore */ }
+}
+
+function applyData(data, fromCache){
+  state.balances = data.balances || [];
+  state.requests = data.requests || [];
+
+  document.getElementById('updatedAt').textContent =
+    'Updated ' + new Date(data.generatedAt).toLocaleString() + (fromCache ? ' (cached — refreshing…)' : '');
+
+  document.getElementById('statStaff').textContent       = fmtNum(data.summary.totalStaff);
+  document.getElementById('statPending').textContent     = fmtNum(data.summary.pendingRequests);
+  document.getElementById('statPaidBalance').textContent = fmtNum(data.summary.totalPaidBalance);
+  document.getElementById('statPaidUsed').textContent    = fmtNum(data.summary.totalPaidUsed);
+  document.getElementById('statHalfDay').textContent     = fmtNum(data.summary.totalHalfDay);
+  document.getElementById('statUnpaid').textContent      = fmtNum(data.summary.totalUnpaidLeave);
+
+  renderRequests();
+  renderBalances();
+}
+
+async function loadData(forceFresh){
+  const cached = readLocalCache();
+
+  if(cached){
+    // instant paint from last known good data
+    applyData(cached, true);
+  } else {
+    document.getElementById('reqList').innerHTML = '<div class="loading">Loading requests…</div>';
+    document.getElementById('balanceBody').innerHTML = '<tr><td colspan="5"><div class="loading">Loading balances…</div></td></tr>';
+  }
 
   if(!CONFIG.API_URL || CONFIG.API_URL.indexOf('PASTE_YOUR') === 0){
     document.getElementById('reqList').innerHTML =
@@ -389,8 +433,9 @@ async function loadData(){
   }
 
   try{
-    // cache-bust so GitHub Pages / the browser never serves a stale response
-    const url = CONFIG.API_URL + (CONFIG.API_URL.includes('?') ? '&' : '?') + 't=' + Date.now();
+    let url = CONFIG.API_URL + (CONFIG.API_URL.includes('?') ? '&' : '?') + 't=' + Date.now();
+    if(forceFresh) url += '&fresh=1';
+
     const res = await fetch(url);
     if(!res.ok){
       throw new Error('HTTP ' + res.status + ' — check that the Apps Script deployment access is set to "Anyone"');
@@ -398,22 +443,10 @@ async function loadData(){
     const data = await res.json();
     if(!data.ok) throw new Error(data.error || 'Unknown error');
 
-    state.balances = data.balances || [];
-    state.requests = data.requests || [];
-
-    document.getElementById('updatedAt').textContent =
-      'Updated ' + new Date(data.generatedAt).toLocaleString();
-
-    document.getElementById('statStaff').textContent      = fmtNum(data.summary.totalStaff);
-    document.getElementById('statPending').textContent    = fmtNum(data.summary.pendingRequests);
-    document.getElementById('statPaidBalance').textContent = fmtNum(data.summary.totalPaidBalance);
-    document.getElementById('statPaidUsed').textContent    = fmtNum(data.summary.totalPaidUsed);
-    document.getElementById('statHalfDay').textContent     = fmtNum(data.summary.totalHalfDay);
-    document.getElementById('statUnpaid').textContent      = fmtNum(data.summary.totalUnpaidLeave);
-
-    renderRequests();
-    renderBalances();
+    applyData(data, false);
+    writeLocalCache(data);
   }catch(err){
+    if(cached) return; // already showing good cached data, fail silently in the background
     document.getElementById('reqList').innerHTML =
       '<div class="error">Could not load data: ' + err.message +
       '<br><br>Tip: open the API_URL directly in a new browser tab — if it prompts a Google sign-in ' +
@@ -524,7 +557,7 @@ document.querySelectorAll('.chip').forEach(chip => {
 });
 
 document.getElementById('staffSearch').addEventListener('input', renderBalances);
-document.getElementById('refreshBtn').addEventListener('click', loadData);
+document.getElementById('refreshBtn').addEventListener('click', () => loadData(true));
 
 loadData();
 setInterval(loadData, 5 * 60 * 1000); // auto-refresh every 5 min
