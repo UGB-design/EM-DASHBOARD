@@ -31,7 +31,6 @@
   }
   h1,h2,h3, .num{ font-family:'Space Grotesk',sans-serif; }
 
-  /* Top bar */
   header.top{
     background: linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
     color:#fff;
@@ -80,7 +79,6 @@
 
   main{ max-width:1180px; margin:0 auto; padding:28px 24px 60px; }
 
-  /* Summary cards */
   .stats{
     display:grid;
     grid-template-columns:repeat(4,1fr);
@@ -139,7 +137,6 @@
   }
   .chip.active{ background:var(--navy); color:#fff; border-color:var(--navy); }
 
-  /* Requests */
   .req-list{ display:flex; flex-direction:column; gap:10px; }
   .req-card{
     background:var(--card);
@@ -183,7 +180,6 @@
     background:var(--card); border:1px dashed var(--line); border-radius:var(--radius);
   }
 
-  /* Balance table */
   table.balance{
     width:100%;
     border-collapse:collapse;
@@ -263,7 +259,7 @@
 
 <main>
 
-  <!-- Row 1: headline org stats -->
+  <!-- Row 1: from Leave_Balance!B30:E30 -->
   <div class="stats" id="stats">
     <div class="stat"><div class="bar"></div><div class="label">Active Staff</div><div class="num" id="statStaff">—</div></div>
     <div class="stat alert"><div class="bar"></div><div class="label">Pending Requests</div><div class="num" id="statPending">—</div></div>
@@ -271,7 +267,7 @@
     <div class="stat"><div class="bar"></div><div class="label">Total SL Balance (org)</div><div class="num" id="statSL">—</div></div>
   </div>
 
-  <!-- Row 2: usage stats, pulled directly from the TOTAL row (row 17) of Leave_Balance -->
+  <!-- Row 2: from Leave_Balance!B32:E32 -->
   <div class="stats" id="statsUsage">
     <div class="stat info"><div class="bar"></div><div class="label">Total CL Used (org)</div><div class="num" id="statCLUsed">—</div></div>
     <div class="stat info"><div class="bar"></div><div class="label">Total SL Used (org)</div><div class="num" id="statSLUsed">—</div></div>
@@ -334,7 +330,7 @@
 /* ================= CONFIG ================= */
 const CONFIG = {
   // Paste your deployed Apps Script Web App URL here (ends in /exec)
-  API_URL: "https://script.google.com/a/macros/ugbolmalassociates.com/s/AKfycbwwIEZYaN_SZC8RlddlYAVFlwq8lgcXeqdaX7RSei2oQlcK5W1G8Xs7B9aYJ0JfhBTP/exec",
+  API_URL: "https://script.google.com/macros/s/AKfycbw5X_oc_pVPnPihpg8Vf18qAsG11l8sLWoZXcNxaQ-mdWwZDYlPX4s_WCRnVWJlDzU4/exec",
   // AppSheet Leave Approval view
   APPROVAL_URL: "https://www.appsheet.com/start/e593f206-628c-4174-a375-4012a703c619#view=Leave%20Approval"
 };
@@ -366,7 +362,9 @@ async function loadData(){
   }
 
   try{
-    const res = await fetch(CONFIG.API_URL);
+    // cache-bust so GitHub Pages / the browser never serves a stale response
+    const url = CONFIG.API_URL + (CONFIG.API_URL.includes('?') ? '&' : '?') + 't=' + Date.now();
+    const res = await fetch(url);
     if(!res.ok){
       throw new Error('HTTP ' + res.status + ' — check that the Apps Script deployment access is set to "Anyone"');
     }
@@ -395,7 +393,7 @@ async function loadData(){
       '<div class="error">Could not load data: ' + err.message +
       '<br><br>Tip: open the API_URL directly in a new browser tab — if it prompts a Google sign-in ' +
       'or shows an "Authorization required" page instead of raw JSON, redeploy the Apps Script with ' +
-      '"Who has access: Anyone".</div>';
+      '"Who has access: Anyone", then update the URL here.</div>';
     document.getElementById('balanceBody').innerHTML = '';
   }
 }
@@ -413,7 +411,7 @@ function renderRequests(){
   }
 
   list.innerHTML = items.map(r => {
-    const status = r.Status || 'Approved';
+    const status = r.Status || 'Pending';
     const cls = badgeClass(status);
     const showApprove = cls === 'pending';
     return `
