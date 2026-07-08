@@ -82,7 +82,7 @@
 
   .stats{
     display:grid;
-    grid-template-columns:repeat(4,1fr);
+    grid-template-columns:repeat(3,1fr);
     gap:16px;
     margin-bottom:14px;
   }
@@ -219,13 +219,12 @@
   }
   .avatar.sm{ width:30px; height:30px; font-size:11px; }
 
-  .fingerprint{ display:flex; flex-direction:column; gap:5px; min-width:140px; }
+  .fingerprint{ display:flex; flex-direction:column; gap:5px; min-width:150px; }
   .fp-row{ display:flex; align-items:center; gap:6px; }
-  .fp-label{ font-size:10.5px; color:var(--muted); width:16px; font-weight:600;}
-  .fp-track{ flex:1; height:6px; border-radius:4px; background:#E9EEF3; overflow:hidden;}
+  .fp-label{ font-size:10.5px; color:var(--muted); width:34px; font-weight:600;}
+  .fp-track{ flex:1; height:7px; border-radius:4px; background:#E9EEF3; overflow:hidden;}
   .fp-fill{ height:100%; border-radius:4px; }
-  .fp-fill.cl{ background:var(--steel); }
-  .fp-fill.sl{ background:var(--amber); }
+  .fp-fill.paid{ background:var(--steel); }
   .fp-num{ font-size:11px; color:var(--muted); width:34px; text-align:right; }
 
   footer{
@@ -237,7 +236,7 @@
   .error{ color:var(--red); }
 
   @media (max-width: 900px){
-    .stats{ grid-template-columns:repeat(2,1fr); }
+    .stats{ grid-template-columns:repeat(1,1fr); }
     .req-card{ grid-template-columns:1fr; }
     .req-card .meta-value.dates{ white-space:normal; }
     .req-card .approve-btn{ justify-self:start; }
@@ -270,18 +269,16 @@
 
 <main>
 
-  <!-- Row 1: from Leave_Balance!B30:E30 -->
+  <!-- Row 1: from Leave_Balance!B30:D30 -->
   <div class="stats" id="stats">
     <div class="stat"><div class="bar"></div><div class="label">Active Staff</div><div class="num" id="statStaff">—</div></div>
     <div class="stat alert"><div class="bar"></div><div class="label">Pending Requests</div><div class="num" id="statPending">—</div></div>
-    <div class="stat"><div class="bar"></div><div class="label">Total CL Balance (org)</div><div class="num" id="statCL">—</div></div>
-    <div class="stat"><div class="bar"></div><div class="label">Total SL Balance (org)</div><div class="num" id="statSL">—</div></div>
+    <div class="stat"><div class="bar"></div><div class="label">Total Paid Balance (org)</div><div class="num" id="statPaidBalance">—</div></div>
   </div>
 
-  <!-- Row 2: from Leave_Balance!B32:E32 -->
+  <!-- Row 2: from Leave_Balance!B32:D32 -->
   <div class="stats" id="statsUsage">
-    <div class="stat info"><div class="bar"></div><div class="label">Total CL Used (org)</div><div class="num" id="statCLUsed">—</div></div>
-    <div class="stat info"><div class="bar"></div><div class="label">Total SL Used (org)</div><div class="num" id="statSLUsed">—</div></div>
+    <div class="stat info"><div class="bar"></div><div class="label">Total Paid Leave Used (org)</div><div class="num" id="statPaidUsed">—</div></div>
     <div class="stat warn"><div class="bar"></div><div class="label">Half Day Count (org)</div><div class="num" id="statHalfDay">—</div></div>
     <div class="stat warn"><div class="bar"></div><div class="label">Unpaid Leave (org)</div><div class="num" id="statUnpaid">—</div></div>
   </div>
@@ -308,7 +305,7 @@
     <div class="section-head">
       <div>
         <h2>Staff Leave Balance</h2>
-        <div class="sub">Casual (CL) and sick leave (SL) usage across the team</div>
+        <div class="sub">Paid leave usage across the team</div>
       </div>
       <div class="controls">
         <input class="search" id="staffSearch" placeholder="Search staff…" />
@@ -318,15 +315,14 @@
       <thead>
         <tr>
           <th>Staff</th>
-          <th>CL Used / Total</th>
-          <th>SL Used / Total</th>
+          <th>Paid Used / Total</th>
           <th>Usage</th>
           <th>Half Day</th>
           <th>Unpaid</th>
         </tr>
       </thead>
       <tbody id="balanceBody">
-        <tr><td colspan="6"><div class="loading">Loading balances…</div></td></tr>
+        <tr><td colspan="5"><div class="loading">Loading balances…</div></td></tr>
       </tbody>
     </table>
   </section>
@@ -341,7 +337,7 @@
 /* ================= CONFIG ================= */
 const CONFIG = {
   // Paste your deployed Apps Script Web App URL here (ends in /exec)
-  API_URL: "https://script.google.com/macros/s/AKfycbw5X_oc_pVPnPihpg8Vf18qAsG11l8sLWoZXcNxaQ-mdWwZDYlPX4s_WCRnVWJlDzU4/exec",
+  API_URL: "https://script.google.com/macros/s/AKfycbxOWqhLTx-vO8T7UufMEnSRFPVoPCNJJX1GOxncSnXX0wXrgXysOgs_hC_GSoVfsdix/exec",
   // AppSheet Leave Approval view
   APPROVAL_URL: "https://www.appsheet.com/start/e593f206-628c-4174-a375-4012a703c619#view=Leave%20Approval"
 };
@@ -383,7 +379,7 @@ function avatarHtml(name, small){
 
 async function loadData(){
   document.getElementById('reqList').innerHTML = '<div class="loading">Loading requests…</div>';
-  document.getElementById('balanceBody').innerHTML = '<tr><td colspan="6"><div class="loading">Loading balances…</div></td></tr>';
+  document.getElementById('balanceBody').innerHTML = '<tr><td colspan="5"><div class="loading">Loading balances…</div></td></tr>';
 
   if(!CONFIG.API_URL || CONFIG.API_URL.indexOf('PASTE_YOUR') === 0){
     document.getElementById('reqList').innerHTML =
@@ -408,14 +404,12 @@ async function loadData(){
     document.getElementById('updatedAt').textContent =
       'Updated ' + new Date(data.generatedAt).toLocaleString();
 
-    document.getElementById('statStaff').textContent   = fmtNum(data.summary.totalStaff);
-    document.getElementById('statPending').textContent = fmtNum(data.summary.pendingRequests);
-    document.getElementById('statCL').textContent       = fmtNum(data.summary.totalCLBalance);
-    document.getElementById('statSL').textContent       = fmtNum(data.summary.totalSLBalance);
-    document.getElementById('statCLUsed').textContent   = fmtNum(data.summary.totalCLUsed);
-    document.getElementById('statSLUsed').textContent   = fmtNum(data.summary.totalSLUsed);
-    document.getElementById('statHalfDay').textContent  = fmtNum(data.summary.totalHalfDay);
-    document.getElementById('statUnpaid').textContent   = fmtNum(data.summary.totalUnpaidLeave);
+    document.getElementById('statStaff').textContent      = fmtNum(data.summary.totalStaff);
+    document.getElementById('statPending').textContent    = fmtNum(data.summary.pendingRequests);
+    document.getElementById('statPaidBalance').textContent = fmtNum(data.summary.totalPaidBalance);
+    document.getElementById('statPaidUsed').textContent    = fmtNum(data.summary.totalPaidUsed);
+    document.getElementById('statHalfDay').textContent     = fmtNum(data.summary.totalHalfDay);
+    document.getElementById('statUnpaid').textContent      = fmtNum(data.summary.totalUnpaidLeave);
 
     renderRequests();
     renderBalances();
@@ -487,17 +481,14 @@ function renderBalances(){
   }
 
   if(items.length === 0){
-    tbody.innerHTML = '<tr><td colspan="6"><div class="empty">No staff found.</div></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5"><div class="empty">No staff found.</div></td></tr>';
     return;
   }
 
   tbody.innerHTML = items.map(b => {
-    const totalCL = Number(b.Total_CL) || 0;
-    const usedCL  = Number(b.Used_CL) || 0;
-    const totalSL = Number(b.Total_SL) || 0;
-    const usedSL  = Number(b.Used_SL) || 0;
-    const clPct = totalCL ? Math.min(100, (usedCL/totalCL)*100) : 0;
-    const slPct = totalSL ? Math.min(100, (usedSL/totalSL)*100) : 0;
+    const totalPaid = Number(b.Total_Paid_Leave) || 0;
+    const usedPaid  = Number(b.Used_Paid_Leave) || 0;
+    const paidPct = totalPaid ? Math.min(100, (usedPaid/totalPaid)*100) : 0;
 
     return `
       <tr>
@@ -507,19 +498,13 @@ function renderBalances(){
             <span class="staff-name">${b.Name}</span>
           </div>
         </td>
-        <td>${usedCL} / ${totalCL} <span style="color:var(--muted); font-size:11.5px;">(bal ${b.Balance_CL ?? '—'})</span></td>
-        <td>${usedSL} / ${totalSL} <span style="color:var(--muted); font-size:11.5px;">(bal ${b.Balance_SL ?? '—'})</span></td>
+        <td>${usedPaid} / ${totalPaid} <span style="color:var(--muted); font-size:11.5px;">(bal ${b.Balance_Leaves ?? '—'})</span></td>
         <td>
           <div class="fingerprint">
             <div class="fp-row">
-              <span class="fp-label">CL</span>
-              <div class="fp-track"><div class="fp-fill cl" style="width:${clPct}%"></div></div>
-              <span class="fp-num">${Math.round(clPct)}%</span>
-            </div>
-            <div class="fp-row">
-              <span class="fp-label">SL</span>
-              <div class="fp-track"><div class="fp-fill sl" style="width:${slPct}%"></div></div>
-              <span class="fp-num">${Math.round(slPct)}%</span>
+              <span class="fp-label">Paid</span>
+              <div class="fp-track"><div class="fp-fill paid" style="width:${paidPct}%"></div></div>
+              <span class="fp-num">${Math.round(paidPct)}%</span>
             </div>
           </div>
         </td>
