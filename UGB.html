@@ -273,14 +273,14 @@
   <div class="stats" id="stats">
     <div class="stat"><div class="bar"></div><div class="label">Active Staff</div><div class="num" id="statStaff">—</div></div>
     <div class="stat alert"><div class="bar"></div><div class="label">Pending Requests</div><div class="num" id="statPending">—</div></div>
-    <div class="stat"><div class="bar"></div><div class="label">Total Paid Leave Balance</div><div class="num" id="statPaidBalance">—</div></div>
+    <div class="stat"><div class="bar"></div><div class="label">Total Paid_Leave Balance (org)</div><div class="num" id="statPaidBalance">—</div></div>
   </div>
 
   <!-- Row 2: from Leave_Balance!B32:D32 -->
   <div class="stats" id="statsUsage">
-    <div class="stat info"><div class="bar"></div><div class="label">Total Paid Leave Used</div><div class="num" id="statPaidUsed">—</div></div>
-    <div class="stat warn"><div class="bar"></div><div class="label">Half Day</div><div class="num" id="statHalfDay">—</div></div>
-    <div class="stat warn"><div class="bar"></div><div class="label">Unpaid Leave</div><div class="num" id="statUnpaid">—</div></div>
+    <div class="stat info"><div class="bar"></div><div class="label">Total Paid Leave Used (org)</div><div class="num" id="statPaidUsed">—</div></div>
+    <div class="stat warn"><div class="bar"></div><div class="label">Half Day Count (org)</div><div class="num" id="statHalfDay">—</div></div>
+    <div class="stat warn"><div class="bar"></div><div class="label">Unpaid Leave (org)</div><div class="num" id="statUnpaid">—</div></div>
   </div>
 
   <section>
@@ -450,7 +450,7 @@ function renderRequests(){
           <div class="meta-value">${r.Leave_Type || '—'}</div>
         </div>
         <div>
-          <div class="meta-label">Dates</div>
+          <div class="meta-label">Applied Dates</div>
           <div class="meta-value dates">${r.From_Date || '—'} → ${r.To_Date || '—'}</div>
         </div>
         <div>
