@@ -57,6 +57,24 @@
   .btn:hover{opacity:.85;}
   .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--border);}
 
+  /* top-right Apply Leave CTA */
+  .topbar{display:flex;justify-content:flex-end;margin-bottom:14px;}
+  .apply-leave{
+    display:inline-flex;align-items:center;gap:8px;
+    background:linear-gradient(180deg,#0a58c2,#054a9f);
+    color:#fff;border:none;border-radius:10px;
+    padding:10px 18px 10px 14px;font-family:'Inter',sans-serif;
+    font-size:13.5px;font-weight:700;letter-spacing:.01em;cursor:pointer;
+    box-shadow:0 1px 2px rgba(5,74,159,.15),0 6px 16px rgba(5,74,159,.28);
+    text-decoration:none;transition:transform .15s, box-shadow .15s, opacity .15s;
+  }
+  .apply-leave:hover{transform:translateY(-1px);box-shadow:0 2px 4px rgba(5,74,159,.2),0 10px 22px rgba(5,74,159,.32);}
+  .apply-leave .plus{
+    width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.18);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .apply-leave .plus svg{width:12px;height:12px;}
+
   /* tabs */
   .tabs{display:flex;gap:4px;background:rgba(0,0,0,0.035);padding:4px;border-radius:12px;width:fit-content;margin-bottom:22px;}
   .tab{
@@ -129,6 +147,13 @@
 <body>
 <div class="wrap">
 
+  <div class="topbar">
+    <a class="apply-leave" href="https://www.appsheet.com/start/e593f206-628c-4174-a375-4012a703c619#view=Apply%20Leave" target="_blank" rel="noopener">
+      <span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
+      Apply Leave
+    </a>
+  </div>
+
   <header>
     <div class="brand">
       <h1>Leave Dashboard</h1>
@@ -136,11 +161,11 @@
     </div>
     <div class="controls">
       <div class="field">
-        <label>From</label>
+        <label>From (Leave Requests)</label>
         <input type="date" id="fromDate">
       </div>
       <div class="field">
-        <label>To</label>
+        <label>To (Leave Requests)</label>
         <input type="date" id="toDate">
       </div>
       <div class="field">
@@ -190,8 +215,8 @@
       <div class="tablewrap">
         <table>
           <thead><tr>
-            <th>Employee</th><th>Type</th><th>From</th><th>To</th><th>Days</th>
-            <th>Reason</th><th>Status</th><th>Applied On</th><th>Approved By</th>
+            <th>Request ID</th><th>Employee</th><th>Type</th><th>From</th><th>To</th>
+            <th>Reason</th><th>Status</th>
           </tr></thead>
           <tbody id="requestsBody"></tbody>
         </table>
@@ -344,22 +369,44 @@ function staffByEmail(email){
 function balanceByEmail(email){
   return DATA.balance.find(b => (b["Email"]||"").toLowerCase() === (email||"").toLowerCase());
 }
-function latestDeductionFor(email, month){
-  return DATA.deduction.find(d =>
-    (d["EMAIL"]||"").toLowerCase() === (email||"").toLowerCase() &&
-    (!month || d["Month"] === month)
-  );
+const MONTH_ORDER = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+function latestDeductionFor(email, monthYearKey){
+  const matches = DATA.deduction.filter(d => (d["EMAIL"]||"").toLowerCase() === (email||"").toLowerCase() && d["Month"]);
+  if(monthYearKey){
+    const [m,y] = monthYearKey.split("|");
+    return matches.find(d => d["Month"]===m && String(Math.round(Number(d["Year"])))===y);
+  }
+  // no month picked -> latest by Year then Month order
+  return matches.sort((a,b)=>{
+    const ya = Math.round(Number(a["Year"])||0), yb = Math.round(Number(b["Year"])||0);
+    if(ya!==yb) return yb-ya;
+    return MONTH_ORDER.indexOf(b["Month"]) - MONTH_ORDER.indexOf(a["Month"]);
+  })[0];
 }
 
 function populateMonths(){
-  const months = [...new Set(DATA.deduction.map(d=>d["Month"]).filter(Boolean))];
+  const seen = new Map(); // key "Month|Year" -> {month,year}
+  DATA.deduction.forEach(d=>{
+    if(!d["Month"]) return;
+    const year = String(Math.round(Number(d["Year"])||0));
+    seen.set(`${d["Month"]}|${year}`, {month:d["Month"], year});
+  });
+  const combos = [...seen.values()].sort((a,b)=>{
+    if(a.year!==b.year) return Number(b.year)-Number(a.year);
+    return MONTH_ORDER.indexOf(b.month) - MONTH_ORDER.indexOf(a.month);
+  });
+
   const sel = document.getElementById("monthSel");
   sel.innerHTML = "";
   const optAll = document.createElement("option");
   optAll.value=""; optAll.textContent="Latest available";
   sel.appendChild(optAll);
-  months.forEach(m=>{
-    const o = document.createElement("option"); o.value=m; o.textContent=m; sel.appendChild(o);
+  combos.forEach(({month,year})=>{
+    const o = document.createElement("option");
+    o.value = `${month}|${year}`;
+    o.textContent = `${month} ${year}`;
+    sel.appendChild(o);
   });
 }
 
@@ -432,11 +479,12 @@ function renderRequests(filterText=""){
 
   let rows = DATA.requests.slice();
   if(q) rows = rows.filter(r => (r["Staff_Name"]||"").toLowerCase().includes(q));
-  if(from) rows = rows.filter(r => !r["Applied_On_f"] || new Date(r["Applied_On"]) >= new Date(from));
-  if(to) rows = rows.filter(r => !r["Applied_On_f"] || new Date(r["Applied_On"]) <= new Date(to));
+  // date-range filter: keep requests whose leave period overlaps the selected From/To
+  if(from) rows = rows.filter(r => !r["To_Date_f"] || new Date(r["To_Date_f"]) >= new Date(from));
+  if(to)   rows = rows.filter(r => !r["From_Date_f"] || new Date(r["From_Date_f"]) <= new Date(to));
 
   if(rows.length===0){
-    body.innerHTML = `<tr><td colspan="9"><div class="empty"><b>No leave requests in this range</b>Submitted requests from Leave_Requests will show up here automatically.</div></td></tr>`;
+    body.innerHTML = `<tr><td colspan="7"><div class="empty"><b>No leave requests in this range</b>Submitted requests from Leave_Requests will show up here automatically.</div></td></tr>`;
     return;
   }
 
@@ -456,16 +504,14 @@ function renderRequests(filterText=""){
   rows.forEach(r=>{
     const tr = document.createElement("tr");
     tr.innerHTML = `
+      <td class="num-cell">${r["Request_ID"]||"–"}</td>
       <td><div class="person"><div class="avatar" style="background:${colorFor(r["Staff_Name"])}">${initials(r["Staff_Name"])}</div>
-        <div class="name">${r["Staff_Name"]||""}</div></div></td>
+        <div><div class="name">${r["Staff_Name"]||""}</div><div class="email">${r["Email"]||""}</div></div></div></td>
       <td>${typeBadge(r["Leave_Type"])}</td>
       <td>${r["From_Date_f"]||"–"}</td>
       <td>${r["To_Date_f"]||"–"}</td>
-      <td class="num-cell">${r["Total_Days"] ?? "–"}</td>
-      <td style="white-space:normal;max-width:220px;">${r["Reason"]||""}</td>
+      <td style="white-space:normal;max-width:260px;">${r["Reason"]||""}</td>
       <td>${statusBadge(r["Status"])}</td>
-      <td>${r["Applied_On_f"]||"–"}</td>
-      <td>${r["Approved_By"]||"–"}</td>
     `;
     body.appendChild(tr);
   });
@@ -518,7 +564,8 @@ function renderDeductions(filterText=""){
   body.innerHTML = "";
   const q = filterText.trim().toLowerCase();
   const month = document.getElementById("monthSel").value;
-  document.getElementById("deductionMonthLabel").textContent = month || "latest available";
+  const monthLabelText = month ? month.replace("|"," ") : "latest available";
+  document.getElementById("deductionMonthLabel").textContent = monthLabelText;
 
   let totalPerf=0, totalLeave=0;
   let rows = DATA.staff.filter(s => (s["Status"]||"").toUpperCase()!=="INACTIVE");
