@@ -42,20 +42,14 @@
   .brand h1{font-size:24px;font-weight:800;margin:0 0 4px;letter-spacing:-0.02em;}
   .brand p{margin:0;font-size:13px;color:var(--ink-soft);}
   .brand p span{color:var(--blue);font-weight:600;}
-  .controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-  .field{display:flex;flex-direction:column;gap:3px;}
-  .field label{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);font-weight:600;}
-  .field input, .field select{
-    border:1px solid var(--border);background:var(--card);border-radius:10px;
-    padding:8px 10px;font-family:inherit;font-size:13px;color:var(--ink);min-width:150px;
-  }
   .btn{
     background:var(--ink);color:#fff;border:none;border-radius:10px;
-    padding:9px 18px;font-weight:600;font-size:13px;cursor:pointer;align-self:flex-end;
+    padding:9px 18px;font-weight:600;font-size:13px;cursor:pointer;
     transition:opacity .15s;
   }
   .btn:hover{opacity:.85;}
   .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--border);}
+  .btn.sm{padding:7px 14px;font-size:12.5px;}
 
   /* top-right Apply Leave CTA */
   .topbar{display:flex;justify-content:flex-end;margin-bottom:14px;}
@@ -78,10 +72,17 @@
   /* tabs */
   .tabs{display:flex;gap:4px;background:rgba(0,0,0,0.035);padding:4px;border-radius:12px;width:fit-content;margin-bottom:22px;}
   .tab{
+    position:relative;
     padding:8px 16px;font-size:13px;font-weight:600;color:var(--ink-soft);
     border-radius:9px;cursor:pointer;border:none;background:transparent;
+    display:flex;align-items:center;gap:7px;
   }
   .tab.active{background:#fff;color:var(--ink);box-shadow:var(--shadow);}
+  .tab-badge{
+    background:var(--red);color:#fff;font-size:10.5px;font-weight:800;
+    min-width:18px;height:18px;border-radius:20px;display:flex;align-items:center;justify-content:center;
+    padding:0 5px;line-height:1;
+  }
 
   /* cards */
   .cards{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:22px;}
@@ -101,9 +102,16 @@
 
   /* section / table */
   .panel{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:20px;}
-  .panel-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+  .panel-head{display:flex;align-items:flex-end;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:14px;}
   .panel-head h2{font-size:15px;font-weight:700;margin:0;}
-  .search{border:1px solid var(--border);border-radius:9px;padding:7px 12px;font-size:12.5px;font-family:inherit;width:220px;}
+  .panel-filters{display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap;}
+  .mini-field{display:flex;flex-direction:column;gap:3px;}
+  .mini-field label{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);font-weight:600;}
+  .mini-field input, .mini-field select{
+    border:1px solid var(--border);background:var(--card);border-radius:9px;
+    padding:7px 10px;font-family:inherit;font-size:12.5px;color:var(--ink);min-width:120px;
+  }
+  .search{border:1px solid var(--border);border-radius:9px;padding:7px 12px;font-size:12.5px;font-family:inherit;width:200px;}
 
   table{width:100%;border-collapse:collapse;font-size:13px;}
   thead th{
@@ -131,8 +139,6 @@
   .badge.blue{background:var(--blue-soft);color:var(--blue);}
   .badge.gray{background:#f0f1ea;color:var(--ink-faint);}
 
-  .bar-track{width:90px;height:6px;background:#eef0e9;border-radius:20px;overflow:hidden;display:inline-block;vertical-align:middle;margin-right:8px;}
-  .bar-fill{height:100%;border-radius:20px;background:var(--green);}
   .num-cell{font-family:'Roboto Mono',monospace;font-weight:500;font-size:12.5px;}
   .num-cell.neg{color:var(--red);}
 
@@ -162,20 +168,13 @@
       <h1>Leave Dashboard</h1>
       <p>Leave requests + balances + deductions &nbsp;·&nbsp; <span id="scopeLabel">All Staff</span></p>
     </div>
-    <div class="controls">
-      <div class="field">
-        <label>Month</label>
-        <select id="monthSel"></select>
-      </div>
-      <button class="btn" id="applyBtn">Apply</button>
-      <button class="btn ghost" id="refreshBtn" title="Reload live data">Refresh</button>
-    </div>
+    <button class="btn ghost" id="refreshBtn" title="Reload live data">Refresh</button>
   </header>
 
   <div id="warnBanner" class="warn-banner"></div>
 
   <div class="tabs" id="tabs">
-    <button class="tab active" data-tab="requests">Leave Requests</button>
+    <button class="tab active" data-tab="requests">Leave Requests <span class="tab-badge" id="pendingBadge" style="display:none;">0</span></button>
     <button class="tab" data-tab="balance">Leave Balance</button>
     <button class="tab" data-tab="deductions">Deductions</button>
   </div>
@@ -184,8 +183,30 @@
   <section id="tab-requests">
     <div class="panel">
       <div class="panel-head">
-        <h2>Leave Requests <span id="requestsMonthLabel" style="color:var(--ink-faint);font-weight:500;"></span></h2>
-        <input class="search" id="searchRequests" placeholder="Search employee...">
+        <h2>Leave Requests</h2>
+        <div class="panel-filters">
+          <div class="mini-field">
+            <label>Status</label>
+            <select id="statusFilter">
+              <option value="">All</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
+          <div class="mini-field">
+            <label>From</label>
+            <input type="date" id="fromDate">
+          </div>
+          <div class="mini-field">
+            <label>To</label>
+            <input type="date" id="toDate">
+          </div>
+          <div class="mini-field">
+            <label>&nbsp;</label>
+            <input class="search" id="searchRequests" placeholder="Search employee...">
+          </div>
+        </div>
       </div>
       <div class="tablewrap">
         <table>
@@ -204,14 +225,18 @@
     <div class="panel">
       <div class="panel-head">
         <h2>Leave Balance</h2>
-        <input class="search" id="searchBalance" placeholder="Search employee...">
+        <div class="panel-filters">
+          <div class="mini-field">
+            <label>&nbsp;</label>
+            <input class="search" id="searchBalance" placeholder="Search employee...">
+          </div>
+        </div>
       </div>
       <div class="tablewrap">
         <table>
           <thead><tr>
-            <th>Employee</th><th>Total Paid Leave</th><th>Used</th><th>Balance</th><th>Half Day</th>
-            <th>Unpaid</th><th>Manual Paid</th><th>Leave Year</th><th>Opening Balance</th>
-            <th>Annual Credit</th><th>Available Leave</th>
+            <th>Employee</th><th>Total Paid Leave</th><th>Used</th><th>Balance</th>
+            <th>Half Day</th><th>Unpaid</th><th>Leave Year</th>
           </tr></thead>
           <tbody id="balanceBody"></tbody>
         </table>
@@ -224,15 +249,24 @@
     <div class="cards" id="deductionCards"></div>
     <div class="panel">
       <div class="panel-head">
-        <h2>Performance Deduction <span id="deductionMonthLabel" style="color:var(--ink-faint);font-weight:500;"></span></h2>
-        <input class="search" id="searchDeductions" placeholder="Search employee...">
+        <h2>Performance Deduction</h2>
+        <div class="panel-filters">
+          <div class="mini-field">
+            <label>Month</label>
+            <select id="monthSel"></select>
+          </div>
+          <div class="mini-field">
+            <label>&nbsp;</label>
+            <input class="search" id="searchDeductions" placeholder="Search employee...">
+          </div>
+        </div>
       </div>
       <div class="tablewrap">
         <table>
           <thead><tr>
-            <th>Employee</th><th>Email</th><th>Month</th><th>Year</th><th>Planned</th>
+            <th>Employee</th><th>Month</th><th>Year</th><th>Planned</th>
             <th>Completed</th><th>Pending</th><th>Work Not Done %</th><th>Deduction %</th>
-            <th>Deduction Amount</th>
+            <th>Unpaid Leave</th><th>Deduction Amount</th>
           </tr></thead>
           <tbody id="deductionsBody"></tbody>
         </table>
@@ -247,12 +281,9 @@
 /* ============================================================
    CONFIG — points at the live "Leave Management" Google Sheet
    ============================================================ */
-// --- OPTION A (recommended): private sheet + Apps Script backend ---
-// Deploy Code.gs as a Web App inside the sheet, paste the /exec URL below.
 const USE_APPS_SCRIPT = true;
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx0QUYZuX9K6Ifow6r075WZDVpxlRAUo9Prp6zxKiKBFMh-Cq8TEIKVmdoOJxWgn06k/exec";
 
-// --- OPTION B (fallback): sheet shared "Anyone with link — Viewer" ---
 const SHEET_ID = "1Q9ylhYjxTxWgX4fJbpI0rg9-WF3vy2AE5uTYnBv0PgA";
 const GVIZ = (sheet) => `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheet)}&headers=1`;
 
@@ -281,15 +312,12 @@ async function loadSheet(name){
     const res = await fetch(`${APPS_SCRIPT_URL}?sheet=${encodeURIComponent(name)}`);
     const rows = await res.json();
     if (rows && rows.error) throw new Error(rows.error);
-    // mirror every field into a "_f" key so render functions can use a
-    // consistent display value whether data came from Apps Script or gviz.
     return rows.map(r=>{
       const obj = {...r};
       Object.keys(r).forEach(k => obj[k+"_f"] = r[k]);
       return obj;
     });
   }
-
   const res = await fetch(GVIZ(name));
   const text = await res.text();
   const json = JSON.parse(text.slice(text.indexOf('{'), text.lastIndexOf('}')+1));
@@ -309,16 +337,13 @@ async function loadSheet(name){
 
 async function safeLoad(name){
   try { return await loadSheet(name); }
-  catch(e){ console.error("Failed to load", name, e); return { __failed:true, rows:[] }; }
+  catch(e){ console.error("Failed to load", name, e); return { __failed:true }; }
 }
 
 let DATA = { staff:[], requests:[], balance:[], deduction:[] };
-let FAILED = [];
 
 async function loadAll(){
   setLoading(true);
-  FAILED = [];
-
   const [staffRes, requestsRes, balanceRes, deductionRes] = await Promise.all([
     safeLoad("Staff_Info"),
     safeLoad("Leave_Requests"),
@@ -326,11 +351,8 @@ async function loadAll(){
     safeLoad("PERFORMANCE_DEDUCTION"),
   ]);
 
-  const unwrap = (res, label) => {
-    if (Array.isArray(res)) return res;
-    FAILED.push(label);
-    return [];
-  };
+  const failed = [];
+  const unwrap = (res, label) => { if (Array.isArray(res)) return res; failed.push(label); return []; };
 
   DATA.staff = unwrap(staffRes, "Staff_Info").filter(r=>r["Name"]);
   DATA.requests = unwrap(requestsRes, "Leave_Requests").filter(r=>r["Staff_Name"] || r["Email"]);
@@ -338,9 +360,9 @@ async function loadAll(){
   DATA.deduction = unwrap(deductionRes, "PERFORMANCE_DEDUCTION").filter(r=>r["EMPLOYEE"]);
 
   const banner = document.getElementById("warnBanner");
-  if (FAILED.length){
+  if (failed.length){
     banner.style.display = "block";
-    banner.textContent = `⚠ Could not load: ${FAILED.join(", ")}. Other tabs still work — hit Refresh to retry.`;
+    banner.textContent = `⚠ Could not load: ${failed.join(", ")}. Other tabs still work — hit Refresh to retry.`;
   } else {
     banner.style.display = "none";
   }
@@ -355,17 +377,16 @@ function setLoading(state){
   document.getElementById("refreshBtn").textContent = state ? "Loading…" : "Refresh";
 }
 
-/* ---------- helpers ---------- */
 function staffByEmail(email){
   return DATA.staff.find(s => (s["Email"]||"").toLowerCase() === (email||"").toLowerCase());
 }
 
 function populateMonths(){
-  const seen = new Map(); // key "Month|Year" -> {month,year}
+  const seen = new Map();
   DATA.deduction.forEach(d=>{
-    if(!d["Month"]) return;
-    const year = String(Math.round(Number(d["Year"])||0));
-    seen.set(`${d["Month"]}|${year}`, {month:d["Month"], year});
+    if(!d["MONTH"]) return;
+    const year = String(Math.round(Number(d["YEAR"])||0));
+    seen.set(`${d["MONTH"]}|${year}`, {month:d["MONTH"], year});
   });
   const combos = [...seen.values()].sort((a,b)=>{
     if(a.year!==b.year) return Number(b.year)-Number(a.year);
@@ -387,41 +408,45 @@ function populateMonths(){
   if ([...sel.options].some(o=>o.value===prevValue)) sel.value = prevValue;
 }
 
-function selectedMonthKey(){
-  return document.getElementById("monthSel").value; // "" or "March|2026"
+/* ============================================================
+   RENDER: Leave Requests tab
+   ============================================================ */
+function updatePendingBadge(){
+  const pendingCount = DATA.requests.filter(r=>{
+    const s = (r["Status"]||"").toLowerCase();
+    return !s || (!s.includes("approve") && !s.includes("reject"));
+  }).length;
+  const badge = document.getElementById("pendingBadge");
+  if(pendingCount>0){
+    badge.style.display = "flex";
+    badge.textContent = pendingCount;
+  } else {
+    badge.style.display = "none";
+  }
 }
 
-/* ============================================================
-   RENDER: Leave Requests tab (mirrors Leave_Requests sheet)
-   ============================================================ */
 function renderRequests(filterText=""){
   const body = document.getElementById("requestsBody");
   body.innerHTML = "";
   const q = filterText.trim().toLowerCase();
-  const monthKey = selectedMonthKey();
+  const status = document.getElementById("statusFilter").value;
+  const from = document.getElementById("fromDate").value;
+  const to = document.getElementById("toDate").value;
 
   let rows = DATA.requests.slice();
   if(q) rows = rows.filter(r => (r["Staff_Name"]||"").toLowerCase().includes(q));
-
-  let label = "";
-  if(monthKey){
-    const [mName, yStr] = monthKey.split("|");
-    label = `— ${mName} ${yStr}`;
-    const mIdx = MONTH_ORDER.indexOf(mName);
-    const y = Number(yStr);
-    const rangeStart = new Date(y, mIdx, 1);
-    const rangeEnd = new Date(y, mIdx+1, 0, 23, 59, 59);
+  if(status){
     rows = rows.filter(r=>{
-      const rf = r["From_Date_f"] ? new Date(r["From_Date_f"]) : null;
-      if(!rf || isNaN(rf)) return true; // keep rows without parseable dates rather than hide them
-      const rt = r["To_Date_f"] ? new Date(r["To_Date_f"]) : rf;
-      return rf <= rangeEnd && rt >= rangeStart;
+      const s = (r["Status"]||"").toLowerCase();
+      if(status==="pending") return !s || (!s.includes("approve") && !s.includes("reject"));
+      return s.includes(status);
     });
   }
-  document.getElementById("requestsMonthLabel").textContent = label;
+  if(from) rows = rows.filter(r => !r["To_Date_f"] || new Date(r["To_Date_f"]) >= new Date(from));
+  if(to)   rows = rows.filter(r => !r["From_Date_f"] || new Date(r["From_Date_f"]) <= new Date(to));
 
   if(rows.length===0){
-    body.innerHTML = `<tr><td colspan="7"><div class="empty"><b>No leave requests${monthKey ? " for this month" : ""}</b>Submitted requests from the Leave_Requests sheet will show up here automatically.</div></td></tr>`;
+    body.innerHTML = `<tr><td colspan="7"><div class="empty"><b>No leave requests found</b>Submitted requests from the Leave_Requests sheet will show up here automatically.</div></td></tr>`;
     return;
   }
 
@@ -435,7 +460,6 @@ function renderRequests(filterText=""){
     s=(s||"").toLowerCase();
     if(s.includes("approve")) return `<span class="badge green">Approved</span>`;
     if(s.includes("reject")) return `<span class="badge red">Rejected</span>`;
-    if(!s) return `<span class="badge gray">–</span>`;
     return `<span class="badge amber">Pending</span>`;
   };
 
@@ -456,8 +480,8 @@ function renderRequests(filterText=""){
 }
 
 /* ============================================================
-   RENDER: Leave Balance tab (mirrors Leave_Balance sheet — no
-   month/date filter applied here on purpose)
+   RENDER: Leave Balance tab (name only, plain balance number,
+   trimmed columns, no date/month filter)
    ============================================================ */
 function renderBalance(filterText=""){
   const body = document.getElementById("balanceBody");
@@ -474,55 +498,43 @@ function renderBalance(filterText=""){
   }
 
   if(rows.length===0){
-    body.innerHTML = `<tr><td colspan="11"><div class="empty"><b>No leave balance data</b>Check that Leave_Balance loaded correctly (see banner above, if any).</div></td></tr>`;
+    body.innerHTML = `<tr><td colspan="7"><div class="empty"><b>No leave balance data</b></div></td></tr>`;
     return;
   }
 
   rows.forEach(r=>{
     const staff = staffByEmail(r["Email"]);
     const displayName = staff ? staff["Name"] : (r["Email"]||"").split("@")[0];
-    const total = Number(r["Total_Paid_Leave"])||0;
-    const bal = Number(r["Balance_Leaves"])||0;
-    const ratio = total ? Math.max(0,Math.min(100, (bal/total)*100)) : 0;
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td><div class="person"><div class="avatar" style="background:${colorFor(displayName)}">${initials(displayName)}</div>
-        <div><div class="name">${displayName}</div><div class="email">${r["Email"]||""}</div></div></div></td>
-      <td class="num-cell">${total}</td>
+        <div class="name">${displayName}</div></div></td>
+      <td class="num-cell">${r["Total_Paid_Leave"] ?? 0}</td>
       <td class="num-cell">${r["Used_Paid_Leave"] ?? 0}</td>
-      <td><span class="bar-track"><span class="bar-fill" style="width:${ratio}%;background:${ratio<30?'var(--red)':ratio<60?'var(--amber)':'var(--green)'}"></span></span>${bal}</td>
+      <td class="num-cell" style="font-weight:700;">${r["Balance_Leaves"] ?? 0}</td>
       <td class="num-cell">${r["HalfDay_Count"] ?? 0}</td>
       <td class="num-cell ${Number(r["Unpaid_Leave"])?'neg':''}">${r["Unpaid_Leave"] ?? 0}</td>
-      <td class="num-cell">${r["Manual_Paid"] ?? 0}</td>
       <td>${r["Leave_Year"]||"–"}</td>
-      <td class="num-cell">${r["Opening_Balance"] ?? 0}</td>
-      <td class="num-cell">${r["Annual_Credit"] ?? 0}</td>
-      <td class="num-cell">${r["Available_Leave"] ?? 0}</td>
     `;
     body.appendChild(tr);
   });
 }
 
 /* ============================================================
-   RENDER: Deductions tab (mirrors PERFORMANCE_DEDUCTION sheet,
-   filterable by the same Month dropdown as PERFORMANCE_DEDUCTION's
-   own Month/Year columns)
+   RENDER: Deductions tab (mirrors PERFORMANCE_DEDUCTION sheet;
+   header names are MONTH / YEAR / UNPAID LEAVE, all caps)
    ============================================================ */
 function renderDeductions(filterText=""){
   const body = document.getElementById("deductionsBody");
   body.innerHTML = "";
   const q = filterText.trim().toLowerCase();
-  const monthKey = selectedMonthKey();
+  const monthKey = document.getElementById("monthSel").value;
 
   let rows = DATA.deduction.slice();
-  let label = "";
   if(monthKey){
     const [mName, yStr] = monthKey.split("|");
-    label = `— ${mName} ${yStr}`;
-    rows = rows.filter(d => d["Month"]===mName && String(Math.round(Number(d["Year"])))===yStr);
+    rows = rows.filter(d => d["MONTH"]===mName && String(Math.round(Number(d["YEAR"])))===yStr);
   }
-  document.getElementById("deductionMonthLabel").textContent = label;
-
   if(q) rows = rows.filter(d => (d["EMPLOYEE"]||"").toLowerCase().includes(q));
 
   let totalPlanned=0, totalCompleted=0, totalPending=0, totalDed=0;
@@ -542,14 +554,14 @@ function renderDeductions(filterText=""){
     tr.innerHTML = `
       <td><div class="person"><div class="avatar" style="background:${colorFor(d["EMPLOYEE"])}">${initials(d["EMPLOYEE"])}</div>
         <div class="name">${titleCase(d["EMPLOYEE"])}</div></div></td>
-      <td class="email">${d["EMAIL"]||""}</td>
-      <td>${d["Month"]||"–"}</td>
-      <td class="num-cell">${d["Year"]||"–"}</td>
+      <td>${d["MONTH"]||"–"}</td>
+      <td class="num-cell">${d["YEAR"]||"–"}</td>
       <td class="num-cell">${d["PLANNED"] ?? "–"}</td>
       <td class="num-cell">${d["COMPLETED"] ?? "–"}</td>
       <td class="num-cell">${d["PENDING"] ?? "–"}</td>
       <td class="num-cell">${d["WORK NOT DONE%"]!==undefined && d["WORK NOT DONE%"]!==null ? pct(d["WORK NOT DONE%"]) : "–"}</td>
       <td class="num-cell">${d["DEDUCTION %"]!==undefined && d["DEDUCTION %"]!==null ? pct(d["DEDUCTION %"]) : "–"}</td>
+      <td class="num-cell">${d["UNPAID LEAVE"] ?? 0}</td>
       <td class="num-cell ${ded?'neg':''}" style="font-weight:700;">${money(ded)}</td>
     `;
     body.appendChild(tr);
@@ -565,6 +577,7 @@ function renderDeductions(filterText=""){
 }
 
 function renderAll(){
+  updatePendingBadge();
   renderRequests(document.getElementById("searchRequests").value);
   renderBalance(document.getElementById("searchBalance").value);
   renderDeductions(document.getElementById("searchDeductions").value);
@@ -580,12 +593,14 @@ document.querySelectorAll(".tab").forEach(btn=>{
   });
 });
 
-/* ---------- search + filters ---------- */
+/* ---------- filters ---------- */
 document.getElementById("searchRequests").addEventListener("input", e=>renderRequests(e.target.value));
+document.getElementById("statusFilter").addEventListener("change", ()=>renderRequests(document.getElementById("searchRequests").value));
+document.getElementById("fromDate").addEventListener("change", ()=>renderRequests(document.getElementById("searchRequests").value));
+document.getElementById("toDate").addEventListener("change", ()=>renderRequests(document.getElementById("searchRequests").value));
 document.getElementById("searchBalance").addEventListener("input", e=>renderBalance(e.target.value));
 document.getElementById("searchDeductions").addEventListener("input", e=>renderDeductions(e.target.value));
-document.getElementById("applyBtn").addEventListener("click", renderAll);
-document.getElementById("monthSel").addEventListener("change", renderAll);
+document.getElementById("monthSel").addEventListener("change", ()=>renderDeductions(document.getElementById("searchDeductions").value));
 document.getElementById("refreshBtn").addEventListener("click", loadAll);
 
 loadAll();
