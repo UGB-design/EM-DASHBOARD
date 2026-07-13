@@ -408,7 +408,6 @@ tr:hover td{background:#fafbfc}
       <select id="dlFilterStatus" onchange="applyDelegationFilters()">
         <option value="All">All Status</option>
         <option value="Completed">Completed</option>
-        <option value="Week Shifted">Week Shifted</option>
         <option value="Pending">Pending</option>
       </select>
     </div>
@@ -456,9 +455,8 @@ tr:hover td{background:#fafbfc}
               <th style="text-align:center">Total Plan</th>
               <th style="text-align:center">Total Completed</th>
               <th style="text-align:center">On Time Completed</th>
-              <th style="text-align:center">Work Not Done %</th>
               <th style="text-align:center">Work Not Done On Time %</th>
-              <th style="text-align:center">Performance</th>
+              <th style="text-align:center">Work Not Done %</th>
             </tr>
           </thead>
           <tbody id="scTableBody"></tbody>
@@ -541,6 +539,15 @@ function toDDMMYYYY(iso) {
   var p = String(iso).split('-');
   if (p.length !== 3) return '';
   return p[2] + '/' + p[1] + '/' + p[0];
+}
+
+// Checks whether a delegation date field actually holds a real date value
+// (used to decide Completed vs Pending — Week Shifted status is retired)
+function hasValidDate(v) {
+  if (v === null || v === undefined) return false;
+  var s = String(v).trim();
+  if (!s || s === '-' || s === '—' || s.toLowerCase() === 'null' || s.toLowerCase() === 'undefined') return false;
+  return true;
 }
 
 // ── From/To Date Range ────────────────────────────────────────────────────────
@@ -951,46 +958,53 @@ function applyChecklistFilters() {
 }
 
 // ── Delegation Tab ────────────────────────────────────────────────────────────
+// Week Shifted status is retired. Status is now derived purely from the three
+// date columns:
+//   • First Date, Revision 1 AND Revision 2 all contain a date  -> Completed
+//   • Revision 2 has no date (regardless of Revision 1 / First) -> Pending
+function computeDelegationStatus(r) {
+  var allDated = hasValidDate(r.firstDate) && hasValidDate(r.revision1) && hasValidDate(r.revision2);
+  return allDated ? 'Completed' : 'Pending';
+}
+
 function applyDelegationFilters() {
   var dFilter = document.getElementById('dlFilterDoer').value;
   var sFilter = document.getElementById('dlFilterStatus').value;
   var data = globalRawData ? (globalRawData.delegationData || []) : [];
 
-  var filtered = data.filter(function(r) {
+  var enriched = data.map(function(r) {
+    return Object.assign({}, r, { status: computeDelegationStatus(r) });
+  });
+
+  var filtered = enriched.filter(function(r) {
     if (dFilter !== 'All' && r.client !== dFilter) return false;
     if (sFilter === 'All') return true;
     return r.status.toLowerCase() === sFilter.toLowerCase();
   });
 
-  var doneCount        = filtered.filter(function(r) { return r.status.toLowerCase() === 'completed'; }).length;
-  var weekShiftedCount = filtered.filter(function(r) { return r.status.toLowerCase() === 'week shifted'; }).length;
-  var pendingOnlyCount = filtered.filter(function(r) { return r.status.toLowerCase() === 'pending'; }).length;
-  var totalCount       = filtered.length;
+  var doneCount    = filtered.filter(function(r) { return r.status === 'Completed'; }).length;
+  var pendingCount = filtered.filter(function(r) { return r.status === 'Pending'; }).length;
+  var totalCount   = filtered.length;
 
   var badgeHTML = '<span class="m-badge b-blue">' + totalCount + ' total</span>';
   if (sFilter === 'All') {
     badgeHTML += '<span class="m-badge b-green">' + doneCount + ' completed</span>' +
-      '<span class="m-badge b-red">' + weekShiftedCount + ' week shifted</span>' +
-      '<span class="m-badge" style="background:#fffbeb;color:#d97706">' + pendingOnlyCount + ' pending</span>';
+      '<span class="m-badge" style="background:#fffbeb;color:#d97706">' + pendingCount + ' pending</span>';
   } else if (sFilter === 'Completed') {
     badgeHTML += '<span class="m-badge b-green">' + doneCount + ' completed</span>';
-  } else if (sFilter === 'Week Shifted') {
-    badgeHTML += '<span class="m-badge b-red">' + weekShiftedCount + ' week shifted</span>';
   } else if (sFilter === 'Pending') {
-    badgeHTML += '<span class="m-badge" style="background:#fffbeb;color:#d97706">' + pendingOnlyCount + ' pending</span>';
+    badgeHTML += '<span class="m-badge" style="background:#fffbeb;color:#d97706">' + pendingCount + ' pending</span>';
   }
   document.getElementById('dlMetaBadges').innerHTML = badgeHTML;
 
-  var redScore    = totalCount > 0 ? (weekShiftedCount / totalCount * 100) : 0;
-  var yellowScore = totalCount > 0 ? (pendingOnlyCount / totalCount * 100) : 0;
-  var greenScore  = totalCount > 0 ? (doneCount        / totalCount * 100) : 0;
+  var yellowScore = totalCount > 0 ? (pendingCount / totalCount * 100) : 0;
+  var greenScore  = totalCount > 0 ? (doneCount    / totalCount * 100) : 0;
   document.getElementById('dlStatsGrid').innerHTML =
-    statCard('Red Score',    redScore.toFixed(2)    + '%', 'red') +
-    statCard('Yellow Score', yellowScore.toFixed(2) + '%', 'orange') +
-    statCard('Green Score',  greenScore.toFixed(2)  + '%', 'green');
+    statCard('Pending Score',   yellowScore.toFixed(2) + '%', 'orange') +
+    statCard('Completed Score', greenScore.toFixed(2)  + '%', 'green');
 
   document.getElementById('dlTableBody').innerHTML = filtered.map(function(r, i) {
-    var sCls = r.status.toLowerCase() === 'completed' ? 'st-done' : r.status.toLowerCase() === 'week shifted' ? 'st-shift' : 'st-pend';
+    var sCls = r.status === 'Completed' ? 'st-done' : 'st-pend';
     return '<tr><td>' + (i + 1) + '</td>' +
       '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(r.client) + '</div>' + r.client + '</div></td>' +
       '<td>' + r.task + '</td>' +
@@ -1012,12 +1026,7 @@ function perfColor(pct) {
   return { bg:'#fee2e2', color:'#991b1b', bar:'#ef4444' }; // red
 }
 
-function perfBadge(pct) {
-  var c = perfColor(pct);
-  return '<span style="background:' + c.bg + ';color:' + c.color + ';padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block;white-space:nowrap">' + pct.toFixed(2) + '%</span>';
-}
-
-// Format a pct cell (Work Not Done % values — shown negative in sheet)
+// Format a pct cell (Work Not Done On Time % values — shown negative in sheet)
 function pctCell(raw) {
   // raw is a string like "-100.00%" or "0.00%" or "-12.26%"
   var s = String(raw || '').trim();
@@ -1026,6 +1035,17 @@ function pctCell(raw) {
   if (num === 0) return '<span class="pct-zer">0.00%</span>';
   if (num < 0)   return '<span class="pct-neg">' + num.toFixed(2) + '%</span>';
   return '<span class="pct-pos">+' + num.toFixed(2) + '%</span>';
+}
+
+// Work Not Done % cell — green when within ±5%, red when it exceeds that band
+function workNotDoneCell(raw) {
+  var s = String(raw || '').trim();
+  if (!s || s === '' || s === '-') return '<span class="pct-zer">—</span>';
+  var num = parseFloat(s.replace('%','')) || 0;
+  var absNum = Math.abs(num);
+  var cls = absNum <= 5 ? 'pct-pos' : 'pct-neg';
+  var display = num === 0 ? '0.00%' : (num > 0 ? '+' : '') + num.toFixed(2) + '%';
+  return '<span class="' + cls + '">' + display + '</span>';
 }
 
 // Check if a scores row is all-zero (hide these)
@@ -1146,7 +1166,8 @@ function applyScoreFilters() {
 
   document.getElementById('scTableCount').textContent = filtered.length + ' employees shown';
 
-  // Sort by performance descending
+  // Sort by performance descending (performance field still drives ranking
+  // even though the column itself is no longer displayed in the table)
   var sorted = filtered.slice().sort(function(a, b) {
     var pa = parseFloat(String(a.performance||'0').replace('%','')) || 0;
     var pb = parseFloat(String(b.performance||'0').replace('%','')) || 0;
@@ -1154,24 +1175,16 @@ function applyScoreFilters() {
   });
 
   document.getElementById('scTableBody').innerHTML = sorted.map(function(r, i) {
-    var perfPct = parseFloat(String(r.performance || '0').replace('%','')) || 0;
-    // Mini rank bar fill color — same red/orange/amber/green scheme as the badge
-    var barColor = perfColor(perfPct).bar;
-    var barW = Math.min(Math.max(perfPct, 0), 100);
     return '<tr>' +
       '<td style="text-align:center;font-weight:700;color:#9aa0ac">' + (i + 1) + '</td>' +
       '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(r.employee) + '</div><strong>' + r.employee + '</strong></div></td>' +
       '<td style="text-align:center">' + nbB(r.totalPlan) + '</td>' +
       '<td style="text-align:center">' + nbG(r.totalCompleted) + '</td>' +
       '<td style="text-align:center">' + nbG(r.onTimeCompleted) + '</td>' +
-      '<td style="text-align:center">' + pctCell(r.workNotDonePct) + '</td>' +
       '<td style="text-align:center">' + pctCell(r.workNotDoneOnTimePct) + '</td>' +
-      '<td><div style="display:flex;align-items:center;gap:8px">' +
-        '<div class="score-rank-bar"><div class="score-rank-fill" style="width:' + barW + '%;background:' + barColor + '"></div></div>' +
-        perfBadge(perfPct) +
-      '</div></td>' +
+      '<td style="text-align:center">' + workNotDoneCell(r.workNotDonePct) + '</td>' +
       '</tr>';
-  }).join('') || '<tr><td colspan="8" style="text-align:center;color:#bbb;padding:30px">No score data matches the selected filters</td></tr>';
+  }).join('') || '<tr><td colspan="7" style="text-align:center;color:#bbb;padding:30px">No score data matches the selected filters</td></tr>';
 }
 
 // ── Tab switch ────────────────────────────────────────────────────────────────
