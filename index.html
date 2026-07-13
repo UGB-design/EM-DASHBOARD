@@ -707,7 +707,7 @@ function computeAdjustedScoresData(data) {
   var wsCounts = {};
   delRows.forEach(function(r) {
     if (isWeekShifted(r)) {
-      var key = String(r.client || '').toLowerCase().trim();
+      var key = String(r.doer || '').toLowerCase().trim();
       wsCounts[key] = (wsCounts[key] || 0) + 1;
     }
   });
