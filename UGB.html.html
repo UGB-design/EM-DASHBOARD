@@ -47,7 +47,7 @@
   .field label{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);font-weight:600;}
   .field input, .field select{
     border:1px solid var(--border);background:var(--card);border-radius:10px;
-    padding:8px 10px;font-family:inherit;font-size:13px;color:var(--ink);min-width:130px;
+    padding:8px 10px;font-family:inherit;font-size:13px;color:var(--ink);min-width:150px;
   }
   .btn{
     background:var(--ink);color:#fff;border:none;border-radius:10px;
@@ -114,7 +114,7 @@
   tbody td{padding:12px 16px;border-bottom:1px solid #f1f2ec;vertical-align:middle;white-space:nowrap;}
   tbody tr:last-child td{border-bottom:none;}
   tbody tr:hover{background:#fafaf6;}
-  .tablewrap{max-height:520px;overflow:auto;}
+  .tablewrap{max-height:560px;overflow:auto;}
 
   .person{display:flex;align-items:center;gap:9px;}
   .avatar{
@@ -138,8 +138,11 @@
 
   .empty{padding:60px 20px;text-align:center;color:var(--ink-faint);}
   .empty b{display:block;color:var(--ink);font-size:14px;margin-bottom:4px;}
-  .loading{padding:50px;text-align:center;color:var(--ink-faint);font-size:13px;}
   .foot-note{font-size:11px;color:var(--ink-faint);text-align:center;margin-top:6px;}
+  .warn-banner{
+    background:var(--amber-soft);color:#8a5a05;border:1px solid #f2d79b;border-radius:10px;
+    padding:9px 14px;font-size:12.5px;margin-bottom:16px;display:none;
+  }
 
   ::selection{background:var(--blue-soft);}
 </style>
@@ -161,15 +164,7 @@
     </div>
     <div class="controls">
       <div class="field">
-        <label>From (Leave Requests)</label>
-        <input type="date" id="fromDate">
-      </div>
-      <div class="field">
-        <label>To (Leave Requests)</label>
-        <input type="date" id="toDate">
-      </div>
-      <div class="field">
-        <label>Deduction Month</label>
+        <label>Month</label>
         <select id="monthSel"></select>
       </div>
       <button class="btn" id="applyBtn">Apply</button>
@@ -177,39 +172,19 @@
     </div>
   </header>
 
+  <div id="warnBanner" class="warn-banner"></div>
+
   <div class="tabs" id="tabs">
-    <button class="tab active" data-tab="summary">Summary</button>
-    <button class="tab" data-tab="requests">Leave Requests</button>
+    <button class="tab active" data-tab="requests">Leave Requests</button>
     <button class="tab" data-tab="balance">Leave Balance</button>
     <button class="tab" data-tab="deductions">Deductions</button>
   </div>
 
-  <!-- SUMMARY -->
-  <section id="tab-summary">
-    <div class="cards" id="summaryCards"></div>
-    <div class="panel">
-      <div class="panel-head">
-        <h2>All Employees — Leave &amp; Deduction Summary</h2>
-        <input class="search" id="searchSummary" placeholder="Search employee...">
-      </div>
-      <div class="tablewrap">
-        <table>
-          <thead><tr>
-            <th>#</th><th>Employee</th><th>Paid Leave Balance</th><th>Used</th><th>Half Day</th>
-            <th>Unpaid Leave</th><th>Leave Deduction</th><th>Performance Deduction</th><th>Total Deduction</th>
-          </tr></thead>
-          <tbody id="summaryBody"></tbody>
-        </table>
-      </div>
-    </div>
-    <p class="foot-note" id="lastUpdated"></p>
-  </section>
-
   <!-- LEAVE REQUESTS -->
-  <section id="tab-requests" style="display:none;">
+  <section id="tab-requests">
     <div class="panel">
       <div class="panel-head">
-        <h2>Leave Requests</h2>
+        <h2>Leave Requests <span id="requestsMonthLabel" style="color:var(--ink-faint);font-weight:500;"></span></h2>
         <input class="search" id="searchRequests" placeholder="Search employee...">
       </div>
       <div class="tablewrap">
@@ -234,9 +209,9 @@
       <div class="tablewrap">
         <table>
           <thead><tr>
-            <th>Employee</th><th>Leave Year</th><th>Opening</th><th>Annual Credit</th>
-            <th>Total Paid Leave</th><th>Used</th><th>Half Day</th><th>Unpaid</th>
-            <th>Balance</th>
+            <th>Employee</th><th>Total Paid Leave</th><th>Used</th><th>Balance</th><th>Half Day</th>
+            <th>Unpaid</th><th>Manual Paid</th><th>Leave Year</th><th>Opening Balance</th>
+            <th>Annual Credit</th><th>Available Leave</th>
           </tr></thead>
           <tbody id="balanceBody"></tbody>
         </table>
@@ -249,15 +224,15 @@
     <div class="cards" id="deductionCards"></div>
     <div class="panel">
       <div class="panel-head">
-        <h2>Deduction Breakdown — <span id="deductionMonthLabel">selected month</span></h2>
+        <h2>Performance Deduction <span id="deductionMonthLabel" style="color:var(--ink-faint);font-weight:500;"></span></h2>
         <input class="search" id="searchDeductions" placeholder="Search employee...">
       </div>
       <div class="tablewrap">
         <table>
           <thead><tr>
-            <th>Employee</th><th>Planned (FMS+CL+DL)</th><th>Completed</th><th>Pending</th>
-            <th>Work Not Done %</th><th>Perf. Deduction %</th><th>Perf. Deduction ₹</th>
-            <th>Unpaid Leave (days)</th><th>Leave Deduction ₹</th><th>Total Deduction ₹</th>
+            <th>Employee</th><th>Email</th><th>Month</th><th>Year</th><th>Planned</th>
+            <th>Completed</th><th>Pending</th><th>Work Not Done %</th><th>Deduction %</th>
+            <th>Deduction Amount</th>
           </tr></thead>
           <tbody id="deductionsBody"></tbody>
         </table>
@@ -265,6 +240,7 @@
     </div>
   </section>
 
+  <p class="foot-note" id="lastUpdated"></p>
 </div>
 
 <script>
@@ -279,6 +255,8 @@ const APPS_SCRIPT_URL = "https://script.google.com/a/macros/ugbolmalassociates.c
 // --- OPTION B (fallback): sheet shared "Anyone with link — Viewer" ---
 const SHEET_ID = "1Q9ylhYjxTxWgX4fJbpI0rg9-WF3vy2AE5uTYnBv0PgA";
 const GVIZ = (sheet) => `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheet)}&headers=1`;
+
+const MONTH_ORDER = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
 const AVATAR_COLORS = ["#2954e5","#17a34a","#d97706","#7c4fe0","#dc2626","#0891b2","#be185d","#4d7c0f"];
 function colorFor(name){
@@ -295,6 +273,7 @@ function money(n){
   return "₹" + n.toLocaleString("en-IN", {maximumFractionDigits:0});
 }
 function pct(n){ return (Number(n)*100).toFixed(1) + "%"; }
+function titleCase(s){ return (s||"").toString().trim().replace(/\w\S*/g, t => t[0].toUpperCase()+t.slice(1).toLowerCase()); }
 
 /* ---------- sheet loader: Apps Script backend (preferred) or public gviz ---------- */
 async function loadSheet(name){
@@ -302,9 +281,8 @@ async function loadSheet(name){
     const res = await fetch(`${APPS_SCRIPT_URL}?sheet=${encodeURIComponent(name)}`);
     const rows = await res.json();
     if (rows && rows.error) throw new Error(rows.error);
-    // dates arrive pre-formatted as "yyyy-MM-dd" strings from Code.gs;
-    // mirror every field into a "_f" key so render functions (written for
-    // the gviz format) work unchanged.
+    // mirror every field into a "_f" key so render functions can use a
+    // consistent display value whether data came from Apps Script or gviz.
     return rows.map(r=>{
       const obj = {...r};
       Object.keys(r).forEach(k => obj[k+"_f"] = r[k]);
@@ -329,32 +307,47 @@ async function loadSheet(name){
   return rows;
 }
 
+async function safeLoad(name){
+  try { return await loadSheet(name); }
+  catch(e){ console.error("Failed to load", name, e); return { __failed:true, rows:[] }; }
+}
+
 let DATA = { staff:[], requests:[], balance:[], deduction:[] };
+let FAILED = [];
 
 async function loadAll(){
   setLoading(true);
-  try{
-    const [staff, requests, balance, deduction] = await Promise.all([
-      loadSheet("Staff_Info"),
-      loadSheet("Leave_Requests"),
-      loadSheet("Leave_Balance"),
-      loadSheet("PERFORMANCE_DEDUCTION"),
-    ]);
-    DATA.staff = staff.filter(r=>r["Name"]);
-    DATA.requests = requests.filter(r=>r["Staff_Name"] || r["Email"]);
-    DATA.balance = balance.filter(r=>r["Email"]);
-    DATA.deduction = deduction.filter(r=>r["EMPLOYEE"]);
-    populateMonths();
-    renderAll();
-    document.getElementById("lastUpdated").textContent = "Live data · refreshed " + new Date().toLocaleTimeString("en-IN");
-  }catch(err){
-    console.error(err);
-    const hint = USE_APPS_SCRIPT
-      ? `Paste your deployed Apps Script Web App URL into APPS_SCRIPT_URL in the code, then hit Refresh.`
-      : `Make sure "Leave Management" is shared as "Anyone with the link — Viewer", then hit Refresh.`;
-    document.getElementById("summaryBody").innerHTML =
-      `<tr><td colspan="9"><div class="empty"><b>Couldn't load the sheet</b>${hint}</div></td></tr>`;
+  FAILED = [];
+
+  const [staffRes, requestsRes, balanceRes, deductionRes] = await Promise.all([
+    safeLoad("Staff_Info"),
+    safeLoad("Leave_Requests"),
+    safeLoad("Leave_Balance"),
+    safeLoad("PERFORMANCE_DEDUCTION"),
+  ]);
+
+  const unwrap = (res, label) => {
+    if (Array.isArray(res)) return res;
+    FAILED.push(label);
+    return [];
+  };
+
+  DATA.staff = unwrap(staffRes, "Staff_Info").filter(r=>r["Name"]);
+  DATA.requests = unwrap(requestsRes, "Leave_Requests").filter(r=>r["Staff_Name"] || r["Email"]);
+  DATA.balance = unwrap(balanceRes, "Leave_Balance").filter(r=>r["Email"]);
+  DATA.deduction = unwrap(deductionRes, "PERFORMANCE_DEDUCTION").filter(r=>r["EMPLOYEE"]);
+
+  const banner = document.getElementById("warnBanner");
+  if (FAILED.length){
+    banner.style.display = "block";
+    banner.textContent = `⚠ Could not load: ${FAILED.join(", ")}. Other tabs still work — hit Refresh to retry.`;
+  } else {
+    banner.style.display = "none";
   }
+
+  populateMonths();
+  renderAll();
+  document.getElementById("lastUpdated").textContent = "Live data · refreshed " + new Date().toLocaleTimeString("en-IN");
   setLoading(false);
 }
 
@@ -362,27 +355,9 @@ function setLoading(state){
   document.getElementById("refreshBtn").textContent = state ? "Loading…" : "Refresh";
 }
 
-/* ---------- helpers to join data across sheets by email ---------- */
+/* ---------- helpers ---------- */
 function staffByEmail(email){
   return DATA.staff.find(s => (s["Email"]||"").toLowerCase() === (email||"").toLowerCase());
-}
-function balanceByEmail(email){
-  return DATA.balance.find(b => (b["Email"]||"").toLowerCase() === (email||"").toLowerCase());
-}
-const MONTH_ORDER = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-
-function latestDeductionFor(email, monthYearKey){
-  const matches = DATA.deduction.filter(d => (d["EMAIL"]||"").toLowerCase() === (email||"").toLowerCase() && d["Month"]);
-  if(monthYearKey){
-    const [m,y] = monthYearKey.split("|");
-    return matches.find(d => d["Month"]===m && String(Math.round(Number(d["Year"])))===y);
-  }
-  // no month picked -> latest by Year then Month order
-  return matches.sort((a,b)=>{
-    const ya = Math.round(Number(a["Year"])||0), yb = Math.round(Number(b["Year"])||0);
-    if(ya!==yb) return yb-ya;
-    return MONTH_ORDER.indexOf(b["Month"]) - MONTH_ORDER.indexOf(a["Month"]);
-  })[0];
 }
 
 function populateMonths(){
@@ -398,9 +373,10 @@ function populateMonths(){
   });
 
   const sel = document.getElementById("monthSel");
+  const prevValue = sel.value;
   sel.innerHTML = "";
   const optAll = document.createElement("option");
-  optAll.value=""; optAll.textContent="Latest available";
+  optAll.value=""; optAll.textContent="All months";
   sel.appendChild(optAll);
   combos.forEach(({month,year})=>{
     const o = document.createElement("option");
@@ -408,83 +384,44 @@ function populateMonths(){
     o.textContent = `${month} ${year}`;
     sel.appendChild(o);
   });
+  if ([...sel.options].some(o=>o.value===prevValue)) sel.value = prevValue;
+}
+
+function selectedMonthKey(){
+  return document.getElementById("monthSel").value; // "" or "March|2026"
 }
 
 /* ============================================================
-   RENDER: Summary tab
-   ============================================================ */
-function renderSummary(filterText=""){
-  const rows = DATA.staff.filter(s => (s["Status"]||"").toUpperCase()!=="INACTIVE");
-  const q = filterText.trim().toLowerCase();
-
-  let totalBalance=0, totalUsed=0, totalUnpaid=0, totalLeaveDed=0, totalPerfDed=0;
-  const body = document.getElementById("summaryBody");
-  body.innerHTML = "";
-
-  if(rows.length===0){
-    body.innerHTML = `<tr><td colspan="9"><div class="empty"><b>No staff found</b>Add employees to Staff_Info to see them here.</div></td></tr>`;
-  }
-
-  rows
-    .filter(s => !q || (s["Name"]||"").toLowerCase().includes(q))
-    .forEach((s,i)=>{
-      const bal = balanceByEmail(s["Email"]) || {};
-      const perf = latestDeductionFor(s["Email"], document.getElementById("monthSel").value) || {};
-      const perDay = Number(s["Per_Day_Salary"]) || 0;
-      const unpaidDays = Number(bal["Unpaid_Leave"]) || 0;
-      const leaveDed = unpaidDays * perDay;
-      const perfDed = Number(perf["DEDUCTION AMOUNT"]) || 0;
-      const total = leaveDed + perfDed;
-
-      totalBalance += Number(bal["Balance_Leaves"])||0;
-      totalUsed += Number(bal["Used_Paid_Leave"])||0;
-      totalUnpaid += unpaidDays;
-      totalLeaveDed += leaveDed;
-      totalPerfDed += perfDed;
-
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td class="num-cell">${i+1}</td>
-        <td><div class="person"><div class="avatar" style="background:${colorFor(s["Name"])}">${initials(s["Name"])}</div>
-          <div><div class="name">${s["Name"]||""}</div><div class="email">${s["Email"]||""}</div></div></div></td>
-        <td>${bal["Balance_Leaves"] ?? "–"}</td>
-        <td>${bal["Used_Paid_Leave"] ?? "–"}</td>
-        <td>${bal["HalfDay_Count"] ?? "0"}</td>
-        <td>${unpaidDays ? `<span class="badge red">${unpaidDays} days</span>` : "0"}</td>
-        <td class="num-cell ${leaveDed?'neg':''}">${money(leaveDed)}</td>
-        <td class="num-cell ${perfDed?'neg':''}">${money(perfDed)}</td>
-        <td class="num-cell neg" style="font-weight:700;color:${total? 'var(--red)':'var(--ink)'}">${money(total)}</td>
-      `;
-      body.appendChild(tr);
-    });
-
-  document.getElementById("summaryCards").innerHTML = `
-    <div class="card"><div class="eyebrow">Active Employees</div><div class="num blue">${rows.length}</div><div class="sub">from Staff_Info</div></div>
-    <div class="card"><div class="eyebrow">Paid Leave Balance</div><div class="num green">${totalBalance}</div><div class="sub">days remaining, all staff</div></div>
-    <div class="card"><div class="eyebrow">Leave Used (YTD)</div><div class="num blue">${totalUsed}</div><div class="sub">paid days used</div></div>
-    <div class="card"><div class="eyebrow">Unpaid Leave</div><div class="num red">${totalUnpaid}</div><div class="sub">days, all staff</div></div>
-    <div class="card"><div class="eyebrow">Total Deduction</div><div class="num red">${money(totalLeaveDed+totalPerfDed)}</div><div class="sub">leave <b>${money(totalLeaveDed)}</b> + performance <b>${money(totalPerfDed)}</b></div></div>
-  `;
-}
-
-/* ============================================================
-   RENDER: Leave Requests tab
+   RENDER: Leave Requests tab (mirrors Leave_Requests sheet)
    ============================================================ */
 function renderRequests(filterText=""){
   const body = document.getElementById("requestsBody");
   body.innerHTML = "";
   const q = filterText.trim().toLowerCase();
-  const from = document.getElementById("fromDate").value;
-  const to = document.getElementById("toDate").value;
+  const monthKey = selectedMonthKey();
 
   let rows = DATA.requests.slice();
   if(q) rows = rows.filter(r => (r["Staff_Name"]||"").toLowerCase().includes(q));
-  // date-range filter: keep requests whose leave period overlaps the selected From/To
-  if(from) rows = rows.filter(r => !r["To_Date_f"] || new Date(r["To_Date_f"]) >= new Date(from));
-  if(to)   rows = rows.filter(r => !r["From_Date_f"] || new Date(r["From_Date_f"]) <= new Date(to));
+
+  let label = "";
+  if(monthKey){
+    const [mName, yStr] = monthKey.split("|");
+    label = `— ${mName} ${yStr}`;
+    const mIdx = MONTH_ORDER.indexOf(mName);
+    const y = Number(yStr);
+    const rangeStart = new Date(y, mIdx, 1);
+    const rangeEnd = new Date(y, mIdx+1, 0, 23, 59, 59);
+    rows = rows.filter(r=>{
+      const rf = r["From_Date_f"] ? new Date(r["From_Date_f"]) : null;
+      if(!rf || isNaN(rf)) return true; // keep rows without parseable dates rather than hide them
+      const rt = r["To_Date_f"] ? new Date(r["To_Date_f"]) : rf;
+      return rf <= rangeEnd && rt >= rangeStart;
+    });
+  }
+  document.getElementById("requestsMonthLabel").textContent = label;
 
   if(rows.length===0){
-    body.innerHTML = `<tr><td colspan="7"><div class="empty"><b>No leave requests in this range</b>Submitted requests from Leave_Requests will show up here automatically.</div></td></tr>`;
+    body.innerHTML = `<tr><td colspan="7"><div class="empty"><b>No leave requests${monthKey ? " for this month" : ""}</b>Submitted requests from the Leave_Requests sheet will show up here automatically.</div></td></tr>`;
     return;
   }
 
@@ -492,12 +429,13 @@ function renderRequests(filterText=""){
     t=(t||"").toLowerCase();
     if(t.includes("unpaid")) return `<span class="badge red">Unpaid</span>`;
     if(t.includes("half")) return `<span class="badge amber">Half Day</span>`;
-    return `<span class="badge green">Paid</span>`;
+    return `<span class="badge green">${t ? titleCase(t) : "Paid"}</span>`;
   };
   const statusBadge = (s)=>{
     s=(s||"").toLowerCase();
     if(s.includes("approve")) return `<span class="badge green">Approved</span>`;
     if(s.includes("reject")) return `<span class="badge red">Rejected</span>`;
+    if(!s) return `<span class="badge gray">–</span>`;
     return `<span class="badge amber">Pending</span>`;
   };
 
@@ -510,7 +448,7 @@ function renderRequests(filterText=""){
       <td>${typeBadge(r["Leave_Type"])}</td>
       <td>${r["From_Date_f"]||"–"}</td>
       <td>${r["To_Date_f"]||"–"}</td>
-      <td style="white-space:normal;max-width:260px;">${r["Reason"]||""}</td>
+      <td style="white-space:normal;max-width:280px;">${r["Reason"]||""}</td>
       <td>${statusBadge(r["Status"])}</td>
     `;
     body.appendChild(tr);
@@ -518,98 +456,115 @@ function renderRequests(filterText=""){
 }
 
 /* ============================================================
-   RENDER: Leave Balance tab
+   RENDER: Leave Balance tab (mirrors Leave_Balance sheet — no
+   month/date filter applied here on purpose)
    ============================================================ */
 function renderBalance(filterText=""){
   const body = document.getElementById("balanceBody");
   body.innerHTML = "";
   const q = filterText.trim().toLowerCase();
 
-  let rows = DATA.balance.map(b => ({...b, staff: staffByEmail(b["Email"])}))
-                          .filter(r => r.staff);
-  if(q) rows = rows.filter(r => (r.staff["Name"]||"").toLowerCase().includes(q));
+  let rows = DATA.balance.slice();
+  if(q){
+    rows = rows.filter(r=>{
+      const staff = staffByEmail(r["Email"]);
+      const name = staff ? staff["Name"] : r["Email"];
+      return (name||"").toLowerCase().includes(q);
+    });
+  }
 
   if(rows.length===0){
-    body.innerHTML = `<tr><td colspan="9"><div class="empty"><b>No leave balance data</b></div></td></tr>`;
+    body.innerHTML = `<tr><td colspan="11"><div class="empty"><b>No leave balance data</b>Check that Leave_Balance loaded correctly (see banner above, if any).</div></td></tr>`;
     return;
   }
 
   rows.forEach(r=>{
+    const staff = staffByEmail(r["Email"]);
+    const displayName = staff ? staff["Name"] : (r["Email"]||"").split("@")[0];
     const total = Number(r["Total_Paid_Leave"])||0;
     const bal = Number(r["Balance_Leaves"])||0;
     const ratio = total ? Math.max(0,Math.min(100, (bal/total)*100)) : 0;
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td><div class="person"><div class="avatar" style="background:${colorFor(r.staff["Name"])}">${initials(r.staff["Name"])}</div>
-        <div><div class="name">${r.staff["Name"]}</div><div class="email">${r["Email"]}</div></div></div></td>
+      <td><div class="person"><div class="avatar" style="background:${colorFor(displayName)}">${initials(displayName)}</div>
+        <div><div class="name">${displayName}</div><div class="email">${r["Email"]||""}</div></div></div></td>
+      <td class="num-cell">${total}</td>
+      <td class="num-cell">${r["Used_Paid_Leave"] ?? 0}</td>
+      <td><span class="bar-track"><span class="bar-fill" style="width:${ratio}%;background:${ratio<30?'var(--red)':ratio<60?'var(--amber)':'var(--green)'}"></span></span>${bal}</td>
+      <td class="num-cell">${r["HalfDay_Count"] ?? 0}</td>
+      <td class="num-cell ${Number(r["Unpaid_Leave"])?'neg':''}">${r["Unpaid_Leave"] ?? 0}</td>
+      <td class="num-cell">${r["Manual_Paid"] ?? 0}</td>
       <td>${r["Leave_Year"]||"–"}</td>
       <td class="num-cell">${r["Opening_Balance"] ?? 0}</td>
       <td class="num-cell">${r["Annual_Credit"] ?? 0}</td>
-      <td class="num-cell">${total}</td>
-      <td class="num-cell">${r["Used_Paid_Leave"] ?? 0}</td>
-      <td class="num-cell">${r["HalfDay_Count"] ?? 0}</td>
-      <td class="num-cell ${Number(r["Unpaid_Leave"])?'neg':''}">${r["Unpaid_Leave"] ?? 0}</td>
-      <td><span class="bar-track"><span class="bar-fill" style="width:${ratio}%;background:${ratio<30?'var(--red)':ratio<60?'var(--amber)':'var(--green)'}"></span></span>${bal}</td>
+      <td class="num-cell">${r["Available_Leave"] ?? 0}</td>
     `;
     body.appendChild(tr);
   });
 }
 
 /* ============================================================
-   RENDER: Deductions tab (FMS + Checklist + Delegation via
-   PERFORMANCE_DEDUCTION, combined with Leave deduction)
+   RENDER: Deductions tab (mirrors PERFORMANCE_DEDUCTION sheet,
+   filterable by the same Month dropdown as PERFORMANCE_DEDUCTION's
+   own Month/Year columns)
    ============================================================ */
 function renderDeductions(filterText=""){
   const body = document.getElementById("deductionsBody");
   body.innerHTML = "";
   const q = filterText.trim().toLowerCase();
-  const month = document.getElementById("monthSel").value;
-  const monthLabelText = month ? month.replace("|"," ") : "latest available";
-  document.getElementById("deductionMonthLabel").textContent = monthLabelText;
+  const monthKey = selectedMonthKey();
 
-  let totalPerf=0, totalLeave=0;
-  let rows = DATA.staff.filter(s => (s["Status"]||"").toUpperCase()!=="INACTIVE");
-  if(q) rows = rows.filter(s => (s["Name"]||"").toLowerCase().includes(q));
+  let rows = DATA.deduction.slice();
+  let label = "";
+  if(monthKey){
+    const [mName, yStr] = monthKey.split("|");
+    label = `— ${mName} ${yStr}`;
+    rows = rows.filter(d => d["Month"]===mName && String(Math.round(Number(d["Year"])))===yStr);
+  }
+  document.getElementById("deductionMonthLabel").textContent = label;
+
+  if(q) rows = rows.filter(d => (d["EMPLOYEE"]||"").toLowerCase().includes(q));
+
+  let totalPlanned=0, totalCompleted=0, totalPending=0, totalDed=0;
 
   if(rows.length===0){
-    body.innerHTML = `<tr><td colspan="10"><div class="empty"><b>No employees found</b></div></td></tr>`;
+    body.innerHTML = `<tr><td colspan="10"><div class="empty"><b>No deduction records${monthKey?" for this month":""}</b></div></td></tr>`;
   }
 
-  rows.forEach(s=>{
-    const perf = latestDeductionFor(s["Email"], month) || {};
-    const bal = balanceByEmail(s["Email"]) || {};
-    const perDay = Number(s["Per_Day_Salary"]) || 0;
-    const unpaidDays = Number(bal["Unpaid_Leave"]) || 0;
-    const leaveDed = unpaidDays * perDay;
-    const perfDed = Number(perf["DEDUCTION AMOUNT"]) || 0;
-    totalPerf += perfDed; totalLeave += leaveDed;
+  rows.forEach(d=>{
+    const ded = Number(d["DEDUCTION AMOUNT"])||0;
+    totalPlanned += Number(d["PLANNED"])||0;
+    totalCompleted += Number(d["COMPLETED"])||0;
+    totalPending += Number(d["PENDING"])||0;
+    totalDed += ded;
 
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td><div class="person"><div class="avatar" style="background:${colorFor(s["Name"])}">${initials(s["Name"])}</div>
-        <div class="name">${s["Name"]}</div></div></td>
-      <td class="num-cell">${perf["PLANNED"] ?? "–"}</td>
-      <td class="num-cell">${perf["COMPLETED"] ?? "–"}</td>
-      <td class="num-cell">${perf["PENDING"] ?? "–"}</td>
-      <td class="num-cell">${perf["WORK NOT DONE%"]!==undefined && perf["WORK NOT DONE%"]!==null ? pct(perf["WORK NOT DONE%"]) : "–"}</td>
-      <td class="num-cell">${perf["DEDUCTION %"]!==undefined && perf["DEDUCTION %"]!==null ? pct(perf["DEDUCTION %"]) : "–"}</td>
-      <td class="num-cell ${perfDed?'neg':''}">${money(perfDed)}</td>
-      <td class="num-cell">${unpaidDays || 0}</td>
-      <td class="num-cell ${leaveDed?'neg':''}">${money(leaveDed)}</td>
-      <td class="num-cell" style="font-weight:700;color:${(perfDed+leaveDed)?'var(--red)':'var(--ink)'}">${money(perfDed+leaveDed)}</td>
+      <td><div class="person"><div class="avatar" style="background:${colorFor(d["EMPLOYEE"])}">${initials(d["EMPLOYEE"])}</div>
+        <div class="name">${titleCase(d["EMPLOYEE"])}</div></div></td>
+      <td class="email">${d["EMAIL"]||""}</td>
+      <td>${d["Month"]||"–"}</td>
+      <td class="num-cell">${d["Year"]||"–"}</td>
+      <td class="num-cell">${d["PLANNED"] ?? "–"}</td>
+      <td class="num-cell">${d["COMPLETED"] ?? "–"}</td>
+      <td class="num-cell">${d["PENDING"] ?? "–"}</td>
+      <td class="num-cell">${d["WORK NOT DONE%"]!==undefined && d["WORK NOT DONE%"]!==null ? pct(d["WORK NOT DONE%"]) : "–"}</td>
+      <td class="num-cell">${d["DEDUCTION %"]!==undefined && d["DEDUCTION %"]!==null ? pct(d["DEDUCTION %"]) : "–"}</td>
+      <td class="num-cell ${ded?'neg':''}" style="font-weight:700;">${money(ded)}</td>
     `;
     body.appendChild(tr);
   });
 
   document.getElementById("deductionCards").innerHTML = `
-    <div class="card"><div class="eyebrow">Performance Deduction</div><div class="num red">${money(totalPerf)}</div><div class="sub">from FMS + Checklist + Delegation</div></div>
-    <div class="card"><div class="eyebrow">Leave Deduction</div><div class="num red">${money(totalLeave)}</div><div class="sub">unpaid leave × per-day salary</div></div>
-    <div class="card"><div class="eyebrow">Combined Total</div><div class="num red">${money(totalPerf+totalLeave)}</div><div class="sub">to apply on this month's salary</div></div>
+    <div class="card"><div class="eyebrow">Employees</div><div class="num blue">${rows.length}</div><div class="sub">rows shown</div></div>
+    <div class="card"><div class="eyebrow">Planned</div><div class="num blue">${totalPlanned}</div><div class="sub">FMS + Checklist + Delegation</div></div>
+    <div class="card"><div class="eyebrow">Completed</div><div class="num green">${totalCompleted}</div><div class="sub">tasks done</div></div>
+    <div class="card"><div class="eyebrow">Pending</div><div class="num amber">${totalPending}</div><div class="sub">tasks pending</div></div>
+    <div class="card"><div class="eyebrow">Total Deduction</div><div class="num red">${money(totalDed)}</div><div class="sub">performance deduction</div></div>
   `;
 }
 
 function renderAll(){
-  renderSummary(document.getElementById("searchSummary").value);
   renderRequests(document.getElementById("searchRequests").value);
   renderBalance(document.getElementById("searchBalance").value);
   renderDeductions(document.getElementById("searchDeductions").value);
@@ -626,7 +581,6 @@ document.querySelectorAll(".tab").forEach(btn=>{
 });
 
 /* ---------- search + filters ---------- */
-document.getElementById("searchSummary").addEventListener("input", e=>renderSummary(e.target.value));
 document.getElementById("searchRequests").addEventListener("input", e=>renderRequests(e.target.value));
 document.getElementById("searchBalance").addEventListener("input", e=>renderBalance(e.target.value));
 document.getElementById("searchDeductions").addEventListener("input", e=>renderDeductions(e.target.value));
