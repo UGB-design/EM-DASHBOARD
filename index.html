@@ -692,14 +692,36 @@ function renderAll(data) {
     document.getElementById('dtTo').value = toISO(em.week.to);
   }
 
+  // ── Recompute Delegation done/pending from the SAME date-based logic used
+  // in the Delegation tab (First Date / Revision 1 / Revision 2 / Latest
+  // Revision), instead of trusting the backend's old "Week Shifted" status
+  // field. This keeps the Summary card and the Delegation tab always in
+  // sync, since both now derive their numbers from the same source + rule.
+  var dlRowsForSummary = data.delegationData || [];
+  var dlDoneCount = 0;
+  dlRowsForSummary.forEach(function(r) {
+    if (computeDelegationStatus(r) === 'Completed') dlDoneCount++;
+  });
+  var dlPendingCount = dlRowsForSummary.length - dlDoneCount;
+  bd.dlDone = dlDoneCount;
+  bd.dlPending = dlPendingCount;
+
+  // Total Actual / Overall Score also need to reflect the recomputed
+  // delegation count (FMS + Checklist portions are untouched/backend as-is).
+  var fmsDoneNum = Number(bd.fmsDone) || 0;
+  var clDoneNum  = Number(bd.clDone) || 0;
+  var recomputedTotalActual = fmsDoneNum + clDoneNum + dlDoneCount;
+  var totalPlanNum = Number(t.totalPlan) || 0;
+  var recomputedOverall = totalPlanNum > 0 ? (recomputedTotalActual / totalPlanNum * 100) : 0;
+  t.totalActual = recomputedTotalActual;
+
   document.getElementById('cTP').textContent = t.totalPlan || 0;
   document.getElementById('cTA').textContent = t.totalActual || 0;
   document.getElementById('cFP').textContent = t.fmsPlan || 0;
   document.getElementById('cCP').textContent = t.checklistPlan || 0;
   document.getElementById('cDP').textContent = t.delegationPlan || 0;
 
-  var ov = t.overall || '0%';
-  var ovNum = parseFloat(ov) || 0;
+  var ovNum = recomputedOverall;
   var ovRounded = Math.round(ovNum) + '%';
   document.getElementById('cTAs').textContent = ovRounded + ' complete';
   var ovEl = document.getElementById('cOV');
