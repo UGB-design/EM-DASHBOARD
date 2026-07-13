@@ -695,6 +695,48 @@ function computeDelegationStatus(r) {
   return normalizeStatus(r.status) === 'completed' ? 'Completed' : 'Pending';
 }
 
+// ── Scores sheet root-fix ────────────────────────────────────────────────────
+// The SCORES sheet's per-employee totals were built including "Week Shifted"
+// delegation rows in totalPlan. Since those rows are now hidden everywhere
+// else (Summary + Delegation tab), we recompute each employee's totalPlan
+// here by subtracting their own Week-Shifted delegation row count, and
+// recompute the two % columns off the corrected numbers — so Scores lines
+// up with Summary without needing any change on the sheet itself.
+function computeAdjustedScoresData(data) {
+  var delRows = data.delegationData || [];
+  var wsCounts = {};
+  delRows.forEach(function(r) {
+    if (isWeekShifted(r)) {
+      var key = String(r.client || '').toLowerCase().trim();
+      wsCounts[key] = (wsCounts[key] || 0) + 1;
+    }
+  });
+  var rows = data.scoresData || [];
+  return rows.map(function(r) {
+    var key = String(r.employee || '').toLowerCase().trim();
+    var wsCount = wsCounts[key] || 0;
+    if (wsCount === 0) return r;
+
+    var totalPlan = Number(r.totalPlan) || 0;
+    var totalCompleted = Number(r.totalCompleted) || 0;
+    var onTimeCompleted = Number(r.onTimeCompleted) || 0;
+
+    var adjTotalPlan = Math.max(totalCompleted, totalPlan - wsCount);
+    var notDone = Math.max(0, adjTotalPlan - totalCompleted);
+    var workNotDonePct = adjTotalPlan > 0 ? -(notDone / adjTotalPlan * 100) : 0;
+    var notOnTime = Math.max(0, totalCompleted - onTimeCompleted);
+    var workNotDoneOnTimePct = totalCompleted > 0 ? -(notOnTime / totalCompleted * 100) : 0;
+    var performance = adjTotalPlan > 0 ? (totalCompleted / adjTotalPlan * 100) : 0;
+
+    return Object.assign({}, r, {
+      totalPlan: adjTotalPlan,
+      workNotDonePct: workNotDonePct.toFixed(2) + '%',
+      workNotDoneOnTimePct: workNotDoneOnTimePct.toFixed(2) + '%',
+      performance: performance.toFixed(2) + '%'
+    });
+  });
+}
+
 // ── Main Render ───────────────────────────────────────────────────────────────
 function renderAll(data) {
   globalRawData = data;
@@ -791,7 +833,9 @@ function renderAll(data) {
   applyChecklistFilters();
   applyDelegationFilters();
 
-  // Scores tab — reset filter on fresh load
+  // Scores tab — reset filter on fresh load, then apply the root-fix so
+  // Week-Shifted delegation rows are excluded from each employee's totals
+  data.scoresData = computeAdjustedScoresData(data);
   document.getElementById('scFilterPerf').value = 'All';
   var scData = data.scoresData || [];
   if (!data.scoresData) console.warn('⚠️ scoresData missing from API response — check code.gs SCORES section');
