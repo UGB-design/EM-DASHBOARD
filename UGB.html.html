@@ -153,18 +153,58 @@
   .slip-btn{display:inline-flex;align-items:center;gap:5px;background:var(--blue-soft);color:var(--blue);border:none;}
   .slip-btn:hover{opacity:.8;}
 
+  /* login gate */
+  #loginGate{
+    position:fixed;inset:0;background:var(--bg);z-index:999;
+    display:flex;align-items:center;justify-content:center;padding:20px;
+  }
+  .login-card{
+    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:32px 30px;width:100%;max-width:380px;
+  }
+  .login-card h2{margin:0 0 6px;font-size:18px;font-weight:800;}
+  .login-card p{margin:0 0 18px;font-size:12.5px;color:var(--ink-soft);}
+  .login-card input{
+    width:100%;border:1px solid var(--border);border-radius:9px;padding:10px 12px;
+    font-family:inherit;font-size:13.5px;margin-bottom:10px;
+  }
+  .login-card .btn{width:100%;text-align:center;}
+  .login-error{color:var(--red);font-size:12px;margin:-4px 0 10px;display:none;}
+  .signed-in-as{
+    display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-soft);
+    background:#fff;border:1px solid var(--border);border-radius:100px;padding:5px 12px 5px 5px;
+  }
+  .signed-in-as .avatar{width:22px;height:22px;font-size:9.5px;}
+  .signed-in-as button{
+    background:none;border:none;color:var(--blue);font-size:11.5px;font-weight:700;cursor:pointer;padding:0;margin-left:4px;
+  }
+
   ::selection{background:var(--blue-soft);}
 </style>
 </head>
 <body>
+
+<div id="loginGate">
+  <div class="login-card">
+    <h2>Sign in</h2>
+    <p>Enter your work email to view your leave dashboard.</p>
+    <input type="email" id="loginEmail" placeholder="you@ugbolmalassociates.com" autocomplete="email">
+    <div class="login-error" id="loginError">Please enter a valid email address.</div>
+    <button class="btn" id="loginBtn">Continue</button>
+  </div>
+</div>
+
 <div class="wrap">
 
   <header>
     <div class="brand">
       <h1>Leave Dashboard</h1>
-      <p>Leave requests + balances + deductions &nbsp;·&nbsp; <span id="scopeLabel">All Staff</span></p>
+      <p>Leave requests + balances + deductions &nbsp;·&nbsp; <span id="scopeLabel">–</span></p>
     </div>
-    <button class="btn ghost" id="refreshBtn" title="Reload live data">Refresh</button>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="signed-in-as" id="signedInAs" style="display:none;"></div>
+      <button class="btn ghost" id="refreshBtn" title="Reload live data">Refresh</button>
+    </div>
   </header>
 
   <div id="warnBanner" class="warn-banner"></div>
@@ -295,6 +335,21 @@ const LEAVE_APPROVAL_URL = "https://www.appsheet.com/start/e593f206-628c-4174-a3
 
 const MONTH_ORDER = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
+/* ---------- Access control ----------
+   ADMIN_EMAILS see everyone's data. Everyone else only sees rows that
+   belong to their own email address. */
+const ADMIN_EMAILS = [
+  "raj@ugbolmalassociates.com",
+  "akshata@ugbolmalassociates.com",
+  "yogesh@ugbolmalassociates.com",
+];
+let CURRENT_USER_EMAIL = "";
+let IS_ADMIN = false;
+
+function isAdminEmail(email){
+  return ADMIN_EMAILS.includes((email||"").trim().toLowerCase());
+}
+
 const AVATAR_COLORS = ["#2954e5","#17a34a","#d97706","#7c4fe0","#dc2626","#0891b2","#be185d","#4d7c0f"];
 function colorFor(name){
   let h=0; for(const c of (name||"?")) h = (h*31 + c.charCodeAt(0)) % AVATAR_COLORS.length;
@@ -393,6 +448,20 @@ async function loadAll(){
   DATA.deduction = unwrap(deductionRes, "PERFORMANCE_DEDUCTION").filter(r=>r["EMPLOYEE"]);
   DATA.scorecards = extractScorecards(balanceRaw);
   if(!DATA.scorecards) failed.push("Leave Balance summary cards");
+
+  updateSignedInAsUI();
+
+  /* ---- apply email-based access scope: non-admins only see their own rows ---- */
+  if(!IS_ADMIN){
+    const me = CURRENT_USER_EMAIL.toLowerCase();
+    DATA.requests = DATA.requests.filter(r => (r["Email"]||"").toLowerCase() === me);
+    DATA.balance = DATA.balance.filter(r => (r["Email"]||"").toLowerCase() === me);
+    DATA.deduction = DATA.deduction.filter(d => {
+      const staff = findStaffForDeductionRow(d);
+      const dedEmail = (staff ? staff["Email"] : d["EMAIL"]) || "";
+      return dedEmail.toLowerCase() === me;
+    });
+  }
 
   const banner = document.getElementById("warnBanner");
   if (failed.length){
@@ -1072,7 +1141,60 @@ document.getElementById("searchDeductions").addEventListener("input", e=>renderD
 document.getElementById("monthSel").addEventListener("change", ()=>renderDeductions(document.getElementById("searchDeductions").value));
 document.getElementById("refreshBtn").addEventListener("click", loadAll);
 
-loadAll();
+/* ============================================================
+   LOGIN GATE — asks for the visitor's email before loading data.
+   Remembers the email in this browser via localStorage so the person
+   doesn't have to type it in every time; "Switch user" clears it.
+   ============================================================ */
+function updateSignedInAsUI(){
+  const staffMatch = DATA.staff.length ? staffByEmail(CURRENT_USER_EMAIL) : null;
+  const displayName = staffMatch ? staffMatch["Name"] : CURRENT_USER_EMAIL.split("@")[0];
+
+  document.getElementById("scopeLabel").textContent = CURRENT_USER_EMAIL;
+  const signedInAs = document.getElementById("signedInAs");
+  signedInAs.style.display = "flex";
+  signedInAs.innerHTML = `
+    <div class="avatar" style="background:${colorFor(displayName)}">${initials(displayName)}</div>
+    <span>${IS_ADMIN ? "Admin" : displayName} · ${CURRENT_USER_EMAIL}</span>
+    <button id="switchUserBtn">Switch</button>
+  `;
+  document.getElementById("switchUserBtn").addEventListener("click", ()=>{
+    localStorage.removeItem("leaveDashboardEmail");
+    location.reload();
+  });
+}
+
+function startApp(email){
+  CURRENT_USER_EMAIL = email.trim().toLowerCase();
+  IS_ADMIN = isAdminEmail(CURRENT_USER_EMAIL);
+  document.getElementById("loginGate").style.display = "none";
+  loadAll();
+}
+
+function tryLogin(){
+  const input = document.getElementById("loginEmail");
+  const email = input.value.trim();
+  const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  if(!valid){
+    document.getElementById("loginError").style.display = "block";
+    return;
+  }
+  document.getElementById("loginError").style.display = "none";
+  localStorage.setItem("leaveDashboardEmail", email.toLowerCase());
+  startApp(email);
+}
+
+document.getElementById("loginBtn").addEventListener("click", tryLogin);
+document.getElementById("loginEmail").addEventListener("keydown", e=>{ if(e.key==="Enter") tryLogin(); });
+
+(function initGate(){
+  const saved = localStorage.getItem("leaveDashboardEmail");
+  if(saved){
+    document.getElementById("loginGate").style.display = "none";
+    startApp(saved);
+  }
+  // otherwise the login card (visible by default) waits for input.
+})();
 </script>
 </body>
 </html>
