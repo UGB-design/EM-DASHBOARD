@@ -310,6 +310,14 @@ function money(n){
   return "₹" + n.toLocaleString("en-IN", {maximumFractionDigits:0});
 }
 function pct(n){ return (Number(n)*100).toFixed(1) + "%"; }
+/* jsPDF's standard Helvetica font has no ₹ glyph — it falls back to a stray
+   "¹"-like symbol and, worse, miscalculates text width so right-aligned
+   amounts (like Net Salary) look cut off. Use "Rs." for anything drawn with
+   doc.text(); the on-screen HTML table can keep the real ₹ symbol via money(). */
+function moneyPDF(n){
+  n = Number(n)||0;
+  return "Rs. " + n.toLocaleString("en-IN", {maximumFractionDigits:0});
+}
 function titleCase(s){ return (s||"").toString().trim().replace(/\w\S*/g, t => t[0].toUpperCase()+t.slice(1).toLowerCase()); }
 
 /* Parse a "dd/MM/yyyy" string (the format Apps Script sends dates in)
@@ -383,6 +391,7 @@ async function loadAll(){
   DATA.balance = unwrap(balanceRes, "Leave_Balance").filter(r=>r["Email"]);
   DATA.deduction = unwrap(deductionRes, "PERFORMANCE_DEDUCTION").filter(r=>r["EMPLOYEE"]);
   DATA.scorecards = scorecardsRes;
+  if(!scorecardsRes) failed.push("Leave Balance summary cards");
 
   const banner = document.getElementById("warnBanner");
   if (failed.length){
@@ -498,19 +507,38 @@ function populateBalanceYears(){
    ============================================================ */
 async function loadScorecards(){
   try{
-    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent("Leave_Balance")}&range=B29:D32&headers=0`;
+    // Fetch the WHOLE sheet as a raw grid (headers=0, no `range` param — that
+    // query param proved unreliable). We then index straight into physical
+    // row/column positions ourselves.
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent("Leave_Balance")}&headers=0`;
     const res = await fetch(url);
     const text = await res.text();
-    const json = JSON.parse(text.slice(text.indexOf('{'), text.lastIndexOf('}')+1));
-    const rows = (json.table.rows||[]).map(r => (r.c||[]).map(cell => cell ? (cell.v ?? "") : ""));
-    if(rows.length < 4) return null;
+    const jsonStart = text.indexOf('{');
+    const jsonEnd = text.lastIndexOf('}');
+    if(jsonStart === -1 || jsonEnd === -1) throw new Error("Unexpected response from Google Sheets");
+    const json = JSON.parse(text.slice(jsonStart, jsonEnd+1));
+    const allRows = (json.table && json.table.rows) || [];
+
+    // Sheet rows are 1-indexed; array is 0-indexed, so physical row N is allRows[N-1].
+    // Row 30 (index 29) holds the values under the ACTIVE STAFF / PENDING REQUEST /
+    // TOTAL PAID BALANCE headers on row 29; row 32 (index 31) holds the values under
+    // the TOTAL PAID LEAVE USED / HALF DAY / UNPAID_LEAVE headers on row 31.
+    // Column B/C/D are indices 1/2/3 (column A is index 0).
+    const cellVal = (rowIdx, colIdx) => {
+      const row = allRows[rowIdx];
+      const cell = row && row.c && row.c[colIdx];
+      return (cell && cell.v !== null && cell.v !== undefined) ? cell.v : 0;
+    };
+
+    if(allRows.length < 32) throw new Error(`Expected at least 32 rows on Leave_Balance, got ${allRows.length}`);
+
     return {
-      activeStaff: rows[1][0] ?? 0,
-      pendingRequest: rows[1][1] ?? 0,
-      totalPaidBalance: rows[1][2] ?? 0,
-      totalPaidLeaveUsed: rows[3][0] ?? 0,
-      halfDay: rows[3][1] ?? 0,
-      unpaidLeave: rows[3][2] ?? 0,
+      activeStaff: cellVal(29, 1),
+      pendingRequest: cellVal(29, 2),
+      totalPaidBalance: cellVal(29, 3),
+      totalPaidLeaveUsed: cellVal(31, 1),
+      halfDay: cellVal(31, 2),
+      unpaidLeave: cellVal(31, 3),
     };
   }catch(e){
     console.error("Failed to load Leave Balance scorecards", e);
@@ -522,7 +550,7 @@ function renderBalanceCards(){
   const wrap = document.getElementById("balanceCards");
   const sc = DATA.scorecards;
   if(!sc){
-    wrap.innerHTML = "";
+    wrap.innerHTML = `<div class="card" style="grid-column:1/-1;"><div class="eyebrow">Summary cards</div><div class="sub" style="margin-top:0;">Could not load the summary block from Leave_Balance!B29:D32. Hit Refresh to retry, and make sure the sheet is shared as "Anyone with the link can view".</div></div>`;
     return;
   }
   wrap.innerHTML = `
@@ -888,14 +916,14 @@ function downloadSalarySlip(d){
   // with the amount column.
   const rowsData = [
     {
-      eLabel: "Basic Salary", eAmt: money(basicSalary),
-      dLabel: `Unpaid Leave (${unpaidLeaveDays} day${unpaidLeaveDays===1?"":"s"} @ ${money(Math.round(perDaySalary))}/day)`,
-      dAmt: money(unpaidLeaveDeduction)
+      eLabel: "Basic Salary", eAmt: moneyPDF(basicSalary),
+      dLabel: "Unpaid Leave",
+      dAmt: moneyPDF(unpaidLeaveDeduction)
     },
     {
       eLabel: "", eAmt: "",
       dLabel: `Performance Deduction (${(performanceDeductionPct*100).toFixed(1)}%)`,
-      dAmt: money(performanceDeductionAmt)
+      dAmt: moneyPDF(performanceDeductionAmt)
     },
   ];
 
@@ -967,10 +995,10 @@ function downloadSalarySlip(d){
   doc.setFontSize(10);
   doc.setTextColor(0,0,0);
   doc.text("Total Earnings", marginX+12, y+17);
-  doc.text(money(basicSalary), pageWidth/2-12, y+17, { align: "right" });
+  doc.text(moneyPDF(basicSalary), pageWidth/2-12, y+17, { align: "right" });
   doc.setTextColor(200,30,30);
   doc.text("Total Deductions", pageWidth/2+12, y+17);
-  doc.text(money(totalDeduction), pageWidth-marginX-12, y+17, { align: "right" });
+  doc.text(moneyPDF(totalDeduction), pageWidth-marginX-12, y+17, { align: "right" });
   doc.setTextColor(0,0,0);
 
   y += totalRowH + 26;
@@ -986,7 +1014,7 @@ function downloadSalarySlip(d){
   doc.setTextColor(255,255,255);
   doc.text("NET SALARY PAYABLE", marginX+16, y+27);
   doc.setFontSize(16);
-  doc.text(money(netSalary), pageWidth-marginX-16, y+28, { align: "right" });
+  doc.text(moneyPDF(netSalary), pageWidth-marginX-16, y+28, { align: "right" });
   doc.setTextColor(0,0,0);
 
   y += netBoxH + 26;
