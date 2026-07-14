@@ -375,23 +375,24 @@ let DATA = { staff:[], requests:[], balance:[], deduction:[], scorecards:null };
 
 async function loadAll(){
   setLoading(true);
-  const [staffRes, requestsRes, balanceRes, deductionRes, scorecardsRes] = await Promise.all([
+  const [staffRes, requestsRes, balanceRes, deductionRes] = await Promise.all([
     safeLoad("Staff_Info"),
     safeLoad("Leave_Requests"),
     safeLoad("Leave_Balance"),
     safeLoad("PERFORMANCE_DEDUCTION"),
-    loadScorecards(),
   ]);
 
   const failed = [];
   const unwrap = (res, label) => { if (Array.isArray(res)) return res; failed.push(label); return []; };
 
+  const balanceRaw = unwrap(balanceRes, "Leave_Balance");
+
   DATA.staff = unwrap(staffRes, "Staff_Info").filter(r=>r["Name"]);
   DATA.requests = unwrap(requestsRes, "Leave_Requests").filter(r=>r["Staff_Name"] || r["Email"]);
-  DATA.balance = unwrap(balanceRes, "Leave_Balance").filter(r=>r["Email"]);
+  DATA.balance = balanceRaw.filter(r=>r["Email"]);
   DATA.deduction = unwrap(deductionRes, "PERFORMANCE_DEDUCTION").filter(r=>r["EMPLOYEE"]);
-  DATA.scorecards = scorecardsRes;
-  if(!scorecardsRes) failed.push("Leave Balance summary cards");
+  DATA.scorecards = extractScorecards(balanceRaw);
+  if(!DATA.scorecards) failed.push("Leave Balance summary cards");
 
   const banner = document.getElementById("warnBanner");
   if (failed.length){
@@ -495,62 +496,72 @@ function populateBalanceYears(){
 }
 
 /* ============================================================
-   Leave Balance scorecards — read directly from the small summary
-   block sitting at B29:D32 on the Leave_Balance sheet (see screenshot):
-     row29: ACTIVE STAFF | PENDING REQUEST | TOTAL PAID BALANCE   (headers)
-     row30: values
-     row31: TOTAL PAID LEAVE USED | HALF DAY | UNPAID_LEAVE        (headers)
-     row32: values
-   This uses the public gviz endpoint with an explicit range so it works
-   independent of the Apps Script backend (which only returns header-based
-   sheet data, not arbitrary ranges).
+   Leave Balance scorecards — the sheet has a small summary block sitting
+   a few rows below the main table (see screenshot):
+     row: ACTIVE STAFF | PENDING REQUEST | TOTAL PAID BALANCE   (labels)
+     row: 12 | 1 | 88                                            (values)
+     row: TOTAL PAID LEAVE USED | HALF DAY | UNPAID_LEAVE        (labels)
+     row: 92 | 0 | 0                                             (values)
+
+   Rather than making a separate network request to Google's gviz endpoint
+   (which turned out to be unreliable — likely blocked cross-origin from
+   this page), we reuse the SAME "Leave_Balance" data already fetched via
+   the working Apps Script call. That call returns every row of the sheet
+   keyed by the header row, so this summary block comes through too — just
+   with its label/value text sitting under whichever column keys happen to
+   line up with columns B/C/D. We find it by searching for the "ACTIVE
+   STAFF" label rather than assuming a fixed row number, so this keeps
+   working even if rows shift.
    ============================================================ */
-async function loadScorecards(){
-  try{
-    // Fetch the WHOLE sheet as a raw grid (headers=0, no `range` param — that
-    // query param proved unreliable). We then index straight into physical
-    // row/column positions ourselves.
-    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent("Leave_Balance")}&headers=0`;
-    const res = await fetch(url);
-    const text = await res.text();
-    const jsonStart = text.indexOf('{');
-    const jsonEnd = text.lastIndexOf('}');
-    if(jsonStart === -1 || jsonEnd === -1) throw new Error("Unexpected response from Google Sheets");
-    const json = JSON.parse(text.slice(jsonStart, jsonEnd+1));
-    const allRows = (json.table && json.table.rows) || [];
+function normalizeLabel(s){
+  return (s||"").toString().trim().toUpperCase().replace(/[_\s]+/g, " ");
+}
 
-    // Sheet rows are 1-indexed; array is 0-indexed, so physical row N is allRows[N-1].
-    // Row 30 (index 29) holds the values under the ACTIVE STAFF / PENDING REQUEST /
-    // TOTAL PAID BALANCE headers on row 29; row 32 (index 31) holds the values under
-    // the TOTAL PAID LEAVE USED / HALF DAY / UNPAID_LEAVE headers on row 31.
-    // Column B/C/D are indices 1/2/3 (column A is index 0).
-    const cellVal = (rowIdx, colIdx) => {
-      const row = allRows[rowIdx];
-      const cell = row && row.c && row.c[colIdx];
-      return (cell && cell.v !== null && cell.v !== undefined) ? cell.v : 0;
-    };
+function extractScorecards(rawRows){
+  if(!Array.isArray(rawRows) || rawRows.length===0) return null;
 
-    if(allRows.length < 32) throw new Error(`Expected at least 32 rows on Leave_Balance, got ${allRows.length}`);
+  const headerIdx = rawRows.findIndex(row =>
+    Object.values(row).some(v => normalizeLabel(v) === "ACTIVE STAFF")
+  );
+  if(headerIdx===-1 || headerIdx+3 >= rawRows.length) return null;
 
-    return {
-      activeStaff: cellVal(29, 1),
-      pendingRequest: cellVal(29, 2),
-      totalPaidBalance: cellVal(29, 3),
-      totalPaidLeaveUsed: cellVal(31, 1),
-      halfDay: cellVal(31, 2),
-      unpaidLeave: cellVal(31, 3),
-    };
-  }catch(e){
-    console.error("Failed to load Leave Balance scorecards", e);
-    return null;
-  }
+  const headerRow1 = rawRows[headerIdx];
+  const valuesRow1 = rawRows[headerIdx+1];
+  const headerRow2 = rawRows[headerIdx+2];
+  const valuesRow2 = rawRows[headerIdx+3];
+
+  const labelMap = {};
+  Object.keys(headerRow1).forEach(k=>{
+    const label = normalizeLabel(headerRow1[k]);
+    if(label) labelMap[label] = valuesRow1[k];
+  });
+  Object.keys(headerRow2).forEach(k=>{
+    const label = normalizeLabel(headerRow2[k]);
+    if(label) labelMap[label] = valuesRow2[k];
+  });
+
+  const pick = (...labels) => {
+    for(const l of labels){
+      if(labelMap[l]!==undefined && labelMap[l]!==null && labelMap[l]!=="") return labelMap[l];
+    }
+    return 0;
+  };
+
+  return {
+    activeStaff: pick("ACTIVE STAFF"),
+    pendingRequest: pick("PENDING REQUEST"),
+    totalPaidBalance: pick("TOTAL PAID BALANCE"),
+    totalPaidLeaveUsed: pick("TOTAL PAID LEAVE USED"),
+    halfDay: pick("HALF DAY"),
+    unpaidLeave: pick("UNPAID LEAVE"),
+  };
 }
 
 function renderBalanceCards(){
   const wrap = document.getElementById("balanceCards");
   const sc = DATA.scorecards;
   if(!sc){
-    wrap.innerHTML = `<div class="card" style="grid-column:1/-1;"><div class="eyebrow">Summary cards</div><div class="sub" style="margin-top:0;">Could not load the summary block from Leave_Balance!B29:D32. Hit Refresh to retry, and make sure the sheet is shared as "Anyone with the link can view".</div></div>`;
+    wrap.innerHTML = `<div class="card" style="grid-column:1/-1;"><div class="eyebrow">Summary cards</div><div class="sub" style="margin-top:0;">Could not find the "ACTIVE STAFF" summary block on the Leave_Balance sheet. Make sure those label/value rows still exist below the main table, then hit Refresh.</div></div>`;
     return;
   }
   wrap.innerHTML = `
