@@ -218,6 +218,7 @@
 
   <!-- LEAVE BALANCE -->
   <section id="tab-balance" style="display:none;">
+    <div class="cards" id="balanceCards"></div>
     <div class="panel">
       <div class="panel-head">
         <h2>Leave Balance</h2>
@@ -362,15 +363,16 @@ async function safeLoad(name){
   catch(e){ console.error("Failed to load", name, e); return { __failed:true }; }
 }
 
-let DATA = { staff:[], requests:[], balance:[], deduction:[] };
+let DATA = { staff:[], requests:[], balance:[], deduction:[], scorecards:null };
 
 async function loadAll(){
   setLoading(true);
-  const [staffRes, requestsRes, balanceRes, deductionRes] = await Promise.all([
+  const [staffRes, requestsRes, balanceRes, deductionRes, scorecardsRes] = await Promise.all([
     safeLoad("Staff_Info"),
     safeLoad("Leave_Requests"),
     safeLoad("Leave_Balance"),
     safeLoad("PERFORMANCE_DEDUCTION"),
+    loadScorecards(),
   ]);
 
   const failed = [];
@@ -380,6 +382,7 @@ async function loadAll(){
   DATA.requests = unwrap(requestsRes, "Leave_Requests").filter(r=>r["Staff_Name"] || r["Email"]);
   DATA.balance = unwrap(balanceRes, "Leave_Balance").filter(r=>r["Email"]);
   DATA.deduction = unwrap(deductionRes, "PERFORMANCE_DEDUCTION").filter(r=>r["EMPLOYEE"]);
+  DATA.scorecards = scorecardsRes;
 
   const banner = document.getElementById("warnBanner");
   if (failed.length){
@@ -400,8 +403,35 @@ function setLoading(state){
   document.getElementById("refreshBtn").textContent = state ? "Loading…" : "Refresh";
 }
 
+/* Collapse repeated adjacent letters and strip non-letters, so small typos
+   like "aishhwarya" vs "aishwarya" still match up. Used as a fallback when
+   an exact email match between sheets fails. */
+function normalizeKey(s){
+  return (s||"").toString().toLowerCase().replace(/[^a-z]/g,"").replace(/(.)\1+/g,"$1");
+}
+
 function staffByEmail(email){
-  return DATA.staff.find(s => (s["Email"]||"").toLowerCase() === (email||"").toLowerCase());
+  const target = (email||"").toLowerCase();
+  let staff = DATA.staff.find(s => (s["Email"]||"").toLowerCase() === target);
+  if(staff) return staff;
+  const targetKey = normalizeKey(target.split("@")[0]);
+  if(!targetKey) return undefined;
+  return DATA.staff.find(s => normalizeKey((s["Email"]||"").split("@")[0]) === targetKey);
+}
+
+/* Matches a PERFORMANCE_DEDUCTION row to a Staff_Info row. Tries an exact
+   email match first, then falls back to a fuzzy match on the email's
+   local-part and finally on the employee name, to tolerate typos in the
+   sheet (e.g. "aishhwarya@..." vs "aishwarya@..."). */
+function findStaffForDeductionRow(d){
+  const byEmail = staffByEmail(d["EMAIL"]);
+  if(byEmail) return byEmail;
+  const empKey = normalizeKey(d["EMPLOYEE"]);
+  if(!empKey) return undefined;
+  return DATA.staff.find(s=>{
+    const nameKey = normalizeKey(s["Name"]);
+    return nameKey && (nameKey.includes(empKey) || empKey.includes(nameKey));
+  });
 }
 
 function populateMonths(){
@@ -453,6 +483,56 @@ function populateBalanceYears(){
     sel.appendChild(o);
   });
   if ([...sel.options].some(o=>o.value===prevValue)) sel.value = prevValue;
+}
+
+/* ============================================================
+   Leave Balance scorecards — read directly from the small summary
+   block sitting at B29:D32 on the Leave_Balance sheet (see screenshot):
+     row29: ACTIVE STAFF | PENDING REQUEST | TOTAL PAID BALANCE   (headers)
+     row30: values
+     row31: TOTAL PAID LEAVE USED | HALF DAY | UNPAID_LEAVE        (headers)
+     row32: values
+   This uses the public gviz endpoint with an explicit range so it works
+   independent of the Apps Script backend (which only returns header-based
+   sheet data, not arbitrary ranges).
+   ============================================================ */
+async function loadScorecards(){
+  try{
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent("Leave_Balance")}&range=B29:D32&headers=0`;
+    const res = await fetch(url);
+    const text = await res.text();
+    const json = JSON.parse(text.slice(text.indexOf('{'), text.lastIndexOf('}')+1));
+    const rows = (json.table.rows||[]).map(r => (r.c||[]).map(cell => cell ? (cell.v ?? "") : ""));
+    if(rows.length < 4) return null;
+    return {
+      activeStaff: rows[1][0] ?? 0,
+      pendingRequest: rows[1][1] ?? 0,
+      totalPaidBalance: rows[1][2] ?? 0,
+      totalPaidLeaveUsed: rows[3][0] ?? 0,
+      halfDay: rows[3][1] ?? 0,
+      unpaidLeave: rows[3][2] ?? 0,
+    };
+  }catch(e){
+    console.error("Failed to load Leave Balance scorecards", e);
+    return null;
+  }
+}
+
+function renderBalanceCards(){
+  const wrap = document.getElementById("balanceCards");
+  const sc = DATA.scorecards;
+  if(!sc){
+    wrap.innerHTML = "";
+    return;
+  }
+  wrap.innerHTML = `
+    <div class="card"><div class="eyebrow">Active Staff</div><div class="num blue">${sc.activeStaff}</div><div class="sub">on the roster</div></div>
+    <div class="card"><div class="eyebrow">Pending Request</div><div class="num amber">${sc.pendingRequest}</div><div class="sub">awaiting approval</div></div>
+    <div class="card"><div class="eyebrow">Total Paid Balance</div><div class="num green">${sc.totalPaidBalance}</div><div class="sub">days remaining</div></div>
+    <div class="card"><div class="eyebrow">Total Paid Leave Used</div><div class="num blue">${sc.totalPaidLeaveUsed}</div><div class="sub">days used</div></div>
+    <div class="card"><div class="eyebrow">Half Day</div><div class="num amber">${sc.halfDay}</div><div class="sub">half-day leaves</div></div>
+    <div class="card"><div class="eyebrow">Unpaid Leave</div><div class="num red">${sc.unpaidLeave}</div><div class="sub">unpaid days</div></div>
+  `;
 }
 
 /* ============================================================
@@ -669,7 +749,7 @@ function downloadSalarySlip(d){
     return;
   }
 
-  const staff = DATA.staff.find(s => (s["Email"]||"").toLowerCase() === (d["EMAIL"]||"").toLowerCase());
+  const staff = findStaffForDeductionRow(d);
   const employeeName = staff ? staff["Name"] : titleCase(d["EMPLOYEE"]);
   const designation = staff ? (staff["Designation"] || "–") : "–";
   const email = (staff ? staff["Email"] : d["EMAIL"]) || "–";
@@ -681,10 +761,19 @@ function downloadSalarySlip(d){
 
   const month = d["MONTH"] || "–";
   const year = d["YEAR"] || "–";
+
+  // Unpaid leave (days) comes from PERFORMANCE_DEDUCTION!J (month-wise),
+  // deduction amount = days * Staff_Info per-day salary (column G).
   const unpaidLeaveDays = Number(d["UNPAID LEAVE"]) || 0;
   const unpaidLeaveDeduction = Math.round(unpaidLeaveDays * perDaySalary);
+
+  // Performance deduction % comes from PERFORMANCE_DEDUCTION!I ("DEDUCTION %"),
+  // amount is computed against the staff member's basic salary so it always
+  // stays consistent with Staff_Info rather than relying on a separate
+  // pre-computed column.
   const performanceDeductionPct = (d["DEDUCTION %"]!==undefined && d["DEDUCTION %"]!==null) ? Number(d["DEDUCTION %"]) : 0;
-  const performanceDeductionAmt = Math.round(Number(d["DEDUCTION AMOUNT"]) || 0);
+  const performanceDeductionAmt = Math.round(performanceDeductionPct * basicSalary);
+
   const totalDeduction = unpaidLeaveDeduction + performanceDeductionAmt;
   const netSalary = Math.round(basicSalary - totalDeduction);
 
@@ -719,40 +808,41 @@ function downloadSalarySlip(d){
   doc.text(`PAYSLIP FOR THE MONTH OF ${String(month).toUpperCase()} ${year}`, pageWidth/2, y, { align: "center" });
   y += 24;
 
-  // ---------- Employee info box ----------
-  const infoBoxH = 66;
-  doc.setDrawColor(210,210,210);
+  // ---------- Employee info table (Name / Designation / Email / Pay Period) ----------
+  const infoRowH = 34;
+  const infoTableH = infoRowH * 2;
+  const infoColW = innerW/2;
+
+  doc.setDrawColor(190,190,190);
   doc.setLineWidth(0.8);
-  doc.rect(marginX, y, innerW, infoBoxH);
-  doc.line(pageWidth/2, y, pageWidth/2, y+infoBoxH);
+  doc.rect(marginX, y, innerW, infoTableH);
+  doc.line(marginX+infoColW, y, marginX+infoColW, y+infoTableH);
+  doc.line(marginX, y+infoRowH, marginX+innerW, y+infoRowH);
 
-  const labelColor = [110,110,110];
-  const colL = marginX + 14;
-  const colR = pageWidth/2 + 14;
-  let iy = y + 20;
-
-  function infoField(x, yy, label, value){
+  function infoField(x, rowTop, label, value){
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8.5);
-    doc.setTextColor(...labelColor);
-    doc.text(label.toUpperCase(), x, yy);
+    doc.setTextColor(110,110,110);
+    doc.text(label.toUpperCase(), x, rowTop+13);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(11);
     doc.setTextColor(0,0,0);
-    doc.text(String(value), x, yy+14);
+    doc.text(String(value), x, rowTop+27);
   }
 
-  infoField(colL, iy, "Employee Name", employeeName);
-  infoField(colR, iy, "Designation", designation);
-  iy += 34;
-  infoField(colL, iy, "Email", email);
-  infoField(colR, iy, "Pay Period", `${month} ${year}`);
+  const colL = marginX + 14;
+  const colR = marginX + infoColW + 14;
+  infoField(colL, y, "Employee Name", employeeName);
+  infoField(colR, y, "Designation", designation);
+  infoField(colL, y+infoRowH, "Email", email);
+  infoField(colR, y+infoRowH, "Pay Period", `${month} ${year}`);
 
-  y += infoBoxH + 22;
+  y += infoTableH + 22;
 
   // ---------- Attendance summary ----------
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10.5);
+  doc.setTextColor(0,0,0);
   doc.text("ATTENDANCE SUMMARY", marginX, y);
   y += 10;
 
@@ -787,13 +877,41 @@ function downloadSalarySlip(d){
   y += 10;
 
   const tableTop = y;
-  const rowH = 24;
-  const headerH = 26;
-  const rows = [
-    ["Basic Salary", money(basicSalary), "Unpaid Leave (" + unpaidLeaveDays + " day" + (unpaidLeaveDays===1?"":"s") + " @ " + money(Math.round(perDaySalary)) + "/day)", money(unpaidLeaveDeduction)],
-    ["", "", "Performance Deduction (" + (performanceDeductionPct*100).toFixed(1) + "%)", money(performanceDeductionAmt)],
+  const halfW = innerW/2;
+  const cellPad = 12;
+  const earnColW = halfW - cellPad*2;   // width available for earnings label+amount split
+  const dedColW = halfW - cellPad*2;    // width available for deduction label+amount split
+
+  // Each "row" has an earnings side (label/amount) and a deduction side
+  // (label/amount). Deduction labels can be long, so wrap them and size
+  // the row height to the number of wrapped lines to avoid any overlap
+  // with the amount column.
+  const rowsData = [
+    {
+      eLabel: "Basic Salary", eAmt: money(basicSalary),
+      dLabel: `Unpaid Leave (${unpaidLeaveDays} day${unpaidLeaveDays===1?"":"s"} @ ${money(Math.round(perDaySalary))}/day)`,
+      dAmt: money(unpaidLeaveDeduction)
+    },
+    {
+      eLabel: "", eAmt: "",
+      dLabel: `Performance Deduction (${(performanceDeductionPct*100).toFixed(1)}%)`,
+      dAmt: money(performanceDeductionAmt)
+    },
   ];
-  const bodyH = rows.length * rowH;
+
+  const dedLabelWidth = dedColW * 0.62; // leave room for the amount column on the right
+  const lineH = 12;
+  const rowPadV = 8;
+
+  const wrappedRows = rowsData.map(r=>{
+    const dLines = r.dLabel ? doc.splitTextToSize(r.dLabel, dedLabelWidth) : [""];
+    const eLines = r.eLabel ? doc.splitTextToSize(r.eLabel, earnColW*0.62) : [""];
+    const lineCount = Math.max(dLines.length, eLines.length, 1);
+    return { ...r, dLines, eLines, rowH: lineCount*lineH + rowPadV };
+  });
+
+  const headerH = 26;
+  const bodyH = wrappedRows.reduce((sum,r)=>sum+r.rowH, 0);
 
   // header row
   doc.setFillColor(245,246,240);
@@ -812,22 +930,27 @@ function downloadSalarySlip(d){
   doc.setTextColor(0,0,0);
 
   y += headerH;
+  doc.setDrawColor(210,210,210);
   doc.rect(marginX, y, innerW, bodyH);
 
-  rows.forEach(([eLabel, eAmt, dLabel, dAmt], i)=>{
-    const rowY = y + i*rowH;
-    doc.setDrawColor(230,230,230);
-    if(i>0) doc.line(marginX, rowY, pageWidth-marginX, rowY);
+  let rowY = y;
+  wrappedRows.forEach((r, i)=>{
+    if(i>0){
+      doc.setDrawColor(230,230,230);
+      doc.line(marginX, rowY, pageWidth-marginX, rowY);
+    }
     doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
-    if(eLabel){
-      doc.text(eLabel, marginX+12, rowY+16);
-      doc.text(eAmt, pageWidth/2-12, rowY+16, { align: "right" });
+    const textTop = rowY + rowPadV/2 + lineH - 3;
+    if(r.eLabel){
+      r.eLines.forEach((line, li)=> doc.text(line, marginX+12, textTop + li*lineH));
+      doc.text(r.eAmt, pageWidth/2-12, textTop, { align: "right" });
     }
-    if(dLabel){
-      doc.text(dLabel, pageWidth/2+12, rowY+16);
-      doc.text(dAmt, pageWidth-marginX-12, rowY+16, { align: "right" });
+    if(r.dLabel){
+      r.dLines.forEach((line, li)=> doc.text(line, pageWidth/2+12, textTop + li*lineH));
+      doc.text(r.dAmt, pageWidth-marginX-12, textTop, { align: "right" });
     }
+    rowY += r.rowH;
   });
 
   y += bodyH;
@@ -842,6 +965,7 @@ function downloadSalarySlip(d){
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10);
+  doc.setTextColor(0,0,0);
   doc.text("Total Earnings", marginX+12, y+17);
   doc.text(money(basicSalary), pageWidth/2-12, y+17, { align: "right" });
   doc.setTextColor(200,30,30);
@@ -851,10 +975,12 @@ function downloadSalarySlip(d){
 
   y += totalRowH + 26;
 
-  // ---------- Net salary ----------
+  // ---------- Net salary (inside its own bordered table row) ----------
   const netBoxH = 44;
+  doc.setDrawColor(20,20,20);
+  doc.setLineWidth(0.8);
   doc.setFillColor(18,20,15);
-  doc.rect(marginX, y, innerW, netBoxH, "F");
+  doc.rect(marginX, y, innerW, netBoxH, "FD");
   doc.setFont("helvetica", "bold");
   doc.setFontSize(13);
   doc.setTextColor(255,255,255);
@@ -863,7 +989,7 @@ function downloadSalarySlip(d){
   doc.text(money(netSalary), pageWidth-marginX-16, y+28, { align: "right" });
   doc.setTextColor(0,0,0);
 
-  y += netBoxH + 30;
+  y += netBoxH + 26;
 
   // ---------- Footer ----------
   doc.setDrawColor(220,220,220);
@@ -872,8 +998,7 @@ function downloadSalarySlip(d){
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8.5);
   doc.setTextColor(140,140,140);
-  doc.text(`Generated on ${new Date().toLocaleString("en-IN")}`, marginX, y);
-  doc.text("This is a system-generated statement and does not require a signature.", pageWidth-marginX, y, { align: "right" });
+  doc.text("This is a system-generated statement and does not require a signature.", pageWidth/2, y, { align: "center" });
 
   const safeName = String(employeeName).replace(/\s+/g, "_");
   doc.save(`Salary_Slip_${safeName}_${month}_${year}.pdf`);
@@ -883,6 +1008,7 @@ function renderAll(){
   updatePendingBadge();
   renderRequests(document.getElementById("searchRequests").value);
   renderBalance(document.getElementById("searchBalance").value);
+  renderBalanceCards();
   renderDeductions(document.getElementById("searchDeductions").value);
 }
 
