@@ -706,40 +706,18 @@ function renderAll(data) {
     document.getElementById('dtTo').value = toISO(em.week.to);
   }
 
-  // ── Delegation totals for Summary card ───────────────────────────────────
-  // Summary (and Scores) totals include ALL delegation rows — "Week Shifted"
-  // rows count as Pending here. Only the Delegation TAB's own list/counts
-  // hide Week Shifted rows (see applyDelegationFilters below); Summary and
-  // Scores intentionally keep the full picture.
-  var dlRowsForSummary = data.delegationData || [];
-  var dlDoneCount = 0;
-  dlRowsForSummary.forEach(function(r) {
-    if (computeDelegationStatus(r) === 'Completed') dlDoneCount++;
-  });
-  var dlPendingCount = dlRowsForSummary.length - dlDoneCount;
-  bd.dlDone = dlDoneCount;
-  bd.dlPending = dlPendingCount;
-  t.delegationPlan = dlRowsForSummary.length;
-
-  // Total Plan / Total Actual / Overall Score also need to reflect the
-  // recomputed delegation numbers (FMS + Checklist portions are untouched).
-  var fmsPlanNum = Number(t.fmsPlan) || 0;
-  var clPlanNum  = Number(t.checklistPlan) || 0;
-  var fmsDoneNum = Number(bd.fmsDone) || 0;
-  var clDoneNum  = Number(bd.clDone) || 0;
-  var recomputedTotalPlan   = fmsPlanNum + clPlanNum + t.delegationPlan;
-  var recomputedTotalActual = fmsDoneNum + clDoneNum + dlDoneCount;
-  t.totalPlan = recomputedTotalPlan;
-  t.totalActual = recomputedTotalActual;
-  var recomputedOverall = recomputedTotalPlan > 0 ? (recomputedTotalActual / recomputedTotalPlan * 100) : 0;
-
+  // ── Summary card numbers ──────────────────────────────────────────────────
+  // These come straight from the EM DASHBOARD sheet (t = em.totals, bd =
+  // em.breakdown, as sent by the backend). No JS-side recomputation —
+  // whatever the sheet's N/O/P/Q/R/S cells say is what gets shown here,
+  // so the website always matches the EM DASHBOARD sheet exactly.
   document.getElementById('cTP').textContent = t.totalPlan || 0;
   document.getElementById('cTA').textContent = t.totalActual || 0;
   document.getElementById('cFP').textContent = t.fmsPlan || 0;
   document.getElementById('cCP').textContent = t.checklistPlan || 0;
   document.getElementById('cDP').textContent = t.delegationPlan || 0;
 
-  var ovNum = recomputedOverall;
+  var ovNum = (typeof t.overallNum === 'number') ? t.overallNum : (Number(t.totalPlan) > 0 ? (Number(t.totalActual) / Number(t.totalPlan) * 100) : 0);
   var ovRounded = Math.round(ovNum) + '%';
   document.getElementById('cTAs').textContent = ovRounded + ' complete';
   var ovEl = document.getElementById('cOV');
