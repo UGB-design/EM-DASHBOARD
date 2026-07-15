@@ -100,6 +100,10 @@
   .slip-btn:hover{opacity:.8;}
   tr.holiday-soon td{background:var(--green-soft);}
   tr.holiday-soon:hover td{background:#d8f3e2;}
+  #tab-holidays table{table-layout:fixed;}
+  #tab-holidays th:nth-child(1), #tab-holidays td:nth-child(1){width:130px;}
+  #tab-holidays th:nth-child(2), #tab-holidays td:nth-child(2){width:120px;}
+  #tab-holidays th:nth-child(3), #tab-holidays td:nth-child(3){width:auto;white-space:normal;}
   #loginGate{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px;}
   .login-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:32px 30px;width:100%;max-width:380px;}
   .login-card h2{margin:0 0 6px;font-size:18px;font-weight:800;}
@@ -820,16 +824,31 @@ function renderHistory(filterText=""){
   });
 }
 
-/* Holiday sheet dates look like "January-14" (Month-Day, no year — repeats every year). */
+/* Holiday sheet dates may come as "January-14" (Month-Day, repeats every year)
+   OR as a real date like "14/01/2026" once Apps Script formats a Date cell.
+   Handle both, always resolving to {monthIdx, day}. */
 function parseHolidayMD(dateStr){
   if(!dateStr) return null;
-  const parts = String(dateStr).trim().split("-");
-  if(parts.length < 2) return null;
-  const monthName = parts[0].trim();
-  const day = parseInt(parts[1], 10);
-  const monthIdx = MONTH_ORDER.findIndex(m => m.toLowerCase() === monthName.toLowerCase());
-  if(monthIdx === -1 || isNaN(day)) return null;
-  return { monthIdx, day };
+  const s = String(dateStr).trim();
+
+  // dd/mm/yyyy or dd/mm/yy
+  const dmy = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
+  if(dmy){
+    const day = parseInt(dmy[1], 10);
+    const monthIdx = parseInt(dmy[2], 10) - 1;
+    if(monthIdx >= 0 && monthIdx < 12 && !isNaN(day)) return { monthIdx, day };
+    return null;
+  }
+
+  // Month-Day, e.g. "January-14"
+  const parts = s.split("-");
+  if(parts.length >= 2){
+    const monthName = parts[0].trim();
+    const day = parseInt(parts[1], 10);
+    const monthIdx = MONTH_ORDER.findIndex(m => m.toLowerCase() === monthName.toLowerCase());
+    if(monthIdx !== -1 && !isNaN(day)) return { monthIdx, day };
+  }
+  return null;
 }
 
 function nearestHolidayMonthCount(rows, startMonthIdx){
