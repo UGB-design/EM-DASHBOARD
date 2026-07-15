@@ -54,6 +54,7 @@
   .tab{position:relative;padding:8px 16px;font-size:13px;font-weight:600;color:var(--ink-soft);border-radius:9px;cursor:pointer;border:none;background:transparent;display:flex;align-items:center;gap:7px;}
   .tab.active{background:#fff;color:var(--ink);box-shadow:var(--shadow);}
   .tab-badge{background:var(--red);color:#fff;font-size:10.5px;font-weight:800;min-width:18px;height:18px;border-radius:20px;display:flex;align-items:center;justify-content:center;padding:0 5px;line-height:1;}
+  .tab-badge.blue{background:var(--blue);}
   .cards{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:22px;}
   @media (max-width:1100px){.cards{grid-template-columns:repeat(2,1fr);}}
   .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 18px 16px;box-shadow:var(--shadow);}
@@ -97,6 +98,8 @@
   .warn-banner{background:var(--amber-soft);color:#8a5a05;border:1px solid #f2d79b;border-radius:10px;padding:9px 14px;font-size:12.5px;margin-bottom:16px;display:none;}
   .slip-btn{display:inline-flex;align-items:center;gap:5px;background:var(--blue-soft);color:var(--blue);border:none;}
   .slip-btn:hover{opacity:.8;}
+  tr.holiday-soon td{background:var(--green-soft);}
+  tr.holiday-soon:hover td{background:#d8f3e2;}
   #loginGate{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px;}
   .login-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:32px 30px;width:100%;max-width:380px;}
   .login-card h2{margin:0 0 6px;font-size:18px;font-weight:800;}
@@ -146,7 +149,7 @@
     <button class="tab" data-tab="balance">Leave Balance</button>
     <button class="tab" data-tab="deductions">Deduction & Salary Slip</button>
     <button class="tab" data-tab="history">All Leave Requests</button>
-    <button class="tab" data-tab="holidays">Upcoming Holidays</button>
+    <button class="tab" data-tab="holidays">Upcoming Holidays <span class="tab-badge blue" id="holidaysBadge" style="display:none;">0</span></button>
   </div>
 
   <section id="tab-requests">
@@ -293,7 +296,7 @@
       <div class="tablewrap">
         <table>
           <thead><tr>
-            <th>Date</th><th>Day</th><th>Occasion</th><th>Status</th>
+            <th>Date</th><th>Day</th><th>Occasion</th>
           </tr></thead>
           <tbody id="holidaysBody"></tbody>
         </table>
@@ -829,6 +832,25 @@ function parseHolidayMD(dateStr){
   return { monthIdx, day };
 }
 
+function nearestHolidayMonthCount(rows, startMonthIdx){
+  for(let i=0;i<12;i++){
+    const idx = (startMonthIdx + i) % 12;
+    const count = rows.filter(r => r.__md && r.__md.monthIdx === idx).length;
+    if(count > 0) return count;
+  }
+  return 0;
+}
+
+function updateHolidaysBadge(count){
+  const badge = document.getElementById("holidaysBadge");
+  if(count>0){
+    badge.style.display = "flex";
+    badge.textContent = count;
+  } else {
+    badge.style.display = "none";
+  }
+}
+
 function renderHolidays(filterText=""){
   const body = document.getElementById("holidaysBody");
   body.innerHTML = "";
@@ -837,7 +859,7 @@ function renderHolidays(filterText=""){
   const today = new Date();
   today.setHours(0,0,0,0);
   const todayMonthIdx = today.getMonth();
-  const todayDay = today.getDate();
+  const nextMonthIdx = (todayMonthIdx + 1) % 12;
 
   let rows = DATA.holidays.slice();
   if(q){
@@ -847,11 +869,13 @@ function renderHolidays(filterText=""){
     );
   }
 
-  // Sort in calendar order (Jan -> Dec), and tag each with whether it's still upcoming this year.
+  // Sort in calendar order (Jan -> Dec), and flag rows that fall in the
+  // current or next calendar month so they can be highlighted.
   rows = rows.map(r=>{
     const md = parseHolidayMD(r["DATE_f"] || r["DATE"]);
-    const isUpcoming = md ? (md.monthIdx > todayMonthIdx || (md.monthIdx === todayMonthIdx && md.day >= todayDay)) : true;
-    return { ...r, __md: md, __isUpcoming: isUpcoming };
+    const isSoon = md ? (md.monthIdx === todayMonthIdx || md.monthIdx === nextMonthIdx) : false;
+    const isThisMonth = md ? (md.monthIdx === todayMonthIdx) : false;
+    return { ...r, __md: md, __isSoon: isSoon, __isThisMonth: isThisMonth };
   }).sort((a,b)=>{
     const am = a.__md ? a.__md.monthIdx*100 + a.__md.day : 9999;
     const bm = b.__md ? b.__md.monthIdx*100 + b.__md.day : 9999;
@@ -859,21 +883,23 @@ function renderHolidays(filterText=""){
   });
 
   if(rows.length===0){
-    body.innerHTML = `<tr><td colspan="4"><div class="empty"><b>No holidays found</b>Add rows to the UPCOMING_HOLIDAY sheet and hit Refresh.</div></td></tr>`;
+    body.innerHTML = `<tr><td colspan="3"><div class="empty"><b>No holidays found</b>Add rows to the UPCOMING_HOLIDAY sheet and hit Refresh.</div></td></tr>`;
+    updateHolidaysBadge(0);
     return;
   }
 
   rows.forEach(r=>{
     const tr = document.createElement("tr");
-    if(!r.__isUpcoming) tr.style.opacity = "0.5";
+    if(r.__isSoon) tr.classList.add("holiday-soon");
     tr.innerHTML = `
       <td>${r["DATE_f"] || r["DATE"] || "–"}</td>
       <td>${r["WEEK-DAY"] || "–"}</td>
       <td style="white-space:normal;">${r["OCCASION"] || "–"}</td>
-      <td>${r.__isUpcoming ? `<span class="badge green">Upcoming</span>` : `<span class="badge gray">Passed</span>`}</td>
     `;
     body.appendChild(tr);
   });
+
+  updateHolidaysBadge(nearestHolidayMonthCount(rows, todayMonthIdx));
 }
 
 function renderBalance(filterText=""){
