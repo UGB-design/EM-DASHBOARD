@@ -144,7 +144,7 @@
   <div class="tabs" id="tabs">
     <button class="tab active" data-tab="requests">Pending Approvals <span class="tab-badge" id="pendingBadge" style="display:none;">0</span></button>
     <button class="tab" data-tab="balance">Leave Balance</button>
-    <button class="tab" data-tab="deductions">Deductions</button>
+    <button class="tab" data-tab="deductions">Deduction & Salary Slip</button>
     <button class="tab" data-tab="history">All Leave Requests</button>
   </div>
 
@@ -494,10 +494,23 @@ function populateMonths(){
     const year = String(Math.round(Number(d["YEAR"])||0));
     seen.set(`${d["MONTH"]}|${year}`, {month:d["MONTH"], year});
   });
-  const combos = [...seen.values()].sort((a,b)=>{
+
+  const now = new Date();
+  const curMonthIdx = now.getMonth(); // 0 = January
+  const curYear = now.getFullYear();
+
+  // Only months that have fully finished — the current, still-running month
+  // (e.g. July while July is in progress) is excluded until it's over.
+  const completedOnly = [...seen.values()].filter(({month, year})=>{
+    const y = Number(year);
+    const m = MONTH_ORDER.indexOf(month);
+    return (y < curYear) || (y === curYear && m < curMonthIdx);
+  });
+
+  const combos = completedOnly.sort((a,b)=>{
     if(a.year!==b.year) return Number(b.year)-Number(a.year);
     return MONTH_ORDER.indexOf(b.month) - MONTH_ORDER.indexOf(a.month);
-  });
+  }).slice(0, 3); // latest 3 completed months only
 
   const sel = document.getElementById("monthSel");
   const prevValue = sel.value;
@@ -729,7 +742,7 @@ function renderRequests(filterText=""){
     tr.innerHTML = `
       <td class="num-cell">${r["Request_ID"]||"–"}</td>
       <td><div class="person"><div class="avatar" style="background:${colorFor(r["Staff_Name"])}">${initials(r["Staff_Name"])}</div>
-        <div><div class="name">${r["Staff_Name"]||""}</div><div class="email">${r["Email"]||""}</div></div></div></td>
+        <div class="name">${r["Staff_Name"]||""}</div></div></td>
       <td>${typeBadgeHtml(r["Leave_Type"])}</td>
       <td>${r["From_Date_f"]||"–"}</td>
       <td>${r["To_Date_f"]||"–"}</td>
@@ -765,7 +778,7 @@ function renderHistory(filterText=""){
     tr.innerHTML = `
       <td class="num-cell">${r["Request_ID"]||"–"}</td>
       <td><div class="person"><div class="avatar" style="background:${colorFor(r["Staff_Name"])}">${initials(r["Staff_Name"])}</div>
-        <div><div class="name">${r["Staff_Name"]||""}</div><div class="email">${r["Email"]||""}</div></div></div></td>
+        <div class="name">${r["Staff_Name"]||""}</div></div></td>
       <td>${typeBadgeHtml(r["Leave_Type"])}</td>
       <td>${r["From_Date_f"]||"–"}</td>
       <td>${r["To_Date_f"]||"–"}</td>
@@ -1022,7 +1035,7 @@ function downloadSalarySlip(d){
     },
     {
       eLabel: "", eAmt: "",
-      dLabel: `Performance Deduction (${(performanceDeductionPct*100).toFixed(1)}%)`,
+      dLabel: `Other Deduction (${(performanceDeductionPct*100).toFixed(1)}%)`,
       dAmt: moneyPDF(performanceDeductionAmt)
     },
   ];
