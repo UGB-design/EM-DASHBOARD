@@ -126,8 +126,8 @@
 
   <header>
     <div class="brand">
-      <h1>UMESH BOLMAL & ASSOCIATES</h1>
-      <p>Leave Management • Payroll • Performance &nbsp;·&nbsp; <span id="scopeLabel">–</span></p>
+      <h1>Leave Dashboard</h1>
+      <p>Leave requests + balances + deductions &nbsp;·&nbsp; <span id="scopeLabel">–</span></p>
     </div>
     <div style="display:flex;align-items:center;gap:10px;">
       <div class="signed-in-as" id="signedInAs" style="display:none;"></div>
@@ -146,6 +146,7 @@
     <button class="tab" data-tab="balance">Leave Balance</button>
     <button class="tab" data-tab="deductions">Deduction & Salary Slip</button>
     <button class="tab" data-tab="history">All Leave Requests</button>
+    <button class="tab" data-tab="holidays">Upcoming Holidays</button>
   </div>
 
   <section id="tab-requests">
@@ -273,6 +274,28 @@
             <th>Reason</th><th>Leave Year</th><th>Status</th>
           </tr></thead>
           <tbody id="historyBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="tab-holidays" style="display:none;">
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Upcoming Holidays</h2>
+        <div class="panel-filters">
+          <div class="mini-field">
+            <label>&nbsp;</label>
+            <input class="search" id="searchHolidays" placeholder="Search occasion...">
+          </div>
+        </div>
+      </div>
+      <div class="tablewrap">
+        <table>
+          <thead><tr>
+            <th>Date</th><th>Day</th><th>Occasion</th><th>Status</th>
+          </tr></thead>
+          <tbody id="holidaysBody"></tbody>
         </table>
       </div>
     </div>
@@ -407,15 +430,16 @@ async function safeLoad(name){
   catch(e){ console.error("Failed to load", name, e); return { __failed:true }; }
 }
 
-let DATA = { staff:[], requests:[], balance:[], deduction:[], scorecards:null };
+let DATA = { staff:[], requests:[], balance:[], deduction:[], scorecards:null, holidays:[] };
 
 async function loadAll(){
   setLoading(true);
-  const [staffRes, requestsRes, balanceRes, deductionRes] = await Promise.all([
+  const [staffRes, requestsRes, balanceRes, deductionRes, holidayRes] = await Promise.all([
     safeLoad("Staff_Info"),
     safeLoad("Leave_Requests"),
     safeLoad("Leave_Balance"),
     safeLoad("PERFORMANCE_DEDUCTION"),
+    safeLoad("UPCOMING_HOLIDAY"),
   ]);
 
   const failed = [];
@@ -427,6 +451,7 @@ async function loadAll(){
   DATA.requests = unwrap(requestsRes, "Leave_Requests").filter(r=>r["Staff_Name"] || r["Email"]);
   DATA.balance = balanceRaw.filter(r=>r["Email"]);
   DATA.deduction = unwrap(deductionRes, "PERFORMANCE_DEDUCTION").filter(r=>r["EMPLOYEE"]);
+  DATA.holidays = unwrap(holidayRes, "UPCOMING_HOLIDAY").filter(r=>r["OCCASION"] || r["DATE"]);
   DATA.scorecards = extractScorecards(balanceRaw);
   if(!DATA.scorecards) failed.push("Leave Balance summary cards");
 
@@ -455,7 +480,7 @@ async function loadAll(){
   populateBalanceYears();
   populateHistoryFilters();
   renderAll();
-  document.getElementById("lastUpdated").textContent = "🟢 Live Sync · refreshed " + new Date().toLocaleTimeString("en-IN");
+  document.getElementById("lastUpdated").textContent = "Live data · refreshed " + new Date().toLocaleTimeString("en-IN");
   setLoading(false);
 }
 
@@ -787,6 +812,65 @@ function renderHistory(filterText=""){
       <td style="white-space:normal;max-width:260px;">${r["Reason"]||""}</td>
       <td>${fiscalYearOf(r["From_Date_f"]) || "–"}</td>
       <td>${statusBadgeHtml(r["Status"])}</td>
+    `;
+    body.appendChild(tr);
+  });
+}
+
+/* Holiday sheet dates look like "January-14" (Month-Day, no year — repeats every year). */
+function parseHolidayMD(dateStr){
+  if(!dateStr) return null;
+  const parts = String(dateStr).trim().split("-");
+  if(parts.length < 2) return null;
+  const monthName = parts[0].trim();
+  const day = parseInt(parts[1], 10);
+  const monthIdx = MONTH_ORDER.findIndex(m => m.toLowerCase() === monthName.toLowerCase());
+  if(monthIdx === -1 || isNaN(day)) return null;
+  return { monthIdx, day };
+}
+
+function renderHolidays(filterText=""){
+  const body = document.getElementById("holidaysBody");
+  body.innerHTML = "";
+  const q = filterText.trim().toLowerCase();
+
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const todayMonthIdx = today.getMonth();
+  const todayDay = today.getDate();
+
+  let rows = DATA.holidays.slice();
+  if(q){
+    rows = rows.filter(r =>
+      (r["OCCASION"]||"").toLowerCase().includes(q) ||
+      (r["DATE"]||"").toLowerCase().includes(q)
+    );
+  }
+
+  // Sort in calendar order (Jan -> Dec), and tag each with whether it's still upcoming this year.
+  rows = rows.map(r=>{
+    const md = parseHolidayMD(r["DATE_f"] || r["DATE"]);
+    const isUpcoming = md ? (md.monthIdx > todayMonthIdx || (md.monthIdx === todayMonthIdx && md.day >= todayDay)) : true;
+    return { ...r, __md: md, __isUpcoming: isUpcoming };
+  }).sort((a,b)=>{
+    const am = a.__md ? a.__md.monthIdx*100 + a.__md.day : 9999;
+    const bm = b.__md ? b.__md.monthIdx*100 + b.__md.day : 9999;
+    return am - bm;
+  });
+
+  if(rows.length===0){
+    body.innerHTML = `<tr><td colspan="4"><div class="empty"><b>No holidays found</b>Add rows to the UPCOMING_HOLIDAY sheet and hit Refresh.</div></td></tr>`;
+    return;
+  }
+
+  rows.forEach(r=>{
+    const tr = document.createElement("tr");
+    if(!r.__isUpcoming) tr.style.opacity = "0.5";
+    tr.innerHTML = `
+      <td>${r["DATE_f"] || r["DATE"] || "–"}</td>
+      <td>${r["WEEK-DAY"] || "–"}</td>
+      <td style="white-space:normal;">${r["OCCASION"] || "–"}</td>
+      <td>${r.__isUpcoming ? `<span class="badge green">Upcoming</span>` : `<span class="badge gray">Passed</span>`}</td>
     `;
     body.appendChild(tr);
   });
@@ -1158,6 +1242,7 @@ function renderAll(){
   renderBalanceCards();
   renderDeductions(document.getElementById("searchDeductions").value);
   renderHistory(document.getElementById("searchHistory").value);
+  renderHolidays(document.getElementById("searchHolidays").value);
 }
 
 document.querySelectorAll(".tab").forEach(btn=>{
@@ -1183,6 +1268,7 @@ document.getElementById("searchHistory").addEventListener("input", e=>renderHist
 document.getElementById("historyEmployeeFilter").addEventListener("change", ()=>renderHistory(document.getElementById("searchHistory").value));
 document.getElementById("historyYearFilter").addEventListener("change", ()=>renderHistory(document.getElementById("searchHistory").value));
 document.getElementById("historyTypeFilter").addEventListener("change", ()=>renderHistory(document.getElementById("searchHistory").value));
+document.getElementById("searchHolidays").addEventListener("input", e=>renderHolidays(e.target.value));
 document.getElementById("refreshBtn").addEventListener("click", loadAll);
 
 function updateSignedInAsUI(){
