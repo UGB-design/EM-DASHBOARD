@@ -50,7 +50,7 @@
   .apply-leave:hover{transform:translateY(-1px);box-shadow:0 2px 4px rgba(5,74,159,.2),0 10px 22px rgba(5,74,159,.32);}
   .apply-leave .plus{width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
   .apply-leave .plus svg{width:12px;height:12px;}
-  .tabs{display:flex;gap:4px;background:rgba(0,0,0,0.035);padding:4px;border-radius:12px;width:fit-content;margin-bottom:22px;}
+  .tabs{display:flex;gap:4px;background:rgba(0,0,0,0.035);padding:4px;border-radius:12px;width:fit-content;margin-bottom:22px;flex-wrap:wrap;}
   .tab{position:relative;padding:8px 16px;font-size:13px;font-weight:600;color:var(--ink-soft);border-radius:9px;cursor:pointer;border:none;background:transparent;display:flex;align-items:center;gap:7px;}
   .tab.active{background:#fff;color:var(--ink);box-shadow:var(--shadow);}
   .tab-badge{background:var(--red);color:#fff;font-size:10.5px;font-weight:800;min-width:18px;height:18px;border-radius:20px;display:flex;align-items:center;justify-content:center;padding:0 5px;line-height:1;}
@@ -142,25 +142,17 @@
   <div id="warnBanner" class="warn-banner"></div>
 
   <div class="tabs" id="tabs">
-    <button class="tab active" data-tab="requests">Leave Requests <span class="tab-badge" id="pendingBadge" style="display:none;">0</span></button>
+    <button class="tab active" data-tab="requests">Pending Approvals <span class="tab-badge" id="pendingBadge" style="display:none;">0</span></button>
     <button class="tab" data-tab="balance">Leave Balance</button>
     <button class="tab" data-tab="deductions">Deductions</button>
+    <button class="tab" data-tab="history">All Leave Requests</button>
   </div>
 
   <section id="tab-requests">
     <div class="panel">
       <div class="panel-head">
-        <h2>Leave Requests</h2>
+        <h2>Pending Leave Requests</h2>
         <div class="panel-filters">
-          <div class="mini-field">
-            <label>Status</label>
-            <select id="statusFilter">
-              <option value="">All</option>
-              <option value="pending">Pending</option>
-              <option value="approved">Approved</option>
-              <option value="rejected">Rejected</option>
-            </select>
-          </div>
           <div class="mini-field">
             <label>From</label>
             <input type="date" id="fromDate">
@@ -246,6 +238,46 @@
     </div>
   </section>
 
+  <section id="tab-history" style="display:none;">
+    <div class="panel">
+      <div class="panel-head">
+        <h2>All Leave Requests</h2>
+        <div class="panel-filters">
+          <div class="mini-field">
+            <label>Employee</label>
+            <select id="historyEmployeeFilter"><option value="">All</option></select>
+          </div>
+          <div class="mini-field">
+            <label>Leave Year</label>
+            <select id="historyYearFilter"><option value="">All</option></select>
+          </div>
+          <div class="mini-field">
+            <label>Leave Type</label>
+            <select id="historyTypeFilter">
+              <option value="">All</option>
+              <option value="Paid">Paid</option>
+              <option value="Unpaid">Unpaid</option>
+              <option value="Half Day">Half Day</option>
+            </select>
+          </div>
+          <div class="mini-field">
+            <label>&nbsp;</label>
+            <input class="search" id="searchHistory" placeholder="Search employee...">
+          </div>
+        </div>
+      </div>
+      <div class="tablewrap">
+        <table>
+          <thead><tr>
+            <th>Request ID</th><th>Employee</th><th>Type</th><th>From</th><th>To</th>
+            <th>Reason</th><th>Leave Year</th><th>Status</th>
+          </tr></thead>
+          <tbody id="historyBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
   <p class="foot-note" id="lastUpdated"></p>
 </div>
 
@@ -305,6 +337,41 @@ function parseDMY(str){
   }
   const fallback = new Date(s);
   return isNaN(fallback) ? null : fallback;
+}
+
+/* Leave Year = April to March, e.g. a date in Apr 2026 - Mar 2027 => "2026-27" */
+function fiscalYearOf(dateStr){
+  const d = parseDMY(dateStr);
+  if(!d) return null;
+  const y = d.getFullYear();
+  const m = d.getMonth(); // 0 = Jan ... 3 = Apr
+  if(m >= 3){
+    return `${y}-${String((y+1)%100).padStart(2,"0")}`;
+  }
+  return `${y-1}-${String(y%100).padStart(2,"0")}`;
+}
+
+function categorizeType(t){
+  t = (t||"").toLowerCase();
+  if(t.includes("unpaid")) return "Unpaid";
+  if(t.includes("half")) return "Half Day";
+  return "Paid";
+}
+function typeBadgeHtml(t){
+  const cat = categorizeType(t);
+  if(cat==="Unpaid") return `<span class="badge red">Unpaid</span>`;
+  if(cat==="Half Day") return `<span class="badge amber">Half Day</span>`;
+  return `<span class="badge green">${t ? titleCase(t) : "Paid"}</span>`;
+}
+function statusBadgeHtml(s){
+  s=(s||"").toLowerCase();
+  if(s.includes("approve")) return `<span class="badge green">Approved</span>`;
+  if(s.includes("reject")) return `<span class="badge red">Rejected</span>`;
+  return `<span class="badge amber">Pending</span>`;
+}
+function isPendingStatus(s){
+  s = (s||"").toLowerCase();
+  return !s || (!s.includes("approve") && !s.includes("reject"));
 }
 
 async function loadSheet(name){
@@ -386,6 +453,7 @@ async function loadAll(){
 
   populateMonths();
   populateBalanceYears();
+  populateHistoryFilters();
   renderAll();
   document.getElementById("lastUpdated").textContent = "Live data · refreshed " + new Date().toLocaleTimeString("en-IN");
   setLoading(false);
@@ -469,10 +537,37 @@ function populateBalanceYears(){
   if ([...sel.options].some(o=>o.value===prevValue)) sel.value = prevValue;
 }
 
+function populateHistoryFilters(){
+  const empSel = document.getElementById("historyEmployeeFilter");
+  const yearSel = document.getElementById("historyYearFilter");
+
+  const prevEmp = empSel.value;
+  const prevYear = yearSel.value;
+
+  const employees = [...new Set(DATA.requests.map(r=>r["Staff_Name"]).filter(Boolean))].sort();
+  empSel.innerHTML = `<option value="">All</option>`;
+  employees.forEach(name=>{
+    const o = document.createElement("option");
+    o.value = name; o.textContent = name;
+    empSel.appendChild(o);
+  });
+  if ([...empSel.options].some(o=>o.value===prevEmp)) empSel.value = prevEmp;
+
+  const years = [...new Set(DATA.requests.map(r=>fiscalYearOf(r["From_Date_f"])).filter(Boolean))]
+    .sort((a,b)=> b.localeCompare(a, undefined, {numeric:true}));
+  yearSel.innerHTML = `<option value="">All</option>`;
+  years.forEach(y=>{
+    const o = document.createElement("option");
+    o.value = y; o.textContent = y;
+    yearSel.appendChild(o);
+  });
+  if ([...yearSel.options].some(o=>o.value===prevYear)) yearSel.value = prevYear;
+}
+
 /* ============================================================
    Leave Balance scorecards
    ============================================================
-   Layout now lives in FIXED columns M:O, right beside the header row
+   Layout lives in FIXED columns M:O, right beside the header row
    of the main Leave_Balance table:
 
      M1: ACTIVE STAFF            N1: PENDING REQUEST   O1: TOTAL PAID BALANCE
@@ -480,16 +575,11 @@ function populateBalanceYears(){
      M3: TOTAL PAID LEAVE USED   N3: HALF DAY           O3: UNPAID_LEAVE
      M4: 92                      N4: 0                  O4: 0
 
-   Because M1/N1/O1 ARE the column headers (sheet row 1), Apps Script
-   returns row 2's numbers already keyed under those header names on the
-   very first data row — no scanning needed for that part. The second
-   sub-block (TOTAL PAID LEAVE USED / HALF DAY / UNPAID_LEAVE) reuses the
-   SAME three columns two rows further down, so we search for that label
-   (rather than assuming a fixed row index) and read the row right after
-   it. Unlike the old B29:D32 location — which sat below the growing
-   staff table and would get pushed further down every time a new
-   employee row was added — this fixed M:O position next to the header
-   row will NOT shift next year.
+   That static block is a firm-wide, all-years total. When the person
+   picks a specific Leave Year in the "Leave Balance" filter, the cards
+   are recomputed on the fly from the (already year-filtered)
+   Leave_Balance rows + matching Leave_Requests, instead of the static
+   sheet block, so the numbers actually change with the dropdown.
    ============================================================ */
 function normalizeLabel(s){
   return (s||"").toString().trim().toUpperCase().replace(/[_\s]+/g, " ");
@@ -525,17 +615,25 @@ function extractScorecards(rawRows){
   return { activeStaff, pendingRequest, totalPaidBalance, totalPaidLeaveUsed, halfDay, unpaidLeave };
 }
 
+function getBalanceRowsForYear(yearFilter){
+  let rows = DATA.balance.slice();
+  if(yearFilter) rows = rows.filter(r => String(r["Leave_Year"]||"").trim() === yearFilter);
+  return rows;
+}
+
 function renderBalanceCards(){
   const wrap = document.getElementById("balanceCards");
+  const yearFilter = document.getElementById("yearFilterBalance").value;
+  const rows = getBalanceRowsForYear(yearFilter);
 
   if(!IS_ADMIN){
-    if(!DATA.balance.length){
-      wrap.innerHTML = `<div class="card" style="grid-column:1/-1;"><div class="eyebrow">Leave Balance</div><div class="sub" style="margin-top:0;">No leave balance record found for your email on the Leave_Balance sheet yet.</div></div>`;
+    if(!rows.length){
+      wrap.innerHTML = `<div class="card" style="grid-column:1/-1;"><div class="eyebrow">Leave Balance</div><div class="sub" style="margin-top:0;">No leave balance record found${yearFilter ? " for " + yearFilter : ""} for your email yet.</div></div>`;
       return;
     }
-    const my = DATA.balance[0];
+    const my = rows[0];
     wrap.innerHTML = `
-      <div class="card"><div class="eyebrow">Total Paid Leave</div><div class="num blue">${my["Total_Paid_Leave"] ?? 0}</div><div class="sub">allotted this year</div></div>
+      <div class="card"><div class="eyebrow">Total Paid Leave</div><div class="num blue">${my["Total_Paid_Leave"] ?? 0}</div><div class="sub">allotted${yearFilter ? " " + yearFilter : " this year"}</div></div>
       <div class="card"><div class="eyebrow">Used</div><div class="num amber">${my["Used_Paid_Leave"] ?? 0}</div><div class="sub">days used</div></div>
       <div class="card"><div class="eyebrow">Balance</div><div class="num green">${my["Balance_Leaves"] ?? 0}</div><div class="sub">days remaining</div></div>
       <div class="card"><div class="eyebrow">Half Day</div><div class="num amber">${my["HalfDay_Count"] ?? 0}</div><div class="sub">half-day leaves</div></div>
@@ -544,26 +642,45 @@ function renderBalanceCards(){
     return;
   }
 
-  const sc = DATA.scorecards;
-  if(!sc){
-    wrap.innerHTML = `<div class="card" style="grid-column:1/-1;"><div class="eyebrow">Summary cards</div><div class="sub" style="margin-top:0;">Could not find the "ACTIVE STAFF" summary block on the Leave_Balance sheet (columns M:O). Make sure those label/value rows still exist next to the header row, then hit Refresh.</div></div>`;
+  // Admin view
+  if(!yearFilter){
+    const sc = DATA.scorecards;
+    if(!sc){
+      wrap.innerHTML = `<div class="card" style="grid-column:1/-1;"><div class="eyebrow">Summary cards</div><div class="sub" style="margin-top:0;">Could not find the "ACTIVE STAFF" summary block on the Leave_Balance sheet (columns M:O). Make sure those label/value rows still exist next to the header row, then hit Refresh.</div></div>`;
+      return;
+    }
+    wrap.innerHTML = `
+      <div class="card"><div class="eyebrow">Active Staff</div><div class="num blue">${sc.activeStaff}</div><div class="sub">on the roster</div></div>
+      <div class="card"><div class="eyebrow">Pending Request</div><div class="num amber">${sc.pendingRequest}</div><div class="sub">awaiting approval</div></div>
+      <div class="card"><div class="eyebrow">Total Paid Balance</div><div class="num green">${sc.totalPaidBalance}</div><div class="sub">days remaining</div></div>
+      <div class="card"><div class="eyebrow">Total Paid Leave Used</div><div class="num blue">${sc.totalPaidLeaveUsed}</div><div class="sub">days used</div></div>
+      <div class="card"><div class="eyebrow">Half Day</div><div class="num amber">${sc.halfDay}</div><div class="sub">half-day leaves</div></div>
+      <div class="card"><div class="eyebrow">Unpaid Leave</div><div class="num red">${sc.unpaidLeave}</div><div class="sub">unpaid days</div></div>
+    `;
     return;
   }
+
+  // Specific Leave Year selected — recompute from filtered rows instead of the static sheet block
+  const sum = (key) => rows.reduce((t,r)=> t + (Number(r[key]) || 0), 0);
+  const activeStaff = rows.length;
+  const totalPaidBalance = sum("Balance_Leaves");
+  const totalPaidLeaveUsed = sum("Used_Paid_Leave");
+  const halfDay = sum("HalfDay_Count");
+  const unpaidLeave = sum("Unpaid_Leave");
+  const pendingRequest = DATA.requests.filter(r => isPendingStatus(r["Status"]) && fiscalYearOf(r["From_Date_f"]) === yearFilter).length;
+
   wrap.innerHTML = `
-    <div class="card"><div class="eyebrow">Active Staff</div><div class="num blue">${sc.activeStaff}</div><div class="sub">on the roster</div></div>
-    <div class="card"><div class="eyebrow">Pending Request</div><div class="num amber">${sc.pendingRequest}</div><div class="sub">awaiting approval</div></div>
-    <div class="card"><div class="eyebrow">Total Paid Balance</div><div class="num green">${sc.totalPaidBalance}</div><div class="sub">days remaining</div></div>
-    <div class="card"><div class="eyebrow">Total Paid Leave Used</div><div class="num blue">${sc.totalPaidLeaveUsed}</div><div class="sub">days used</div></div>
-    <div class="card"><div class="eyebrow">Half Day</div><div class="num amber">${sc.halfDay}</div><div class="sub">half-day leaves</div></div>
-    <div class="card"><div class="eyebrow">Unpaid Leave</div><div class="num red">${sc.unpaidLeave}</div><div class="sub">unpaid days</div></div>
+    <div class="card"><div class="eyebrow">Active Staff</div><div class="num blue">${activeStaff}</div><div class="sub">with a ${yearFilter} record</div></div>
+    <div class="card"><div class="eyebrow">Pending Request</div><div class="num amber">${pendingRequest}</div><div class="sub">awaiting approval · ${yearFilter}</div></div>
+    <div class="card"><div class="eyebrow">Total Paid Balance</div><div class="num green">${totalPaidBalance}</div><div class="sub">days remaining · ${yearFilter}</div></div>
+    <div class="card"><div class="eyebrow">Total Paid Leave Used</div><div class="num blue">${totalPaidLeaveUsed}</div><div class="sub">days used · ${yearFilter}</div></div>
+    <div class="card"><div class="eyebrow">Half Day</div><div class="num amber">${halfDay}</div><div class="sub">half-day leaves · ${yearFilter}</div></div>
+    <div class="card"><div class="eyebrow">Unpaid Leave</div><div class="num red">${unpaidLeave}</div><div class="sub">unpaid days · ${yearFilter}</div></div>
   `;
 }
 
 function updatePendingBadge(){
-  const pendingCount = DATA.requests.filter(r=>{
-    const s = (r["Status"]||"").toLowerCase();
-    return !s || (!s.includes("approve") && !s.includes("reject"));
-  }).length;
+  const pendingCount = DATA.requests.filter(r => isPendingStatus(r["Status"])).length;
   const badge = document.getElementById("pendingBadge");
   if(pendingCount>0){
     badge.style.display = "flex";
@@ -577,19 +694,12 @@ function renderRequests(filterText=""){
   const body = document.getElementById("requestsBody");
   body.innerHTML = "";
   const q = filterText.trim().toLowerCase();
-  const status = document.getElementById("statusFilter").value;
   const from = document.getElementById("fromDate").value;
   const to = document.getElementById("toDate").value;
 
-  let rows = DATA.requests.slice();
+  // This tab is a dedicated "Pending Approvals" queue — always pending only.
+  let rows = DATA.requests.filter(r => isPendingStatus(r["Status"]));
   if(q) rows = rows.filter(r => (r["Staff_Name"]||"").toLowerCase().includes(q));
-  if(status){
-    rows = rows.filter(r=>{
-      const s = (r["Status"]||"").toLowerCase();
-      if(status==="pending") return !s || (!s.includes("approve") && !s.includes("reject"));
-      return s.includes(status);
-    });
-  }
 
   if(from){
     const fromD = parseDMY(from.split("-").reverse().join("/"));
@@ -610,22 +720,9 @@ function renderRequests(filterText=""){
   if(actionColHead) actionColHead.style.display = IS_ADMIN ? "" : "none";
 
   if(rows.length===0){
-    body.innerHTML = `<tr><td colspan="${IS_ADMIN ? 8 : 7}"><div class="empty"><b>No leave requests found</b>Submitted requests from the Leave_Requests sheet will show up here automatically.</div></td></tr>`;
+    body.innerHTML = `<tr><td colspan="${IS_ADMIN ? 8 : 7}"><div class="empty"><b>No pending leave requests</b>Submitted requests awaiting approval will show up here automatically.</div></td></tr>`;
     return;
   }
-
-  const typeBadge = (t)=>{
-    t=(t||"").toLowerCase();
-    if(t.includes("unpaid")) return `<span class="badge red">Unpaid</span>`;
-    if(t.includes("half")) return `<span class="badge amber">Half Day</span>`;
-    return `<span class="badge green">${t ? titleCase(t) : "Paid"}</span>`;
-  };
-  const statusBadge = (s)=>{
-    s=(s||"").toLowerCase();
-    if(s.includes("approve")) return `<span class="badge green">Approved</span>`;
-    if(s.includes("reject")) return `<span class="badge red">Rejected</span>`;
-    return `<span class="badge amber">Pending</span>`;
-  };
 
   rows.forEach(r=>{
     const tr = document.createElement("tr");
@@ -633,12 +730,48 @@ function renderRequests(filterText=""){
       <td class="num-cell">${r["Request_ID"]||"–"}</td>
       <td><div class="person"><div class="avatar" style="background:${colorFor(r["Staff_Name"])}">${initials(r["Staff_Name"])}</div>
         <div><div class="name">${r["Staff_Name"]||""}</div><div class="email">${r["Email"]||""}</div></div></div></td>
-      <td>${typeBadge(r["Leave_Type"])}</td>
+      <td>${typeBadgeHtml(r["Leave_Type"])}</td>
       <td>${r["From_Date_f"]||"–"}</td>
       <td>${r["To_Date_f"]||"–"}</td>
       <td style="white-space:normal;max-width:280px;">${r["Reason"]||""}</td>
-      <td>${statusBadge(r["Status"])}</td>
+      <td>${statusBadgeHtml(r["Status"])}</td>
       ${IS_ADMIN ? `<td><a class="btn sm" href="${LEAVE_APPROVAL_URL}" target="_blank" rel="noopener">Approve</a></td>` : ""}
+    `;
+    body.appendChild(tr);
+  });
+}
+
+function renderHistory(filterText=""){
+  const body = document.getElementById("historyBody");
+  body.innerHTML = "";
+  const q = filterText.trim().toLowerCase();
+  const emp = document.getElementById("historyEmployeeFilter").value;
+  const year = document.getElementById("historyYearFilter").value;
+  const type = document.getElementById("historyTypeFilter").value;
+
+  let rows = DATA.requests.slice();
+  if(q) rows = rows.filter(r => (r["Staff_Name"]||"").toLowerCase().includes(q));
+  if(emp) rows = rows.filter(r => r["Staff_Name"] === emp);
+  if(year) rows = rows.filter(r => fiscalYearOf(r["From_Date_f"]) === year);
+  if(type) rows = rows.filter(r => categorizeType(r["Leave_Type"]) === type);
+
+  if(rows.length===0){
+    body.innerHTML = `<tr><td colspan="8"><div class="empty"><b>No leave requests found</b>Try clearing a filter above.</div></td></tr>`;
+    return;
+  }
+
+  rows.forEach(r=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="num-cell">${r["Request_ID"]||"–"}</td>
+      <td><div class="person"><div class="avatar" style="background:${colorFor(r["Staff_Name"])}">${initials(r["Staff_Name"])}</div>
+        <div><div class="name">${r["Staff_Name"]||""}</div><div class="email">${r["Email"]||""}</div></div></div></td>
+      <td>${typeBadgeHtml(r["Leave_Type"])}</td>
+      <td>${r["From_Date_f"]||"–"}</td>
+      <td>${r["To_Date_f"]||"–"}</td>
+      <td style="white-space:normal;max-width:260px;">${r["Reason"]||""}</td>
+      <td>${fiscalYearOf(r["From_Date_f"]) || "–"}</td>
+      <td>${statusBadgeHtml(r["Status"])}</td>
     `;
     body.appendChild(tr);
   });
@@ -650,10 +783,7 @@ function renderBalance(filterText=""){
   const q = filterText.trim().toLowerCase();
   const yearFilter = document.getElementById("yearFilterBalance").value;
 
-  let rows = DATA.balance.slice();
-  if(yearFilter){
-    rows = rows.filter(r => String(r["Leave_Year"]||"").trim() === yearFilter);
-  }
+  let rows = getBalanceRowsForYear(yearFilter);
   if(q){
     rows = rows.filter(r=>{
       const staff = staffByEmail(r["Email"]);
@@ -1004,6 +1134,7 @@ function renderAll(){
   renderBalance(document.getElementById("searchBalance").value);
   renderBalanceCards();
   renderDeductions(document.getElementById("searchDeductions").value);
+  renderHistory(document.getElementById("searchHistory").value);
 }
 
 document.querySelectorAll(".tab").forEach(btn=>{
@@ -1016,13 +1147,19 @@ document.querySelectorAll(".tab").forEach(btn=>{
 });
 
 document.getElementById("searchRequests").addEventListener("input", e=>renderRequests(e.target.value));
-document.getElementById("statusFilter").addEventListener("change", ()=>renderRequests(document.getElementById("searchRequests").value));
 document.getElementById("fromDate").addEventListener("change", ()=>renderRequests(document.getElementById("searchRequests").value));
 document.getElementById("toDate").addEventListener("change", ()=>renderRequests(document.getElementById("searchRequests").value));
 document.getElementById("searchBalance").addEventListener("input", e=>renderBalance(e.target.value));
-document.getElementById("yearFilterBalance").addEventListener("change", ()=>renderBalance(document.getElementById("searchBalance").value));
+document.getElementById("yearFilterBalance").addEventListener("change", ()=>{
+  renderBalance(document.getElementById("searchBalance").value);
+  renderBalanceCards();
+});
 document.getElementById("searchDeductions").addEventListener("input", e=>renderDeductions(e.target.value));
 document.getElementById("monthSel").addEventListener("change", ()=>renderDeductions(document.getElementById("searchDeductions").value));
+document.getElementById("searchHistory").addEventListener("input", e=>renderHistory(e.target.value));
+document.getElementById("historyEmployeeFilter").addEventListener("change", ()=>renderHistory(document.getElementById("searchHistory").value));
+document.getElementById("historyYearFilter").addEventListener("change", ()=>renderHistory(document.getElementById("searchHistory").value));
+document.getElementById("historyTypeFilter").addEventListener("change", ()=>renderHistory(document.getElementById("searchHistory").value));
 document.getElementById("refreshBtn").addEventListener("click", loadAll);
 
 function updateSignedInAsUI(){
