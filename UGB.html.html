@@ -37,61 +37,26 @@
     -webkit-font-smoothing:antialiased;
   }
   .wrap{max-width:1320px;margin:0 auto;padding:28px 32px 80px;}
-
-  /* header */
   header{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:22px;}
   .brand h1{font-size:24px;font-weight:800;margin:0 0 4px;letter-spacing:-0.02em;}
   .brand p{margin:0;font-size:13px;color:var(--ink-soft);}
   .brand p span{color:var(--blue);font-weight:600;}
-  .btn{
-    background:var(--ink);color:#fff;border:none;border-radius:10px;
-    padding:9px 18px;font-weight:600;font-size:13px;cursor:pointer;
-    transition:opacity .15s;display:inline-block;text-decoration:none;
-  }
+  .btn{background:var(--ink);color:#fff;border:none;border-radius:10px;padding:9px 18px;font-weight:600;font-size:13px;cursor:pointer;transition:opacity .15s;display:inline-block;text-decoration:none;}
   .btn:hover{opacity:.85;}
   .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--border);}
   .btn.sm{padding:6px 12px;font-size:11.5px;}
-
-  /* top-right Apply Leave CTA */
   .topbar{display:flex;justify-content:flex-end;margin-bottom:14px;}
-  .apply-leave{
-    display:inline-flex;align-items:center;gap:8px;
-    background:linear-gradient(180deg,#0a58c2,#054a9f);
-    color:#fff;border:none;border-radius:10px;
-    padding:10px 18px 10px 14px;font-family:'Inter',sans-serif;
-    font-size:13.5px;font-weight:700;letter-spacing:.01em;cursor:pointer;
-    box-shadow:0 1px 2px rgba(5,74,159,.15),0 6px 16px rgba(5,74,159,.28);
-    text-decoration:none;transition:transform .15s, box-shadow .15s, opacity .15s;
-  }
+  .apply-leave{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(180deg,#0a58c2,#054a9f);color:#fff;border:none;border-radius:10px;padding:10px 18px 10px 14px;font-family:'Inter',sans-serif;font-size:13.5px;font-weight:700;letter-spacing:.01em;cursor:pointer;box-shadow:0 1px 2px rgba(5,74,159,.15),0 6px 16px rgba(5,74,159,.28);text-decoration:none;transition:transform .15s, box-shadow .15s, opacity .15s;}
   .apply-leave:hover{transform:translateY(-1px);box-shadow:0 2px 4px rgba(5,74,159,.2),0 10px 22px rgba(5,74,159,.32);}
-  .apply-leave .plus{
-    width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.18);
-    display:flex;align-items:center;justify-content:center;flex-shrink:0;
-  }
+  .apply-leave .plus{width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
   .apply-leave .plus svg{width:12px;height:12px;}
-
-  /* tabs */
   .tabs{display:flex;gap:4px;background:rgba(0,0,0,0.035);padding:4px;border-radius:12px;width:fit-content;margin-bottom:22px;}
-  .tab{
-    position:relative;
-    padding:8px 16px;font-size:13px;font-weight:600;color:var(--ink-soft);
-    border-radius:9px;cursor:pointer;border:none;background:transparent;
-    display:flex;align-items:center;gap:7px;
-  }
+  .tab{position:relative;padding:8px 16px;font-size:13px;font-weight:600;color:var(--ink-soft);border-radius:9px;cursor:pointer;border:none;background:transparent;display:flex;align-items:center;gap:7px;}
   .tab.active{background:#fff;color:var(--ink);box-shadow:var(--shadow);}
-  .tab-badge{
-    background:var(--red);color:#fff;font-size:10.5px;font-weight:800;
-    min-width:18px;height:18px;border-radius:20px;display:flex;align-items:center;justify-content:center;
-    padding:0 5px;line-height:1;
-  }
-
-  /* cards */
+  .tab-badge{background:var(--red);color:#fff;font-size:10.5px;font-weight:800;min-width:18px;height:18px;border-radius:20px;display:flex;align-items:center;justify-content:center;padding:0 5px;line-height:1;}
   .cards{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:22px;}
   @media (max-width:1100px){.cards{grid-template-columns:repeat(2,1fr);}}
-  .card{
-    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
-    padding:18px 18px 16px;box-shadow:var(--shadow);
-  }
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 18px 16px;box-shadow:var(--shadow);}
   .card .eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-faint);font-weight:700;margin-bottom:10px;}
   .card .num{font-size:30px;font-weight:800;letter-spacing:-0.02em;line-height:1;}
   .card .num.blue{color:var(--blue);}
@@ -100,85 +65,48 @@
   .card .num.amber{color:var(--amber);}
   .card .sub{font-size:12px;color:var(--ink-faint);margin-top:8px;}
   .card .sub b{color:var(--ink-soft);}
-
-  /* section / table */
   .panel{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:20px;}
   .panel-head{display:flex;align-items:flex-end;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:14px;}
   .panel-head h2{font-size:15px;font-weight:700;margin:0;}
   .panel-filters{display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap;}
   .mini-field{display:flex;flex-direction:column;gap:3px;}
   .mini-field label{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);font-weight:600;}
-  .mini-field input, .mini-field select{
-    border:1px solid var(--border);background:var(--card);border-radius:9px;
-    padding:7px 10px;font-family:inherit;font-size:12.5px;color:var(--ink);min-width:120px;
-  }
+  .mini-field input, .mini-field select{border:1px solid var(--border);background:var(--card);border-radius:9px;padding:7px 10px;font-family:inherit;font-size:12.5px;color:var(--ink);min-width:120px;}
   .search{border:1px solid var(--border);border-radius:9px;padding:7px 12px;font-size:12.5px;font-family:inherit;width:200px;}
-
   table{width:100%;border-collapse:collapse;font-size:13px;}
-  thead th{
-    text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;
-    color:var(--ink-faint);font-weight:700;padding:10px 16px;border-bottom:1px solid var(--border);
-    white-space:nowrap;position:sticky;top:0;background:var(--card);
-  }
+  thead th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);font-weight:700;padding:10px 16px;border-bottom:1px solid var(--border);white-space:nowrap;position:sticky;top:0;background:var(--card);}
   tbody td{padding:12px 16px;border-bottom:1px solid #f1f2ec;vertical-align:middle;white-space:nowrap;}
   tbody tr:last-child td{border-bottom:none;}
   tbody tr:hover{background:#fafaf6;}
   .tablewrap{max-height:560px;overflow:auto;}
-
   .person{display:flex;align-items:center;gap:9px;}
-  .avatar{
-    width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-    font-size:11px;font-weight:700;color:#fff;flex-shrink:0;
-  }
+  .avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
   .name{font-weight:600;}
   .email{font-size:11px;color:var(--ink-faint);}
-
   .badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:4px 9px;border-radius:100px;}
   .badge.green{background:var(--green-soft);color:var(--green);}
   .badge.red{background:var(--red-soft);color:var(--red);}
   .badge.amber{background:var(--amber-soft);color:var(--amber);}
   .badge.blue{background:var(--blue-soft);color:var(--blue);}
   .badge.gray{background:#f0f1ea;color:var(--ink-faint);}
-
   .num-cell{font-family:'Roboto Mono',monospace;font-weight:500;font-size:12.5px;}
   .num-cell.neg{color:var(--red);}
-
   .empty{padding:60px 20px;text-align:center;color:var(--ink-faint);}
   .empty b{display:block;color:var(--ink);font-size:14px;margin-bottom:4px;}
   .foot-note{font-size:11px;color:var(--ink-faint);text-align:center;margin-top:6px;}
-  .warn-banner{
-    background:var(--amber-soft);color:#8a5a05;border:1px solid #f2d79b;border-radius:10px;
-    padding:9px 14px;font-size:12.5px;margin-bottom:16px;display:none;
-  }
+  .warn-banner{background:var(--amber-soft);color:#8a5a05;border:1px solid #f2d79b;border-radius:10px;padding:9px 14px;font-size:12.5px;margin-bottom:16px;display:none;}
   .slip-btn{display:inline-flex;align-items:center;gap:5px;background:var(--blue-soft);color:var(--blue);border:none;}
   .slip-btn:hover{opacity:.8;}
-
-  /* login gate */
-  #loginGate{
-    position:fixed;inset:0;background:var(--bg);z-index:999;
-    display:flex;align-items:center;justify-content:center;padding:20px;
-  }
-  .login-card{
-    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
-    box-shadow:var(--shadow);padding:32px 30px;width:100%;max-width:380px;
-  }
+  #loginGate{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px;}
+  .login-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:32px 30px;width:100%;max-width:380px;}
   .login-card h2{margin:0 0 6px;font-size:18px;font-weight:800;}
   .login-card p{margin:0 0 18px;font-size:12.5px;color:var(--ink-soft);}
-  .login-card input{
-    width:100%;border:1px solid var(--border);border-radius:9px;padding:10px 12px;
-    font-family:inherit;font-size:13.5px;margin-bottom:10px;
-  }
+  .login-card input{width:100%;border:1px solid var(--border);border-radius:9px;padding:10px 12px;font-family:inherit;font-size:13.5px;margin-bottom:10px;}
   .login-card .btn{width:100%;text-align:center;}
   .login-error{color:var(--red);font-size:12px;margin:-4px 0 10px;display:none;}
-  .signed-in-as{
-    display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-soft);
-    background:#fff;border:1px solid var(--border);border-radius:100px;padding:5px 12px 5px 5px;
-  }
+  .signed-in-as{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-soft);background:#fff;border:1px solid var(--border);border-radius:100px;padding:5px 12px 5px 5px;}
   .signed-in-as .avatar{width:22px;height:22px;font-size:9.5px;}
-  .signed-in-as button{
-    background:none;border:none;color:var(--blue);font-size:11.5px;font-weight:700;cursor:pointer;padding:0;margin-left:4px;
-  }
-
+  .signed-in-as button{background:none;border:none;color:var(--blue);font-size:11.5px;font-weight:700;cursor:pointer;padding:0;margin-left:4px;}
   ::selection{background:var(--blue-soft);}
 </style>
 </head>
@@ -219,7 +147,6 @@
     <button class="tab" data-tab="deductions">Deductions</button>
   </div>
 
-  <!-- LEAVE REQUESTS -->
   <section id="tab-requests">
     <div class="panel">
       <div class="panel-head">
@@ -260,7 +187,6 @@
     </div>
   </section>
 
-  <!-- LEAVE BALANCE -->
   <section id="tab-balance" style="display:none;">
     <div class="cards" id="balanceCards"></div>
     <div class="panel">
@@ -291,7 +217,6 @@
     </div>
   </section>
 
-  <!-- DEDUCTIONS -->
   <section id="tab-deductions" style="display:none;">
     <div class="cards" id="deductionCards"></div>
     <div class="panel">
@@ -325,9 +250,6 @@
 </div>
 
 <script>
-/* ============================================================
-   CONFIG — points at the live "Leave Management" Google Sheet
-   ============================================================ */
 const USE_APPS_SCRIPT = true;
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx0QUYZuX9K6Ifow6r075WZDVpxlRAUo9Prp6zxKiKBFMh-Cq8TEIKVmdoOJxWgn06k/exec";
 
@@ -340,9 +262,6 @@ const APPLY_LEAVE_URL = "https://www.appsheet.com/start/e593f206-628c-4174-a375-
 
 const MONTH_ORDER = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
-/* ---------- Access control ----------
-   ADMIN_EMAILS see everyone's data. Everyone else only sees rows that
-   belong to their own email address. */
 const ADMIN_EMAILS = [
   "raj@ugbolmalassociates.com",
   "akshata@ugbolmalassociates.com",
@@ -370,21 +289,12 @@ function money(n){
   return "₹" + n.toLocaleString("en-IN", {maximumFractionDigits:0});
 }
 function pct(n){ return (Number(n)*100).toFixed(1) + "%"; }
-/* jsPDF's standard Helvetica font has no ₹ glyph — it falls back to a stray
-   "¹"-like symbol and, worse, miscalculates text width so right-aligned
-   amounts (like Net Salary) look cut off. Use "Rs." for anything drawn with
-   doc.text(); the on-screen HTML table can keep the real ₹ symbol via money(). */
 function moneyPDF(n){
   n = Number(n)||0;
   return "Rs. " + n.toLocaleString("en-IN", {maximumFractionDigits:0});
 }
 function titleCase(s){ return (s||"").toString().trim().replace(/\w\S*/g, t => t[0].toUpperCase()+t.slice(1).toLowerCase()); }
 
-/* Parse a "dd/MM/yyyy" string (the format Apps Script sends dates in)
-   into a real JS Date. Native new Date("dd/MM/yyyy") is unreliable
-   because JS assumes MM/dd/yyyy for slash-separated strings, which
-   silently breaks for any day > 12 — that was the root cause of the
-   From/To filter not working. */
 function parseDMY(str){
   if(!str) return null;
   const s = String(str).trim();
@@ -397,7 +307,6 @@ function parseDMY(str){
   return isNaN(fallback) ? null : fallback;
 }
 
-/* ---------- sheet loader: Apps Script backend (preferred) or public gviz ---------- */
 async function loadSheet(name){
   if (USE_APPS_SCRIPT) {
     const res = await fetch(`${APPS_SCRIPT_URL}?sheet=${encodeURIComponent(name)}`);
@@ -456,7 +365,6 @@ async function loadAll(){
 
   updateSignedInAsUI();
 
-  /* ---- apply email-based access scope: non-admins only see their own rows ---- */
   if(!IS_ADMIN){
     const me = CURRENT_USER_EMAIL.toLowerCase();
     DATA.requests = DATA.requests.filter(r => (r["Email"]||"").toLowerCase() === me);
@@ -487,9 +395,6 @@ function setLoading(state){
   document.getElementById("refreshBtn").textContent = state ? "Loading…" : "Refresh";
 }
 
-/* Collapse repeated adjacent letters and strip non-letters, so small typos
-   like "aishhwarya" vs "aishwarya" still match up. Used as a fallback when
-   an exact email match between sheets fails. */
 function normalizeKey(s){
   return (s||"").toString().toLowerCase().replace(/[^a-z]/g,"").replace(/(.)\1+/g,"$1");
 }
@@ -503,10 +408,6 @@ function staffByEmail(email){
   return DATA.staff.find(s => normalizeKey((s["Email"]||"").split("@")[0]) === targetKey);
 }
 
-/* Matches a PERFORMANCE_DEDUCTION row to a Staff_Info row. Tries an exact
-   email match first, then falls back to a fuzzy match on the email's
-   local-part and finally on the employee name, to tolerate typos in the
-   sheet (e.g. "aishhwarya@..." vs "aishwarya@..."). */
 function findStaffForDeductionRow(d){
   const byEmail = staffByEmail(d["EMAIL"]);
   if(byEmail) return byEmail;
@@ -545,7 +446,6 @@ function populateMonths(){
   if ([...sel.options].some(o=>o.value===prevValue)) sel.value = prevValue;
 }
 
-/* Leave Year dropdown for the Leave Balance tab */
 function populateBalanceYears(){
   const years = new Set();
   DATA.balance.forEach(r=>{
@@ -570,73 +470,64 @@ function populateBalanceYears(){
 }
 
 /* ============================================================
-   Leave Balance scorecards — the sheet has a small summary block sitting
-   a few rows below the main table (see screenshot):
-     row: ACTIVE STAFF | PENDING REQUEST | TOTAL PAID BALANCE   (labels)
-     row: 12 | 1 | 88                                            (values)
-     row: TOTAL PAID LEAVE USED | HALF DAY | UNPAID_LEAVE        (labels)
-     row: 92 | 0 | 0                                             (values)
+   Leave Balance scorecards
+   ============================================================
+   Layout now lives in FIXED columns M:O, right beside the header row
+   of the main Leave_Balance table:
 
-   Rather than making a separate network request to Google's gviz endpoint
-   (which turned out to be unreliable — likely blocked cross-origin from
-   this page), we reuse the SAME "Leave_Balance" data already fetched via
-   the working Apps Script call. That call returns every row of the sheet
-   keyed by the header row, so this summary block comes through too — just
-   with its label/value text sitting under whichever column keys happen to
-   line up with columns B/C/D. We find it by searching for the "ACTIVE
-   STAFF" label rather than assuming a fixed row number, so this keeps
-   working even if rows shift.
+     M1: ACTIVE STAFF            N1: PENDING REQUEST   O1: TOTAL PAID BALANCE
+     M2: 12                      N2: 0                 O2: 88
+     M3: TOTAL PAID LEAVE USED   N3: HALF DAY           O3: UNPAID_LEAVE
+     M4: 92                      N4: 0                  O4: 0
+
+   Because M1/N1/O1 ARE the column headers (sheet row 1), Apps Script
+   returns row 2's numbers already keyed under those header names on the
+   very first data row — no scanning needed for that part. The second
+   sub-block (TOTAL PAID LEAVE USED / HALF DAY / UNPAID_LEAVE) reuses the
+   SAME three columns two rows further down, so we search for that label
+   (rather than assuming a fixed row index) and read the row right after
+   it. Unlike the old B29:D32 location — which sat below the growing
+   staff table and would get pushed further down every time a new
+   employee row was added — this fixed M:O position next to the header
+   row will NOT shift next year.
    ============================================================ */
 function normalizeLabel(s){
   return (s||"").toString().trim().toUpperCase().replace(/[_\s]+/g, " ");
 }
 
 function extractScorecards(rawRows){
-  if(!Array.isArray(rawRows) || rawRows.length===0) return null;
+  if(!Array.isArray(rawRows) || rawRows.length < 1) return null;
 
-  const headerIdx = rawRows.findIndex(row =>
-    Object.values(row).some(v => normalizeLabel(v) === "ACTIVE STAFF")
-  );
-  if(headerIdx===-1 || headerIdx+3 >= rawRows.length) return null;
+  const COL_1 = "ACTIVE STAFF";
+  const COL_2 = "PENDING REQUEST";
+  const COL_3 = "TOTAL PAID BALANCE";
 
-  const headerRow1 = rawRows[headerIdx];
-  const valuesRow1 = rawRows[headerIdx+1];
-  const headerRow2 = rawRows[headerIdx+2];
-  const valuesRow2 = rawRows[headerIdx+3];
+  const first = rawRows[0];
+  if(!first || first[COL_1] === undefined || first[COL_1] === null || first[COL_1] === ""){
+    return null; // columns not present in this load — sheet layout may have changed
+  }
 
-  const labelMap = {};
-  Object.keys(headerRow1).forEach(k=>{
-    const label = normalizeLabel(headerRow1[k]);
-    if(label) labelMap[label] = valuesRow1[k];
-  });
-  Object.keys(headerRow2).forEach(k=>{
-    const label = normalizeLabel(headerRow2[k]);
-    if(label) labelMap[label] = valuesRow2[k];
-  });
+  const activeStaff = first[COL_1];
+  const pendingRequest = first[COL_2];
+  const totalPaidBalance = first[COL_3];
 
-  const pick = (...labels) => {
-    for(const l of labels){
-      if(labelMap[l]!==undefined && labelMap[l]!==null && labelMap[l]!=="") return labelMap[l];
+  let totalPaidLeaveUsed = 0, halfDay = 0, unpaidLeave = 0;
+  for(let i=1;i<rawRows.length-1;i++){
+    if(normalizeLabel(rawRows[i][COL_1]) === "TOTAL PAID LEAVE USED"){
+      const valRow = rawRows[i+1];
+      totalPaidLeaveUsed = valRow[COL_1];
+      halfDay = valRow[COL_2];
+      unpaidLeave = valRow[COL_3];
+      break;
     }
-    return 0;
-  };
+  }
 
-  return {
-    activeStaff: pick("ACTIVE STAFF"),
-    pendingRequest: pick("PENDING REQUEST"),
-    totalPaidBalance: pick("TOTAL PAID BALANCE"),
-    totalPaidLeaveUsed: pick("TOTAL PAID LEAVE USED"),
-    halfDay: pick("HALF DAY"),
-    unpaidLeave: pick("UNPAID LEAVE"),
-  };
+  return { activeStaff, pendingRequest, totalPaidBalance, totalPaidLeaveUsed, halfDay, unpaidLeave };
 }
 
 function renderBalanceCards(){
   const wrap = document.getElementById("balanceCards");
 
-  /* Non-admin staff: show their OWN numbers from the Leave_Balance sheet
-     (DATA.balance is already scoped to just their row(s) in loadAll()),
-     instead of the firm-wide roster summary. */
   if(!IS_ADMIN){
     if(!DATA.balance.length){
       wrap.innerHTML = `<div class="card" style="grid-column:1/-1;"><div class="eyebrow">Leave Balance</div><div class="sub" style="margin-top:0;">No leave balance record found for your email on the Leave_Balance sheet yet.</div></div>`;
@@ -655,7 +546,7 @@ function renderBalanceCards(){
 
   const sc = DATA.scorecards;
   if(!sc){
-    wrap.innerHTML = `<div class="card" style="grid-column:1/-1;"><div class="eyebrow">Summary cards</div><div class="sub" style="margin-top:0;">Could not find the "ACTIVE STAFF" summary block on the Leave_Balance sheet. Make sure those label/value rows still exist below the main table, then hit Refresh.</div></div>`;
+    wrap.innerHTML = `<div class="card" style="grid-column:1/-1;"><div class="eyebrow">Summary cards</div><div class="sub" style="margin-top:0;">Could not find the "ACTIVE STAFF" summary block on the Leave_Balance sheet (columns M:O). Make sure those label/value rows still exist next to the header row, then hit Refresh.</div></div>`;
     return;
   }
   wrap.innerHTML = `
@@ -668,9 +559,6 @@ function renderBalanceCards(){
   `;
 }
 
-/* ============================================================
-   RENDER: Leave Requests tab
-   ============================================================ */
 function updatePendingBadge(){
   const pendingCount = DATA.requests.filter(r=>{
     const s = (r["Status"]||"").toLowerCase();
@@ -690,8 +578,8 @@ function renderRequests(filterText=""){
   body.innerHTML = "";
   const q = filterText.trim().toLowerCase();
   const status = document.getElementById("statusFilter").value;
-  const from = document.getElementById("fromDate").value; // yyyy-mm-dd from <input type=date>
-  const to = document.getElementById("toDate").value;      // yyyy-mm-dd from <input type=date>
+  const from = document.getElementById("fromDate").value;
+  const to = document.getElementById("toDate").value;
 
   let rows = DATA.requests.slice();
   if(q) rows = rows.filter(r => (r["Staff_Name"]||"").toLowerCase().includes(q));
@@ -704,7 +592,7 @@ function renderRequests(filterText=""){
   }
 
   if(from){
-    const fromD = parseDMY(from.split("-").reverse().join("/")); // yyyy-mm-dd -> dd/mm/yyyy
+    const fromD = parseDMY(from.split("-").reverse().join("/"));
     rows = rows.filter(r=>{
       const toDate = parseDMY(r["To_Date_f"]);
       return !toDate || !fromD || toDate >= fromD;
@@ -756,9 +644,6 @@ function renderRequests(filterText=""){
   });
 }
 
-/* ============================================================
-   RENDER: Leave Balance tab
-   ============================================================ */
 function renderBalance(filterText=""){
   const body = document.getElementById("balanceBody");
   body.innerHTML = "";
@@ -800,9 +685,6 @@ function renderBalance(filterText=""){
   });
 }
 
-/* ============================================================
-   RENDER: Deductions tab
-   ============================================================ */
 let currentDeductionRows = [];
 
 function renderDeductions(filterText=""){
@@ -867,17 +749,12 @@ function renderDeductions(filterText=""){
   `;
 }
 
-/* Number of calendar days in a given month name + year, used for attendance calc */
 function daysInMonth(monthName, year){
   const idx = MONTH_ORDER.indexOf(monthName);
   if(idx===-1 || !year) return 30;
   return new Date(Number(year), idx+1, 0).getDate();
 }
 
-/* ---------- Salary Slip PDF (jsPDF) — full payslip, TCS-style ----------
-   Combines: Staff_Info (Basic / Per-Day Salary, Designation) matched by
-   email, with PERFORMANCE_DEDUCTION row (Month/Year, Unpaid Leave,
-   Deduction % and Amount) for that specific month. */
 function downloadSalarySlip(d){
   const { jsPDF } = window.jspdf || {};
   if(!jsPDF){
@@ -898,15 +775,9 @@ function downloadSalarySlip(d){
   const month = d["MONTH"] || "–";
   const year = d["YEAR"] || "–";
 
-  // Unpaid leave (days) comes from PERFORMANCE_DEDUCTION!J (month-wise),
-  // deduction amount = days * Staff_Info per-day salary (column G).
   const unpaidLeaveDays = Number(d["UNPAID LEAVE"]) || 0;
   const unpaidLeaveDeduction = Math.round(unpaidLeaveDays * perDaySalary);
 
-  // Performance deduction % comes from PERFORMANCE_DEDUCTION!I ("DEDUCTION %"),
-  // amount is computed against the staff member's basic salary so it always
-  // stays consistent with Staff_Info rather than relying on a separate
-  // pre-computed column.
   const performanceDeductionPct = (d["DEDUCTION %"]!==undefined && d["DEDUCTION %"]!==null) ? Number(d["DEDUCTION %"]) : 0;
   const performanceDeductionAmt = Math.round(performanceDeductionPct * basicSalary);
 
@@ -923,7 +794,6 @@ function downloadSalarySlip(d){
   const innerW = pageWidth - marginX*2;
   let y = 54;
 
-  // ---------- Letterhead ----------
   doc.setFont("helvetica", "bold");
   doc.setFontSize(19);
   doc.text(FIRM_NAME, pageWidth/2, y, { align: "center" });
@@ -944,7 +814,6 @@ function downloadSalarySlip(d){
   doc.text(`PAYSLIP FOR THE MONTH OF ${String(month).toUpperCase()} ${year}`, pageWidth/2, y, { align: "center" });
   y += 24;
 
-  // ---------- Employee info table (Name / Designation / Email / Pay Period) ----------
   const infoRowH = 34;
   const infoTableH = infoRowH * 2;
   const infoColW = innerW/2;
@@ -975,7 +844,6 @@ function downloadSalarySlip(d){
 
   y += infoTableH + 22;
 
-  // ---------- Attendance summary ----------
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10.5);
   doc.setTextColor(0,0,0);
@@ -1006,22 +874,16 @@ function downloadSalarySlip(d){
 
   y += attBoxH + 26;
 
-  // ---------- Earnings & Deductions ----------
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10.5);
   doc.text("EARNINGS & DEDUCTIONS", marginX, y);
   y += 10;
 
-  const tableTop = y;
   const halfW = innerW/2;
   const cellPad = 12;
-  const earnColW = halfW - cellPad*2;   // width available for earnings label+amount split
-  const dedColW = halfW - cellPad*2;    // width available for deduction label+amount split
+  const earnColW = halfW - cellPad*2;
+  const dedColW = halfW - cellPad*2;
 
-  // Each "row" has an earnings side (label/amount) and a deduction side
-  // (label/amount). Deduction labels can be long, so wrap them and size
-  // the row height to the number of wrapped lines to avoid any overlap
-  // with the amount column.
   const rowsData = [
     {
       eLabel: "Basic Salary", eAmt: moneyPDF(basicSalary),
@@ -1035,7 +897,7 @@ function downloadSalarySlip(d){
     },
   ];
 
-  const dedLabelWidth = dedColW * 0.62; // leave room for the amount column on the right
+  const dedLabelWidth = dedColW * 0.62;
   const lineH = 12;
   const rowPadV = 8;
 
@@ -1049,7 +911,6 @@ function downloadSalarySlip(d){
   const headerH = 26;
   const bodyH = wrappedRows.reduce((sum,r)=>sum+r.rowH, 0);
 
-  // header row
   doc.setFillColor(245,246,240);
   doc.rect(marginX, y, innerW, headerH, "F");
   doc.setDrawColor(210,210,210);
@@ -1091,7 +952,6 @@ function downloadSalarySlip(d){
 
   y += bodyH;
 
-  // totals row
   const totalRowH = 26;
   doc.setFillColor(250,250,246);
   doc.rect(marginX, y, innerW, totalRowH, "F");
@@ -1111,7 +971,6 @@ function downloadSalarySlip(d){
 
   y += totalRowH + 26;
 
-  // ---------- Net salary (inside its own bordered table row) ----------
   const netBoxH = 44;
   doc.setDrawColor(20,20,20);
   doc.setLineWidth(0.8);
@@ -1127,7 +986,6 @@ function downloadSalarySlip(d){
 
   y += netBoxH + 26;
 
-  // ---------- Footer ----------
   doc.setDrawColor(220,220,220);
   doc.line(marginX, y, pageWidth-marginX, y);
   y += 16;
@@ -1148,7 +1006,6 @@ function renderAll(){
   renderDeductions(document.getElementById("searchDeductions").value);
 }
 
-/* ---------- tabs ---------- */
 document.querySelectorAll(".tab").forEach(btn=>{
   btn.addEventListener("click", ()=>{
     document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
@@ -1158,7 +1015,6 @@ document.querySelectorAll(".tab").forEach(btn=>{
   });
 });
 
-/* ---------- filters ---------- */
 document.getElementById("searchRequests").addEventListener("input", e=>renderRequests(e.target.value));
 document.getElementById("statusFilter").addEventListener("change", ()=>renderRequests(document.getElementById("searchRequests").value));
 document.getElementById("fromDate").addEventListener("change", ()=>renderRequests(document.getElementById("searchRequests").value));
@@ -1169,11 +1025,6 @@ document.getElementById("searchDeductions").addEventListener("input", e=>renderD
 document.getElementById("monthSel").addEventListener("change", ()=>renderDeductions(document.getElementById("searchDeductions").value));
 document.getElementById("refreshBtn").addEventListener("click", loadAll);
 
-/* ============================================================
-   LOGIN GATE — asks for the visitor's email before loading data.
-   Remembers the email in this browser via localStorage so the person
-   doesn't have to type it in every time; "Switch user" clears it.
-   ============================================================ */
 function updateSignedInAsUI(){
   const staffMatch = DATA.staff.length ? staffByEmail(CURRENT_USER_EMAIL) : null;
   const displayName = staffMatch ? staffMatch["Name"] : CURRENT_USER_EMAIL.split("@")[0];
@@ -1221,7 +1072,6 @@ document.getElementById("loginEmail").addEventListener("keydown", e=>{ if(e.key=
     document.getElementById("loginGate").style.display = "none";
     startApp(saved);
   }
-  // otherwise the login card (visible by default) waits for input.
 })();
 </script>
 </body>
