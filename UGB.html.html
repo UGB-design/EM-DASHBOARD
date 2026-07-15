@@ -512,6 +512,8 @@ function populateMonths(){
     return MONTH_ORDER.indexOf(b.month) - MONTH_ORDER.indexOf(a.month);
   }).slice(0, 3); // latest 3 completed months only
 
+  ALLOWED_MONTH_KEYS = new Set(combos.map(c => `${c.month}|${c.year}`));
+
   const sel = document.getElementById("monthSel");
   const prevValue = sel.value;
   sel.innerHTML = "";
@@ -829,6 +831,7 @@ function renderBalance(filterText=""){
 }
 
 let currentDeductionRows = [];
+let ALLOWED_MONTH_KEYS = new Set();
 
 function renderDeductions(filterText=""){
   const body = document.getElementById("deductionsBody");
@@ -840,6 +843,13 @@ function renderDeductions(filterText=""){
   if(monthKey){
     const [mName, yStr] = monthKey.split("|");
     rows = rows.filter(d => d["MONTH"]===mName && String(Math.round(Number(d["YEAR"])))===yStr);
+  } else {
+    // "All months" = all of the latest 3 completed months shown in the dropdown,
+    // not the entire history (older months like March shouldn't leak in here).
+    rows = rows.filter(d => {
+      const yStr = String(Math.round(Number(d["YEAR"])||0));
+      return ALLOWED_MONTH_KEYS.has(`${d["MONTH"]}|${yStr}`);
+    });
   }
   if(q) rows = rows.filter(d => (d["EMPLOYEE"]||"").toLowerCase().includes(q));
 
