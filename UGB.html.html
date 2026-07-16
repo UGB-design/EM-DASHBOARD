@@ -479,6 +479,18 @@ function attendanceStatusBadgeHtml(status){
    all, it falls back to "–" rather than showing a bogus 1899 date. */
 function formatTimeValue(raw){
   if(raw === undefined || raw === null || raw === "") return "–";
+
+  // Raw numeric spreadsheet serial value (days since epoch + time-of-day
+  // fraction), in case the feed sends unformatted numbers for these cells.
+  if(typeof raw === "number" && isFinite(raw)){
+    const fraction = raw - Math.floor(raw);
+    if(fraction <= 0) return "–";
+    const totalMinutes = Math.round(fraction * 24 * 60);
+    const hh = Math.floor(totalMinutes / 60) % 24;
+    const mm = totalMinutes % 60;
+    return `${String(hh).padStart(2,"0")}:${String(mm).padStart(2,"0")}`;
+  }
+
   const s = String(raw).trim();
   if(!s || s === "–") return "–";
 
@@ -500,6 +512,28 @@ function formatTimeValue(raw){
   if(/^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(s)) return "–";
 
   return s;
+}
+
+/* Looks up a value on a row trying several candidate key spellings first
+   (exact match), then falls back to a normalized (lowercase, punctuation
+   stripped) comparison against every key on the row. This makes the
+   Attendance IN/OUT/Working Hours lookups resilient to small header
+   differences coming back from the Apps Script feed (e.g. "In1" vs "IN 1"
+   vs "in_1"). */
+function getFieldFuzzy(row, ...names){
+  for(const n of names){
+    if(row[n] !== undefined && row[n] !== null && row[n] !== "") return row[n];
+  }
+  const normalize = s => s.toLowerCase().replace(/[^a-z0-9]/g,"");
+  const targets = names.map(normalize);
+  for(const key of Object.keys(row)){
+    const nk = normalize(key);
+    if(targets.includes(nk)){
+      const v = row[key];
+      if(v !== undefined && v !== null && v !== "") return v;
+    }
+  }
+  return null;
 }
 
 async function loadSheet(name){
@@ -857,13 +891,13 @@ function renderAttendanceCards(){
 
   row1.innerHTML = `
     <div class="card"><div class="eyebrow">Working Days</div><div class="num blue">${workingDays}</div><div class="sub">excl. week-off & holiday</div></div>
-    <div class="card"><div class="eyebrow">Present</div><div class="num green">${present}</div><div class="sub">Final Status = P</div></div>
-    <div class="card"><div class="eyebrow">Absent</div><div class="num red">${absent}</div><div class="sub">Final Status = A</div></div>
+    <div class="card"><div class="eyebrow">Present</div><div class="num green">${present}</div></div>
+    <div class="card"><div class="eyebrow">Absent</div><div class="num red">${absent}</div></div>
   `;
   row2.innerHTML = `
-    <div class="card"><div class="eyebrow">Late Present</div><div class="num amber">${late}</div><div class="sub">Final Status has LT</div></div>
-    <div class="card"><div class="eyebrow">Half Day</div><div class="num amber">${halfDay}</div><div class="sub">Final Status = half-day</div></div>
-    <div class="card"><div class="eyebrow">Week Off</div><div class="num blue">${weekOff}</div><div class="sub">Final Status = WO</div></div>
+    <div class="card"><div class="eyebrow">Late Present</div><div class="num amber">${late}</div></div>
+    <div class="card"><div class="eyebrow">Half Day</div><div class="num amber">${halfDay}</div></div>
+    <div class="card"><div class="eyebrow">Week Off</div><div class="num blue">${weekOff}</div></div>
   `;
 }
 
@@ -890,9 +924,9 @@ function renderAttendanceTable(){
       <td><div class="person"><div class="avatar" style="background:${colorFor(r["Emp Name"])}">${initials(r["Emp Name"])}</div>
         <div class="name">${r["Emp Name"]||""}</div></div></td>
       <td>${r["Date_f"]||r["Date"]||"–"}</td>
-      <td class="num-cell">${formatTimeValue(r["In1_f"] ?? r["In1"])}</td>
-      <td class="num-cell">${formatTimeValue(r["Out2_f"] ?? r["Out2"])}</td>
-      <td class="num-cell">${formatTimeValue(r["W.Hrs_f"] ?? r["W.Hrs"])}</td>
+      <td class="num-cell">${formatTimeValue(getFieldFuzzy(r, "In1_f", "In1"))}</td>
+      <td class="num-cell">${formatTimeValue(getFieldFuzzy(r, "Out2_f", "Out2"))}</td>
+      <td class="num-cell">${formatTimeValue(getFieldFuzzy(r, "W.Hrs_f", "W.Hrs", "WHrs"))}</td>
       <td>${attendanceStatusBadgeHtml(r["Final Status"])}</td>
     `;
     body.appendChild(tr);
