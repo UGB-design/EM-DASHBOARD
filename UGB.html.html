@@ -57,6 +57,8 @@
   .tab-badge.blue{background:var(--blue);}
   .cards{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:22px;}
   @media (max-width:1100px){.cards{grid-template-columns:repeat(2,1fr);}}
+  .cards-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px;}
+  @media (max-width:1100px){.cards-4{grid-template-columns:repeat(2,1fr);}}
   .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 18px 16px;box-shadow:var(--shadow);}
   .card .eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-faint);font-weight:700;margin-bottom:10px;}
   .card .num{font-size:30px;font-weight:800;letter-spacing:-0.02em;line-height:1;}
@@ -154,6 +156,7 @@
     <button class="tab" data-tab="deductions">Deduction & Salary Slip</button>
     <button class="tab" data-tab="history">All Leave Requests</button>
     <button class="tab" data-tab="holidays">Upcoming Holidays <span class="tab-badge blue" id="holidaysBadge" style="display:none;">0</span></button>
+    <button class="tab" data-tab="attendance">Attendance</button>
   </div>
 
   <section id="tab-requests">
@@ -308,6 +311,44 @@
     </div>
   </section>
 
+  <section id="tab-attendance" style="display:none;">
+    <div class="cards-4" id="attendanceCardsRow1"></div>
+    <div class="cards-4" id="attendanceCardsRow2"></div>
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Attendance</h2>
+        <div class="panel-filters">
+          <div class="mini-field">
+            <label>Employee</label>
+            <select id="attendanceEmployeeFilter"><option value="">All</option></select>
+          </div>
+          <div class="mini-field">
+            <label>Status</label>
+            <select id="attendanceStatusFilter"><option value="">All</option></select>
+          </div>
+          <div class="mini-field">
+            <label>Month</label>
+            <select id="attendanceMonthSel"><option value="">All</option></select>
+          </div>
+          <div class="mini-field">
+            <label>&nbsp;</label>
+            <input class="search" id="searchAttendance" placeholder="Search employee...">
+          </div>
+        </div>
+      </div>
+      <div class="tablewrap">
+        <table>
+          <thead><tr>
+            <th>Employee</th><th>Dept</th><th>Date</th><th>In1</th><th>Out1</th>
+            <th>In2</th><th>Out2</th><th>W.Hrs</th><th>Basic.Hrs</th><th>OT</th>
+            <th>Status</th><th>Final Status</th>
+          </tr></thead>
+          <tbody id="attendanceBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
   <p class="foot-note" id="lastUpdated"></p>
 </div>
 
@@ -381,6 +422,16 @@ function fiscalYearOf(dateStr){
   return `${y-1}-${String(y%100).padStart(2,"0")}`;
 }
 
+/* Current Leave Year (April-March) based on today's real date, used to
+   auto-select the right option in the Leave Year dropdown. */
+function currentFiscalYear(){
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = d.getMonth();
+  if(m >= 3) return `${y}-${String((y+1)%100).padStart(2,"0")}`;
+  return `${y-1}-${String(y%100).padStart(2,"0")}`;
+}
+
 function categorizeType(t){
   t = (t||"").toLowerCase();
   if(t.includes("unpaid")) return "Unpaid";
@@ -402,6 +453,20 @@ function statusBadgeHtml(s){
 function isPendingStatus(s){
   s = (s||"").toLowerCase();
   return !s || (!s.includes("approve") && !s.includes("reject"));
+}
+
+/* Attendance status -> badge colour. Final Status collapses "P-LT" (late
+   present) into "P", so late is shown via the badge colour on the raw
+   Status column instead. */
+function attendanceStatusBadgeHtml(status){
+  const s = (status||"").toUpperCase();
+  if(s === "P") return `<span class="badge green">P</span>`;
+  if(s.includes("LT")) return `<span class="badge amber">${status}</span>`;
+  if(s === "A") return `<span class="badge red">A</span>`;
+  if(s === "WO") return `<span class="badge gray">WO</span>`;
+  if(s === "HLD") return `<span class="badge blue">HLD</span>`;
+  if(s.includes("/2")) return `<span class="badge amber">${status}</span>`;
+  return `<span class="badge gray">${status||"–"}</span>`;
 }
 
 async function loadSheet(name){
@@ -437,16 +502,17 @@ async function safeLoad(name){
   catch(e){ console.error("Failed to load", name, e); return { __failed:true }; }
 }
 
-let DATA = { staff:[], requests:[], balance:[], deduction:[], scorecards:null, holidays:[] };
+let DATA = { staff:[], requests:[], balance:[], deduction:[], scorecards:null, holidays:[], attendance:[] };
 
 async function loadAll(){
   setLoading(true);
-  const [staffRes, requestsRes, balanceRes, deductionRes, holidayRes] = await Promise.all([
+  const [staffRes, requestsRes, balanceRes, deductionRes, holidayRes, attendanceRes] = await Promise.all([
     safeLoad("Staff_Info"),
     safeLoad("Leave_Requests"),
     safeLoad("Leave_Balance"),
     safeLoad("PERFORMANCE_DEDUCTION"),
     safeLoad("UPCOMING_HOLIDAY"),
+    safeLoad("Attendance"),
   ]);
 
   const failed = [];
@@ -459,6 +525,7 @@ async function loadAll(){
   DATA.balance = balanceRaw.filter(r=>r["Email"]);
   DATA.deduction = unwrap(deductionRes, "PERFORMANCE_DEDUCTION").filter(r=>r["EMPLOYEE"]);
   DATA.holidays = unwrap(holidayRes, "UPCOMING_HOLIDAY").filter(r=>r["OCCASION"] || r["DATE"]);
+  DATA.attendance = unwrap(attendanceRes, "Attendance").filter(r=>r["Emp Name"] && r["Date"]);
   DATA.scorecards = extractScorecards(balanceRaw);
   if(!DATA.scorecards) failed.push("Leave Balance summary cards");
 
@@ -473,6 +540,9 @@ async function loadAll(){
       const dedEmail = (staff ? staff["Email"] : d["EMAIL"]) || "";
       return dedEmail.toLowerCase() === me;
     });
+    const myStaff = staffByEmail(CURRENT_USER_EMAIL);
+    const myName = myStaff ? myStaff["Name"] : null;
+    DATA.attendance = myName ? DATA.attendance.filter(a => a["Emp Name"] === myName) : [];
   }
 
   const banner = document.getElementById("warnBanner");
@@ -486,6 +556,7 @@ async function loadAll(){
   populateMonths();
   populateBalanceYears();
   populateHistoryFilters();
+  populateAttendanceFilters();
   renderAll();
   document.getElementById("lastUpdated").textContent = "🟢 Live Sync · refreshed " + new Date().toLocaleTimeString("en-IN");
   setLoading(false);
@@ -518,6 +589,9 @@ function findStaffForDeductionRow(d){
     return nameKey && (nameKey.includes(empKey) || empKey.includes(nameKey));
   });
 }
+
+let monthSelInitialized = false;
+let ALLOWED_MONTH_KEYS = new Set();
 
 function populateMonths(){
   const seen = new Map();
@@ -558,8 +632,20 @@ function populateMonths(){
     o.textContent = `${month} ${year}`;
     sel.appendChild(o);
   });
-  if ([...sel.options].some(o=>o.value===prevValue)) sel.value = prevValue;
+
+  if(!monthSelInitialized){
+    // First-ever load: default to the latest completed month (a salary slip
+    // can't be generated for the still-running current month anyway).
+    if(combos.length){
+      sel.value = `${combos[0].month}|${combos[0].year}`;
+    }
+    monthSelInitialized = true;
+  } else if ([...sel.options].some(o=>o.value===prevValue)) {
+    sel.value = prevValue;
+  }
 }
+
+let balanceYearInitialized = false;
 
 function populateBalanceYears(){
   const years = new Set();
@@ -581,7 +667,15 @@ function populateBalanceYears(){
     o.value = y; o.textContent = y;
     sel.appendChild(o);
   });
-  if ([...sel.options].some(o=>o.value===prevValue)) sel.value = prevValue;
+
+  if(!balanceYearInitialized){
+    // First-ever load: default to the current Leave Year automatically.
+    const fy = currentFiscalYear();
+    if ([...sel.options].some(o=>o.value===fy)) sel.value = fy;
+    balanceYearInitialized = true;
+  } else if ([...sel.options].some(o=>o.value===prevValue)) {
+    sel.value = prevValue;
+  }
 }
 
 function populateHistoryFilters(){
@@ -609,6 +703,160 @@ function populateHistoryFilters(){
     yearSel.appendChild(o);
   });
   if ([...yearSel.options].some(o=>o.value===prevYear)) yearSel.value = prevYear;
+}
+
+/* ============================================================
+   Attendance tab helpers
+   ============================================================ */
+function parseHM(str){
+  if(!str) return 0;
+  const s = String(str).trim();
+  const m = s.match(/^(\d{1,3}):(\d{2})$/);
+  if(!m) return 0;
+  return Number(m[1]) + Number(m[2])/60;
+}
+function attendanceMonthKey(dateStr){
+  const d = parseDMY(dateStr);
+  if(!d) return null;
+  return `${MONTH_ORDER[d.getMonth()]}|${d.getFullYear()}`;
+}
+
+function populateAttendanceFilters(){
+  const empSel = document.getElementById("attendanceEmployeeFilter");
+  const statusSel = document.getElementById("attendanceStatusFilter");
+  const monthSel = document.getElementById("attendanceMonthSel");
+
+  const prevEmp = empSel.value, prevStatus = statusSel.value, prevMonth = monthSel.value;
+
+  const employees = [...new Set(DATA.attendance.map(r=>r["Emp Name"]).filter(Boolean))].sort();
+  empSel.innerHTML = `<option value="">All</option>`;
+  employees.forEach(name=>{
+    const o = document.createElement("option");
+    o.value = name; o.textContent = name;
+    empSel.appendChild(o);
+  });
+  if ([...empSel.options].some(o=>o.value===prevEmp)) empSel.value = prevEmp;
+
+  const statuses = [...new Set(DATA.attendance.map(r=>r["Final Status"]).filter(Boolean))].sort();
+  statusSel.innerHTML = `<option value="">All</option>`;
+  statuses.forEach(s=>{
+    const o = document.createElement("option");
+    o.value = s; o.textContent = s;
+    statusSel.appendChild(o);
+  });
+  if ([...statusSel.options].some(o=>o.value===prevStatus)) statusSel.value = prevStatus;
+
+  const monthMap = new Map();
+  DATA.attendance.forEach(r=>{
+    const key = attendanceMonthKey(r["Date_f"] || r["Date"]);
+    if(key && !monthMap.has(key)){
+      const d = parseDMY(r["Date_f"] || r["Date"]);
+      monthMap.set(key, {key, month:MONTH_ORDER[d.getMonth()], year:d.getFullYear()});
+    }
+  });
+  const monthCombos = [...monthMap.values()].sort((a,b)=>{
+    if(a.year!==b.year) return b.year-a.year;
+    return MONTH_ORDER.indexOf(b.month) - MONTH_ORDER.indexOf(a.month);
+  });
+  monthSel.innerHTML = `<option value="">All</option>`;
+  monthCombos.forEach(c=>{
+    const o = document.createElement("option");
+    o.value = c.key; o.textContent = `${c.month} ${c.year}`;
+    monthSel.appendChild(o);
+  });
+  if ([...monthSel.options].some(o=>o.value===prevMonth)) monthSel.value = prevMonth;
+}
+
+function getFilteredAttendance(){
+  const emp = document.getElementById("attendanceEmployeeFilter").value;
+  const status = document.getElementById("attendanceStatusFilter").value;
+  const monthKey = document.getElementById("attendanceMonthSel").value;
+  const q = document.getElementById("searchAttendance").value.trim().toLowerCase();
+
+  let rows = DATA.attendance.slice();
+  if(emp) rows = rows.filter(r => r["Emp Name"] === emp);
+  if(status) rows = rows.filter(r => r["Final Status"] === status);
+  if(monthKey) rows = rows.filter(r => attendanceMonthKey(r["Date_f"] || r["Date"]) === monthKey);
+  if(q) rows = rows.filter(r => (r["Emp Name"]||"").toLowerCase().includes(q));
+  return rows;
+}
+
+function renderAttendanceCards(){
+  const rows = getFilteredAttendance();
+  const row1 = document.getElementById("attendanceCardsRow1");
+  const row2 = document.getElementById("attendanceCardsRow2");
+
+  if(!rows.length){
+    row1.innerHTML = `<div class="card" style="grid-column:1/-1;"><div class="eyebrow">Attendance</div><div class="sub" style="margin-top:0;">No attendance records match the current filters.</div></div>`;
+    row2.innerHTML = "";
+    return;
+  }
+
+  const weekOff = rows.filter(r => r["Final Status"] === "WO").length;
+  const holiday = rows.filter(r => r["Final Status"] === "HLD").length;
+  const present = rows.filter(r => r["Final Status"] === "P").length;
+  const absent = rows.filter(r => r["Final Status"] === "A").length;
+  const halfDay = rows.filter(r => String(r["Final Status"]||"").includes("/2")).length;
+  // "Late present" is a granular flag that Final Status folds back into "P",
+  // so it's read from the original Status column instead.
+  const late = rows.filter(r => String(r["Status"]||"").toUpperCase().includes("LT")).length;
+  const workingDays = rows.length - weekOff - holiday;
+  const attendancePct = workingDays > 0 ? (present/workingDays*100) : 0;
+
+  const totalHrs = rows.reduce((s,r)=> s + parseHM(r["W.Hrs"]), 0);
+  const avgHrs = workingDays > 0 ? (totalHrs/workingDays) : 0;
+  const totalOT = rows.reduce((s,r)=> s + parseHM(r["OT"]), 0);
+
+  row1.innerHTML = `
+    <div class="card"><div class="eyebrow">Working Days</div><div class="num blue">${workingDays}</div><div class="sub">excl. week-off & holiday</div></div>
+    <div class="card"><div class="eyebrow">Present</div><div class="num green">${present}</div><div class="sub">incl. late arrivals</div></div>
+    <div class="card"><div class="eyebrow">Late Present</div><div class="num amber">${late}</div><div class="sub">in after schedule</div></div>
+    <div class="card"><div class="eyebrow">Absent</div><div class="num red">${absent}</div><div class="sub">no punch recorded</div></div>
+  `;
+  row2.innerHTML = `
+    <div class="card"><div class="eyebrow">Half Day</div><div class="num amber">${halfDay}</div><div class="sub">half-day present</div></div>
+    <div class="card"><div class="eyebrow">Avg Hrs / Day</div><div class="num blue">${avgHrs.toFixed(2)}</div><div class="sub">across working days</div></div>
+    <div class="card"><div class="eyebrow">OT Hours</div><div class="num green">${totalOT.toFixed(2)}</div><div class="sub">total overtime</div></div>
+    <div class="card"><div class="eyebrow">Attendance %</div><div class="num ${attendancePct>=90?'green':(attendancePct>=75?'amber':'red')}">${attendancePct.toFixed(1)}%</div><div class="sub">present / working days</div></div>
+  `;
+}
+
+function renderAttendanceTable(){
+  const body = document.getElementById("attendanceBody");
+  body.innerHTML = "";
+  const rows = getFilteredAttendance();
+
+  if(rows.length===0){
+    body.innerHTML = `<tr><td colspan="12"><div class="empty"><b>No attendance records found</b>Try clearing a filter above.</div></td></tr>`;
+    return;
+  }
+
+  // Most recent date first
+  rows.sort((a,b)=>{
+    const da = parseDMY(a["Date_f"]||a["Date"]);
+    const db = parseDMY(b["Date_f"]||b["Date"]);
+    return (db?db.getTime():0) - (da?da.getTime():0);
+  });
+
+  rows.forEach(r=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><div class="person"><div class="avatar" style="background:${colorFor(r["Emp Name"])}">${initials(r["Emp Name"])}</div>
+        <div class="name">${r["Emp Name"]||""}</div></div></td>
+      <td>${r["Dept"]||"–"}</td>
+      <td>${r["Date_f"]||r["Date"]||"–"}</td>
+      <td class="num-cell">${r["In1"]||"–"}</td>
+      <td class="num-cell">${r["Out1"]||"–"}</td>
+      <td class="num-cell">${r["In2"]||"–"}</td>
+      <td class="num-cell">${r["Out2"]||"–"}</td>
+      <td class="num-cell">${r["W.Hrs"]||"–"}</td>
+      <td class="num-cell">${r["Basic.Hrs"]||"–"}</td>
+      <td class="num-cell">${r["OT"]||"–"}</td>
+      <td>${attendanceStatusBadgeHtml(r["Status"])}</td>
+      <td>${attendanceStatusBadgeHtml(r["Final Status"])}</td>
+    `;
+    body.appendChild(tr);
+  });
 }
 
 /* ============================================================
@@ -960,7 +1208,6 @@ function renderBalance(filterText=""){
 }
 
 let currentDeductionRows = [];
-let ALLOWED_MONTH_KEYS = new Set();
 
 function renderDeductions(filterText=""){
   const body = document.getElementById("deductionsBody");
@@ -1288,6 +1535,8 @@ function renderAll(){
   renderDeductions(document.getElementById("searchDeductions").value);
   renderHistory(document.getElementById("searchHistory").value);
   renderHolidays(document.getElementById("searchHolidays").value);
+  renderAttendanceCards();
+  renderAttendanceTable();
 }
 
 document.querySelectorAll(".tab").forEach(btn=>{
@@ -1314,6 +1563,10 @@ document.getElementById("historyEmployeeFilter").addEventListener("change", ()=>
 document.getElementById("historyYearFilter").addEventListener("change", ()=>renderHistory(document.getElementById("searchHistory").value));
 document.getElementById("historyTypeFilter").addEventListener("change", ()=>renderHistory(document.getElementById("searchHistory").value));
 document.getElementById("searchHolidays").addEventListener("input", e=>renderHolidays(e.target.value));
+document.getElementById("attendanceEmployeeFilter").addEventListener("change", ()=>{ renderAttendanceCards(); renderAttendanceTable(); });
+document.getElementById("attendanceStatusFilter").addEventListener("change", ()=>{ renderAttendanceCards(); renderAttendanceTable(); });
+document.getElementById("attendanceMonthSel").addEventListener("change", ()=>{ renderAttendanceCards(); renderAttendanceTable(); });
+document.getElementById("searchAttendance").addEventListener("input", ()=>{ renderAttendanceCards(); renderAttendanceTable(); });
 document.getElementById("refreshBtn").addEventListener("click", loadAll);
 
 function updateSignedInAsUI(){
