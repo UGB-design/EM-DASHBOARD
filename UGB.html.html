@@ -461,10 +461,10 @@ function isPendingStatus(s){
    colour whenever the label contains "LT". */
 function attendanceStatusBadgeHtml(status){
   const s = (status||"").toUpperCase();
-  if(s === "Present") return `<span class="badge green">P</span>`;
+  if(s === "P") return `<span class="badge green">P</span>`;
   if(s.includes("LT")) return `<span class="badge amber">${status}</span>`;
-  if(s === "Absent") return `<span class="badge red">A</span>`;
-  if(s === "Week Off") return `<span class="badge gray">WO</span>`;
+  if(s === "A") return `<span class="badge red">A</span>`;
+  if(s === "WO") return `<span class="badge gray">WO</span>`;
   if(s === "HLD") return `<span class="badge blue">HLD</span>`;
   if(s.includes("/2") || s.includes("HALF")) return `<span class="badge amber">${status}</span>`;
   return `<span class="badge gray">${status||"–"}</span>`;
