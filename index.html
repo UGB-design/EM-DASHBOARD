@@ -22,9 +22,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 /* TABS NAV */
 .tabs-row{display:flex;gap:4px;overflow-x:auto;width:fit-content;max-width:100%;background:rgba(255,255,255,.6);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-radius:14px;padding:6px;margin:0 0 18px;box-shadow:0 6px 18px rgba(60,50,30,.07);position:sticky;top:14px;z-index:60}
-.tab-btn{padding:10px 22px;border-radius:10px;font-size:13px;cursor:pointer;color:#8a8478;border:none;background:transparent;font-weight:600;transition:all .2s;white-space:nowrap}
+.tab-btn{position:relative;padding:10px 22px;border-radius:10px;font-size:13px;cursor:pointer;color:#8a8478;border:none;background:transparent;font-weight:600;transition:all .2s;white-space:nowrap}
 .tab-btn.active{color:#1a1a1a;font-weight:700;background:#fff;box-shadow:0 3px 10px rgba(0,0,0,.08)}
 .tab-btn:hover:not(.active){color:#4b4538}
+.tab-badge{position:absolute;top:2px;right:2px;background:#dc2626;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:10px;line-height:1.5;min-width:15px;text-align:center;box-shadow:0 1px 3px rgba(220,38,38,.4)}
 
 /* LAYOUT */
 .content{padding:24px 32px}
@@ -261,9 +262,9 @@ tr:hover td{background:#fafbfc}
   </div>
   <div class="tabs-row">
     <button class="tab-btn active" onclick="switchTab('summary',this)">Summary</button>
-    <button class="tab-btn" onclick="switchTab('fms',this)">FMS Steps</button>
-    <button class="tab-btn" onclick="switchTab('checklist',this)">Checklist</button>
-    <button class="tab-btn" onclick="switchTab('delegation',this)">Delegation</button>
+    <button class="tab-btn" onclick="switchTab('fms',this)">FMS Steps<span class="tab-badge" id="badgeFms" style="display:none">0</span></button>
+    <button class="tab-btn" onclick="switchTab('checklist',this)">Checklist<span class="tab-badge" id="badgeChecklist" style="display:none">0</span></button>
+    <button class="tab-btn" onclick="switchTab('delegation',this)">Delegation<span class="tab-badge" id="badgeDelegation" style="display:none">0</span></button>
     <button class="tab-btn" onclick="switchTab('scores',this)">Scores</button>
   </div>
 </div>
@@ -311,7 +312,6 @@ tr:hover td{background:#fafbfc}
       <div class="tc">
         <div class="tc-top">
           <div class="tc-title">All Doers Master Summary</div>
-          <div class="date-cols-wrap" id="hmDateCols"></div>
         </div>
         <div style="overflow-x:auto">
           <table id="masterDoerTable">
@@ -322,7 +322,6 @@ tr:hover td{background:#fafbfc}
                 <th style="text-align:center">CL Plan</th><th style="text-align:center">CL Actual</th>
                 <th style="text-align:center">DL Plan</th><th style="text-align:center">DL Actual</th>
                 <th style="text-align:center">Progress</th>
-                <th style="text-align:center" id="hmThLabel">Daily Heatmap</th>
               </tr>
             </thead>
             <tbody id="dBody"></tbody>
@@ -524,6 +523,19 @@ function hmCell(val) {
     return d === t ? '<span class="hok">' + s + '</span>' : d === 0 ? '<span class="hbad">' + s + '</span>' : '<span class="hwarn">' + s + '</span>';
   }
   return '<span class="hok">' + s + '</span>';
+}
+
+// ── Tab pending-count badges ─────────────────────────────────────────────────
+function setTabBadge(id, count) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  var n = Number(count) || 0;
+  if (n > 0) {
+    el.textContent = n;
+    el.style.display = 'inline-block';
+  } else {
+    el.style.display = 'none';
+  }
 }
 
 // ── Date helpers ─────────────────────────────────────────────────────────────
@@ -734,30 +746,14 @@ function renderAll(data) {
     '<span class="cs-done">' + bd.dlDone + ' done</span>' +
     '<span class="cs-pend">' + bd.dlPending + ' pending</span>';
 
-  if (data.heatmap && data.heatmap.dates) {
-    var M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    var html = '';
-    data.heatmap.dates.forEach(function(d) {
-      var pts = d.split('/');
-      html += '<div class="dcol"><div class="dcol-day">' + pts[0] + '</div><div style="font-size:9px">' + (M[parseInt(pts[1]) - 1] || pts[1]) + '</div></div>';
-    });
-    document.getElementById('hmDateCols').innerHTML = html;
-    document.getElementById('hmThLabel').setAttribute('colspan', data.heatmap.dates.length);
-  }
-
   if (em.doers) {
-    var hmMap = {};
-    if (data.heatmap && data.heatmap.doers) data.heatmap.doers.forEach(function(hd) { hmMap[hd.name.toLowerCase().trim()] = hd.days; });
-    var numDates = data.heatmap && data.heatmap.dates ? data.heatmap.dates.length : 0;
     document.getElementById('dBody').innerHTML = em.doers.map(function(d, i) {
-      var cells = '';
-      for (var j = 0; j < numDates; j++) cells += '<td style="text-align:center;padding:6px 2px">' + hmCell((hmMap[d.name.toLowerCase().trim()] || [])[j]) + '</td>';
       return '<tr><td style="text-align:center">' + (i + 1) + '</td>' +
         '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(d.name) + '</div>' + d.name + '</div></td>' +
         '<td style="text-align:center">' + nbB(d.fmsPlan) + '</td><td style="text-align:center">' + nbG(d.fmsActual) + '</td>' +
         '<td style="text-align:center">' + nbB(d.clPlan) + '</td><td style="text-align:center">' + nbG(d.clActual) + '</td>' +
         '<td style="text-align:center">' + nbB(d.dlPlan) + '</td><td style="text-align:center">' + nbG(d.dlActual) + '</td>' +
-        '<td>' + pg(d.progress) + '</td>' + cells + '</tr>';
+        '<td>' + pg(d.progress) + '</td></tr>';
     }).join('');
   }
 
@@ -895,6 +891,8 @@ function applyFmsFilters() {
     '<span class="m-badge b-green">' + totalActual + ' done</span>' +
     '<span class="m-badge b-red">' + Math.max(0, missed) + ' pending</span>';
 
+  setTabBadge('badgeFms', Math.max(0, missed));
+
   var fmsWorkNotDonePct       = totalPlan   > 0 ? (Math.max(0, missed) / totalPlan * 100) : 0;
   var fmsWorkNotDoneOnTimePct = totalActual > 0 ? Math.max(0, 100 - (totalOnTime / totalActual * 100)) : 0;
 
@@ -953,6 +951,8 @@ function applyChecklistFilters() {
     '<span class="m-badge b-blue">' + filtered.length + ' planned</span>' +
     '<span class="m-badge b-green">' + doneCount + ' done</span>' +
     '<span class="m-badge b-red">' + pendCount + ' pending</span>';
+
+  setTabBadge('badgeChecklist', pendCount);
 
   var onTimeCount = filtered.filter(function(r) {
     return r.status === 'Done' && r.actualDate && r.actualDate !== '-' && r.plannedDate && r.plannedDate !== '-' && r.actualDate <= r.plannedDate;
@@ -1013,6 +1013,14 @@ function applyDelegationFilters() {
     badgeHTML += '<span class="m-badge" style="background:#fffbeb;color:#d97706">' + pendingCount + ' pending</span>';
   }
   document.getElementById('dlMetaBadges').innerHTML = badgeHTML;
+
+  // Badge should reflect the true pending total from ALL visible rows
+  // (not just the current filter selection), so switching the status
+  // filter doesn't make the notification disappear.
+  var allPendingCount = enriched.filter(function(r) {
+    return (dFilter === 'All' || r.client === dFilter) && r.status === 'Pending';
+  }).length;
+  setTabBadge('badgeDelegation', allPendingCount);
 
   var yellowScore = totalCount > 0 ? (pendingCount / totalCount * 100) : 0;
   var greenScore  = totalCount > 0 ? (doneCount    / totalCount * 100) : 0;
