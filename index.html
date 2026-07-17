@@ -19,6 +19,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .wk-sel{background:#fff;border:1.5px solid #e3ddd2;border-radius:10px;padding:7px 14px;font-size:13px;color:#333;font-weight:500;cursor:pointer;outline:none;box-shadow:0 2px 8px rgba(60,50,30,.08);max-width:260px}
 .saving{font-size:11px;color:#888;display:none}
 .saving.show{display:inline}
+.leave-link-row{display:flex;justify-content:flex-end;margin:2px 0 14px}
+.leave-link-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 100%);color:#fff;text-decoration:none;font-size:12.5px;font-weight:700;padding:9px 18px;border-radius:12px;box-shadow:0 4px 14px rgba(79,70,229,.28);transition:transform .15s,box-shadow .15s}
+.leave-link-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(79,70,229,.36)}
+.leave-link-btn .llb-icon{font-size:15px;line-height:1}
 
 /* TABS NAV */
 .tabs-row{display:flex;gap:4px;overflow-x:auto;width:fit-content;max-width:100%;background:rgba(255,255,255,.6);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-radius:14px;padding:6px;margin:0 0 18px;box-shadow:0 6px 18px rgba(60,50,30,.07);position:sticky;top:14px;z-index:60}
@@ -259,6 +263,11 @@ tr:hover td{background:#fafbfc}
       </div>
       <button class="logout-btn" id="logoutBtn" style="display:none" onclick="doLogout()">Logout</button>
     </div>
+  </div>
+  <div class="leave-link-row">
+    <a href="https://ugb-design.github.io/EM-DASHBOARD/UGB.html.html" target="_blank" rel="noopener" class="leave-link-btn">
+      <span class="llb-icon">🗓️</span> Leave · Attendance · Salary Slip
+    </a>
   </div>
   <div class="tabs-row">
     <button class="tab-btn active" onclick="switchTab('summary',this)">Summary</button>
@@ -1141,7 +1150,7 @@ function applyScoreFilters() {
     '<div class="score-hero-card"><div class="score-hero-label">Active Employees</div><div class="score-hero-val" style="color:#2563eb">' + totalEmployees + '</div></div>' +
     '<div class="score-hero-card"><div class="score-hero-label">Total Plan</div><div class="score-hero-val" style="color:#2563eb">' + heroTotalPlan + '</div></div>' +
     '<div class="score-hero-card"><div class="score-hero-label">Total Completed</div><div class="score-hero-val" style="color:#16a34a">' + heroTotalDone + '</div></div>' +
-    '<div class="score-hero-card" onclick="showScorePendingModal()" style="cursor:pointer;position:relative" title="Click to see all pending tasks"><div class="score-hero-label">Pending</div><div class="score-hero-val" style="color:' + pendingColor + '">' + totalPendingSum + '</div><div style="font-size:10px;color:#9aa0ac;margin-top:2px">tap to view</div></div>' +
+    '<div class="score-hero-card" onclick="showScorePendingModal()" style="cursor:pointer;position:relative" title="Click to see all pending tasks"><div class="score-hero-label">Pending</div><div class="score-hero-val" style="color:' + pendingColor + '">' + totalPendingSum + '</div><div style="font-size:8px;color:#c7c2b8;margin-top:1px;letter-spacing:.03em">tap to view</div></div>' +
     '<div class="score-hero-card"><div class="score-hero-label">On Time Completed</div><div class="score-hero-val" style="color:#16a34a">' + onTimeSum + '</div></div>' +
     '<div class="score-hero-card"><div class="score-hero-label">Avg Performance</div><div class="score-hero-val" style="color:' + avgColor + '">' + heroAvgPerf.toFixed(1) + '%</div></div>';
 
