@@ -1188,7 +1188,7 @@ function collectAllPendingTasks(employeeFilter) {
       (s.pendingTasks || []).forEach(function(t) {
         var doerName = t.finalDoer || s.doer || '';
         if (employeeFilter && employeeFilter !== 'All' && normalizeName(doerName) !== normalizeName(employeeFilter)) return;
-        list.push({ type: 'FMS', doer: doerName, task: s.step, plannedDate: t.plannedDate || '-' });
+        list.push({ type: 'FMS', doer: doerName, task: s.step, client: t.client || '-', plannedDate: t.plannedDate || '-' });
       });
     });
   });
@@ -1196,14 +1196,14 @@ function collectAllPendingTasks(employeeFilter) {
   (data.checklistData || []).forEach(function(r) {
     if (r.status === 'Done') return;
     if (employeeFilter && employeeFilter !== 'All' && normalizeName(r.doer) !== normalizeName(employeeFilter)) return;
-    list.push({ type: 'Checklist', doer: r.doer, task: r.task, plannedDate: r.plannedDate || '-' });
+    list.push({ type: 'Checklist', doer: r.doer, task: r.task, client: '-', plannedDate: r.plannedDate || '-' });
   });
 
   (data.delegationData || []).forEach(function(r) {
     if (isWeekShifted(r)) return;
     if (computeDelegationStatus(r) !== 'Pending') return;
     if (employeeFilter && employeeFilter !== 'All' && normalizeName(r.client) !== normalizeName(employeeFilter)) return;
-    list.push({ type: 'Delegation', doer: r.client, task: r.task, plannedDate: r.firstDate || '-' });
+    list.push({ type: 'Delegation', doer: r.client, task: r.task, client: '-', plannedDate: r.firstDate || '-' });
   });
 
   // Most recent/overdue planned dates first where possible
@@ -1231,9 +1231,10 @@ function showScorePendingModal() {
       '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6"><span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;' + typeTagStyle(t.type) + '">' + t.type + '</span></td>' +
       '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151;font-weight:600">' + t.doer + '</td>' +
       '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151">' + t.task + '</td>' +
+      '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151">' + (t.client && t.client !== '-' ? t.client : '<span style="color:#d1d5db">—</span>') + '</td>' +
       '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151;white-space:nowrap">' + t.plannedDate + '</td>' +
       '</tr>';
-  }).join('') || '<tr><td colspan="5" style="text-align:center;color:#bbb;padding:30px">No pending tasks 🎉</td></tr>';
+  }).join('') || '<tr><td colspan="6" style="text-align:center;color:#bbb;padding:30px">No pending tasks 🎉</td></tr>';
 
   document.getElementById('scorePendingModal').style.display = 'flex';
 }
@@ -1308,7 +1309,7 @@ initGoogleAuth();
 
 <!-- SCORES: ALL PENDING TASKS MODAL -->
 <div id="scorePendingModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center">
-  <div style="background:#fff;border-radius:14px;width:92%;max-width:720px;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
+  <div style="background:#fff;border-radius:14px;width:92%;max-width:840px;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
     <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e8eaed">
       <div>
         <div id="scoreModalTitle" style="font-size:15px;font-weight:700;color:#1a1a1a"></div>
@@ -1324,6 +1325,7 @@ initGoogleAuth();
             <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa;position:sticky;top:0">Type</th>
             <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa;position:sticky;top:0">Employee</th>
             <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa;position:sticky;top:0">Task</th>
+            <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa;position:sticky;top:0">Client</th>
             <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa;position:sticky;top:0">Planned Date</th>
           </tr>
         </thead>
