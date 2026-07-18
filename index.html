@@ -217,6 +217,25 @@ tr:hover td{background:#fafbfc}
 @media(max-width:600px){
   .auth-box,.denied-box{padding:28px 22px;max-width:88vw}
 }
+
+/* ── SCORE PENDING MODAL: employee picker + mini scorecards ───── */
+.sc-emp-list{padding:8px}
+.sc-emp-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-radius:10px;cursor:pointer;transition:background .15s;margin-bottom:4px}
+.sc-emp-row:hover{background:#f9fafb}
+.sc-emp-left{display:flex;align-items:center;gap:10px}
+.sc-emp-name{font-size:13.5px;font-weight:700;color:#1a1a1a}
+.sc-emp-sub{font-size:11px;color:#9aa0ac;margin-top:1px}
+.sc-emp-count{background:#fef2f2;color:#dc2626;font-weight:700;font-size:12px;padding:4px 12px;border-radius:20px;white-space:nowrap}
+.sc-emp-arrow{color:#c7c2b8;font-size:16px;margin-left:4px}
+.sc-back-btn{background:#f3f4f6;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;color:#555;cursor:pointer;display:inline-flex;align-items:center;gap:5px;margin-right:10px}
+.sc-back-btn:hover{background:#e8eaed}
+.sc-mini-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:16px 20px 4px}
+.sc-mini-card{border-radius:12px;padding:12px 14px;text-align:center}
+.sc-mini-label{font-size:10px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:5px;opacity:.85}
+.sc-mini-val{font-size:20px;font-weight:700;line-height:1}
+.sc-mini-fms{background:#eff6ff}.sc-mini-fms .sc-mini-label{color:#1d4ed8}.sc-mini-fms .sc-mini-val{color:#1d4ed8}
+.sc-mini-cl{background:#fff7ed}.sc-mini-cl .sc-mini-label{color:#c2410c}.sc-mini-cl .sc-mini-val{color:#c2410c}
+.sc-mini-dl{background:#f5f3ff}.sc-mini-dl .sc-mini-label{color:#7c3aed}.sc-mini-dl .sc-mini-val{color:#7c3aed}
 </style>
 </head>
 <body>
@@ -1226,26 +1245,105 @@ function typeTagStyle(type) {
   return 'background:#f5f3ff;color:#7c3aed';
 }
 
+// ── Pending modal: employee picker view ──────────────────────────────────────
+// Builds the list of employees that currently have at least one pending item
+// (across FMS + Checklist + Delegation), with their pending count, so the
+// person taps an employee first instead of seeing one giant combined list.
+function buildEmployeePendingSummary() {
+  var allTasks = collectAllPendingTasks('All');
+  var map = {}; // name -> {fms, cl, dl, total}
+  allTasks.forEach(function(t) {
+    var key = t.doer || '(Unassigned)';
+    if (!map[key]) map[key] = { name: key, fms: 0, cl: 0, dl: 0, total: 0 };
+    if (t.type === 'FMS') map[key].fms++;
+    else if (t.type === 'Checklist') map[key].cl++;
+    else if (t.type === 'Delegation') map[key].dl++;
+    map[key].total++;
+  });
+  return Object.keys(map).map(function(k) { return map[k]; }).sort(function(a, b) { return b.total - a.total; });
+}
+
 function showScorePendingModal() {
   var employeeFilter = window._scPendingEmployeeFilter || 'All';
-  var tasks = collectAllPendingTasks(employeeFilter);
+
+  document.getElementById('scoreModalMiniCards').style.display = 'none';
+  document.getElementById('scoreModalTableWrap').style.display = 'none';
+  document.getElementById('scoreModalBackBtnWrap').innerHTML = '';
+
+  // If a specific employee is already selected via the tab filter, jump
+  // straight to their detail view. Otherwise show the employee picker.
+  if (employeeFilter !== 'All') {
+    renderScorePendingDetail(employeeFilter);
+  } else {
+    renderScorePendingEmployeeList();
+  }
+
+  document.getElementById('scorePendingModal').style.display = 'flex';
+}
+
+function renderScorePendingEmployeeList() {
+  var employees = buildEmployeePendingSummary();
 
   document.getElementById('scoreModalTitle').textContent = 'All Pending Tasks';
-  document.getElementById('scoreModalSubtitle').textContent =
-    (employeeFilter !== 'All' ? 'Employee: ' + employeeFilter + '  ·  ' : '') + tasks.length + ' pending';
+  document.getElementById('scoreModalSubtitle').textContent = employees.length + ' employees with pending work · tap an employee to view details';
+  document.getElementById('scoreModalBackBtnWrap').innerHTML = '';
+
+  document.getElementById('scoreModalMiniCards').style.display = 'none';
+  document.getElementById('scoreModalTableWrap').style.display = 'none';
+  document.getElementById('scoreModalEmpListWrap').style.display = 'block';
+
+  document.getElementById('scoreModalEmpList').innerHTML = employees.map(function(e) {
+    return '<div class="sc-emp-row" onclick="renderScorePendingDetail(\'' + e.name.replace(/'/g, "\\'") + '\')">' +
+      '<div class="sc-emp-left">' +
+        '<div class="av av' + (Math.abs(hashCode(e.name)) % 16) + '" style="width:32px;height:32px;font-size:10px">' + ini(e.name) + '</div>' +
+        '<div><div class="sc-emp-name">' + e.name + '</div>' +
+          '<div class="sc-emp-sub">FMS ' + e.fms + ' · Checklist ' + e.cl + ' · Delegation ' + e.dl + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="display:flex;align-items:center">' +
+        '<span class="sc-emp-count">' + e.total + ' pending</span>' +
+        '<span class="sc-emp-arrow">›</span>' +
+      '</div>' +
+    '</div>';
+  }).join('') || '<div style="text-align:center;color:#bbb;padding:40px">No pending tasks 🎉</div>';
+}
+
+function hashCode(str) {
+  var h = 0;
+  for (var i = 0; i < str.length; i++) { h = ((h << 5) - h) + str.charCodeAt(i); h |= 0; }
+  return h;
+}
+
+function renderScorePendingDetail(employeeName) {
+  var tasks = collectAllPendingTasks(employeeName);
+  var fmsCount = tasks.filter(function(t) { return t.type === 'FMS'; }).length;
+  var clCount  = tasks.filter(function(t) { return t.type === 'Checklist'; }).length;
+  var dlCount  = tasks.filter(function(t) { return t.type === 'Delegation'; }).length;
+
+  document.getElementById('scoreModalTitle').textContent = employeeName;
+  document.getElementById('scoreModalSubtitle').textContent = tasks.length + ' pending tasks';
+
+  document.getElementById('scoreModalBackBtnWrap').innerHTML =
+    '<button class="sc-back-btn" onclick="renderScorePendingEmployeeList()">‹ All Employees</button>';
+
+  document.getElementById('scoreModalEmpListWrap').style.display = 'none';
+  document.getElementById('scoreModalMiniCards').style.display = 'grid';
+  document.getElementById('scoreModalTableWrap').style.display = 'block';
+
+  document.getElementById('scoreModalMiniCards').innerHTML =
+    '<div class="sc-mini-card sc-mini-fms"><div class="sc-mini-label">FMS</div><div class="sc-mini-val">' + fmsCount + '</div></div>' +
+    '<div class="sc-mini-card sc-mini-cl"><div class="sc-mini-label">Checklist</div><div class="sc-mini-val">' + clCount + '</div></div>' +
+    '<div class="sc-mini-card sc-mini-dl"><div class="sc-mini-label">Delegation</div><div class="sc-mini-val">' + dlCount + '</div></div>';
 
   document.getElementById('scoreModalBody').innerHTML = tasks.map(function(t, i) {
     return '<tr>' +
       '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#555">' + (i + 1) + '</td>' +
       '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6"><span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;' + typeTagStyle(t.type) + '">' + t.type + '</span></td>' +
-      '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151;font-weight:600">' + t.doer + '</td>' +
       '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151">' + t.task + '</td>' +
       '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151">' + (t.client && t.client !== '-' ? t.client : '<span style="color:#d1d5db">—</span>') + '</td>' +
       '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151;white-space:nowrap">' + t.plannedDate + '</td>' +
       '</tr>';
-  }).join('') || '<tr><td colspan="6" style="text-align:center;color:#bbb;padding:30px">No pending tasks 🎉</td></tr>';
-
-  document.getElementById('scorePendingModal').style.display = 'flex';
+  }).join('') || '<tr><td colspan="5" style="text-align:center;color:#bbb;padding:30px">No pending tasks 🎉</td></tr>';
 }
 
 function closeScorePendingModal() {
@@ -1316,23 +1414,35 @@ initGoogleAuth();
   </div>
 </div>
 
-<!-- SCORES: ALL PENDING TASKS MODAL -->
+<!-- SCORES: ALL PENDING TASKS MODAL (employee picker + drilldown) -->
 <div id="scorePendingModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center">
-  <div style="background:#fff;border-radius:14px;width:92%;max-width:840px;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
+  <div style="background:#fff;border-radius:14px;width:92%;max-width:840px;max-height:82vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
     <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e8eaed">
-      <div>
-        <div id="scoreModalTitle" style="font-size:15px;font-weight:700;color:#1a1a1a"></div>
-        <div id="scoreModalSubtitle" style="font-size:12px;color:#9aa0ac;margin-top:2px"></div>
+      <div style="display:flex;align-items:center">
+        <span id="scoreModalBackBtnWrap"></span>
+        <div>
+          <div id="scoreModalTitle" style="font-size:15px;font-weight:700;color:#1a1a1a"></div>
+          <div id="scoreModalSubtitle" style="font-size:12px;color:#9aa0ac;margin-top:2px"></div>
+        </div>
       </div>
       <button onclick="closeScorePendingModal()" style="background:#f3f4f6;border:none;border-radius:8px;width:30px;height:30px;font-size:16px;cursor:pointer;color:#555;display:flex;align-items:center;justify-content:center">✕</button>
     </div>
-    <div style="overflow-y:auto;padding:0">
+
+    <!-- Employee picker view -->
+    <div id="scoreModalEmpListWrap" style="overflow-y:auto">
+      <div class="sc-emp-list" id="scoreModalEmpList"></div>
+    </div>
+
+    <!-- Mini scorecards: FMS / Checklist / Delegation counts -->
+    <div class="sc-mini-cards" id="scoreModalMiniCards" style="display:none"></div>
+
+    <!-- Detail table for the selected employee -->
+    <div id="scoreModalTableWrap" style="overflow-y:auto;padding:0;display:none">
       <table style="width:100%;border-collapse:collapse">
         <thead>
           <tr>
             <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa;position:sticky;top:0">#</th>
             <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa;position:sticky;top:0">Type</th>
-            <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa;position:sticky;top:0">Employee</th>
             <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa;position:sticky;top:0">Task</th>
             <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa;position:sticky;top:0">Client</th>
             <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa;position:sticky;top:0">Planned Date</th>
@@ -1341,6 +1451,7 @@ initGoogleAuth();
         <tbody id="scoreModalBody"></tbody>
       </table>
     </div>
+
     <div style="padding:12px 20px;border-top:1px solid #e8eaed;text-align:right">
       <button onclick="closeScorePendingModal()" style="background:#1a1a1a;color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:13px;font-weight:600;cursor:pointer">Close</button>
     </div>
