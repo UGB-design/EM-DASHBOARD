@@ -1,567 +1,564 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>UGB & Associates — Leave Dashboard</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<title>Umesh Bolmal &amp; Associates — Staff Portal</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
-  :root{
-    --navy:#1B5FAE;
-    --navy-deep:#154A87;
-    --steel:#3E6E96;
-    --amber:#DE9A32;
-    --green:#3C8F5A;
-    --red:#C1503D;
-    --bg:#F3F6FA;
-    --card:#FFFFFF;
-    --line:#E3E9F0;
-    --text:#1B2733;
-    --muted:#66788F;
-    --radius:12px;
-    --avatar-colors: #1B5FAE, #3E6E96, #DE9A32, #3C8F5A, #8E5FBF, #C1503D, #0E8A82, #B0729A;
-  }
-  *{box-sizing:border-box;}
-  body{
-    margin:0;
-    background:var(--bg);
-    color:var(--text);
-    font-family:'Inter',sans-serif;
-    -webkit-font-smoothing:antialiased;
-  }
-  h1,h2,h3, .num{ font-family:'Space Grotesk',sans-serif; }
+@import url("https://fonts.googleapis.com/css2?family=Google+Sans:wght@300;400;500;600;700&display=swap");
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;font-family:"Google Sans",Roboto,sans-serif;background:#f0f4fa;overflow:hidden}
 
-  header.top{
-    background: linear-gradient(120deg, #2568B8 0%, #1B5FAE 45%, #154A87 100%);
-    color:#fff;
-    padding:22px 32px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    flex-wrap:wrap;
-    gap:12px;
-  }
-  .brand{ display:flex; align-items:center; gap:14px; }
-  .brand .mark{
-    width:42px; height:42px; border-radius:10px;
-    background: linear-gradient(135deg, var(--amber), #F2C572);
-    display:flex; align-items:center; justify-content:center;
-    font-family:'Space Grotesk',sans-serif; font-weight:700; color:var(--navy-deep); font-size:18px;
-  }
-  .brand h1{ margin:0; font-size:19px; font-weight:600; letter-spacing:.2px;}
-  .brand p{ margin:2px 0 0; font-size:12.5px; color:#B9CBDD; }
-  .top-actions{ display:flex; align-items:center; gap:14px; }
-  .top-actions .updated{ font-size:12px; color:#B9CBDD; }
-  button.refresh{
-    background:rgba(255,255,255,.1);
-    border:1px solid rgba(255,255,255,.25);
-    color:#fff;
-    padding:8px 14px;
-    border-radius:8px;
-    font-size:13px;
-    cursor:pointer;
-    display:flex; align-items:center; gap:6px;
-    transition:.15s background;
-  }
-  button.refresh:hover{ background:rgba(255,255,255,.2); }
-  button.refresh svg{ width:14px; height:14px; }
-  a.appsheet-link{
-    background:var(--amber);
-    color:var(--navy-deep);
-    text-decoration:none;
-    font-weight:600;
-    font-size:13px;
-    padding:9px 16px;
-    border-radius:8px;
-    transition:.15s filter;
-  }
-  a.appsheet-link:hover{ filter:brightness(1.06); }
+/* ── Loader ─────────────────────────────────────────────────── */
+#loader{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:20px}
+.logo{font-size:11px;font-weight:700;letter-spacing:3.5px;text-transform:uppercase;color:#1F5FA6}
+.bar-wrap{width:200px;height:3px;background:#dce8f7;border-radius:4px;overflow:hidden}
+.bar{height:100%;width:35%;background:#1F5FA6;border-radius:4px;animation:slide 1.4s ease-in-out infinite}
+@keyframes slide{0%{transform:translateX(-120%)}100%{transform:translateX(380%)}}
+.msg{font-size:11px;color:#6b8ab0;letter-spacing:1.5px;text-transform:uppercase}
+.err{text-align:center;color:#e53e3e;font-size:13px}
+.retry{margin-top:12px;padding:8px 20px;background:#1F5FA6;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:12px}
 
-  main{ max-width:1180px; margin:0 auto; padding:28px 24px 60px; }
+/* ── Sign-in / Denied gates ────────────────────────────────────── */
+.auth-screen,.denied-screen{position:fixed;inset:0;background:#f0f4fa;display:none;align-items:center;justify-content:center;z-index:9999}
+.auth-screen.show,.denied-screen.show{display:flex}
+.auth-box,.denied-box{background:#fff;border-radius:18px;padding:40px 44px;box-shadow:0 10px 40px rgba(31,95,166,.15);text-align:center;max-width:380px}
+.auth-title{font-size:20px;font-weight:700;margin-bottom:6px;color:#111827}
+.auth-sub{font-size:13px;color:#6b8ab0;margin-bottom:24px}
+.auth-btn-wrap{display:flex;justify-content:center;min-height:44px}
+.auth-loading{font-size:13px;color:#6b8ab0;margin-top:16px;display:none}
+.auth-loading.show{display:block}
+.denied-icon{font-size:40px;margin-bottom:10px}
+.denied-title{font-size:18px;font-weight:700;color:#dc2626;margin-bottom:8px}
+.denied-sub{font-size:13px;color:#6b8ab0;margin-bottom:20px;line-height:1.6}
+.denied-email{font-size:12px;color:#555;background:#f9fafb;padding:6px 12px;border-radius:8px;margin-bottom:18px;display:inline-block}
+.btn-dark{background:#1F5FA6;color:#fff;border:none;border-radius:10px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer}
 
-  .stats{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:16px;
-    margin-bottom:14px;
-  }
-  .stats + .stats{ margin-bottom:30px; }
-  .stat{
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:var(--radius);
-    padding:18px 20px;
-    position:relative;
-    overflow:hidden;
-  }
-  .stat .label{ font-size:12.5px; color:var(--muted); font-weight:500; margin-bottom:6px;}
-  .stat .num{ font-size:28px; font-weight:700; color:var(--navy);}
-  .stat.alert{ border-color:#F1D6A8; background:#FFF8EC; }
-  .stat.alert .num{ color:var(--amber); }
-  .stat.warn{ border-color:#F1D6A8; background:#FFF8EC; }
-  .stat.warn .num{ color:var(--amber); }
-  .stat.info{ border-color:#CFE0EE; background:#F3F8FD; }
-  .stat.info .num{ color:var(--steel); }
-  .stat .bar{ position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--steel); }
-  .stat.alert .bar{ background:var(--amber); }
-  .stat.warn .bar{ background:var(--amber); }
-  .stat.info .bar{ background:var(--steel); }
+#app{display:none;width:100%;height:100%}
 
-  section{ margin-bottom:34px; }
-  .section-head{
-    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;
-    margin-bottom:14px;
-  }
-  .section-head h2{ font-size:16px; margin:0; color:var(--navy); }
-  .section-head .sub{ font-size:12.5px; color:var(--muted); margin-top:2px;}
-
-  .controls{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-  input.search{
-    border:1px solid var(--line);
-    border-radius:8px;
-    padding:8px 12px;
-    font-size:13px;
-    font-family:'Inter',sans-serif;
-    width:200px;
-    background:#fff;
-  }
-  .chip{
-    border:1px solid var(--line);
-    background:#fff;
-    color:var(--muted);
-    padding:7px 13px;
-    border-radius:999px;
-    font-size:12.5px;
-    cursor:pointer;
-    font-weight:500;
-  }
-  .chip.active{ background:var(--navy); color:#fff; border-color:var(--navy); }
-
-  .req-list{ display:flex; flex-direction:column; gap:10px; }
-  .req-card{
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:var(--radius);
-    padding:14px 18px;
-    display:grid;
-    grid-template-columns: 1.3fr .85fr 1.7fr .6fr 1.1fr auto;
-    gap:14px;
-    align-items:center;
-  }
-  .req-card .staff-cell{ display:flex; align-items:center; gap:10px; }
-  .req-card .staff{ font-weight:600; font-size:14px; }
-  .req-card .meta-label{ font-size:10.5px; text-transform:uppercase; letter-spacing:.4px; color:var(--muted); margin-bottom:2px;}
-  .req-card .meta-value{ font-size:13px; font-weight:500; }
-  .req-card .meta-value.dates{ white-space:nowrap; font-size:12.5px; }
-  .badge{
-    display:inline-block;
-    font-size:11.5px;
-    font-weight:600;
-    padding:4px 10px;
-    border-radius:999px;
-    width:fit-content;
-  }
-  .badge.pending{ background:#FFF3DD; color:#95661A; }
-  .badge.approved{ background:#E4F5E9; color:var(--green); }
-  .badge.rejected{ background:#FBE7E3; color:var(--red); }
-  .badge.other{ background:#EDF1F5; color:var(--muted); }
-  .approve-btn{
-    background:var(--navy);
-    color:#fff;
-    text-decoration:none;
-    font-size:12.5px;
-    font-weight:600;
-    padding:9px 14px;
-    border-radius:8px;
-    white-space:nowrap;
-  }
-  .approve-btn:hover{ background:var(--navy-deep); }
-  .empty{
-    text-align:center; padding:34px; color:var(--muted); font-size:13.5px;
-    background:var(--card); border:1px dashed var(--line); border-radius:var(--radius);
-  }
-
-  table.balance{
-    width:100%;
-    border-collapse:collapse;
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:var(--radius);
-    overflow:hidden;
-  }
-  table.balance thead th{
-    background:#F7FAFD;
-    text-align:left;
-    font-size:11px;
-    text-transform:uppercase;
-    letter-spacing:.4px;
-    color:var(--muted);
-    padding:11px 14px;
-    border-bottom:1px solid var(--line);
-  }
-  table.balance tbody td{
-    padding:12px 14px;
-    font-size:13.5px;
-    border-bottom:1px solid var(--line);
-    vertical-align:middle;
-  }
-  table.balance tbody tr:last-child td{ border-bottom:none; }
-  table.balance tbody tr:hover{ background:#FAFBFD; }
-  .staff-cell{ display:flex; align-items:center; gap:11px; }
-  .staff-name{ font-weight:600; }
-
-  .avatar{
-    width:34px; height:34px; border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    color:#fff; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:12px;
-    flex-shrink:0; letter-spacing:.3px;
-  }
-  .avatar.sm{ width:30px; height:30px; font-size:11px; }
-
-  .fingerprint{ display:flex; flex-direction:column; gap:5px; min-width:150px; }
-  .fp-row{ display:flex; align-items:center; gap:6px; }
-  .fp-label{ font-size:10.5px; color:var(--muted); width:34px; font-weight:600;}
-  .fp-track{ flex:1; height:7px; border-radius:4px; background:#E9EEF3; overflow:hidden;}
-  .fp-fill{ height:100%; border-radius:4px; }
-  .fp-fill.paid{ background:var(--steel); }
-  .fp-num{ font-size:11px; color:var(--muted); width:34px; text-align:right; }
-
-  footer{
-    text-align:center; padding:22px; font-size:12px; color:var(--muted);
-  }
-  footer a{ color:var(--steel); }
-
-  .loading, .error{ text-align:center; padding:60px 20px; color:var(--muted); font-size:14px;}
-  .error{ color:var(--red); }
-
-  @media (max-width: 900px){
-    .stats{ grid-template-columns:repeat(1,1fr); }
-    .req-card{ grid-template-columns:1fr; }
-    .req-card .meta-value.dates{ white-space:normal; }
-    .req-card .approve-btn{ justify-self:start; }
-    table.balance thead{ display:none; }
-    table.balance, table.balance tbody, table.balance tr, table.balance td{ display:block; width:100%; }
-    table.balance tr{ padding:12px 14px; border-bottom:1px solid var(--line); }
-    table.balance td{ border:none; padding:4px 0; }
-  }
+/* ── App shell (same visual design as before) ─────────────────── */
+.wrapper{display:flex;flex-direction:column;height:100%;overflow:hidden}
+.top{display:flex;justify-content:space-between;align-items:flex-start;padding:14px 28px 12px;position:relative;background:#1F5FA6;flex-wrap:wrap;gap:8px}
+.top-left{flex:1;min-width:0}
+.greet{font-size:26px;font-weight:700;color:#fff;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.firm-line{display:flex;align-items:center;gap:10px;margin-top:5px}
+.firm-divider{width:28px;height:2px;background:rgba(255,255,255,0.45);flex-shrink:0}
+.firm{font-size:11px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.75)}
+.portal-sub{font-size:10px;font-weight:500;letter-spacing:1.8px;text-transform:uppercase;color:rgba(255,255,255,0.85);margin-top:14px}
+.top-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;padding-top:2px;flex-shrink:0}
+.icons-row{display:flex;align-items:center;gap:10px}
+.bell-wrap{position:relative;cursor:pointer;width:36px;height:36px;border-radius:9px;background:rgba(255,255,255,0.12);border:1.5px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.bell-svg{width:17px;height:17px;stroke:#fff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.bell-badge{position:absolute;top:-6px;right:-6px;background:#f59e0b;color:#fff;font-size:9px;font-weight:700;width:17px;height:17px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid #1F5FA6}
+.profile{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.18);border:2px solid rgba(255,255,255,0.5);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;cursor:pointer;overflow:hidden;flex-shrink:0}
+.date{font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.65)}
+.time{font-size:34px;font-weight:300;color:#fff;letter-spacing:2px;line-height:1}
+.ampm{font-size:13px;font-weight:500;color:rgba(255,255,255,0.75);margin-left:4px}
+.top-accent{height:3px;background:linear-gradient(90deg,#0d3466,#1F5FA6,#4a90d9,#1F5FA6,#0d3466);flex-shrink:0}
+.ann-panel{display:none;position:absolute;top:72px;right:80px;width:300px;background:#fff;border:1px solid #c9d9ef;border-radius:12px;padding:16px;z-index:999;box-shadow:0 10px 32px rgba(31,95,166,0.18)}
+.ann-panel.open{display:block}
+.ann-title{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#1F5FA6;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #e5edf8;display:flex;align-items:center;gap:8px}
+.ann-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #f0f4fa}
+.ann-item:last-child{border-bottom:none}
+.ann-dot{width:7px;height:7px;border-radius:50%;background:#1F5FA6;margin-top:4px;flex-shrink:0}
+.ann-msg{font-size:12px;color:#111827;line-height:1.6;flex:1;font-weight:500}
+.ann-date{font-size:10px;color:#6b8ab0;white-space:nowrap;margin-top:2px}
+.ann-empty{font-size:12px;color:#6b8ab0;text-align:center;padding:8px 0;font-style:italic}
+.ann-ticker-wrap{margin:10px 28px 0;background:#1F5FA6;border-radius:9px;padding:9px 16px;display:flex;align-items:center;gap:12px;min-height:38px;overflow:hidden;flex-shrink:0}
+.ticker-label{font-size:9px;font-weight:700;letter-spacing:2px;color:#fff;text-transform:uppercase;white-space:nowrap;border-right:1.5px solid rgba(255,255,255,0.25);padding-right:12px;display:flex;align-items:center;gap:7px}
+.ticker-live-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;animation:livepulse 2s infinite}
+@keyframes livepulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.ticker-slider{flex:1;position:relative;overflow:hidden;height:20px}
+.ticker-track{position:absolute;top:0;left:0;white-space:nowrap;display:flex;align-items:center;height:20px;font-size:12px;font-weight:500;color:#fff;animation-name:tickerScroll;animation-timing-function:linear;animation-iteration-count:infinite;will-change:transform}
+.ticker-sep{margin:0 30px;color:rgba(255,255,255,0.45);font-size:8px}
+@keyframes tickerScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.profile-popup{display:none;position:absolute;top:68px;right:28px;background:#fff;border:1px solid #c9d9ef;border-radius:12px;padding:22px 26px;z-index:1000;min-width:210px;box-shadow:0 10px 32px rgba(31,95,166,0.18);text-align:center}
+.profile-popup.open{display:block}
+.photo-edit-wrap{position:relative;width:72px;margin:0 auto 6px}
+.profile-big{width:72px;height:72px;border-radius:50%;background:#e8eef6;border:2.5px solid #b0c4de;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#1F5FA6;overflow:hidden}
+.photo-edit-btn{position:absolute;bottom:0;right:0;width:22px;height:22px;border-radius:50%;background:#1F5FA6;border:2px solid #fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:#fff;line-height:1;z-index:10}
+.upload-status{font-size:10px;color:#1F5FA6;margin-bottom:4px;min-height:14px;text-align:center}
+.remove-photo-btn{font-size:10px;font-weight:600;color:#dc2626;background:#fff5f5;border:1.5px solid #fca5a5;border-radius:20px;padding:5px 14px;cursor:pointer;margin-top:4px;margin-bottom:2px;display:none;transition:all 0.2s;letter-spacing:0.5px}
+.remove-photo-btn:hover{background:#dc2626;color:#fff;border-color:#dc2626}
+.view-photo-hint{font-size:11px;color:#6b8ab0;margin-bottom:10px;cursor:pointer}
+.profile-name{font-size:14px;font-weight:700;color:#111827;margin-bottom:4px}
+.profile-email{font-size:11px;color:#6b8ab0;word-break:break-all}
+.notepad-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(10,30,70,0.7);z-index:9998;align-items:center;justify-content:center}
+.notepad-modal.open{display:flex}
+.notepad-box{background:#fff;border-radius:16px;width:90%;max-width:480px;padding:24px;box-shadow:0 16px 48px rgba(31,95,166,0.22);display:flex;flex-direction:column;gap:14px}
+.notepad-header{display:flex;align-items:center;justify-content:space-between}
+.notepad-title{font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#1F5FA6;display:flex;align-items:center;gap:8px}
+.notepad-close{width:28px;height:28px;border-radius:50%;background:#f0f4fa;border:none;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:#6b8ab0}
+.notepad-close:hover{background:#e5edf8}
+.notepad-area{width:100%;height:200px;border:1.5px solid #c9d9ef;border-radius:10px;padding:12px 14px;font-family:"Google Sans",Roboto,sans-serif;font-size:13px;color:#111827;line-height:1.7;resize:none;outline:none;background:#f8fafd;transition:border 0.2s}
+.notepad-area:focus{border-color:#1F5FA6;background:#fff}
+.notepad-footer{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.notepad-saved{font-size:10px;color:#9ab0c8;letter-spacing:0.5px;flex:1}
+.notepad-chars{font-size:10px;color:#b0c4de}
+.notepad-save-btn{background:#1F5FA6;color:#fff;border:none;border-radius:8px;padding:9px 22px;font-family:"Google Sans",Roboto,sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all 0.2s}
+.notepad-save-btn:hover{background:#0d3466;transform:translateY(-1px)}
+.notepad-save-btn:disabled{background:#b0c4de;cursor:not-allowed;transform:none}
+.notepad-btn-wrap{position:relative;cursor:pointer;width:36px;height:36px;border-radius:9px;background:rgba(255,255,255,0.12);border:1.5px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:17px}
+.notepad-btn-wrap:hover{background:rgba(255,255,255,0.22)}
+.photo-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(10,30,70,0.9);z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+.photo-modal.open{display:flex}
+.photo-modal img{width:200px;height:200px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,0.4)}
+.photo-modal-name{font-size:18px;font-weight:600;color:#fff}
+.photo-modal-close{font-size:12px;color:rgba(255,255,255,0.7);cursor:pointer;letter-spacing:1px;text-transform:uppercase;border:1px solid rgba(255,255,255,0.3);border-radius:20px;padding:6px 22px}
+.btn-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;padding:10px 16px;background:#fff;border-top:1px solid #e5edf8;border-bottom:1px solid #e5edf8;margin-top:10px;flex-shrink:0}
+.btn{font-family:"Google Sans",Roboto,sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#1a3a60;background:#f5f8fd;border:1.5px solid #c9d9ef;border-left:4px solid #1F5FA6;border-radius:8px;padding:10px 18px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all 0.22s;white-space:nowrap}
+.btn:hover{background:#1F5FA6;color:#fff;border-color:#1F5FA6;border-left-color:#0d3466;transform:translateY(-2px);box-shadow:0 4px 16px rgba(31,95,166,0.28)}
+.gov-links-wrap{background:linear-gradient(180deg,#eef4ff 0%,#f5f8fd 55%,#ffffff 100%);border-bottom:1px solid #dce8f7;flex-shrink:0;padding:4px 0 10px}
+.gov-links-title{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#1F5FA6;text-align:center;padding-top:12px;padding-bottom:2px;display:flex;align-items:center;justify-content:center;gap:10px;margin:0 24px}
+.gov-links-title::before,.gov-links-title::after{content:"";flex:1;max-width:70px;height:1.5px;background:linear-gradient(90deg,transparent,#a9c3e6)}
+.gov-links-title::after{background:linear-gradient(90deg,#a9c3e6,transparent)}
+.gov-row{border-top:none;border-bottom:none;margin-top:6px;background:transparent}
+.gov-row .btn{background:#fff;border-color:#b8cdea}
+.gov-row .btn:hover{background:#1F5FA6;border-color:#1F5FA6}
+.highlights{padding:16px 28px 12px;flex:1;display:flex;flex-direction:column;align-items:center;background:#fff;overflow-y:auto}
+.hl-title{font-size:14px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#1F5FA6;margin-bottom:16px;text-align:center;width:100%;display:flex;align-items:center;gap:14px}
+.hl-title::before,.hl-title::after{content:"";flex:1;height:1.5px;background:#e5edf8}
+.hl-group{margin-bottom:14px;width:100%;display:flex;flex-direction:column;align-items:center}
+.hl-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#fff;background:#1F5FA6;border:none;border-radius:20px;padding:5px 16px;margin-bottom:12px;text-align:center;display:inline-block}
+.hl-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.hl-card{background:#f5f8fd;border:1.5px solid #c9d9ef;border-radius:12px;padding:11px 16px;display:flex;align-items:center;gap:12px;min-width:200px;box-shadow:0 2px 8px rgba(31,95,166,0.07)}
+.hl-card-birthday{border-left:4px solid #f59e0b;background:linear-gradient(135deg,#fffbf0,#f5f8fd)}
+.hl-card-anniv{border-left:4px solid #1F5FA6;background:linear-gradient(135deg,#eef4ff,#f5f8fd)}
+.hl-card-new{border-left:4px solid #10b981;background:linear-gradient(135deg,#ecfdf5,#f5f8fd)}
+.hl-icon-wrap{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.hl-icon-birthday{background:#fff8e8;border:1.5px solid #f59e0b}
+.hl-icon-anniv{background:#e8f0fb;border:1.5px solid #1F5FA6}
+.hl-icon-new{background:#d1fae5;border:1.5px solid #10b981}
+.hl-name{font-size:13px;font-weight:700;color:#111827;margin-bottom:2px}
+.hl-sub{font-size:11px;color:#4b5563;font-weight:400}
+.hl-chip{background:#e8f0fb;border:1.5px solid #b0c4de;border-radius:20px;padding:7px 16px;font-size:12px;font-weight:600;color:#111827;display:flex;align-items:center;gap:10px}
+.hl-badge{background:#1F5FA6;border-radius:10px;padding:3px 9px;font-size:10px;color:#fff;font-weight:700}
+.hl-empty-grid{display:flex;flex-direction:column;gap:14px;width:100%;max-width:420px;padding-top:6px}
+.hl-empty-card{background:#f8fafd;border:1.5px solid #dce8f5;border-left:4px solid #c9d9ef;border-radius:10px;padding:18px 20px;font-size:12px;font-weight:500;color:#6b8ab0;display:flex;align-items:center;gap:14px;line-height:1.5}
+.hl-empty-icon{font-size:20px;flex-shrink:0;opacity:0.7}
+.hl-empty-title{font-size:12px;font-weight:600;color:#4b5563;margin-bottom:3px}
+.hl-empty-desc{font-size:11px;color:#9ab0c8;font-weight:400}
+@media(max-width:600px){
+.top{padding:10px 14px 10px;gap:6px}
+.greet{font-size:18px}
+.firm{font-size:9px;letter-spacing:1.5px}
+.portal-sub{font-size:9px;letter-spacing:1.2px}
+.time{font-size:24px;letter-spacing:1px}
+.ampm{font-size:11px}
+.date{font-size:9px;letter-spacing:1.5px}
+.top-right{gap:4px}
+.icons-row{gap:8px}
+.bell-wrap{width:32px;height:32px}
+.profile{width:32px;height:32px;font-size:12px}
+.ann-ticker-wrap{margin:8px 10px 0;padding:7px 12px}
+.ticker-label{font-size:8px;padding-right:10px}
+.btn-row{padding:8px 10px;gap:6px}
+.btn{font-size:9px;padding:8px 12px;letter-spacing:1px}
+.gov-links-title{font-size:8px;letter-spacing:1.5px;margin:0 10px}
+.gov-links-title::before,.gov-links-title::after{max-width:30px}
+.highlights{padding:12px 10px 10px}
+.hl-title{font-size:10px;letter-spacing:2px}
+.ann-panel{right:8px;width:calc(100vw - 24px);top:58px}
+.profile-popup{right:8px;min-width:180px;top:58px}
+.hl-card{min-width:160px;padding:10px 14px}
+}
+@media(max-width:380px){
+.greet{font-size:16px}
+.time{font-size:20px}
+.btn{font-size:8px;padding:7px 10px}
+}
 </style>
 </head>
 <body>
 
-<header class="top">
-  <div class="brand">
-    <div class="mark">UGB</div>
-    <div>
-      <h1>LEAVE MANAGEMENT SYSTEM</h1>
-      <p>UMESH BOLMAL  &amp; ASSOCIATES — STAFF LEAVE OVERVIEW</p>
-    </div>
+<div id="loader">
+  <div class="logo">🏛 Umesh Bolmal &amp; Associates</div>
+  <div class="bar-wrap"><div class="bar"></div></div>
+  <div class="msg">Loading your dashboard…</div>
+</div>
+
+<div class="auth-screen" id="authScreen">
+  <div class="auth-box">
+    <div class="auth-title">Staff Portal</div>
+    <div class="auth-sub">Sign in with your company Google account to continue</div>
+    <div class="auth-btn-wrap" id="googleSignInBtn"></div>
+    <div class="auth-loading" id="authLoadingTxt">Verifying access…</div>
   </div>
-  <div class="top-actions">
-    <span class="updated" id="updatedAt">Loading…</span>
-    <button class="refresh" id="refreshBtn">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>
-      Refresh
-    </button>
-    <a class="appsheet-link" id="appsheetLink" href="#" target="_blank" rel="noopener">Open Approval App ↗</a>
+</div>
+
+<div class="denied-screen" id="deniedScreen">
+  <div class="denied-box">
+    <div class="denied-icon">🚫</div>
+    <div class="denied-title">Access Denied</div>
+    <div class="denied-sub">This portal is restricted to staff accounts only.</div>
+    <div class="denied-email" id="deniedEmail"></div>
+    <button class="btn-dark" onclick="doLogout()">Try a Different Account</button>
   </div>
-</header>
+</div>
 
-<main>
-
-  <!-- Row 1: from Leave_Balance!B30:D30 -->
-  <div class="stats" id="stats">
-    <div class="stat"><div class="bar"></div><div class="label">ACTIVE STAFF </div><div class="num" id="statStaff">—</div></div>
-    <div class="stat alert"><div class="bar"></div><div class="label">PENDING REQUESTS</div><div class="num" id="statPending">—</div></div>
-    <div class="stat"><div class="bar"></div><div class="label">TOTAL PAID LEAVE BALANCE </div><div class="num" id="statPaidBalance">—</div></div>
-  </div>
-
-  <!-- Row 2: from Leave_Balance!B32:D32 -->
-  <div class="stats" id="statsUsage">
-    <div class="stat info"><div class="bar"></div><div class="label">TOTAL PAID LEAVE USED </div><div class="num" id="statPaidUsed">—</div></div>
-    <div class="stat warn"><div class="bar"></div><div class="label">HALF DAY </div><div class="num" id="statHalfDay">—</div></div>
-    <div class="stat warn"><div class="bar"></div><div class="label">UNPAID LEAVES </div><div class="num" id="statUnpaid">—</div></div>
-  </div>
-
-  <section>
-    <div class="section-head">
-      <div>
-        <h2>LEAVE REQUESTS </h2>
-        <div class="sub">Pending requests can be approved or rejected in the Approval App</div>
-      </div>
-      <div class="controls">
-        <div class="chip active" data-filter="All">All</div>
-        <div class="chip" data-filter="Pending">Pending</div>
-        <div class="chip" data-filter="Approved">Approved</div>
-        <div class="chip" data-filter="Rejected">Rejected</div>
-      </div>
-    </div>
-    <div class="req-list" id="reqList">
-      <div class="loading">Loading requests…</div>
-    </div>
-  </section>
-
-  <section>
-    <div class="section-head">
-      <div>
-        <h2>STAFF LEAVE BALANCE </h2>
-        <div class="sub">Paid leave usage across the team</div>
-      </div>
-      <div class="controls">
-        <input class="search" id="staffSearch" placeholder="Search staff…" />
-      </div>
-    </div>
-    <table class="balance" id="balanceTable">
-      <thead>
-        <tr>
-          <th>Staff</th>
-          <th>Paid Used / Total</th>
-          <th>Usage</th>
-          <th>Half Day</th>
-          <th>Unpaid</th>
-        </tr>
-      </thead>
-      <tbody id="balanceBody">
-        <tr><td colspan="5"><div class="loading">Loading balances…</div></td></tr>
-      </tbody>
-    </table>
-  </section>
-
-</main>
-
-<footer>
-  Data synced live from Google Sheets · Approvals handled in AppSheet
-</footer>
+<div id="app"></div>
 
 <script>
-/* ================= CONFIG ================= */
-const CONFIG = {
-  // Paste your deployed Apps Script Web App URL here (ends in /exec)
-  API_URL: "https://script.google.com/macros/s/AKfycbyMp9Gbxuk-KYx2C_mga5BzK3ECOs6gbo541GwmcRYwaG8tfYx7m72PV6vyvNqnPoea/exec",
-  // AppSheet Leave Approval view
-  APPROVAL_URL: "https://www.appsheet.com/start/e593f206-628c-4174-a375-4012a703c619#view=Leave%20Approval"
-};
-/* ============================================ */
+/* ⚠️ Replace with your deployed Apps Script Web App /exec URL */
+var API = "https://script.google.com/a/macros/ugbolmalassociates.com/s/AKfycbzqpQNWEvLHylO5j7K9lzwYitGoU0QGEwIYx8evMwQ4p4pr13MEQhgt3msaiVZjNTYfZQ/exec";
+/* ⚠️ Must match the Apps Script backend's GOOGLE_CLIENT_ID */
+var GOOGLE_CLIENT_ID = "567925868040-kv22o4qhj5rmreiaka4odpth50v99ndf.apps.googleusercontent.com";
 
-let state = { balances: [], requests: [], filter: "All" };
+var currentIdToken = null;
+var currentUserEmail = null;
+var portalData = null;
+var notepadLoaded = false;
 
-document.getElementById('appsheetLink').href = CONFIG.APPROVAL_URL;
-
-function badgeClass(status){
-  const s = String(status || '').trim().toLowerCase();
-  if(s === 'pending') return 'pending';
-  if(s === 'approved') return 'approved';
-  if(s === 'rejected') return 'rejected';
-  return 'other';
+/* ── Google Sign-In ───────────────────────────────────────────── */
+function decodeJwtPayload(token) {
+  try {
+    var base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(decodeURIComponent(atob(base64).split('').map(function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join('')));
+  } catch (e) { return null; }
 }
 
-function fmtNum(n){ return (Number(n) || 0).toLocaleString(); }
-
-const AVATAR_COLORS = ['#1B5FAE','#3E6E96','#DE9A32','#3C8F5A','#8E5FBF','#C1503D','#0E8A82','#B0729A'];
-
-function initials(name){
-  const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
-  if(parts.length === 0) return '?';
-  if(parts.length === 1) return parts[0].substring(0,2).toUpperCase();
-  return (parts[0][0] + parts[1][0]).toUpperCase();
+function handleCredentialResponse(response) {
+  currentIdToken = response.credential;
+  try { localStorage.setItem('ugb_portal_idtoken', currentIdToken); } catch (e) {}
+  verifyAndEnter();
 }
 
-function avatarColor(name){
-  const s = String(name || '');
-  let hash = 0;
-  for(let i = 0; i < s.length; i++) hash = s.charCodeAt(i) + ((hash << 5) - hash);
-  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
-}
-
-function avatarHtml(name, small){
-  return `<div class="avatar${small ? ' sm' : ''}" style="background:${avatarColor(name)}">${initials(name)}</div>`;
-}
-
-/* ---- local cache: paint instantly on repeat visits, then refresh in background ---- */
-const LOCAL_CACHE_KEY = 'ugb_leave_dashboard_cache_v1';
-const LOCAL_CACHE_MAX_AGE_MS = 20 * 60 * 1000; // 20 min — just for instant first paint
-
-function readLocalCache(){
-  try{
-    const raw = localStorage.getItem(LOCAL_CACHE_KEY);
-    if(!raw) return null;
-    const parsed = JSON.parse(raw);
-    if(!parsed || !parsed.data || (Date.now() - parsed.savedAt) > LOCAL_CACHE_MAX_AGE_MS) return null;
-    return parsed.data;
-  }catch(err){ return null; }
-}
-
-function writeLocalCache(data){
-  try{ localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify({ savedAt: Date.now(), data })); }
-  catch(err){ /* storage full or unavailable — ignore */ }
-}
-
-function applyData(data, fromCache){
-  state.balances = data.balances || [];
-  state.requests = data.requests || [];
-
-  document.getElementById('updatedAt').textContent =
-    'Updated ' + new Date(data.generatedAt).toLocaleString() + (fromCache ? ' (cached — refreshing…)' : '');
-
-  document.getElementById('statStaff').textContent       = fmtNum(data.summary.totalStaff);
-  document.getElementById('statPending').textContent     = fmtNum(data.summary.pendingRequests);
-  document.getElementById('statPaidBalance').textContent = fmtNum(data.summary.totalPaidBalance);
-  document.getElementById('statPaidUsed').textContent    = fmtNum(data.summary.totalPaidUsed);
-  document.getElementById('statHalfDay').textContent     = fmtNum(data.summary.totalHalfDay);
-  document.getElementById('statUnpaid').textContent      = fmtNum(data.summary.totalUnpaidLeave);
-
-  renderRequests();
-  renderBalances();
-}
-
-async function loadData(forceFresh){
-  const cached = readLocalCache();
-
-  if(cached){
-    // instant paint from last known good data
-    applyData(cached, true);
-  } else {
-    document.getElementById('reqList').innerHTML = '<div class="loading">Loading requests…</div>';
-    document.getElementById('balanceBody').innerHTML = '<tr><td colspan="5"><div class="loading">Loading balances…</div></td></tr>';
+function verifyAndEnter() {
+  if (!currentIdToken) return showSignIn();
+  var payload = decodeJwtPayload(currentIdToken);
+  if (!payload || !payload.exp || payload.exp * 1000 < Date.now()) {
+    try { localStorage.removeItem('ugb_portal_idtoken'); } catch (e) {}
+    return showSignIn();
   }
+  hideAll();
+  document.getElementById('authScreen').classList.add('show');
+  document.getElementById('authLoadingTxt').classList.add('show');
+  fetch(API + '?action=auth&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now())
+    .then(function(r) { return r.json(); })
+    .then(function(res) {
+      document.getElementById('authLoadingTxt').classList.remove('show');
+      if (res.authorized) {
+        currentUserEmail = res.email || payload.email;
+        loadPortal();
+      } else {
+        showDenied(res.email || payload.email);
+      }
+    })
+    .catch(function() {
+      document.getElementById('authLoadingTxt').classList.remove('show');
+      showDenied(payload.email);
+    });
+}
 
-  if(!CONFIG.API_URL || CONFIG.API_URL.indexOf('PASTE_YOUR') === 0){
-    document.getElementById('reqList').innerHTML =
-      '<div class="error">Set CONFIG.API_URL in index.html to your deployed Apps Script web app URL.</div>';
-    document.getElementById('balanceBody').innerHTML = '';
-    return;
+function hideAll() {
+  document.getElementById('loader').style.display = 'none';
+  document.getElementById('authScreen').classList.remove('show');
+  document.getElementById('deniedScreen').classList.remove('show');
+  document.getElementById('app').style.display = 'none';
+}
+
+function showSignIn() {
+  hideAll();
+  document.getElementById('authScreen').classList.add('show');
+  if (window.google && google.accounts && google.accounts.id) {
+    google.accounts.id.renderButton(document.getElementById('googleSignInBtn'), { theme: 'outline', size: 'large', width: 260 });
   }
+}
 
-  try{
-    let url = CONFIG.API_URL + (CONFIG.API_URL.includes('?') ? '&' : '?') + 't=' + Date.now();
-    if(forceFresh) url += '&fresh=1';
+function showDenied(email) {
+  hideAll();
+  document.getElementById('deniedScreen').classList.add('show');
+  document.getElementById('deniedEmail').textContent = email || '';
+}
 
-    const res = await fetch(url);
-    if(!res.ok){
-      throw new Error('HTTP ' + res.status + ' — check that the Apps Script deployment access is set to "Anyone"');
+function doLogout() {
+  try { localStorage.removeItem('ugb_portal_idtoken'); } catch (e) {}
+  currentIdToken = null; currentUserEmail = null;
+  if (window.google && google.accounts && google.accounts.id) google.accounts.id.disableAutoSelect();
+  showSignIn();
+}
+
+function initGoogleAuth() {
+  if (!window.google || !google.accounts || !google.accounts.id) { setTimeout(initGoogleAuth, 200); return; }
+  google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleCredentialResponse, auto_select: true });
+  var saved = null;
+  try { saved = localStorage.getItem('ugb_portal_idtoken'); } catch (e) {}
+  if (saved) { currentIdToken = saved; verifyAndEnter(); }
+  else { showSignIn(); google.accounts.id.prompt(); }
+}
+
+/* ── Load portal data & render ───────────────────────────────── */
+function loadPortal() {
+  hideAll();
+  document.getElementById('loader').style.display = 'flex';
+  fetch(API + '?action=getData&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now())
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.authorized) { showDenied(currentUserEmail); return; }
+      portalData = data;
+      renderApp(data);
+      hideAll();
+      document.getElementById('app').style.display = 'block';
+    })
+    .catch(function(err) {
+      document.getElementById('loader').innerHTML = '<div class="err">⚠ Could not load.<br><small>' + err.message + '</small><br><button class="retry" onclick="location.reload()">Retry</button></div>';
+    });
+}
+
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+
+function renderApp(d) {
+  var profileIconHtml = d.photoUrl
+    ? '<div class="profile" onclick="toggleProfile()" id="profileBtn"><img src="' + d.photoUrl + '" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" onerror="this.parentNode.textContent=\'' + d.initials + '\'"></div>'
+    : '<div class="profile" onclick="toggleProfile()" id="profileBtn">' + d.initials + '</div>';
+
+  var profileBigHtml = '<div class="photo-edit-wrap">'
+    + (d.photoUrl
+      ? '<div class="profile-big" style="padding:0;overflow:hidden" id="profileBigDiv"><img id="profileBigImg" src="' + d.photoUrl + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.parentNode.textContent=\'' + d.initials + '\'" onclick="viewPhoto()"></div>'
+      : '<div class="profile-big" id="profileBigDiv">' + d.initials + '</div>')
+    + '<div class="photo-edit-btn" onclick="document.getElementById(\'photoFileInput\').click()" title="Change photo">✎</div></div>'
+    + '<input type="file" id="photoFileInput" accept="image/*" style="display:none" onchange="uploadProfilePhoto(this)">'
+    + '<div class="upload-status" id="uploadStatus"></div>'
+    + (d.photoUrl ? '<div class="view-photo-hint" onclick="viewPhoto()">👁 View Photo</div>' : '')
+    + '<div class="remove-photo-btn" id="removePhotoBtn" style="display:' + (d.photoUrl ? 'inline-block' : 'none') + '" onclick="removePhoto()">🗑 Remove Photo</div>';
+
+  var annCount = (d.announcements || []).length;
+  var annPanelHtml = (d.announcements || []).map(function(a) {
+    return '<div class="ann-item"><span class="ann-dot"></span><div class="ann-msg">' + esc(a.msg) + '</div>' + (a.date ? '<div class="ann-date">' + esc(a.date) + '</div>' : '') + '</div>';
+  }).join('') || '<div class="ann-empty">No new announcements</div>';
+
+  var hlHtml = '';
+  if (d.hasHighlights) {
+    if (d.birthdays.length) {
+      hlHtml += '<div class="hl-group"><div class="hl-label">🎂 Birthday Today</div><div class="hl-row">';
+      d.birthdays.forEach(function(b) {
+        hlHtml += '<div class="hl-card hl-card-birthday"><div class="hl-icon-wrap hl-icon-birthday">🎂</div><div><div class="hl-name">' + esc(b.name) + '</div><div class="hl-sub">Wishing a wonderful birthday!</div></div></div>';
+      });
+      hlHtml += '</div></div>';
     }
-    const data = await res.json();
-    if(!data.ok) throw new Error(data.error || 'Unknown error');
-
-    applyData(data, false);
-    writeLocalCache(data);
-  }catch(err){
-    if(cached) return; // already showing good cached data, fail silently in the background
-    document.getElementById('reqList').innerHTML =
-      '<div class="error">Could not load data: ' + err.message +
-      '<br><br>Tip: open the API_URL directly in a new browser tab — if it prompts a Google sign-in ' +
-      'or shows an "Authorization required" page instead of raw JSON, redeploy the Apps Script with ' +
-      '"Who has access: Anyone", then update the URL here.</div>';
-    document.getElementById('balanceBody').innerHTML = '';
-  }
-}
-
-function renderRequests(){
-  const list = document.getElementById('reqList');
-  let items = state.requests;
-  if(state.filter !== 'All'){
-    items = items.filter(r => String(r.Status || '').trim().toLowerCase() === state.filter.toLowerCase());
-  }
-
-  if(items.length === 0){
-    list.innerHTML = '<div class="empty">No ' + (state.filter === 'All' ? '' : state.filter.toLowerCase() + ' ') + 'leave requests.</div>';
-    return;
+    if (d.anniversaries.length) {
+      hlHtml += '<div class="hl-group"><div class="hl-label">🎊 Work Anniversary Today</div><div class="hl-row">';
+      d.anniversaries.forEach(function(a) {
+        var cardClass = a.years === 0 ? 'hl-card-new' : 'hl-card-anniv';
+        var iconClass = a.years === 0 ? 'hl-icon-new' : 'hl-icon-anniv';
+        var icon = a.years === 0 ? '🎉' : '🎊';
+        hlHtml += '<div class="hl-card ' + cardClass + '"><div class="hl-icon-wrap ' + iconClass + '">' + icon + '</div><div><div class="hl-name">' + esc(a.name) + '</div><div class="hl-sub">' + esc(a.label) + '</div></div></div>';
+      });
+      hlHtml += '</div></div>';
+    }
+    if (d.upcoming7.length) {
+      hlHtml += '<div class="hl-group"><div class="hl-label">📅 Upcoming Birthday This Week</div><div class="hl-row">';
+      d.upcoming7.forEach(function(u) {
+        hlHtml += '<div class="hl-chip">' + esc(u.name) + ' · ' + esc(u.date) + '<span class="hl-badge">in ' + u.days + 'd</span></div>';
+      });
+      hlHtml += '</div></div>';
+    }
+  } else {
+    hlHtml = '<div class="hl-empty-grid">'
+      + '<div class="hl-empty-card"><span class="hl-empty-icon">🎂</span><div><div class="hl-empty-title">No Birthdays This Week</div><div class="hl-empty-desc">Check back next week for upcoming birthdays</div></div></div>'
+      + '<div class="hl-empty-card"><span class="hl-empty-icon">🎊</span><div><div class="hl-empty-title">No Work Anniversaries This Month</div><div class="hl-empty-desc">No joining anniversaries falling this month</div></div></div>'
+      + '<div class="hl-empty-card"><span class="hl-empty-icon">📅</span><div><div class="hl-empty-title">No Upcoming Staff Events This Week</div><div class="hl-empty-desc">All clear — nothing scheduled in the next 7 days</div></div></div>'
+      + '</div>';
   }
 
-  list.innerHTML = items.map(r => {
-    const status = r.Status || 'Pending';
-    const cls = badgeClass(status);
-    const showApprove = cls === 'pending';
-    return `
-      <div class="req-card">
-        <div class="staff-cell">
-          ${avatarHtml(r.Staff_Name, true)}
-          <div class="staff">${r.Staff_Name || '—'}</div>
-        </div>
-        <div>
-          <div class="meta-label">Type</div>
-          <div class="meta-value">${r.Leave_Type || '—'}</div>
-        </div>
-        <div>
-          <div class="meta-label">Applied Dates</div>
-          <div class="meta-value dates">${r.From_Date || '—'} → ${r.To_Date || '—'}</div>
-        </div>
-        <div>
-          <div class="meta-label">Days</div>
-          <div class="meta-value">${r.Total_Days ?? '—'}</div>
-        </div>
-        <div>
-          <div class="meta-label">Status</div>
-          <span class="badge ${cls}">${status}</span>
-        </div>
-        ${showApprove
-          ? `<a class="approve-btn" href="${CONFIG.APPROVAL_URL}" target="_blank" rel="noopener">Review in Approval App ↗</a>`
-          : `<span></span>`}
-      </div>`;
+  var govLinksHtml = (d.quickLinks || []).map(function(l) {
+    return '<a class="btn" href="' + esc(l.url) + '" target="_blank">🔗 ' + esc(l.name) + '</a>';
   }).join('');
+
+  var html = ''
+    + '<div class="wrapper">'
+    + '<div class="top">'
+    + '<div class="top-left"><div class="greet">' + esc(d.greeting) + ', ' + esc(d.name) + '!</div>'
+    + '<div class="firm-line"><div class="firm-divider"></div><div class="firm">Umesh Bolmal &amp; Associates</div></div>'
+    + '<div class="portal-sub">Internal Operations &amp; Staff Management Portal</div></div>'
+    + '<div class="top-right"><div class="icons-row">'
+    + '<div class="bell-wrap" onclick="toggleAnn()" id="bellBtn"><svg class="bell-svg" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>'
+    + (annCount > 0 ? '<span class="bell-badge">' + annCount + '</span>' : '') + '</div>'
+    + '<div class="notepad-btn-wrap" onclick="openNotepad()" title="My Notepad">📝</div>'
+    + profileIconHtml
+    + '</div><div class="date">' + esc(d.dateStr) + '</div><div class="time" id="clock"></div></div>'
+    + '<div class="ann-panel" id="annPanel"><div class="ann-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1F5FA6" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>Announcements</div>' + annPanelHtml + '</div>'
+    + '<div class="profile-popup" id="profilePopup">' + profileBigHtml + '<div class="profile-name">' + esc(d.name) + '</div><div class="profile-email">' + esc(d.email) + '</div></div>'
+    + '</div>'
+    + '<div class="top-accent"></div>'
+    + '<div class="ann-ticker-wrap" id="annTicker"><div class="ticker-label"><div class="ticker-live-dot"></div>Notice</div><div class="ticker-slider" id="tickerSlider"></div></div>'
+    + '<div class="photo-modal" id="photoModal" onclick="closePhoto()">'
+    + (d.photoUrl ? '<img src="' + d.photoUrl + '" id="photoModalImg" onclick="event.stopPropagation()">' : '')
+    + '<div class="photo-modal-name">' + esc(d.name) + '</div><div class="photo-modal-close" onclick="closePhoto()">✕ Close</div></div>'
+    + '<div class="btn-row">'
+    + '<a class="btn" href="https://datastudio.google.com/embed/reporting/b8cb5428-6c70-42f2-ba91-70fc3a64da3d/page/qzoyF" target="_blank">📋 My Tasks</a>'
+    + '<a class="btn" href="https://ugb-design.github.io/EM-DASHBOARD/INDEX.html" target="_blank">📅 My Dashboard</a>'
+    + '<a class="btn" href="https://script.google.com/a/macros/ugbolmalassociates.com/s/AKfycby4BXW15m-svwc744uWItA1nQGp4Kt3IiqZoWTlzwew3g3PDuJTwPbx4M49dwYc6AmqFQ/exec" target="_blank">📄 Google Forms</a>'
+    + '<a class="btn" href="https://script.google.com/a/macros/ugbolmalassociates.com/s/AKfycbzFqAcz5qcBmRTnav3Rze55Wd0SApEOpjm9KK-kQmndyletqJcNdzf3dlNrMKQir6r_Xg/exec" target="_blank">👤 My Profile</a>'
+    + '<a class="btn" href="https://www.appsheet.com/start/e593f206-628c-4174-a375-4012a703c619#view=Apply%20Leave" target="_blank">📅 Apply Leave</a>'
+    + '</div>'
+    + (govLinksHtml ? '<div class="gov-links-wrap"><div class="gov-links-title">🏛 Quick Access Portals</div><div class="btn-row gov-row">' + govLinksHtml + '</div></div>' : '')
+    + '<div class="highlights"><div class="hl-title">Staff Highlights</div>' + hlHtml + '</div>'
+    + '<div class="notepad-modal" id="notepadModal" onclick="notepadOutsideClick(event)"><div class="notepad-box" id="notepadBox">'
+    + '<div class="notepad-header"><div class="notepad-title">📝 My Private Notepad</div><button class="notepad-close" onclick="closeNotepad()">✕</button></div>'
+    + '<textarea class="notepad-area" id="notepadArea" placeholder="Write your private notes here… only you can see this." maxlength="2000" oninput="notepadInput()"></textarea>'
+    + '<div class="notepad-footer"><div class="notepad-saved" id="notepadSaved">Loading…</div><div class="notepad-chars" id="notepadChars">0 / 2000</div><button class="notepad-save-btn" id="notepadSaveBtn" onclick="saveNotepad()">💾 Save</button></div>'
+    + '</div></div>'
+    + '</div>';
+
+  document.getElementById('app').innerHTML = html;
+  wireUpEvents(d);
 }
 
-function renderBalances(){
-  const tbody = document.getElementById('balanceBody');
-  const q = (document.getElementById('staffSearch').value || '').trim().toLowerCase();
+/* ── Wire up interactivity after render ─────────────────────── */
+function wireUpEvents(d) {
+  updateClock(); setInterval(updateClock, 1000);
 
-  let items = state.balances;
-  if(q){
-    items = items.filter(b =>
-      (b.Name || '').toLowerCase().includes(q) ||
-      (b.Email || '').toLowerCase().includes(q)
-    );
-  }
-
-  if(items.length === 0){
-    tbody.innerHTML = '<tr><td colspan="5"><div class="empty">No staff found.</div></td></tr>';
-    return;
-  }
-
-  tbody.innerHTML = items.map(b => {
-    const totalPaid = Number(b.Total_Paid_Leave) || 0;
-    const usedPaid  = Number(b.Used_Paid_Leave) || 0;
-    const paidPct = totalPaid ? Math.min(100, (usedPaid/totalPaid)*100) : 0;
-
-    return `
-      <tr>
-        <td>
-          <div class="staff-cell">
-            ${avatarHtml(b.Name)}
-            <span class="staff-name">${b.Name}</span>
-          </div>
-        </td>
-        <td>${usedPaid} / ${totalPaid} <span style="color:var(--muted); font-size:11.5px;">(bal ${b.Balance_Leaves ?? '—'})</span></td>
-        <td>
-          <div class="fingerprint">
-            <div class="fp-row">
-              <span class="fp-label">Paid</span>
-              <div class="fp-track"><div class="fp-fill paid" style="width:${paidPct}%"></div></div>
-              <span class="fp-num">${Math.round(paidPct)}%</span>
-            </div>
-          </div>
-        </td>
-        <td>${b.HalfDay_Count ?? 0}</td>
-        <td>${b.Unpaid_Leave ?? 0}</td>
-      </tr>`;
-  }).join('');
-}
-
-document.querySelectorAll('.chip').forEach(chip => {
-  chip.addEventListener('click', () => {
-    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-    chip.classList.add('active');
-    state.filter = chip.dataset.filter;
-    renderRequests();
+  document.addEventListener('click', function(e) {
+    var panel = document.getElementById('annPanel'), bell = document.getElementById('bellBtn');
+    var popup = document.getElementById('profilePopup'), prof = document.getElementById('profileBtn');
+    if (panel && bell && !bell.contains(e.target) && !panel.contains(e.target)) panel.classList.remove('open');
+    if (popup && prof && !prof.contains(e.target) && !popup.contains(e.target)) popup.classList.remove('open');
   });
-});
 
-document.getElementById('staffSearch').addEventListener('input', renderBalances);
-document.getElementById('refreshBtn').addEventListener('click', () => loadData(true));
+  // Announcement ticker
+  var anns = d.announcements || [];
+  var slider = document.getElementById('tickerSlider');
+  var wrap = document.getElementById('annTicker');
+  if (!anns.length) { wrap.style.display = 'none'; }
+  else {
+    var sep = '<span class="ticker-sep">●</span>';
+    var pieces = anns.map(function(a) { return esc(a.msg) + (a.date ? " <span style='color:rgba(255,255,255,0.55);font-size:10px;'>· " + esc(a.date) + "</span>" : ''); });
+    var single = pieces.join(sep);
+    var track = document.createElement('div');
+    track.className = 'ticker-track';
+    track.innerHTML = single + sep + single + sep;
+    slider.appendChild(track);
+    function startMarquee() {
+      var contentWidth = track.scrollWidth / 2;
+      var duration = Math.max(contentWidth / 55, 10);
+      track.style.animationDuration = duration + 's';
+    }
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(startMarquee); else startMarquee();
+    setTimeout(startMarquee, 300);
+  }
+}
 
-loadData();
-setInterval(loadData, 5 * 60 * 1000); // auto-refresh every 5 min
+function updateClock() {
+  var n = new Date(), h = n.getHours(), m = n.getMinutes().toString().padStart(2, '0'), ap = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;
+  var el = document.getElementById('clock');
+  if (el) el.innerHTML = h + ':' + m + '<span class="ampm">' + ap + '</span>';
+}
+
+function toggleAnn() { document.getElementById('annPanel').classList.toggle('open'); document.getElementById('profilePopup').classList.remove('open'); }
+function toggleProfile() { document.getElementById('profilePopup').classList.toggle('open'); document.getElementById('annPanel').classList.remove('open'); }
+function viewPhoto() { document.getElementById('profilePopup').classList.remove('open'); document.getElementById('photoModal').classList.add('open'); }
+function closePhoto() { document.getElementById('photoModal').classList.remove('open'); }
+
+/* ── Profile photo upload/remove ──────────────────────────────── */
+function apiPost(action, extra) {
+  var body = Object.assign({ action: action, idToken: currentIdToken }, extra || {});
+  return fetch(API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // avoids CORS preflight on Apps Script
+    body: JSON.stringify(body)
+  }).then(function(r) { return r.json(); });
+}
+
+function uploadProfilePhoto(input) {
+  if (!input.files || !input.files[0]) return;
+  var file = input.files[0];
+  if (file.size > 3 * 1024 * 1024) { document.getElementById('uploadStatus').textContent = 'Max size is 3 MB'; return; }
+  document.getElementById('uploadStatus').textContent = 'Uploading…';
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var b64 = e.target.result.split(',')[1];
+    apiPost('saveProfilePhoto', { base64Data: b64, mimeType: file.type }).then(function(res) {
+      if (res.authorized === false) { showDenied(currentUserEmail); return; }
+      if (res.photoUrl) {
+        document.getElementById('uploadStatus').textContent = '✔ Photo updated!';
+        setTimeout(function() { document.getElementById('uploadStatus').textContent = ''; }, 3000);
+        portalData.photoUrl = res.photoUrl;
+        var bigDiv = document.getElementById('profileBigDiv');
+        bigDiv.style.padding = '0'; bigDiv.style.overflow = 'hidden';
+        bigDiv.innerHTML = "<img id='profileBigImg' src='" + res.photoUrl + "' style='width:100%;height:100%;object-fit:cover;border-radius:50%' onclick='viewPhoto()'>";
+        if (!document.querySelector('.view-photo-hint')) {
+          var hint = document.createElement('div');
+          hint.className = 'view-photo-hint'; hint.textContent = '👁 View Photo'; hint.onclick = viewPhoto;
+          document.getElementById('uploadStatus').parentNode.insertBefore(hint, document.getElementById('uploadStatus').nextSibling);
+        }
+        var modalImg = document.getElementById('photoModalImg');
+        if (modalImg) modalImg.src = res.photoUrl;
+        else {
+          var mi = document.createElement('img'); mi.id = 'photoModalImg'; mi.src = res.photoUrl;
+          mi.style = "width:200px;height:200px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,0.4)";
+          mi.onclick = function(ev) { ev.stopPropagation(); };
+          document.getElementById('photoModal').insertBefore(mi, document.getElementById('photoModal').firstChild);
+        }
+        document.getElementById('profileBtn').innerHTML = "<img src='" + res.photoUrl + "' style='width:100%;height:100%;border-radius:50%;object-fit:cover'>";
+        var rb = document.getElementById('removePhotoBtn'); if (rb) rb.style.display = 'inline-block';
+      } else {
+        document.getElementById('uploadStatus').textContent = 'Upload failed. Try again.';
+      }
+    }).catch(function(err) { document.getElementById('uploadStatus').textContent = 'Error: ' + err.message; });
+  };
+  reader.readAsDataURL(file);
+}
+
+function removePhoto() {
+  if (!confirm('Remove your profile photo?')) return;
+  document.getElementById('uploadStatus').textContent = 'Removing…';
+  apiPost('removeProfilePhoto').then(function(res) {
+    if (res.authorized === false) { showDenied(currentUserEmail); return; }
+    document.getElementById('uploadStatus').textContent = '✔ Photo removed!';
+    setTimeout(function() { document.getElementById('uploadStatus').textContent = ''; }, 3000);
+    var initials = portalData.initials;
+    var bigDiv = document.getElementById('profileBigDiv');
+    bigDiv.style.padding = ''; bigDiv.style.overflow = ''; bigDiv.textContent = initials;
+    var hint = document.querySelector('.view-photo-hint'); if (hint) hint.style.display = 'none';
+    document.getElementById('removePhotoBtn').style.display = 'none';
+    document.getElementById('profileBtn').textContent = initials;
+    var mi = document.getElementById('photoModalImg'); if (mi) mi.remove();
+    portalData.photoUrl = '';
+  }).catch(function(err) { document.getElementById('uploadStatus').textContent = 'Error: ' + err.message; });
+}
+
+/* ── Notepad ──────────────────────────────────────────────────── */
+function openNotepad() {
+  document.getElementById('notepadModal').classList.add('open');
+  document.getElementById('annPanel').classList.remove('open');
+  document.getElementById('profilePopup').classList.remove('open');
+  if (!notepadLoaded) {
+    document.getElementById('notepadSaved').textContent = 'Loading…';
+    var area = document.getElementById('notepadArea');
+    var n = portalData.note || { note: '', saved: '' };
+    notepadLoaded = true;
+    area.value = n.note || '';
+    notepadInput();
+    document.getElementById('notepadSaved').textContent = n.saved ? 'Last saved: ' + n.saved : 'Not saved yet';
+  }
+}
+function closeNotepad() { document.getElementById('notepadModal').classList.remove('open'); }
+function notepadOutsideClick(e) { if (e.target === document.getElementById('notepadModal')) closeNotepad(); }
+function notepadInput() {
+  var len = document.getElementById('notepadArea').value.length;
+  document.getElementById('notepadChars').textContent = len + ' / 2000';
+}
+function saveNotepad() {
+  var text = document.getElementById('notepadArea').value;
+  var btn = document.getElementById('notepadSaveBtn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  apiPost('saveNote', { note: text }).then(function(res) {
+    btn.disabled = false; btn.textContent = '💾 Save';
+    if (res.authorized === false) { showDenied(currentUserEmail); return; }
+    document.getElementById('notepadSaved').textContent = 'Last saved: ' + res.saved;
+  }).catch(function(err) {
+    btn.disabled = false; btn.textContent = '💾 Save';
+    document.getElementById('notepadSaved').textContent = 'Save failed: ' + err.message;
+  });
+}
+
+/* ── Boot ─────────────────────────────────────────────────────── */
+initGoogleAuth();
 </script>
-
 </body>
 </html>
