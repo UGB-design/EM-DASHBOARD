@@ -1231,7 +1231,10 @@ function collectAllPendingTasks(employeeFilter) {
     if (isWeekShifted(r)) return;
     if (computeDelegationStatus(r) !== 'Pending') return;
     if (employeeFilter && employeeFilter !== 'All' && normalizeName(r.client) !== normalizeName(employeeFilter)) return;
-    list.push({ type: 'Delegation', doer: r.client, task: r.task, client: '-', plannedDate: r.firstDate || '-' });
+    var dlDate = hasValidDate(r.latestRevision) ? r.latestRevision :
+                 hasValidDate(r.revision2) ? r.revision2 :
+                 hasValidDate(r.revision1) ? r.revision1 : (r.firstDate || '-');
+    list.push({ type: 'Delegation', doer: r.client, task: r.task, client: '-', plannedDate: dlDate });
   });
 
   // Most recent/overdue planned dates first where possible
