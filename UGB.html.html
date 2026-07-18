@@ -538,14 +538,20 @@ function getFieldFuzzy(row, ...names){
 
 async function loadSheet(name){
   if (USE_APPS_SCRIPT) {
-    const res = await fetch(`${APPS_SCRIPT_URL}?sheet=${encodeURIComponent(name)}`);
-    const rows = await res.json();
-    if (rows && rows.error) throw new Error(rows.error);
-    return rows.map(r=>{
-      const obj = {...r};
-      Object.keys(r).forEach(k => obj[k+"_f"] = r[k]);
-      return obj;
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(()=>controller.abort(), 20000);
+    try{
+      const res = await fetch(`${APPS_SCRIPT_URL}?sheet=${encodeURIComponent(name)}`, { signal: controller.signal });
+      const rows = await res.json();
+      if (rows && rows.error) throw new Error(rows.error);
+      return rows.map(r=>{
+        const obj = {...r};
+        Object.keys(r).forEach(k => obj[k+"_f"] = r[k]);
+        return obj;
+      });
+    } finally {
+      clearTimeout(timeoutId);
+    }
   }
   const res = await fetch(GVIZ(name));
   const text = await res.text();
@@ -571,24 +577,60 @@ async function safeLoad(name){
 
 let DATA = { staff:[], requests:[], balance:[], deduction:[], scorecards:null, holidays:[], attendance:[] };
 
-async function loadAll(){
-  setLoading(true);
-  const [staffRes, requestsRes, balanceRes, deductionRes, holidayRes, attendanceRes] = await Promise.all([
+// ── Local cache: render instantly from the last successful load while a
+// fresh copy is fetched quietly in the background. Keyed per signed-in
+// email so different people (and admin vs staff scoping) never mix. ──────
+function cacheKeyFor(email){ return "leaveDashboardCache_v1_" + (email||"").toLowerCase(); }
+
+function saveCacheData(){
+  try{
+    localStorage.setItem(cacheKeyFor(CURRENT_USER_EMAIL), JSON.stringify({ savedAt: Date.now(), data: DATA }));
+  }catch(e){ /* storage full/unavailable — safe to ignore */ }
+}
+
+function loadCacheData(){
+  try{
+    const raw = localStorage.getItem(cacheKeyFor(CURRENT_USER_EMAIL));
+    if(!raw) return null;
+    const parsed = JSON.parse(raw);
+    if(!parsed || !parsed.data) return null;
+    return parsed;
+  }catch(e){ return null; }
+}
+
+async function loadAll(background=false){
+  setLoading(true, background);
+
+  const failed = [];
+  const unwrap = (res, label) => { if (Array.isArray(res)) return res; failed.push(label); return []; };
+
+  // ── Stage 1: the data the default "Pending Approvals" tab needs. Resolve
+  // and paint this first so the person sees real rows almost immediately
+  // instead of waiting on every sheet in the workbook to come back. ───────
+  const [staffRes, requestsRes] = await Promise.all([
     safeLoad("Staff_Info"),
     safeLoad("Leave_Requests"),
+  ]);
+  DATA.staff = unwrap(staffRes, "Staff_Info").filter(r=>r["Name"]);
+  DATA.requests = unwrap(requestsRes, "Leave_Requests").filter(r=>r["Staff_Name"] || r["Email"]);
+  if(!IS_ADMIN){
+    const me0 = CURRENT_USER_EMAIL.toLowerCase();
+    DATA.requests = DATA.requests.filter(r => (r["Email"]||"").toLowerCase() === me0);
+  }
+  updateSignedInAsUI();
+  updatePendingBadge();
+  renderRequests(document.getElementById("searchRequests").value);
+  document.getElementById("lastUpdated").textContent = "🟡 Pending approvals ready · loading balance, deductions, holidays, attendance…";
+
+  // ── Stage 2: everything else, in parallel ───────────────────────────────
+  const [balanceRes, deductionRes, holidayRes, attendanceRes] = await Promise.all([
     safeLoad("Leave_Balance"),
     safeLoad("PERFORMANCE_DEDUCTION"),
     safeLoad("UPCOMING_HOLIDAY"),
     safeLoad("Attendance"),
   ]);
 
-  const failed = [];
-  const unwrap = (res, label) => { if (Array.isArray(res)) return res; failed.push(label); return []; };
-
   const balanceRaw = unwrap(balanceRes, "Leave_Balance");
-
-  DATA.staff = unwrap(staffRes, "Staff_Info").filter(r=>r["Name"]);
-  DATA.requests = unwrap(requestsRes, "Leave_Requests").filter(r=>r["Staff_Name"] || r["Email"]);
   DATA.balance = balanceRaw.filter(r=>r["Email"]);
   DATA.deduction = unwrap(deductionRes, "PERFORMANCE_DEDUCTION").filter(r=>r["EMPLOYEE"]);
   DATA.holidays = unwrap(holidayRes, "UPCOMING_HOLIDAY").filter(r=>r["OCCASION"] || r["DATE"]);
@@ -596,11 +638,8 @@ async function loadAll(){
   DATA.scorecards = extractScorecards(balanceRaw);
   if(!DATA.scorecards) failed.push("Leave Balance summary cards");
 
-  updateSignedInAsUI();
-
   if(!IS_ADMIN){
     const me = CURRENT_USER_EMAIL.toLowerCase();
-    DATA.requests = DATA.requests.filter(r => (r["Email"]||"").toLowerCase() === me);
     DATA.balance = DATA.balance.filter(r => (r["Email"]||"").toLowerCase() === me);
     DATA.deduction = DATA.deduction.filter(d => {
       const staff = findStaffForDeductionRow(d);
@@ -627,10 +666,11 @@ async function loadAll(){
   renderAll();
   document.getElementById("lastUpdated").textContent = "🟢 Live Sync · refreshed " + new Date().toLocaleTimeString("en-IN");
   setLoading(false);
+  saveCacheData();
 }
 
-function setLoading(state){
-  document.getElementById("refreshBtn").textContent = state ? "Loading…" : "Refresh";
+function setLoading(state, background=false){
+  document.getElementById("refreshBtn").textContent = state ? (background ? "Syncing…" : "Loading…") : "Refresh";
 }
 
 function normalizeKey(s){
@@ -1641,7 +1681,7 @@ document.getElementById("attendanceEmployeeFilter").addEventListener("change", (
 document.getElementById("attendanceStatusFilter").addEventListener("change", ()=>{ renderAttendanceCards(); renderAttendanceTable(); });
 document.getElementById("attendanceMonthSel").addEventListener("change", ()=>{ renderAttendanceCards(); renderAttendanceTable(); });
 document.getElementById("searchAttendance").addEventListener("input", ()=>{ renderAttendanceCards(); renderAttendanceTable(); });
-document.getElementById("refreshBtn").addEventListener("click", loadAll);
+document.getElementById("refreshBtn").addEventListener("click", ()=>loadAll(false));
 
 function updateSignedInAsUI(){
   const staffMatch = DATA.staff.length ? staffByEmail(CURRENT_USER_EMAIL) : null;
@@ -1665,7 +1705,25 @@ function startApp(email){
   CURRENT_USER_EMAIL = email.trim().toLowerCase();
   IS_ADMIN = isAdminEmail(CURRENT_USER_EMAIL);
   document.getElementById("loginGate").style.display = "none";
-  loadAll();
+
+  const cached = loadCacheData();
+  if(cached){
+    // Instant paint from the last successful load — no spinner, no empty
+    // tables — while a fresh copy quietly loads underneath.
+    DATA = cached.data;
+    updateSignedInAsUI();
+    populateMonths();
+    populateBalanceYears();
+    populateHistoryFilters();
+    populateAttendanceFilters();
+    renderAll();
+    const ageMins = Math.max(0, Math.round((Date.now()-cached.savedAt)/60000));
+    document.getElementById("lastUpdated").textContent =
+      `🟡 Showing cached data (${ageMins<1 ? "just now" : ageMins+" min ago"}) · refreshing…`;
+    loadAll(true);
+  } else {
+    loadAll(false);
+  }
 }
 
 function tryLogin(){
