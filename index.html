@@ -230,12 +230,44 @@ tr:hover td{background:#fafbfc}
 .sc-back-btn{background:#f3f4f6;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;color:#555;cursor:pointer;display:inline-flex;align-items:center;gap:5px;margin-right:10px}
 .sc-back-btn:hover{background:#e8eaed}
 .sc-mini-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:16px 20px 4px}
-.sc-mini-card{border-radius:12px;padding:12px 14px;text-align:center}
+.sc-mini-card{border-radius:12px;padding:12px 14px;text-align:center;cursor:pointer;border:2px solid transparent;transition:all .15s}
+.sc-mini-card:hover{transform:translateY(-1px)}
+.sc-mini-card.active{border-color:currentColor}
 .sc-mini-label{font-size:10px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:5px;opacity:.85}
 .sc-mini-val{font-size:20px;font-weight:700;line-height:1}
 .sc-mini-fms{background:#eff6ff}.sc-mini-fms .sc-mini-label{color:#1d4ed8}.sc-mini-fms .sc-mini-val{color:#1d4ed8}
 .sc-mini-cl{background:#fff7ed}.sc-mini-cl .sc-mini-label{color:#c2410c}.sc-mini-cl .sc-mini-val{color:#c2410c}
 .sc-mini-dl{background:#f5f3ff}.sc-mini-dl .sc-mini-label{color:#7c3aed}.sc-mini-dl .sc-mini-val{color:#7c3aed}
+.sc-mini-hint{text-align:center;font-size:10px;color:#c7c2b8;padding:2px 20px 10px}
+
+/* ── EMPLOYEE PROFILE TAB ────────────────────────────────────── */
+.profile-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.profile-card{background:linear-gradient(160deg,#ffffff 0%,#fbf8f3 100%);border-radius:16px;padding:24px 20px;box-shadow:0 4px 18px rgba(60,50,30,.07);border:1px solid rgba(255,255,255,.8);cursor:pointer;text-align:center;transition:transform .18s,box-shadow .18s}
+.profile-card:hover{transform:translateY(-4px);box-shadow:0 10px 26px rgba(60,50,30,.14)}
+.profile-avatar{width:60px;height:60px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:700;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.12)}
+.profile-name{font-size:14.5px;font-weight:700;color:#1a1a1a;margin-bottom:4px;line-height:1.3}
+.profile-desig{font-size:10.5px;color:#9aa0ac;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
+.profile-exp-badge{display:inline-block;background:#eff6ff;color:#1d4ed8;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px}
+.profile-modal-overlay{display:none;position:fixed;inset:0;background:rgba(20,15,10,.5);z-index:9999;align-items:center;justify-content:center;padding:16px}
+.profile-modal-box{background:#fff;border-radius:20px;width:100%;max-width:460px;max-height:88vh;overflow-y:auto;box-shadow:0 16px 50px rgba(0,0,0,.25)}
+.profile-modal-header{background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 100%);padding:30px 24px 24px;color:#fff;text-align:center;position:relative}
+.profile-modal-avatar{width:78px;height:78px;border-radius:50%;background:rgba(255,255,255,.18);border:3px solid rgba(255,255,255,.55);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;margin:0 auto 12px;color:#fff}
+.profile-modal-name{font-size:18px;font-weight:700}
+.profile-modal-desig{font-size:12px;opacity:.85;margin-top:3px;text-transform:uppercase;letter-spacing:.04em;font-weight:600}
+.profile-modal-close{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.2);border:none;color:#fff;width:30px;height:30px;border-radius:9px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+.profile-modal-close:hover{background:rgba(255,255,255,.32)}
+.profile-section{padding:18px 24px}
+.profile-section+.profile-section{border-top:1px solid #f3f4f6}
+.profile-section-title{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#9aa0ac;font-weight:700;margin-bottom:12px}
+.profile-info-row{display:flex;justify-content:space-between;padding:7px 0;font-size:13px;border-bottom:1px dashed #f3f4f6}
+.profile-info-row:last-child{border-bottom:none}
+.profile-info-label{color:#8a8478}
+.profile-info-val{color:#1a1a1a;font-weight:700;text-align:right}
+.profile-stat-trio{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.profile-stat-duo{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.profile-stat-box{text-align:center;padding:14px 8px;border-radius:12px}
+.profile-stat-box .n{font-size:20px;font-weight:700}
+.profile-stat-box .l{font-size:10px;color:#9aa0ac;text-transform:uppercase;font-weight:700;margin-top:3px;letter-spacing:.04em}
 </style>
 </head>
 <body>
@@ -294,6 +326,7 @@ tr:hover td{background:#fafbfc}
     <button class="tab-btn" onclick="switchTab('checklist',this)">Checklist<span class="tab-badge" id="badgeChecklist" style="display:none">0</span></button>
     <button class="tab-btn" onclick="switchTab('delegation',this)">Delegation<span class="tab-badge" id="badgeDelegation" style="display:none">0</span></button>
     <button class="tab-btn" onclick="switchTab('scores',this)">Scores</button>
+    <button class="tab-btn" onclick="switchTab('profile',this)">Employee Profile</button>
   </div>
 </div>
 
@@ -392,6 +425,14 @@ tr:hover td{background:#fafbfc}
       <select id="fmsFilterType" onchange="applyFmsFilters()"><option value="All">All Types</option></select>
       <label>Doer:</label>
       <select id="fmsFilterDoer" onchange="applyFmsFilters()"><option value="All">All Doers</option></select>
+      <label>Status:</label>
+      <select id="fmsFilterStatus" onchange="applyFmsFilters()">
+        <option value="All">All Status</option>
+        <option value="Completed">Completed</option>
+        <option value="Pending">Pending</option>
+      </select>
+      <label>Step:</label>
+      <select id="fmsFilterStep" onchange="applyFmsFilters()"><option value="All">All Steps</option></select>
     </div>
     <div class="meta-info-badge" id="fmsMetaBadges"></div>
     <div class="stat-grid" id="fmsStatsGrid"></div>
@@ -488,6 +529,14 @@ tr:hover td{background:#fafbfc}
           <tbody id="scTableBody"></tbody>
         </table>
       </div>
+    </div>
+  </div>
+
+  <!-- EMPLOYEE PROFILE TAB -->
+  <div class="tab-content" id="tab-profile">
+    <div class="meta-info-badge" id="profileMetaBadges"></div>
+    <div class="profile-grid" id="profileGrid">
+      <div class="loading">Loading employee profiles...</div>
     </div>
   </div>
 
@@ -802,6 +851,9 @@ function renderAll(data) {
   else console.log('✅ scoresData received:', scData.length, 'rows');
   populateScoreFilters(scData);
   applyScoreFilters();
+
+  // Employee Profile tab
+  renderEmployeeProfiles();
 }
 
 // ── FMS by Process panel ──────────────────────────────────────────────────────
@@ -838,8 +890,10 @@ function renderClByDoer(rows) {
 function populateFmsFilters(opts) {
   var typesSel = document.getElementById('fmsFilterType');
   var doersSel = document.getElementById('fmsFilterDoer');
+  var stepsSel = document.getElementById('fmsFilterStep');
   var prevType = typesSel.value;
   var prevDoer = doersSel.value;
+  var prevStep = stepsSel.value;
 
   typesSel.innerHTML = '<option value="All">All Types</option>';
   (opts.types || []).forEach(function(t) {
@@ -856,11 +910,31 @@ function populateFmsFilters(opts) {
     if (d === prevDoer) o.selected = true;
     doersSel.appendChild(o);
   });
+
+  // Step dropdown — use backend-provided list if present, otherwise derive
+  // the unique set of step names straight from the fmsGroups payload.
+  var stepNames = opts.steps;
+  if (!stepNames || !stepNames.length) {
+    var stepSet = new Set();
+    (globalRawData && globalRawData.fmsGroups || []).forEach(function(g) {
+      (g.steps || []).forEach(function(s) { if (s.step) stepSet.add(s.step); });
+    });
+    stepNames = Array.from(stepSet).sort();
+  }
+  stepsSel.innerHTML = '<option value="All">All Steps</option>';
+  stepNames.forEach(function(s) {
+    var o = document.createElement('option');
+    o.value = s; o.textContent = s;
+    if (s === prevStep) o.selected = true;
+    stepsSel.appendChild(o);
+  });
 }
 
 function applyFmsFilters() {
   var typeFilter = document.getElementById('fmsFilterType').value;
   var doerFilter = document.getElementById('fmsFilterDoer').value;
+  var statusFilter = document.getElementById('fmsFilterStatus').value;
+  var stepFilter = document.getElementById('fmsFilterStep').value;
   var groups = globalRawData ? (globalRawData.fmsGroups || []) : [];
 
   var totalPlan = 0, totalActual = 0, totalOnTime = 0, groupCount = 0;
@@ -868,7 +942,11 @@ function applyFmsFilters() {
   var html = groups.map(function(g) {
     if (typeFilter !== 'All' && g.groupName !== typeFilter) return '';
     var filteredSteps = g.steps.filter(function(s) {
-      return doerFilter === 'All' || s.doer === doerFilter;
+      if (doerFilter !== 'All' && s.doer !== doerFilter) return false;
+      if (stepFilter !== 'All' && s.step !== stepFilter) return false;
+      if (statusFilter === 'Completed' && (s.missed || 0) !== 0) return false;
+      if (statusFilter === 'Pending' && (s.missed || 0) === 0) return false;
+      return true;
     });
     if (filteredSteps.length === 0) return '';
 
@@ -1204,9 +1282,41 @@ function applyScoreFilters() {
 // ── Scores tab: Pending card → combined pending-tasks modal ─────────────────
 function normalizeName(n) { return String(n || '').trim().toLowerCase(); }
 
+// Strips off trailing " - <phone/id>" style suffixes some source sheets add
+// to a doer's name (e.g. "Aishwarya - 9886160130" → "Aishwarya"), so the
+// same person doesn't get split into multiple pending-task buckets.
+function baseName(n) {
+  return String(n || '').split(/\s*-\s*/)[0].trim();
+}
+
+// Resolves any raw doer/client name coming from FMS/Checklist/Delegation
+// rows to a single canonical employee name (taken from the Scores sheet),
+// so name variants like "AISHWARYA" and "Aishwarya - 9886160130" always
+// collapse into one person instead of showing as separate pending cards.
+function resolveCanonicalEmployee(rawName) {
+  var canonicalList = (globalRawData && globalRawData.scoresData || [])
+    .map(function(r) { return r.employee; })
+    .filter(Boolean);
+  var base = normalizeName(baseName(rawName));
+  if (!base) return String(rawName || '').trim();
+
+  for (var i = 0; i < canonicalList.length; i++) {
+    if (normalizeName(canonicalList[i]) === base) return canonicalList[i];
+  }
+  for (var i = 0; i < canonicalList.length; i++) {
+    var c = normalizeName(canonicalList[i]);
+    if (c.indexOf(base) === 0 || base.indexOf(c) === 0) return canonicalList[i];
+  }
+  // No canonical match found — fall back to the cleaned base name so at
+  // least "Aishwarya" and "Aishwarya - 123" still merge with each other.
+  return baseName(rawName) || String(rawName || '').trim();
+}
+
 // Gathers every pending item across FMS / Checklist / Delegation into one
 // unified list — each tagged with its source type, doer, task, and planned
 // date — so the Scores tab's Pending card can show a single combined view.
+// Doer/client names are passed through resolveCanonicalEmployee() so name
+// variants for the same person are merged before grouping/filtering.
 function collectAllPendingTasks(employeeFilter) {
   var data = globalRawData || {};
   var list = [];
@@ -1214,7 +1324,7 @@ function collectAllPendingTasks(employeeFilter) {
   (data.fmsGroups || []).forEach(function(g) {
     (g.steps || []).forEach(function(s) {
       (s.pendingTasks || []).forEach(function(t) {
-        var doerName = t.finalDoer || s.doer || '';
+        var doerName = resolveCanonicalEmployee(t.finalDoer || s.doer || '');
         if (employeeFilter && employeeFilter !== 'All' && normalizeName(doerName) !== normalizeName(employeeFilter)) return;
         list.push({ type: 'FMS', doer: doerName, task: s.step, client: t.client || '-', plannedDate: t.plannedDate || '-' });
       });
@@ -1223,18 +1333,20 @@ function collectAllPendingTasks(employeeFilter) {
 
   (data.checklistData || []).forEach(function(r) {
     if (r.status === 'Done') return;
-    if (employeeFilter && employeeFilter !== 'All' && normalizeName(r.doer) !== normalizeName(employeeFilter)) return;
-    list.push({ type: 'Checklist', doer: r.doer, task: r.task, client: '-', plannedDate: r.plannedDate || '-' });
+    var doerName = resolveCanonicalEmployee(r.doer);
+    if (employeeFilter && employeeFilter !== 'All' && normalizeName(doerName) !== normalizeName(employeeFilter)) return;
+    list.push({ type: 'Checklist', doer: doerName, task: r.task, client: '-', plannedDate: r.plannedDate || '-' });
   });
 
   (data.delegationData || []).forEach(function(r) {
     if (isWeekShifted(r)) return;
     if (computeDelegationStatus(r) !== 'Pending') return;
-    if (employeeFilter && employeeFilter !== 'All' && normalizeName(r.client) !== normalizeName(employeeFilter)) return;
+    var doerName = resolveCanonicalEmployee(r.client);
+    if (employeeFilter && employeeFilter !== 'All' && normalizeName(doerName) !== normalizeName(employeeFilter)) return;
     var dlDate = hasValidDate(r.latestRevision) ? r.latestRevision :
                  hasValidDate(r.revision2) ? r.revision2 :
                  hasValidDate(r.revision1) ? r.revision1 : (r.firstDate || '-');
-    list.push({ type: 'Delegation', doer: r.client, task: r.task, client: '-', plannedDate: dlDate });
+    list.push({ type: 'Delegation', doer: doerName, task: r.task, client: '-', plannedDate: dlDate });
   });
 
   // Most recent/overdue planned dates first where possible
@@ -1252,6 +1364,9 @@ function typeTagStyle(type) {
 // Builds the list of employees that currently have at least one pending item
 // (across FMS + Checklist + Delegation), with their pending count, so the
 // person taps an employee first instead of seeing one giant combined list.
+// Names are already canonicalized inside collectAllPendingTasks(), so each
+// employee appears here exactly once with FMS + Checklist + Delegation
+// combined into a single card.
 function buildEmployeePendingSummary() {
   var allTasks = collectAllPendingTasks('All');
   var map = {}; // name -> {fms, cl, dl, total}
@@ -1270,13 +1385,14 @@ function showScorePendingModal() {
   var employeeFilter = window._scPendingEmployeeFilter || 'All';
 
   document.getElementById('scoreModalMiniCards').style.display = 'none';
+  document.getElementById('scoreModalMiniHint').style.display = 'none';
   document.getElementById('scoreModalTableWrap').style.display = 'none';
   document.getElementById('scoreModalBackBtnWrap').innerHTML = '';
 
   // If a specific employee is already selected via the tab filter, jump
   // straight to their detail view. Otherwise show the employee picker.
   if (employeeFilter !== 'All') {
-    renderScorePendingDetail(employeeFilter);
+    renderScorePendingDetail(resolveCanonicalEmployee(employeeFilter));
   } else {
     renderScorePendingEmployeeList();
   }
@@ -1292,6 +1408,7 @@ function renderScorePendingEmployeeList() {
   document.getElementById('scoreModalBackBtnWrap').innerHTML = '';
 
   document.getElementById('scoreModalMiniCards').style.display = 'none';
+  document.getElementById('scoreModalMiniHint').style.display = 'none';
   document.getElementById('scoreModalTableWrap').style.display = 'none';
   document.getElementById('scoreModalEmpListWrap').style.display = 'block';
 
@@ -1317,7 +1434,14 @@ function hashCode(str) {
   return h;
 }
 
+// Which type filter ('All' | 'FMS' | 'Checklist' | 'Delegation') is active
+// inside the employee detail view of the pending-tasks modal.
+var scoreModalTypeFilter = 'All';
+var scoreModalCurrentEmployee = '';
+
 function renderScorePendingDetail(employeeName) {
+  scoreModalTypeFilter = 'All';
+  scoreModalCurrentEmployee = employeeName;
   var tasks = collectAllPendingTasks(employeeName);
   var fmsCount = tasks.filter(function(t) { return t.type === 'FMS'; }).length;
   var clCount  = tasks.filter(function(t) { return t.type === 'Checklist'; }).length;
@@ -1331,13 +1455,37 @@ function renderScorePendingDetail(employeeName) {
 
   document.getElementById('scoreModalEmpListWrap').style.display = 'none';
   document.getElementById('scoreModalMiniCards').style.display = 'grid';
+  document.getElementById('scoreModalMiniHint').style.display = 'block';
   document.getElementById('scoreModalTableWrap').style.display = 'block';
 
-  document.getElementById('scoreModalMiniCards').innerHTML =
-    '<div class="sc-mini-card sc-mini-fms"><div class="sc-mini-label">FMS</div><div class="sc-mini-val">' + fmsCount + '</div></div>' +
-    '<div class="sc-mini-card sc-mini-cl"><div class="sc-mini-label">Checklist</div><div class="sc-mini-val">' + clCount + '</div></div>' +
-    '<div class="sc-mini-card sc-mini-dl"><div class="sc-mini-label">Delegation</div><div class="sc-mini-val">' + dlCount + '</div></div>';
+  renderScoreModalMiniCards(fmsCount, clCount, dlCount);
+  renderScoreModalTable(tasks);
+}
 
+// Renders the FMS / Checklist / Delegation mini scorecards as clickable
+// filter chips — clicking one filters the table below to just that type;
+// clicking the same one again (or it's already active) resets to "All".
+function renderScoreModalMiniCards(fmsCount, clCount, dlCount) {
+  document.getElementById('scoreModalMiniCards').innerHTML =
+    '<div class="sc-mini-card sc-mini-fms' + (scoreModalTypeFilter === 'FMS' ? ' active' : '') + '" onclick="filterScoreModalByType(\'FMS\')"><div class="sc-mini-label">FMS</div><div class="sc-mini-val">' + fmsCount + '</div></div>' +
+    '<div class="sc-mini-card sc-mini-cl' + (scoreModalTypeFilter === 'Checklist' ? ' active' : '') + '" onclick="filterScoreModalByType(\'Checklist\')"><div class="sc-mini-label">Checklist</div><div class="sc-mini-val">' + clCount + '</div></div>' +
+    '<div class="sc-mini-card sc-mini-dl' + (scoreModalTypeFilter === 'Delegation' ? ' active' : '') + '" onclick="filterScoreModalByType(\'Delegation\')"><div class="sc-mini-label">Delegation</div><div class="sc-mini-val">' + dlCount + '</div></div>';
+}
+
+function filterScoreModalByType(type) {
+  scoreModalTypeFilter = (scoreModalTypeFilter === type) ? 'All' : type;
+  var allTasks = collectAllPendingTasks(scoreModalCurrentEmployee);
+  var fmsCount = allTasks.filter(function(t) { return t.type === 'FMS'; }).length;
+  var clCount  = allTasks.filter(function(t) { return t.type === 'Checklist'; }).length;
+  var dlCount  = allTasks.filter(function(t) { return t.type === 'Delegation'; }).length;
+  renderScoreModalMiniCards(fmsCount, clCount, dlCount);
+
+  var shown = scoreModalTypeFilter === 'All' ? allTasks : allTasks.filter(function(t) { return t.type === scoreModalTypeFilter; });
+  document.getElementById('scoreModalSubtitle').textContent = shown.length + ' pending tasks' + (scoreModalTypeFilter !== 'All' ? ' · ' + scoreModalTypeFilter : '');
+  renderScoreModalTable(shown);
+}
+
+function renderScoreModalTable(tasks) {
   document.getElementById('scoreModalBody').innerHTML = tasks.map(function(t, i) {
     return '<tr>' +
       '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#555">' + (i + 1) + '</td>' +
@@ -1351,6 +1499,84 @@ function renderScorePendingDetail(employeeName) {
 
 function closeScorePendingModal() {
   document.getElementById('scorePendingModal').style.display = 'none';
+}
+
+// ── EMPLOYEE PROFILE TAB ──────────────────────────────────────────────────────
+// Expects the backend ("action=getData") to return an "employeeProfiles"
+// array sourced from the Employee_Profile sheet, one object per row:
+//   { employee, designation, email, joining, experience, name,
+//     assigned, completed, pending, completionPct,
+//     fms, checklist, delegation, leaveBalance, leaveUsed }
+// If the backend doesn't send this field yet, the tab shows a friendly
+// notice instead of breaking.
+function renderEmployeeProfiles() {
+  var rows = (globalRawData && globalRawData.employeeProfiles) || [];
+  var grid = document.getElementById('profileGrid');
+  var badges = document.getElementById('profileMetaBadges');
+
+  if (!rows.length) {
+    badges.innerHTML = '';
+    grid.innerHTML = '<div style="text-align:center;padding:40px;color:#bbb;grid-column:1/-1">' +
+      'No employee profile data received yet.<br>' +
+      '<span style="font-size:11px">Backend (code.gs) needs to return an "employeeProfiles" array from the Employee_Profile sheet.</span>' +
+      '</div>';
+    return;
+  }
+
+  badges.innerHTML = '<span class="m-badge b-blue">' + rows.length + ' employees</span>';
+
+  grid.innerHTML = rows.map(function(r, i) {
+    var fullName = r.employee || r.name || '-';
+    return '<div class="profile-card" onclick="openProfileModal(' + i + ')">' +
+      '<div class="profile-avatar av' + (i % 16) + '">' + ini(fullName) + '</div>' +
+      '<div class="profile-name">' + fullName + '</div>' +
+      '<div class="profile-desig">' + (r.designation || '') + '</div>' +
+      '<div class="profile-exp-badge">' + (r.experience || '-') + ' experience</div>' +
+      '</div>';
+  }).join('');
+}
+
+function profileInfoRow(label, val) {
+  return '<div class="profile-info-row"><span class="profile-info-label">' + label + '</span><span class="profile-info-val">' + (val || '—') + '</span></div>';
+}
+function profileStatBox(val, label, bg, color) {
+  return '<div class="profile-stat-box" style="background:' + bg + '"><div class="n" style="color:' + color + '">' + (val !== undefined && val !== null && val !== '' ? val : '0') + '</div><div class="l">' + label + '</div></div>';
+}
+
+function openProfileModal(idx) {
+  var rows = (globalRawData && globalRawData.employeeProfiles) || [];
+  var r = rows[idx];
+  if (!r) return;
+  var fullName = r.employee || r.name || '-';
+
+  document.getElementById('profileModalAvatar').textContent = ini(fullName);
+  document.getElementById('profileModalName').textContent = fullName;
+  document.getElementById('profileModalDesig').textContent = r.designation || '';
+
+  document.getElementById('profileInfoBody').innerHTML =
+    profileInfoRow('Email', r.email) +
+    profileInfoRow('Joining Date', r.joining) +
+    profileInfoRow('Experience', r.experience);
+
+  document.getElementById('profileTaskStats').innerHTML =
+    profileStatBox(r.assigned, 'Assigned', '#eff6ff', '#1d4ed8') +
+    profileStatBox(r.completed, 'Completed', '#f0fdf4', '#16a34a') +
+    profileStatBox(r.pending, 'Pending', '#fef2f2', '#dc2626');
+
+  document.getElementById('profileTypeStats').innerHTML =
+    profileStatBox(r.fms, 'FMS', '#eff6ff', '#1d4ed8') +
+    profileStatBox(r.checklist, 'Checklist', '#fff7ed', '#c2410c') +
+    profileStatBox(r.delegation, 'Delegation', '#f5f3ff', '#7c3aed');
+
+  document.getElementById('profileLeaveStats').innerHTML =
+    profileStatBox(r.leaveBalance, 'Leave Balance', '#f0fdfa', '#0d9488') +
+    profileStatBox(r.leaveUsed, 'Leave Used', '#fffbeb', '#d97706');
+
+  document.getElementById('profileModal').style.display = 'flex';
+}
+
+function closeProfileModal() {
+  document.getElementById('profileModal').style.display = 'none';
 }
 
 // ── Tab switch ────────────────────────────────────────────────────────────────
@@ -1436,8 +1662,9 @@ initGoogleAuth();
       <div class="sc-emp-list" id="scoreModalEmpList"></div>
     </div>
 
-    <!-- Mini scorecards: FMS / Checklist / Delegation counts -->
+    <!-- Mini scorecards: FMS / Checklist / Delegation counts (clickable filters) -->
     <div class="sc-mini-cards" id="scoreModalMiniCards" style="display:none"></div>
+    <div class="sc-mini-hint" id="scoreModalMiniHint" style="display:none">Tap a card to filter the list below · tap again to show all</div>
 
     <!-- Detail table for the selected employee -->
     <div id="scoreModalTableWrap" style="overflow-y:auto;padding:0;display:none">
@@ -1461,9 +1688,40 @@ initGoogleAuth();
   </div>
 </div>
 
+<!-- EMPLOYEE PROFILE MODAL -->
+<div class="profile-modal-overlay" id="profileModal">
+  <div class="profile-modal-box">
+    <div class="profile-modal-header">
+      <button class="profile-modal-close" onclick="closeProfileModal()">✕</button>
+      <div class="profile-modal-avatar" id="profileModalAvatar"></div>
+      <div class="profile-modal-name" id="profileModalName"></div>
+      <div class="profile-modal-desig" id="profileModalDesig"></div>
+    </div>
+    <div class="profile-section">
+      <div class="profile-section-title">Employee Details</div>
+      <div id="profileInfoBody"></div>
+    </div>
+    <div class="profile-section">
+      <div class="profile-section-title">Task Overview</div>
+      <div class="profile-stat-trio" id="profileTaskStats"></div>
+    </div>
+    <div class="profile-section">
+      <div class="profile-section-title">Work Type Breakdown</div>
+      <div class="profile-stat-trio" id="profileTypeStats"></div>
+    </div>
+    <div class="profile-section">
+      <div class="profile-section-title">Leave Summary</div>
+      <div class="profile-stat-duo" id="profileLeaveStats"></div>
+    </div>
+  </div>
+</div>
+
 <script>
 document.getElementById('scorePendingModal').addEventListener('click', function(e) {
   if (e.target === this) closeScorePendingModal();
+});
+document.getElementById('profileModal').addEventListener('click', function(e) {
+  if (e.target === this) closeProfileModal();
 });
 </script>
 
