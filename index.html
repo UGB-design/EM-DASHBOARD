@@ -239,35 +239,6 @@ tr:hover td{background:#fafbfc}
 .sc-mini-cl{background:#fff7ed}.sc-mini-cl .sc-mini-label{color:#c2410c}.sc-mini-cl .sc-mini-val{color:#c2410c}
 .sc-mini-dl{background:#f5f3ff}.sc-mini-dl .sc-mini-label{color:#7c3aed}.sc-mini-dl .sc-mini-val{color:#7c3aed}
 .sc-mini-hint{text-align:center;font-size:10px;color:#c7c2b8;padding:2px 20px 10px}
-
-/* ── EMPLOYEE PROFILE TAB ────────────────────────────────────── */
-.profile-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
-.profile-card{background:linear-gradient(160deg,#ffffff 0%,#fbf8f3 100%);border-radius:16px;padding:24px 20px;box-shadow:0 4px 18px rgba(60,50,30,.07);border:1px solid rgba(255,255,255,.8);cursor:pointer;text-align:center;transition:transform .18s,box-shadow .18s}
-.profile-card:hover{transform:translateY(-4px);box-shadow:0 10px 26px rgba(60,50,30,.14)}
-.profile-avatar{width:60px;height:60px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:700;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.12)}
-.profile-name{font-size:14.5px;font-weight:700;color:#1a1a1a;margin-bottom:4px;line-height:1.3}
-.profile-desig{font-size:10.5px;color:#9aa0ac;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
-.profile-exp-badge{display:inline-block;background:#eff6ff;color:#1d4ed8;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px}
-.profile-modal-overlay{display:none;position:fixed;inset:0;background:rgba(20,15,10,.5);z-index:9999;align-items:center;justify-content:center;padding:16px}
-.profile-modal-box{background:#fff;border-radius:20px;width:100%;max-width:460px;max-height:88vh;overflow-y:auto;box-shadow:0 16px 50px rgba(0,0,0,.25)}
-.profile-modal-header{background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 100%);padding:30px 24px 24px;color:#fff;text-align:center;position:relative}
-.profile-modal-avatar{width:78px;height:78px;border-radius:50%;background:rgba(255,255,255,.18);border:3px solid rgba(255,255,255,.55);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;margin:0 auto 12px;color:#fff}
-.profile-modal-name{font-size:18px;font-weight:700}
-.profile-modal-desig{font-size:12px;opacity:.85;margin-top:3px;text-transform:uppercase;letter-spacing:.04em;font-weight:600}
-.profile-modal-close{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.2);border:none;color:#fff;width:30px;height:30px;border-radius:9px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
-.profile-modal-close:hover{background:rgba(255,255,255,.32)}
-.profile-section{padding:18px 24px}
-.profile-section+.profile-section{border-top:1px solid #f3f4f6}
-.profile-section-title{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#9aa0ac;font-weight:700;margin-bottom:12px}
-.profile-info-row{display:flex;justify-content:space-between;padding:7px 0;font-size:13px;border-bottom:1px dashed #f3f4f6}
-.profile-info-row:last-child{border-bottom:none}
-.profile-info-label{color:#8a8478}
-.profile-info-val{color:#1a1a1a;font-weight:700;text-align:right}
-.profile-stat-trio{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.profile-stat-duo{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.profile-stat-box{text-align:center;padding:14px 8px;border-radius:12px}
-.profile-stat-box .n{font-size:20px;font-weight:700}
-.profile-stat-box .l{font-size:10px;color:#9aa0ac;text-transform:uppercase;font-weight:700;margin-top:3px;letter-spacing:.04em}
 </style>
 </head>
 <body>
@@ -326,7 +297,6 @@ tr:hover td{background:#fafbfc}
     <button class="tab-btn" onclick="switchTab('checklist',this)">Checklist<span class="tab-badge" id="badgeChecklist" style="display:none">0</span></button>
     <button class="tab-btn" onclick="switchTab('delegation',this)">Delegation<span class="tab-badge" id="badgeDelegation" style="display:none">0</span></button>
     <button class="tab-btn" onclick="switchTab('scores',this)">Scores</button>
-    <button class="tab-btn" onclick="switchTab('profile',this)">Employee Profile</button>
   </div>
 </div>
 
@@ -529,14 +499,6 @@ tr:hover td{background:#fafbfc}
           <tbody id="scTableBody"></tbody>
         </table>
       </div>
-    </div>
-  </div>
-
-  <!-- EMPLOYEE PROFILE TAB -->
-  <div class="tab-content" id="tab-profile">
-    <div class="meta-info-badge" id="profileMetaBadges"></div>
-    <div class="profile-grid" id="profileGrid">
-      <div class="loading">Loading employee profiles...</div>
     </div>
   </div>
 
@@ -851,9 +813,6 @@ function renderAll(data) {
   else console.log('✅ scoresData received:', scData.length, 'rows');
   populateScoreFilters(scData);
   applyScoreFilters();
-
-  // Employee Profile tab
-  renderEmployeeProfiles();
 }
 
 // ── FMS by Process panel ──────────────────────────────────────────────────────
@@ -1501,84 +1460,6 @@ function closeScorePendingModal() {
   document.getElementById('scorePendingModal').style.display = 'none';
 }
 
-// ── EMPLOYEE PROFILE TAB ──────────────────────────────────────────────────────
-// Expects the backend ("action=getData") to return an "employeeProfiles"
-// array sourced from the Employee_Profile sheet, one object per row:
-//   { employee, designation, email, joining, experience, name,
-//     assigned, completed, pending, completionPct,
-//     fms, checklist, delegation, leaveBalance, leaveUsed }
-// If the backend doesn't send this field yet, the tab shows a friendly
-// notice instead of breaking.
-function renderEmployeeProfiles() {
-  var rows = (globalRawData && globalRawData.employeeProfiles) || [];
-  var grid = document.getElementById('profileGrid');
-  var badges = document.getElementById('profileMetaBadges');
-
-  if (!rows.length) {
-    badges.innerHTML = '';
-    grid.innerHTML = '<div style="text-align:center;padding:40px;color:#bbb;grid-column:1/-1">' +
-      'No employee profile data received yet.<br>' +
-      '<span style="font-size:11px">Backend (code.gs) needs to return an "employeeProfiles" array from the Employee_Profile sheet.</span>' +
-      '</div>';
-    return;
-  }
-
-  badges.innerHTML = '<span class="m-badge b-blue">' + rows.length + ' employees</span>';
-
-  grid.innerHTML = rows.map(function(r, i) {
-    var fullName = r.employee || r.name || '-';
-    return '<div class="profile-card" onclick="openProfileModal(' + i + ')">' +
-      '<div class="profile-avatar av' + (i % 16) + '">' + ini(fullName) + '</div>' +
-      '<div class="profile-name">' + fullName + '</div>' +
-      '<div class="profile-desig">' + (r.designation || '') + '</div>' +
-      '<div class="profile-exp-badge">' + (r.experience || '-') + ' experience</div>' +
-      '</div>';
-  }).join('');
-}
-
-function profileInfoRow(label, val) {
-  return '<div class="profile-info-row"><span class="profile-info-label">' + label + '</span><span class="profile-info-val">' + (val || '—') + '</span></div>';
-}
-function profileStatBox(val, label, bg, color) {
-  return '<div class="profile-stat-box" style="background:' + bg + '"><div class="n" style="color:' + color + '">' + (val !== undefined && val !== null && val !== '' ? val : '0') + '</div><div class="l">' + label + '</div></div>';
-}
-
-function openProfileModal(idx) {
-  var rows = (globalRawData && globalRawData.employeeProfiles) || [];
-  var r = rows[idx];
-  if (!r) return;
-  var fullName = r.employee || r.name || '-';
-
-  document.getElementById('profileModalAvatar').textContent = ini(fullName);
-  document.getElementById('profileModalName').textContent = fullName;
-  document.getElementById('profileModalDesig').textContent = r.designation || '';
-
-  document.getElementById('profileInfoBody').innerHTML =
-    profileInfoRow('Email', r.email) +
-    profileInfoRow('Joining Date', r.joining) +
-    profileInfoRow('Experience', r.experience);
-
-  document.getElementById('profileTaskStats').innerHTML =
-    profileStatBox(r.assigned, 'Assigned', '#eff6ff', '#1d4ed8') +
-    profileStatBox(r.completed, 'Completed', '#f0fdf4', '#16a34a') +
-    profileStatBox(r.pending, 'Pending', '#fef2f2', '#dc2626');
-
-  document.getElementById('profileTypeStats').innerHTML =
-    profileStatBox(r.fms, 'FMS', '#eff6ff', '#1d4ed8') +
-    profileStatBox(r.checklist, 'Checklist', '#fff7ed', '#c2410c') +
-    profileStatBox(r.delegation, 'Delegation', '#f5f3ff', '#7c3aed');
-
-  document.getElementById('profileLeaveStats').innerHTML =
-    profileStatBox(r.leaveBalance, 'Leave Balance', '#f0fdfa', '#0d9488') +
-    profileStatBox(r.leaveUsed, 'Leave Used', '#fffbeb', '#d97706');
-
-  document.getElementById('profileModal').style.display = 'flex';
-}
-
-function closeProfileModal() {
-  document.getElementById('profileModal').style.display = 'none';
-}
-
 // ── Tab switch ────────────────────────────────────────────────────────────────
 function switchTab(name, el) {
   document.querySelectorAll('.tab-btn').forEach(function(t) { t.classList.remove('active'); });
@@ -1688,40 +1569,9 @@ initGoogleAuth();
   </div>
 </div>
 
-<!-- EMPLOYEE PROFILE MODAL -->
-<div class="profile-modal-overlay" id="profileModal">
-  <div class="profile-modal-box">
-    <div class="profile-modal-header">
-      <button class="profile-modal-close" onclick="closeProfileModal()">✕</button>
-      <div class="profile-modal-avatar" id="profileModalAvatar"></div>
-      <div class="profile-modal-name" id="profileModalName"></div>
-      <div class="profile-modal-desig" id="profileModalDesig"></div>
-    </div>
-    <div class="profile-section">
-      <div class="profile-section-title">Employee Details</div>
-      <div id="profileInfoBody"></div>
-    </div>
-    <div class="profile-section">
-      <div class="profile-section-title">Task Overview</div>
-      <div class="profile-stat-trio" id="profileTaskStats"></div>
-    </div>
-    <div class="profile-section">
-      <div class="profile-section-title">Work Type Breakdown</div>
-      <div class="profile-stat-trio" id="profileTypeStats"></div>
-    </div>
-    <div class="profile-section">
-      <div class="profile-section-title">Leave Summary</div>
-      <div class="profile-stat-duo" id="profileLeaveStats"></div>
-    </div>
-  </div>
-</div>
-
 <script>
 document.getElementById('scorePendingModal').addEventListener('click', function(e) {
   if (e.target === this) closeScorePendingModal();
-});
-document.getElementById('profileModal').addEventListener('click', function(e) {
-  if (e.target === this) closeProfileModal();
 });
 </script>
 
