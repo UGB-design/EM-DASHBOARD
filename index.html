@@ -14,15 +14,28 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .h-top{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;flex-wrap:wrap;gap:10px}
 .h-title{font-size:24px;font-weight:700;color:#1a1a1a;letter-spacing:-0.3px}
 .h-sub{font-size:12px;color:#8a8478;margin-top:3px}
+.h-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#1a1a1a 0%,#3a3a3a 100%);color:#fff;font-size:14px;font-weight:800;letter-spacing:.06em;padding:5px 14px;border-radius:8px;margin-top:8px;box-shadow:0 3px 10px rgba(0,0,0,.15)}
+.h-badge .hb-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.25);animation:hbPulse 1.6s ease-in-out infinite}
+@keyframes hbPulse{0%,100%{opacity:1}50%{opacity:.4}}
+.h-greet{font-size:13.5px;color:#4b4538;margin-top:9px;font-weight:600;display:flex;align-items:center;gap:6px}
+.h-greet .hg-name{color:#1a1a1a;font-weight:800}
+.h-greet .hg-emoji{font-size:15px}
 .h-right{display:flex;align-items:center;gap:10px}
+.refresh-btn{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;background:#fff;border:1.5px solid #e3ddd2;border-radius:10px;cursor:pointer;box-shadow:0 2px 8px rgba(60,50,30,.08);transition:background .15s}
+.refresh-btn:hover{background:#f9fafb}
+.refresh-btn svg{width:16px;height:16px;stroke:#4b4538;transition:transform .5s ease}
+.refresh-btn.spinning svg{animation:refreshSpin .7s linear infinite}
+@keyframes refreshSpin{to{transform:rotate(360deg)}}
 .wk-label{font-size:13px;color:#7a756a;font-weight:500}
 .wk-sel{background:#fff;border:1.5px solid #e3ddd2;border-radius:10px;padding:7px 14px;font-size:13px;color:#333;font-weight:500;cursor:pointer;outline:none;box-shadow:0 2px 8px rgba(60,50,30,.08);max-width:260px}
 .saving{font-size:11px;color:#888;display:none}
 .saving.show{display:inline}
 .leave-link-row{display:flex;justify-content:flex-end;margin:2px 0 14px}
-.leave-link-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 100%);color:#fff;text-decoration:none;font-size:12.5px;font-weight:700;padding:9px 18px;border-radius:12px;box-shadow:0 4px 14px rgba(79,70,229,.28);transition:transform .15s,box-shadow .15s}
+.leave-link-btn{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 100%);color:#fff;text-decoration:none;font-size:12.5px;font-weight:700;padding:9px 18px;border-radius:12px;box-shadow:0 4px 14px rgba(79,70,229,.28);transition:transform .15s,box-shadow .15s}
 .leave-link-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(79,70,229,.36)}
 .leave-link-btn .llb-icon{font-size:15px;line-height:1}
+.leave-link-btn::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(120deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.55) 50%,rgba(255,255,255,0) 100%);transform:skewX(-20deg);animation:llbShine 2.6s ease-in-out infinite}
+@keyframes llbShine{0%{left:-60%}55%{left:130%}100%{left:130%}}
 
 /* TABS NAV */
 .tabs-row{display:flex;gap:4px;overflow-x:auto;width:fit-content;max-width:100%;background:rgba(255,255,255,.6);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-radius:14px;padding:6px;margin:0 0 18px;box-shadow:0 6px 18px rgba(60,50,30,.07);position:sticky;top:14px;z-index:60}
@@ -270,7 +283,8 @@ tr:hover td{background:#fafbfc}
   <div class="h-top">
     <div>
       <div class="h-title">UMESH BOLMAL & ASSOCIATES</div>
-      <div class="h-sub">EM - DASHBOARD &nbsp;·&nbsp; <span id="userEmailSub">ugbolmalassociates.com</span></div>
+      <div class="h-badge"><span class="hb-dot"></span>EM DASHBOARD</div>
+      <div class="h-greet" id="greetLine"><span class="hg-emoji">👋</span><span id="greetText">Welcome</span>, <span class="hg-name" id="greetName">back</span></div>
     </div>
     <div class="h-right">
       <span class="wk-label">From</span>
@@ -279,6 +293,9 @@ tr:hover td{background:#fafbfc}
       <input type="date" class="wk-sel dt-input" id="dtTo">
       <button class="apply-btn" id="applyBtn" onclick="applyDateRange()">Apply</button>
       <span class="saving" id="savingTxt"> Please Wait...</span>
+      <button class="refresh-btn" id="refreshBtn" onclick="refreshDashboard()" title="Refresh data">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+      </button>
       <div class="user-chip" id="userChip">
         <span class="user-avatar" id="userAvatar"></span>
         <span id="userNameLabel"></span>
@@ -577,6 +594,38 @@ function setTabBadge(id, count) {
   }
 }
 
+// ── Greeting helper (time-of-day based) ───────────────────────────────────────
+function updateGreeting(name) {
+  var hr = new Date().getHours();
+  var text = 'Good Morning', emoji = '☀️';
+  if (hr >= 12 && hr < 17) { text = 'Good Afternoon'; emoji = '🌤️'; }
+  else if (hr >= 17 && hr < 21) { text = 'Good Evening'; emoji = '🌆'; }
+  else if (hr >= 21 || hr < 5) { text = 'Good Night'; emoji = '🌙'; }
+  var greetTextEl = document.getElementById('greetText');
+  var greetNameEl = document.getElementById('greetName');
+  var greetEmojiEl = document.querySelector('#greetLine .hg-emoji');
+  if (greetTextEl) greetTextEl.textContent = text;
+  if (greetNameEl) greetNameEl.textContent = name || 'there';
+  if (greetEmojiEl) greetEmojiEl.textContent = emoji;
+}
+
+// ── Refresh button (re-fetches latest data without a full reload) ────────────
+function refreshDashboard() {
+  var btn = document.getElementById('refreshBtn');
+  if (!currentIdToken) return;
+  if (btn) btn.classList.add('spinning');
+  fetch(API + '?action=getData&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now(), { redirect: 'follow' })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (btn) btn.classList.remove('spinning');
+      if (data.authorized === false) { showDenied(currentUserEmail); return; }
+      renderAll(data);
+    })
+    .catch(function() {
+      if (btn) btn.classList.remove('spinning');
+    });
+}
+
 // ── Date helpers ─────────────────────────────────────────────────────────────
 function toISO(ddmmyyyy) {
   if (!ddmmyyyy) return '';
@@ -694,6 +743,10 @@ function enterApp(name, email) {
   document.getElementById('userAvatar').textContent = ini(name);
   var emailSub = document.getElementById('userEmailSub');
   if (emailSub) emailSub.textContent = email || 'ugbolmalassociates.com';
+  var firstName = String(name || '').trim().split(' ')[0] || name;
+  updateGreeting(firstName);
+  if (window._greetTimer) clearInterval(window._greetTimer);
+  window._greetTimer = setInterval(function() { updateGreeting(firstName); }, 60000);
   initialLoad();
 }
 
