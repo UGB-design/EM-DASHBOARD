@@ -2,215 +2,814 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Umesh Bolmal &amp; Associates — Staff Portal</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EM Dashboard</title>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
-@import url("https://fonts.googleapis.com/css2?family=Google+Sans:wght@300;400;500;600;700&display=swap");
-*{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100%;height:100%;font-family:"Google Sans",Roboto,sans-serif;background:#f0f4fa;overflow:hidden}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:linear-gradient(135deg,#f7ead9 0%,#f3ede3 28%,#eef1ea 58%,#e6ece8 100%);background-attachment:fixed;color:#1a1a1a;min-height:100vh}
 
-/* ── Loader ─────────────────────────────────────────────────── */
-#loader{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:20px}
-.logo{font-size:11px;font-weight:700;letter-spacing:3.5px;text-transform:uppercase;color:#1F5FA6}
-.bar-wrap{width:200px;height:3px;background:#dce8f7;border-radius:4px;overflow:hidden}
-.bar{height:100%;width:35%;background:#1F5FA6;border-radius:4px;animation:slide 1.4s ease-in-out infinite}
-@keyframes slide{0%{transform:translateX(-120%)}100%{transform:translateX(380%)}}
-.msg{font-size:11px;color:#6b8ab0;letter-spacing:1.5px;text-transform:uppercase}
-.err{text-align:center;color:#e53e3e;font-size:13px}
-.retry{margin-top:12px;padding:8px 20px;background:#1F5FA6;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:12px}
+/* APP SHELL (sidebar + main) */
+.app-shell{display:flex;min-height:100vh}
+.sidebar{width:230px;flex-shrink:0;background:#ffffff;border-right:1px solid #ece7dc;display:flex;flex-direction:column;padding:22px 14px;position:sticky;top:0;height:100vh;overflow-y:auto;z-index:70}
+.sb-brand{display:flex;align-items:center;gap:10px;padding:0 8px 20px;border-bottom:1px solid #f0ece2;margin-bottom:14px}
+.sb-brand-mark{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#1a1a1a 0%,#3a3a3a 100%);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;letter-spacing:-.5px;flex-shrink:0}
+.sb-brand-txt{line-height:1.25}
+.sb-brand-title{font-size:13px;font-weight:800;color:#1a1a1a}
+.sb-brand-sub{font-size:10px;color:#9aa0ac;font-weight:600;letter-spacing:.04em}
+.sb-nav{display:flex;flex-direction:column;gap:3px;flex:1}
+.sb-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;color:#6b6558;font-size:13px;font-weight:600;cursor:pointer;border:none;background:transparent;text-align:left;width:100%;transition:all .15s;position:relative}
+.sb-item:hover:not(.active){background:#f7f4ee;color:#1a1a1a}
+.sb-item.active{background:#1a1a1a;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.16)}
+.sb-item .sb-ic{width:18px;height:18px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.sb-item .sb-ic svg{width:17px;height:17px;stroke-width:2}
+.sb-item .sb-label{flex:1}
+.sb-item .sb-count{background:#dc2626;color:#fff;font-size:10px;font-weight:700;min-width:18px;height:18px;padding:0 5px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center}
+.sb-item.active .sb-count{background:rgba(255,255,255,.25)}
+.sb-foot{border-top:1px solid #f0ece2;padding-top:12px;margin-top:8px}
+.sb-leave-btn{display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 100%);color:#fff;text-decoration:none;font-size:11.5px;font-weight:700;padding:10px 12px;border-radius:10px;box-shadow:0 4px 12px rgba(79,70,229,.25)}
+.main-wrap{flex:1;min-width:0}
+@media(max-width:900px){
+  .sidebar{position:fixed;left:0;top:0;transform:translateX(-100%);transition:transform .25s ease;box-shadow:0 0 24px rgba(0,0,0,.15)}
+  .sidebar.open{transform:translateX(0)}
+  .sb-toggle-btn{display:inline-flex !important}
+}
 
-/* ── Sign-in / Denied gates ────────────────────────────────────── */
-.auth-screen,.denied-screen{position:fixed;inset:0;background:#f0f4fa;display:none;align-items:center;justify-content:center;z-index:9999}
-.auth-screen.show,.denied-screen.show{display:flex}
-.auth-box,.denied-box{background:#fff;border-radius:18px;padding:40px 44px;box-shadow:0 10px 40px rgba(31,95,166,.15);text-align:center;max-width:380px}
-.auth-title{font-size:20px;font-weight:700;margin-bottom:6px;color:#111827}
-.auth-sub{font-size:13px;color:#6b8ab0;margin-bottom:24px}
+/* OVERVIEW WIDGETS (performers / task chart / bottleneck / attendance) */
+.ov-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.ov-card{background:#fff;border-radius:14px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed;padding:16px 20px}
+.ov-card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.ov-card-title{font-size:13px;font-weight:700;color:#1a1a1a}
+.ov-card-sub{font-size:10.5px;color:#9aa0ac;font-weight:600}
+.ov-bars{display:flex;align-items:flex-end;justify-content:space-around;gap:10px;height:150px;padding-top:10px}
+.ov-bar-col{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;height:100%;justify-content:flex-end}
+.ov-bar-val{font-size:11px;font-weight:700;color:#374151}
+.ov-bar{width:100%;max-width:34px;border-radius:6px 6px 3px 3px;transition:height .6s ease}
+.ov-bar-name{font-size:10px;color:#8a8478;font-weight:600;text-align:center;line-height:1.3;max-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ov-donut-wrap{display:flex;align-items:center;gap:22px}
+.ov-donut{width:130px;height:130px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;position:relative}
+.ov-donut::before{content:'';position:absolute;inset:16px;border-radius:50%;background:#fff}
+.ov-donut-center{position:relative;z-index:1;text-align:center}
+.ov-donut-num{font-size:20px;font-weight:800;color:#1a1a1a;line-height:1}
+.ov-donut-lbl{font-size:9px;color:#9aa0ac;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
+.ov-legend{display:flex;flex-direction:column;gap:9px}
+.ov-legend-row{display:flex;align-items:center;gap:8px;font-size:12px;color:#4b4538;font-weight:600}
+.ov-legend-dot{width:9px;height:9px;border-radius:3px;flex-shrink:0}
+.ov-legend-val{margin-left:auto;font-weight:700;color:#1a1a1a}
+.ov-empty{text-align:center;color:#c7c2b8;font-size:12px;padding:30px 10px}
+.att-note{background:#fffbeb;border:1px dashed #fbbf24;border-radius:10px;padding:10px 14px;font-size:11.5px;color:#92400e;margin-top:8px;line-height:1.5}
+
+/* HEADER */
+.header{background:transparent;padding:20px 32px 0}
+.h-top{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;flex-wrap:wrap;gap:10px}
+.h-title{font-size:24px;font-weight:700;color:#1a1a1a;letter-spacing:-0.3px}
+.h-sub{font-size:12px;color:#8a8478;margin-top:3px}
+.h-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#1a1a1a 0%,#3a3a3a 100%);color:#fff;font-size:14px;font-weight:800;letter-spacing:.06em;padding:5px 14px;border-radius:8px;margin-top:8px;box-shadow:0 3px 10px rgba(0,0,0,.15)}
+.h-badge .hb-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.25);animation:hbPulse 1.6s ease-in-out infinite}
+@keyframes hbPulse{0%,100%{opacity:1}50%{opacity:.4}}
+.h-greet{font-size:13.5px;color:#4b4538;margin-top:9px;font-weight:600;display:flex;align-items:center;gap:6px}
+.h-greet .hg-name{color:#1a1a1a;font-weight:800}
+.h-greet .hg-emoji{font-size:15px}
+.h-right{display:flex;align-items:center;gap:10px}
+.refresh-btn{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;background:#fff;border:1.5px solid #e3ddd2;border-radius:10px;cursor:pointer;box-shadow:0 2px 8px rgba(60,50,30,.08);transition:background .15s}
+.refresh-btn:hover{background:#f9fafb}
+.refresh-btn svg{width:16px;height:16px;stroke:#4b4538;transition:transform .5s ease}
+.refresh-btn.spinning svg{animation:refreshSpin .7s linear infinite}
+@keyframes refreshSpin{to{transform:rotate(360deg)}}
+.wk-label{font-size:13px;color:#7a756a;font-weight:500}
+.wk-sel{background:#fff;border:1.5px solid #e3ddd2;border-radius:10px;padding:7px 14px;font-size:13px;color:#333;font-weight:500;cursor:pointer;outline:none;box-shadow:0 2px 8px rgba(60,50,30,.08);max-width:260px}
+.saving{font-size:11px;color:#888;display:none}
+.saving.show{display:inline}
+.leave-link-row{display:flex;justify-content:flex-end;margin:2px 0 14px}
+.leave-link-btn{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 100%);color:#fff;text-decoration:none;font-size:12.5px;font-weight:700;padding:9px 18px;border-radius:12px;box-shadow:0 4px 14px rgba(79,70,229,.28);transition:transform .15s,box-shadow .15s}
+.leave-link-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(79,70,229,.36)}
+.leave-link-btn .llb-icon{font-size:15px;line-height:1}
+.leave-link-btn::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(120deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.55) 50%,rgba(255,255,255,0) 100%);transform:skewX(-20deg);animation:llbShine 2.6s ease-in-out infinite}
+@keyframes llbShine{0%{left:-60%}55%{left:130%}100%{left:130%}}
+
+/* TABS NAV */
+.tabs-row{display:flex;gap:4px;overflow-x:auto;width:fit-content;max-width:100%;background:rgba(255,255,255,.6);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-radius:14px;padding:6px;margin:0 0 18px;box-shadow:0 6px 18px rgba(60,50,30,.07);position:sticky;top:14px;z-index:60}
+.tab-btn{display:inline-flex;align-items:center;gap:7px;padding:10px 18px;border-radius:10px;font-size:13px;cursor:pointer;color:#8a8478;border:none;background:transparent;font-weight:600;transition:all .2s;white-space:nowrap}
+.tab-btn.active{color:#1a1a1a;font-weight:700;background:#fff;box-shadow:0 3px 10px rgba(0,0,0,.08)}
+.tab-btn:hover:not(.active){color:#4b4538}
+.tab-badge{background:#dc2626;color:#fff;font-size:11px;font-weight:700;min-width:20px;height:20px;padding:0 5px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;line-height:1;box-shadow:0 1px 3px rgba(220,38,38,.35)}
+
+/* LAYOUT */
+.content{padding:24px 32px}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* TOP METRIC CARDS */
+.c5{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:14px}
+.c1{display:grid;grid-template-columns:200px 1fr;gap:14px;margin-bottom:24px}
+.card{background:linear-gradient(160deg,#ffffff 0%,#fbf8f3 100%);border-radius:16px;padding:20px 22px;box-shadow:0 4px 18px rgba(60,50,30,.07);border:1px solid rgba(255,255,255,.8);animation:cardPop .4s ease-out both}
+.cl{font-size:10px;color:#9aa0ac;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;font-weight:700}
+.cv{font-size:30px;font-weight:700;margin-bottom:6px;line-height:1.1}
+.cv.blue{color:#2563eb}.cv.green{color:#16a34a}
+@keyframes cardPop{
+  0%{opacity:0;transform:translateY(8px)}
+  100%{opacity:1;transform:translateY(0)}
+}
+.c5 .card:nth-child(1){animation-delay:.02s}
+.c5 .card:nth-child(2){animation-delay:.06s}
+.c5 .card:nth-child(3){animation-delay:.1s}
+.c5 .card:nth-child(4){animation-delay:.14s}
+.c5 .card:nth-child(5){animation-delay:.18s}
+.c1 .card{animation-delay:.22s}
+.cs{font-size:11px;color:#bbb;line-height:1.5}
+.cs-detail{font-size:11px;margin-top:6px;display:flex;gap:6px;flex-wrap:wrap}
+.cs-done{color:#16a34a;font-weight:600;background:#f0fdf4;padding:2px 8px;border-radius:20px;font-size:11px}
+.cs-pend{color:#dc2626;font-weight:600;background:#fef2f2;padding:2px 8px;border-radius:20px;font-size:11px}
+
+/* FILTER BAR */
+.filter-bar{display:flex;align-items:center;gap:16px;margin-bottom:16px;background:#fff;padding:12px 20px;border-radius:10px;border:1px solid #e8eaed;flex-wrap:wrap;font-size:12px}
+.filter-bar label{font-weight:600;color:#555}
+.filter-bar select,.filter-bar input{padding:6px 12px;border:1px solid #d1d5db;border-radius:6px;outline:none;font-size:12px;color:#333;background:#fff}
+.meta-info-badge{display:flex;gap:8px;margin-bottom:14px}
+.m-badge{font-size:11px;padding:4px 12px;border-radius:20px;font-weight:600}
+.m-badge.b-blue{background:#eff6ff;color:#1d4ed8}
+.m-badge.b-green{background:#f0fdf4;color:#16a34a}
+.m-badge.b-red{background:#fef2f2;color:#dc2626}
+
+/* STAT CARD ROW */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px}
+.stat-card{background:linear-gradient(160deg,#ffffff 0%,#fbf8f3 100%);border-radius:14px;padding:14px 18px;box-shadow:0 4px 14px rgba(60,50,30,.06);border:1px solid rgba(255,255,255,.8)}
+.stat-label{font-size:10px;color:#9aa0ac;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:6px}
+.stat-value{font-size:22px;font-weight:700;line-height:1.1}
+.stat-value.blue{color:#2563eb}
+.stat-value.green{color:#16a34a}
+.stat-value.orange{color:#d97706}
+.stat-value.red{color:#dc2626}
+
+/* FMS GROUP CARDS */
+.fms-card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed;margin-bottom:16px;padding:18px 22px}
+.fms-card-top{display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:1px solid #f0f0f0;margin-bottom:12px;flex-wrap:wrap;gap:10px}
+.fms-card-title{font-size:14px;font-weight:700;color:#1a1a1a;display:flex;align-items:center;gap:8px}
+.fms-dot{width:8px;height:8px;border-radius:50%;background:#10b981}
+.fms-card-meta{display:flex;align-items:center;gap:12px}
+.fms-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px}
+.fms-badge.p-blue{background:#eff6ff;color:#1e40af}
+.fms-badge.a-green{background:#f0fdf4;color:#166534}
+
+/* TABLES */
+table{width:100%;border-collapse:collapse}
+th{font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 14px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fdfbf7;white-space:nowrap}
+td{padding:13px 14px;border-bottom:1px solid #f3f4f6;vertical-align:middle;font-size:13px;color:#374151}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafbfc}
+
+/* BADGES */
+.mb-ok{background:#f0fdf4;color:#16a34a;font-weight:700;font-size:10px;padding:3px 8px;border-radius:6px;display:inline-block}
+.mb-num{background:#fef2f2;color:#dc2626;font-weight:700;font-size:11px;padding:3px 8px;border-radius:6px;display:inline-block}
+.st-done{background:#f0fdf4;color:#16a34a;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block}
+.st-pend{background:#fef2f2;color:#dc2626;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block}
+.st-shift{background:#fffbeb;color:#d97706;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block}
+.dept-pill{background:#eff6ff;color:#2563eb;font-size:11px;padding:3px 9px;border-radius:6px;font-weight:600;white-space:nowrap;display:inline-block}
+.freq-pill{background:#fff7ed;color:#ea580c;font-size:11px;padding:2px 7px;border-radius:20px;font-weight:700;border:1px solid #fed7aa}
+.fms-type-pill{background:#f0fdf4;color:#166534;font-size:11px;padding:4px 12px;border-radius:20px;font-weight:600;display:inline-block;white-space:nowrap}
+
+/* AVATARS */
+.dc{display:flex;align-items:center;gap:10px}
+.av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.av0{background:#3B82F6;color:#fff}.av1{background:#10B981;color:#fff}
+.av2{background:#EF4444;color:#fff}.av3{background:#8B5CF6;color:#fff}
+.av4{background:#F59E0B;color:#fff}.av5{background:#EC4899;color:#fff}
+.av6{background:#06B6D4;color:#fff}.av7{background:#84CC16;color:#fff}
+.av8{background:#F97316;color:#fff}.av9{background:#6366F1;color:#fff}
+.av10{background:#14B8A6;color:#fff}.av11{background:#A855F7;color:#fff}
+.av12{background:#0EA5E9;color:#fff}.av13{background:#D946EF;color:#fff}
+.av14{background:#22C55E;color:#fff}.av15{background:#FB923C;color:#fff}
+
+/* PROGRESS BARS */
+.pgw{display:flex;align-items:center;gap:6px;min-width:0;width:100%}
+.pgbg{border-radius:4px;height:8px;width:80px;min-width:60px;overflow:hidden;background:#e5e7eb;flex-shrink:0}
+.pgf{height:8px;border-radius:4px;transition:width .6s}
+.pgp{font-size:12px;font-weight:700;min-width:36px;text-align:right;white-space:nowrap}
+.pg-g .pgf{background:#16a34a}.pg-g .pgp{color:#16a34a}
+.pg-o .pgf{background:#f59e0b}.pg-o .pgp{color:#d97706}
+.pg-r .pgf{background:#ef4444}.pg-r .pgp{color:#dc2626}
+
+/* MASTER TABLE WRAPPER */
+.tc{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed}
+.tc-top{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e8eaed}
+.tc-title{font-size:14px;font-weight:700;color:#1a1a1a}
+.date-cols-wrap{display:flex;align-items:flex-end;gap:2px}
+.dcol{font-size:10px;color:#9aa0ac;text-align:center;width:42px;line-height:1.4}
+.dcol-day{font-weight:700;font-size:12px;color:#374151}
+.nb{background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:3px 8px;font-size:12px;display:inline-block;min-width:32px;text-align:center;color:#374151;font-weight:600}
+.nb.z{color:#d1d5db;background:#fff;border-color:#f3f4f6}
+.nb-blue{background:#eff6ff;border:1px solid #dbeafe;border-radius:6px;padding:3px 9px;font-size:12px;display:inline-block;min-width:32px;text-align:center;color:#1d4ed8;font-weight:700}
+.nb-green{background:#f0fdf4;border:1px solid #dcfce7;border-radius:6px;padding:3px 9px;font-size:12px;display:inline-block;min-width:32px;text-align:center;color:#15803d;font-weight:700}
+.nb-blue.z,.nb-green.z{color:#d1d5db;background:#fff;border-color:#f3f4f6}
+
+/* HEATMAP CELLS */
+.hok{display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:26px;border-radius:8px;font-size:10px;font-weight:700;padding:0 6px;background:#dcfce7;color:#166534}
+.hwarn{display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:26px;border-radius:8px;font-size:10px;font-weight:700;padding:0 6px;background:#fef9c3;color:#854d0e}
+.hbad{display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:26px;border-radius:8px;font-size:10px;font-weight:700;padding:0 6px;background:#fee2e2;color:#991b1b}
+.hdash{color:#d1d5db;font-size:16px}
+
+/* BOTTOM SUMMARY PANELS */
+.summary-panels{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+.sp-card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed;overflow:hidden}
+.sp-head{padding:14px 20px;border-bottom:1px solid #e8eaed;display:flex;align-items:center;justify-content:space-between}
+.sp-title{font-size:14px;font-weight:700;color:#1a1a1a}
+.sp-count{font-size:11px;color:#9aa0ac;font-weight:500}
+.sp-card table th{background:#fff}
+.sp-card td{padding:11px 14px}
+
+/* LOADING / ERROR */
+.loading{text-align:center;padding:60px;color:#bbb}
+.spin{width:32px;height:32px;border:3px solid #e5e7eb;border-top-color:#2563eb;border-radius:50%;animation:sp .8s linear infinite;margin:0 auto 14px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.ebox{background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:18px;margin:14px 0}
+
+/* ── SCORE TAB STYLES ─────────────────────────────────────────── */
+.score-hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:22px}
+.score-hero-card{background:linear-gradient(160deg,#ffffff 0%,#fbf8f3 100%);border-radius:16px;padding:18px 20px;box-shadow:0 4px 18px rgba(60,50,30,.07);border:1px solid rgba(255,255,255,.8);text-align:center}
+.score-hero-label{font-size:10px;color:#9aa0ac;text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:8px}
+.score-hero-val{font-size:28px;font-weight:700;line-height:1.1}
+
+/* Performance badge colors */
+.perf-s{background:#dcfce7;color:#166534;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block;white-space:nowrap}   /* >=95 */
+.perf-a{background:#fef9c3;color:#854d0e;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block;white-space:nowrap}   /* 90-95 */
+.perf-b{background:#ffedd5;color:#c2410c;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block;white-space:nowrap}   /* 50-90 */
+.perf-c{background:#fee2e2;color:#991b1b;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block;white-space:nowrap}   /* <50  */
+
+/* Neg/pos pct cells */
+.pct-neg{color:#dc2626;font-weight:700}
+.pct-pos{color:#16a34a;font-weight:700}
+.pct-zer{color:#9aa0ac;font-weight:600}
+
+/* Score rank bar */
+.score-rank-bar{height:10px;border-radius:5px;background:#e5e7eb;overflow:hidden;width:100px;display:inline-block;vertical-align:middle;margin-right:6px}
+.score-rank-fill{height:10px;border-radius:5px}
+
+@media(max-width:900px){
+  .c5{grid-template-columns:repeat(3,1fr)}
+  .c1{grid-template-columns:1fr}
+  .summary-panels{grid-template-columns:1fr}
+  .content{padding:16px}
+}
+@media(max-width:600px){
+  .c5{grid-template-columns:1fr 1fr}
+  .header{padding:16px 16px 0}
+  .score-hero{grid-template-columns:1fr 1fr}
+}
+
+/* ── AUTH / DATE RANGE / USER CHIP ───────────────────────────── */
+.auth-screen,.denied-screen{position:fixed;inset:0;background:linear-gradient(135deg,#f7ead9 0%,#f3ede3 28%,#eef1ea 58%,#e6ece8 100%);display:flex;align-items:center;justify-content:center;z-index:9999}
+.auth-box,.denied-box{background:#fff;border-radius:18px;padding:40px 44px;box-shadow:0 10px 40px rgba(60,50,30,.15);text-align:center;max-width:380px}
+.auth-title{font-size:20px;font-weight:700;margin-bottom:6px;color:#1a1a1a}
+.auth-sub{font-size:13px;color:#8a8478;margin-bottom:24px}
 .auth-btn-wrap{display:flex;justify-content:center;min-height:44px}
-.auth-loading{font-size:13px;color:#6b8ab0;margin-top:16px;display:none}
-.auth-loading.show{display:block}
+.auth-loading{font-size:13px;color:#8a8478;margin-top:16px;display:none}
 .denied-icon{font-size:40px;margin-bottom:10px}
 .denied-title{font-size:18px;font-weight:700;color:#dc2626;margin-bottom:8px}
-.denied-sub{font-size:13px;color:#6b8ab0;margin-bottom:20px;line-height:1.6}
+.denied-sub{font-size:13px;color:#8a8478;margin-bottom:20px;line-height:1.6}
 .denied-email{font-size:12px;color:#555;background:#f9fafb;padding:6px 12px;border-radius:8px;margin-bottom:18px;display:inline-block}
-.btn-dark{background:#1F5FA6;color:#fff;border:none;border-radius:10px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer}
-
-#app{display:none;width:100%;height:100%}
-
-/* ── App shell (same visual design as before) ─────────────────── */
-.wrapper{display:flex;flex-direction:column;height:100%;overflow:hidden}
-.top{display:flex;justify-content:space-between;align-items:flex-start;padding:14px 28px 12px;position:relative;background:#1F5FA6;flex-wrap:wrap;gap:8px}
-.top-left{flex:1;min-width:0}
-.greet{font-size:26px;font-weight:700;color:#fff;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.firm-line{display:flex;align-items:center;gap:10px;margin-top:5px}
-.firm-divider{width:28px;height:2px;background:rgba(255,255,255,0.45);flex-shrink:0}
-.firm{font-size:11px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.75)}
-.portal-sub{font-size:10px;font-weight:500;letter-spacing:1.8px;text-transform:uppercase;color:rgba(255,255,255,0.85);margin-top:14px}
-.top-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;padding-top:2px;flex-shrink:0}
-.icons-row{display:flex;align-items:center;gap:10px}
-.bell-wrap{position:relative;cursor:pointer;width:36px;height:36px;border-radius:9px;background:rgba(255,255,255,0.12);border:1.5px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.bell-svg{width:17px;height:17px;stroke:#fff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.bell-badge{position:absolute;top:-6px;right:-6px;background:#f59e0b;color:#fff;font-size:9px;font-weight:700;width:17px;height:17px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid #1F5FA6}
-.profile{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.18);border:2px solid rgba(255,255,255,0.5);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;cursor:pointer;overflow:hidden;flex-shrink:0}
-.date{font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.65)}
-.time{font-size:34px;font-weight:300;color:#fff;letter-spacing:2px;line-height:1}
-.ampm{font-size:13px;font-weight:500;color:rgba(255,255,255,0.75);margin-left:4px}
-.top-accent{height:3px;background:linear-gradient(90deg,#0d3466,#1F5FA6,#4a90d9,#1F5FA6,#0d3466);flex-shrink:0}
-.ann-panel{display:none;position:absolute;top:72px;right:80px;width:300px;background:#fff;border:1px solid #c9d9ef;border-radius:12px;padding:16px;z-index:999;box-shadow:0 10px 32px rgba(31,95,166,0.18)}
-.ann-panel.open{display:block}
-.ann-title{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#1F5FA6;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #e5edf8;display:flex;align-items:center;gap:8px}
-.ann-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #f0f4fa}
-.ann-item:last-child{border-bottom:none}
-.ann-dot{width:7px;height:7px;border-radius:50%;background:#1F5FA6;margin-top:4px;flex-shrink:0}
-.ann-msg{font-size:12px;color:#111827;line-height:1.6;flex:1;font-weight:500}
-.ann-date{font-size:10px;color:#6b8ab0;white-space:nowrap;margin-top:2px}
-.ann-empty{font-size:12px;color:#6b8ab0;text-align:center;padding:8px 0;font-style:italic}
-.ann-ticker-wrap{margin:10px 28px 0;background:#1F5FA6;border-radius:9px;padding:9px 16px;display:flex;align-items:center;gap:12px;min-height:38px;overflow:hidden;flex-shrink:0}
-.ticker-label{font-size:9px;font-weight:700;letter-spacing:2px;color:#fff;text-transform:uppercase;white-space:nowrap;border-right:1.5px solid rgba(255,255,255,0.25);padding-right:12px;display:flex;align-items:center;gap:7px}
-.ticker-live-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;animation:livepulse 2s infinite}
-@keyframes livepulse{0%,100%{opacity:1}50%{opacity:0.3}}
-.ticker-slider{flex:1;position:relative;overflow:hidden;height:20px}
-.ticker-track{position:absolute;top:0;left:0;white-space:nowrap;display:flex;align-items:center;height:20px;font-size:12px;font-weight:500;color:#fff;animation-name:tickerScroll;animation-timing-function:linear;animation-iteration-count:infinite;will-change:transform}
-.ticker-sep{margin:0 30px;color:rgba(255,255,255,0.45);font-size:8px}
-@keyframes tickerScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-.profile-popup{display:none;position:absolute;top:68px;right:28px;background:#fff;border:1px solid #c9d9ef;border-radius:12px;padding:22px 26px;z-index:1000;min-width:210px;box-shadow:0 10px 32px rgba(31,95,166,0.18);text-align:center}
-.profile-popup.open{display:block}
-.photo-edit-wrap{position:relative;width:72px;margin:0 auto 6px}
-.profile-big{width:72px;height:72px;border-radius:50%;background:#e8eef6;border:2.5px solid #b0c4de;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#1F5FA6;overflow:hidden}
-.photo-edit-btn{position:absolute;bottom:0;right:0;width:22px;height:22px;border-radius:50%;background:#1F5FA6;border:2px solid #fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:#fff;line-height:1;z-index:10}
-.upload-status{font-size:10px;color:#1F5FA6;margin-bottom:4px;min-height:14px;text-align:center}
-.remove-photo-btn{font-size:10px;font-weight:600;color:#dc2626;background:#fff5f5;border:1.5px solid #fca5a5;border-radius:20px;padding:5px 14px;cursor:pointer;margin-top:4px;margin-bottom:2px;display:none;transition:all 0.2s;letter-spacing:0.5px}
-.remove-photo-btn:hover{background:#dc2626;color:#fff;border-color:#dc2626}
-.view-photo-hint{font-size:11px;color:#6b8ab0;margin-bottom:10px;cursor:pointer}
-.profile-name{font-size:14px;font-weight:700;color:#111827;margin-bottom:4px}
-.profile-email{font-size:11px;color:#6b8ab0;word-break:break-all}
-.notepad-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(10,30,70,0.7);z-index:9998;align-items:center;justify-content:center}
-.notepad-modal.open{display:flex}
-.notepad-box{background:#fff;border-radius:16px;width:90%;max-width:480px;padding:24px;box-shadow:0 16px 48px rgba(31,95,166,0.22);display:flex;flex-direction:column;gap:14px}
-.notepad-header{display:flex;align-items:center;justify-content:space-between}
-.notepad-title{font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#1F5FA6;display:flex;align-items:center;gap:8px}
-.notepad-close{width:28px;height:28px;border-radius:50%;background:#f0f4fa;border:none;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:#6b8ab0}
-.notepad-close:hover{background:#e5edf8}
-.notepad-area{width:100%;height:200px;border:1.5px solid #c9d9ef;border-radius:10px;padding:12px 14px;font-family:"Google Sans",Roboto,sans-serif;font-size:13px;color:#111827;line-height:1.7;resize:none;outline:none;background:#f8fafd;transition:border 0.2s}
-.notepad-area:focus{border-color:#1F5FA6;background:#fff}
-.notepad-footer{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.notepad-saved{font-size:10px;color:#9ab0c8;letter-spacing:0.5px;flex:1}
-.notepad-chars{font-size:10px;color:#b0c4de}
-.notepad-save-btn{background:#1F5FA6;color:#fff;border:none;border-radius:8px;padding:9px 22px;font-family:"Google Sans",Roboto,sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all 0.2s}
-.notepad-save-btn:hover{background:#0d3466;transform:translateY(-1px)}
-.notepad-save-btn:disabled{background:#b0c4de;cursor:not-allowed;transform:none}
-.notepad-btn-wrap{position:relative;cursor:pointer;width:36px;height:36px;border-radius:9px;background:rgba(255,255,255,0.12);border:1.5px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:17px}
-.notepad-btn-wrap:hover{background:rgba(255,255,255,0.22)}
-.photo-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(10,30,70,0.9);z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:16px}
-.photo-modal.open{display:flex}
-.photo-modal img{width:200px;height:200px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,0.4)}
-.photo-modal-name{font-size:18px;font-weight:600;color:#fff}
-.photo-modal-close{font-size:12px;color:rgba(255,255,255,0.7);cursor:pointer;letter-spacing:1px;text-transform:uppercase;border:1px solid rgba(255,255,255,0.3);border-radius:20px;padding:6px 22px}
-.btn-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;padding:10px 16px;background:#fff;border-top:1px solid #e5edf8;border-bottom:1px solid #e5edf8;margin-top:10px;flex-shrink:0}
-.btn{font-family:"Google Sans",Roboto,sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#1a3a60;background:#f5f8fd;border:1.5px solid #c9d9ef;border-left:4px solid #1F5FA6;border-radius:8px;padding:10px 18px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all 0.22s;white-space:nowrap}
-.btn:hover{background:#1F5FA6;color:#fff;border-color:#1F5FA6;border-left-color:#0d3466;transform:translateY(-2px);box-shadow:0 4px 16px rgba(31,95,166,0.28)}
-.gov-links-wrap{background:linear-gradient(180deg,#eef4ff 0%,#f5f8fd 55%,#ffffff 100%);border-bottom:1px solid #dce8f7;flex-shrink:0;padding:4px 0 10px}
-.gov-links-title{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#1F5FA6;text-align:center;padding-top:12px;padding-bottom:2px;display:flex;align-items:center;justify-content:center;gap:10px;margin:0 24px}
-.gov-links-title::before,.gov-links-title::after{content:"";flex:1;max-width:70px;height:1.5px;background:linear-gradient(90deg,transparent,#a9c3e6)}
-.gov-links-title::after{background:linear-gradient(90deg,#a9c3e6,transparent)}
-.gov-row{border-top:none;border-bottom:none;margin-top:6px;background:transparent}
-.gov-row .btn{background:#fff;border-color:#b8cdea}
-.gov-row .btn:hover{background:#1F5FA6;border-color:#1F5FA6}
-.highlights{padding:16px 28px 12px;flex:1;display:flex;flex-direction:column;align-items:center;background:#fff;overflow-y:auto}
-.hl-title{font-size:14px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#1F5FA6;margin-bottom:16px;text-align:center;width:100%;display:flex;align-items:center;gap:14px}
-.hl-title::before,.hl-title::after{content:"";flex:1;height:1.5px;background:#e5edf8}
-.hl-group{margin-bottom:14px;width:100%;display:flex;flex-direction:column;align-items:center}
-.hl-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#fff;background:#1F5FA6;border:none;border-radius:20px;padding:5px 16px;margin-bottom:12px;text-align:center;display:inline-block}
-.hl-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
-.hl-card{background:#f5f8fd;border:1.5px solid #c9d9ef;border-radius:12px;padding:11px 16px;display:flex;align-items:center;gap:12px;min-width:200px;box-shadow:0 2px 8px rgba(31,95,166,0.07)}
-.hl-card-birthday{border-left:4px solid #f59e0b;background:linear-gradient(135deg,#fffbf0,#f5f8fd)}
-.hl-card-anniv{border-left:4px solid #1F5FA6;background:linear-gradient(135deg,#eef4ff,#f5f8fd)}
-.hl-card-new{border-left:4px solid #10b981;background:linear-gradient(135deg,#ecfdf5,#f5f8fd)}
-.hl-icon-wrap{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.hl-icon-birthday{background:#fff8e8;border:1.5px solid #f59e0b}
-.hl-icon-anniv{background:#e8f0fb;border:1.5px solid #1F5FA6}
-.hl-icon-new{background:#d1fae5;border:1.5px solid #10b981}
-.hl-name{font-size:13px;font-weight:700;color:#111827;margin-bottom:2px}
-.hl-sub{font-size:11px;color:#4b5563;font-weight:400}
-.hl-chip{background:#e8f0fb;border:1.5px solid #b0c4de;border-radius:20px;padding:7px 16px;font-size:12px;font-weight:600;color:#111827;display:flex;align-items:center;gap:10px}
-.hl-badge{background:#1F5FA6;border-radius:10px;padding:3px 9px;font-size:10px;color:#fff;font-weight:700}
-.hl-empty-grid{display:flex;flex-direction:column;gap:14px;width:100%;max-width:420px;padding-top:6px}
-.hl-empty-card{background:#f8fafd;border:1.5px solid #dce8f5;border-left:4px solid #c9d9ef;border-radius:10px;padding:18px 20px;font-size:12px;font-weight:500;color:#6b8ab0;display:flex;align-items:center;gap:14px;line-height:1.5}
-.hl-empty-icon{font-size:20px;flex-shrink:0;opacity:0.7}
-.hl-empty-title{font-size:12px;font-weight:600;color:#4b5563;margin-bottom:3px}
-.hl-empty-desc{font-size:11px;color:#9ab0c8;font-weight:400}
+.btn-dark{background:#1a1a1a;color:#fff;border:none;border-radius:10px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer}
+.dt-input{max-width:150px;font-family:inherit}
+.apply-btn{background:#1a1a1a;color:#fff;border:none;border-radius:10px;padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;transition:background .2s}
+.apply-btn:hover{background:#333}
+.apply-btn:disabled{background:#ccc;cursor:not-allowed}
+.user-chip{display:none;align-items:center;gap:8px;background:#fff;border:1.5px solid #e3ddd2;border-radius:20px;padding:5px 14px 5px 5px;font-size:12px;font-weight:600;color:#333;box-shadow:0 2px 8px rgba(60,50,30,.08)}
+.user-avatar{width:24px;height:24px;border-radius:50%;background:#2563eb;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+.logout-btn{background:#fff;border:1.5px solid #e3ddd2;border-radius:10px;padding:7px 14px;font-size:12px;font-weight:600;color:#555;cursor:pointer}
+.logout-btn:hover{background:#f9fafb}
+#appRoot{display:none}
 @media(max-width:600px){
-.top{padding:10px 14px 10px;gap:6px}
-.greet{font-size:18px}
-.firm{font-size:9px;letter-spacing:1.5px}
-.portal-sub{font-size:9px;letter-spacing:1.2px}
-.time{font-size:24px;letter-spacing:1px}
-.ampm{font-size:11px}
-.date{font-size:9px;letter-spacing:1.5px}
-.top-right{gap:4px}
-.icons-row{gap:8px}
-.bell-wrap{width:32px;height:32px}
-.profile{width:32px;height:32px;font-size:12px}
-.ann-ticker-wrap{margin:8px 10px 0;padding:7px 12px}
-.ticker-label{font-size:8px;padding-right:10px}
-.btn-row{padding:8px 10px;gap:6px}
-.btn{font-size:9px;padding:8px 12px;letter-spacing:1px}
-.gov-links-title{font-size:8px;letter-spacing:1.5px;margin:0 10px}
-.gov-links-title::before,.gov-links-title::after{max-width:30px}
-.highlights{padding:12px 10px 10px}
-.hl-title{font-size:10px;letter-spacing:2px}
-.ann-panel{right:8px;width:calc(100vw - 24px);top:58px}
-.profile-popup{right:8px;min-width:180px;top:58px}
-.hl-card{min-width:160px;padding:10px 14px}
+  .auth-box,.denied-box{padding:28px 22px;max-width:88vw}
 }
-@media(max-width:380px){
-.greet{font-size:16px}
-.time{font-size:20px}
-.btn{font-size:8px;padding:7px 10px}
-}
+
+/* ── SCORE PENDING MODAL: employee picker + mini scorecards ───── */
+.sc-emp-list{padding:8px}
+.sc-emp-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-radius:10px;cursor:pointer;transition:background .15s;margin-bottom:4px}
+.sc-emp-row:hover{background:#f9fafb}
+.sc-emp-left{display:flex;align-items:center;gap:10px}
+.sc-emp-name{font-size:13.5px;font-weight:700;color:#1a1a1a}
+.sc-emp-sub{font-size:11px;color:#9aa0ac;margin-top:1px}
+.sc-emp-count{background:#fef2f2;color:#dc2626;font-weight:700;font-size:12px;padding:4px 12px;border-radius:20px;white-space:nowrap}
+.sc-emp-arrow{color:#c7c2b8;font-size:16px;margin-left:4px}
+.sc-back-btn{background:#f3f4f6;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;color:#555;cursor:pointer;display:inline-flex;align-items:center;gap:5px;margin-right:10px}
+.sc-back-btn:hover{background:#e8eaed}
+.sc-mini-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:16px 20px 4px}
+.sc-mini-card{border-radius:12px;padding:12px 14px;text-align:center;cursor:pointer;border:2px solid transparent;transition:all .15s}
+.sc-mini-card:hover{transform:translateY(-1px)}
+.sc-mini-card.active{border-color:currentColor}
+.sc-mini-label{font-size:10px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:5px;opacity:.85}
+.sc-mini-val{font-size:20px;font-weight:700;line-height:1}
+.sc-mini-fms{background:#eff6ff}.sc-mini-fms .sc-mini-label{color:#1d4ed8}.sc-mini-fms .sc-mini-val{color:#1d4ed8}
+.sc-mini-cl{background:#fff7ed}.sc-mini-cl .sc-mini-label{color:#c2410c}.sc-mini-cl .sc-mini-val{color:#c2410c}
+.sc-mini-dl{background:#f5f3ff}.sc-mini-dl .sc-mini-label{color:#7c3aed}.sc-mini-dl .sc-mini-val{color:#7c3aed}
+.sc-mini-hint{text-align:center;font-size:10px;color:#c7c2b8;padding:2px 20px 10px}
 </style>
 </head>
 <body>
 
-<div id="loader">
-  <div class="logo">🏛 Umesh Bolmal &amp; Associates</div>
-  <div class="bar-wrap"><div class="bar"></div></div>
-  <div class="msg">Loading your dashboard…</div>
-</div>
-
+<!-- SIGN-IN GATE -->
 <div class="auth-screen" id="authScreen">
   <div class="auth-box">
-    <div class="auth-title">Staff Portal</div>
+    <div class="auth-title">EM Dashboard</div>
     <div class="auth-sub">Sign in with your company Google account to continue</div>
     <div class="auth-btn-wrap" id="googleSignInBtn"></div>
     <div class="auth-loading" id="authLoadingTxt">Verifying access…</div>
   </div>
 </div>
 
-<div class="denied-screen" id="deniedScreen">
+<!-- ACCESS DENIED -->
+<div class="denied-screen" id="deniedScreen" style="display:none">
   <div class="denied-box">
     <div class="denied-icon">🚫</div>
     <div class="denied-title">Access Denied</div>
-    <div class="denied-sub">This portal is restricted to staff accounts only.</div>
+    <div class="denied-sub">This dashboard is restricted. Your account does not have permission to view it.</div>
     <div class="denied-email" id="deniedEmail"></div>
     <button class="btn-dark" onclick="doLogout()">Try a Different Account</button>
   </div>
 </div>
 
-<div id="app"></div>
+<div id="appRoot">
+<div class="app-shell">
+
+  <!-- SIDEBAR NAVIGATION -->
+  <div class="sidebar" id="sidebarNav">
+    <div class="sb-brand">
+      <div class="sb-brand-mark">UB</div>
+      <div class="sb-brand-txt">
+        <div class="sb-brand-title">UB & Associates</div>
+        <div class="sb-brand-sub">EM DASHBOARD</div>
+      </div>
+    </div>
+    <div class="sb-nav">
+      <button class="sb-item active" data-tab="summary" onclick="switchTab('summary',this)">
+        <span class="sb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"></rect><rect x="14" y="3" width="7" height="5" rx="1"></rect><rect x="14" y="12" width="7" height="9" rx="1"></rect><rect x="3" y="16" width="7" height="5" rx="1"></rect></svg></span>
+        <span class="sb-label">Summary</span>
+      </button>
+      <button class="sb-item" data-tab="fms" onclick="switchTab('fms',this)">
+        <span class="sb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></span>
+        <span class="sb-label">FMS Steps</span>
+        <span class="sb-count" id="badgeFms" style="display:none">0</span>
+      </button>
+      <button class="sb-item" data-tab="checklist" onclick="switchTab('checklist',this)">
+        <span class="sb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></span>
+        <span class="sb-label">Checklist</span>
+        <span class="sb-count" id="badgeChecklist" style="display:none">0</span>
+      </button>
+      <button class="sb-item" data-tab="delegation" onclick="switchTab('delegation',this)">
+        <span class="sb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21v-1a7 7 0 0 1 14 0v1"></path><path d="M19 8h3M20.5 6.5v3"></path></svg></span>
+        <span class="sb-label">Delegation</span>
+        <span class="sb-count" id="badgeDelegation" style="display:none">0</span>
+      </button>
+      <button class="sb-item" data-tab="scores" onclick="switchTab('scores',this)">
+        <span class="sb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M7 15l4-6 4 3 5-8"></path></svg></span>
+        <span class="sb-label">Scores</span>
+      </button>
+    </div>
+    <div class="sb-foot">
+      <a href="https://ugb-design.github.io/EM-DASHBOARD/UGB.html.html" target="_blank" rel="noopener" class="sb-leave-btn">
+        <span>🗓️</span> Leave · Attendance · Salary
+      </a>
+    </div>
+  </div>
+
+  <div class="main-wrap">
+    <div class="header">
+      <div class="h-top">
+        <div>
+          <button class="refresh-btn sb-toggle-btn" id="sbToggleBtn" onclick="toggleSidebar()" title="Menu" style="display:none;margin-bottom:8px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#4b4538" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>
+          </button>
+          <div class="h-title">UMESH BOLMAL & ASSOCIATES</div>
+          <div class="h-badge"><span class="hb-dot"></span>EM DASHBOARD</div>
+          <div class="h-greet" id="greetLine"><span class="hg-emoji">👋</span><span id="greetText">Welcome</span>, <span class="hg-name" id="greetName">back</span></div>
+        </div>
+        <div class="h-right">
+          <span class="wk-label">From</span>
+          <input type="date" class="wk-sel dt-input" id="dtFrom">
+          <span class="wk-label">To</span>
+          <input type="date" class="wk-sel dt-input" id="dtTo">
+          <button class="apply-btn" id="applyBtn" onclick="applyDateRange()">Apply</button>
+          <span class="saving" id="savingTxt"> Please Wait...</span>
+          <button class="refresh-btn" id="refreshBtn" onclick="refreshDashboard()" title="Refresh data">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          </button>
+          <div class="user-chip" id="userChip">
+            <span class="user-avatar" id="userAvatar"></span>
+            <span id="userNameLabel"></span>
+          </div>
+          <button class="logout-btn" id="logoutBtn" style="display:none" onclick="doLogout()">Logout</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+
+  <!-- SUMMARY TAB -->
+  <div class="tab-content active" id="tab-summary">
+    <div id="ldiv" class="loading"><div class="spin"></div> Please Wait Loading Summary...</div>
+    <div id="mdiv" style="display:none">
+
+      <!-- TOP / BOTTOM PERFORMERS + TASK CHART -->
+      <div class="ov-grid">
+        <div class="ov-card">
+          <div class="ov-card-top">
+            <div class="ov-card-title">Top Performers</div>
+            <div class="ov-card-sub">this period</div>
+          </div>
+          <div class="ov-bars" id="ovTopBars"></div>
+        </div>
+        <div class="ov-card">
+          <div class="ov-card-top">
+            <div class="ov-card-title">Bottom Performers</div>
+            <div class="ov-card-sub">this period</div>
+          </div>
+          <div class="ov-bars" id="ovBottomBars"></div>
+        </div>
+      </div>
+      <div class="ov-grid">
+        <div class="ov-card">
+          <div class="ov-card-top">
+            <div class="ov-card-title">Task Chart</div>
+            <div class="ov-card-sub" id="ovDonutSub">this period</div>
+          </div>
+          <div class="ov-donut-wrap" id="ovDonutWrap"></div>
+        </div>
+        <div class="ov-card">
+          <div class="ov-card-top">
+            <div class="ov-card-title">Attendance Status</div>
+            <div class="ov-card-sub">today</div>
+          </div>
+          <div id="ovAttendance">
+            <div class="ov-empty">Attendance isn't part of this dashboard's data source yet.</div>
+            <div class="att-note">To show live present/absent/leave counts here, connect an Attendance sheet/API and it'll render the same way as the other panels.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FMS BOTTLENECK -->
+      <div class="tc" style="margin-bottom:16px">
+        <div class="tc-top">
+          <div class="tc-title">FMS Bottle-Neck</div>
+          <div class="sp-count" id="ovBottleneckCount"></div>
+        </div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr><th>#</th><th>FMS Name</th><th>Step Doer's Name</th><th>Missed</th><th>Avg Delay Time</th></tr></thead>
+            <tbody id="ovBottleneckBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="c5">
+        <div class="card">
+          <div class="cl">Total Plan</div>
+          <div class="cv blue" id="cTP">—</div>
+          <div class="cs">FMS + CHECKLIST + DELEGATION</div>
+        </div>
+        <div class="card">
+          <div class="cl">Total Actual</div>
+          <div class="cv green" id="cTA">—</div>
+          <div class="cs" id="cTAs">—</div>
+        </div>
+        <div class="card">
+          <div class="cl">FMS Plan</div>
+          <div class="cv blue" id="cFP">—</div>
+          <div class="cs-detail" id="cFPdetail"></div>
+        </div>
+        <div class="card">
+          <div class="cl">Checklist Plan</div>
+          <div class="cv blue" id="cCP">—</div>
+          <div class="cs-detail" id="cCPdetail"></div>
+        </div>
+        <div class="card">
+          <div class="cl">Delegation Plan</div>
+          <div class="cv blue" id="cDP">—</div>
+          <div class="cs-detail" id="cDPdetail"></div>
+        </div>
+      </div>
+      <div class="c1">
+        <div class="card">
+          <div class="cl">Overall Score</div>
+          <div class="cv green" id="cOV">—</div>
+          <div class="cs">weekly progress rate</div>
+        </div>
+      </div>
+      <div class="tc">
+        <div class="tc-top">
+          <div class="tc-title">All Doers Master Summary</div>
+        </div>
+        <div style="overflow-x:auto">
+          <table id="masterDoerTable">
+            <thead>
+              <tr>
+                <th style="text-align:center">#</th><th>Doer</th>
+                <th style="text-align:center">FMS Plan</th><th style="text-align:center">FMS Actual</th>
+                <th style="text-align:center">CL Plan</th><th style="text-align:center">CL Actual</th>
+                <th style="text-align:center">DL Plan</th><th style="text-align:center">DL Actual</th>
+                <th style="text-align:center">Progress</th>
+              </tr>
+            </thead>
+            <tbody id="dBody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="summary-panels">
+        <div class="sp-card">
+          <div class="sp-head">
+            <div class="sp-title">FMS by Process</div>
+            <div class="sp-count" id="fmsByProcessCount"></div>
+          </div>
+          <div style="overflow-x:auto">
+            <table>
+              <thead><tr><th>#</th><th>FMS</th><th>Plan</th><th>Actual</th><th>Miss</th><th>Progress</th></tr></thead>
+              <tbody id="fmsByProcessBody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="sp-card">
+          <div class="sp-head">
+            <div class="sp-title">Checklist by Doer</div>
+            <div class="sp-count" id="clByDoerCount"></div>
+          </div>
+          <div style="overflow-x:auto">
+            <table>
+              <thead><tr><th>#</th><th>Doer</th><th>Dept</th><th>Plan</th><th>Actual</th><th>Progress</th></tr></thead>
+              <tbody id="clByDoerBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FMS STEPS TAB -->
+  <div class="tab-content" id="tab-fms">
+    <div class="filter-bar">
+      <label>FMS Type:</label>
+      <select id="fmsFilterType" onchange="applyFmsFilters()"><option value="All">All Types</option></select>
+      <label>Doer:</label>
+      <select id="fmsFilterDoer" onchange="applyFmsFilters()"><option value="All">All Doers</option></select>
+      <label>Status:</label>
+      <select id="fmsFilterStatus" onchange="applyFmsFilters()">
+        <option value="All">All Status</option>
+        <option value="Completed">Completed</option>
+        <option value="Pending">Pending</option>
+      </select>
+      <label>Step:</label>
+      <select id="fmsFilterStep" onchange="applyFmsFilters()"><option value="All">All Steps</option></select>
+    </div>
+    <div class="meta-info-badge" id="fmsMetaBadges"></div>
+    <div class="stat-grid" id="fmsStatsGrid"></div>
+    <div id="fmsCardsContainer"><div class="loading">Fetching FMS structured groups...</div></div>
+  </div>
+
+  <!-- CHECKLIST TAB -->
+  <div class="tab-content" id="tab-checklist">
+    <div class="filter-bar">
+      <label>Doer:</label>
+      <select id="clFilterDoer" onchange="applyChecklistFilters()"><option value="All">All Doers</option></select>
+      <label>Dept:</label>
+      <select id="clFilterDept" onchange="applyChecklistFilters()"><option value="All">All Depts</option></select>
+      <label>Status:</label>
+      <select id="clFilterStatus" onchange="applyChecklistFilters()">
+        <option value="All">All Status</option>
+        <option value="Done">Done</option>
+        <option value="Pending">Pending</option>
+      </select>
+    </div>
+    <div class="meta-info-badge" id="clMetaBadges"></div>
+    <div class="stat-grid" id="clStatsGrid"></div>
+    <div class="tc">
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Doer</th><th>Dept</th><th>Task Details</th><th>Freq</th><th>Planned Date</th><th>Actual Date</th><th>Status</th></tr>
+          </thead>
+          <tbody id="clTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- DELEGATION TAB -->
+  <div class="tab-content" id="tab-delegation">
+    <div class="filter-bar">
+      <label>Doer:</label>
+      <select id="dlFilterDoer" onchange="applyDelegationFilters()"><option value="All">All Doers</option></select>
+      <label>Status:</label>
+      <select id="dlFilterStatus" onchange="applyDelegationFilters()">
+        <option value="All">All Status</option>
+        <option value="Completed">Completed</option>
+        <option value="Pending">Pending</option>
+      </select>
+    </div>
+    <div class="meta-info-badge" id="dlMetaBadges"></div>
+    <div class="stat-grid" id="dlStatsGrid"></div>
+    <div class="tc">
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Doer</th><th>Task Description</th><th>First Date</th><th>Revision 1</th><th>Revision 2</th><th>Latest Revision</th><th>Status</th></tr>
+          </thead>
+          <tbody id="dlTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCORES TAB -->
+  <div class="tab-content" id="tab-scores">
+    <div class="filter-bar">
+      <label>Employee:</label>
+      <select id="scFilterDoer" onchange="applyScoreFilters()"><option value="All">All Employees</option></select>
+      <label>Performance:</label>
+      <select id="scFilterPerf" onchange="applyScoreFilters()">
+        <option value="All">All Performance</option>
+        <option value="high">High (≥90%)</option>
+        <option value="mid">Mid (50–89%)</option>
+        <option value="low">Low (&lt;50%)</option>
+      </select>
+    </div>
+    <div class="meta-info-badge" id="scMetaBadges"></div>
+    <div class="score-hero" id="scHeroCards"></div>
+    <div class="tc">
+      <div class="tc-top">
+        <div class="tc-title">Employee Score Board</div>
+        <div id="scTableCount" style="font-size:12px;color:#9aa0ac;font-weight:500"></div>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th style="text-align:center">#</th>
+              <th>Employee</th>
+              <th style="text-align:center">Total Plan</th>
+              <th style="text-align:center">Total Completed</th>
+              <th style="text-align:center">On Time Completed</th>
+              <th style="text-align:center">Work Not Done On Time %</th>
+              <th style="text-align:center">Work Not Done %</th>
+            </tr>
+          </thead>
+          <tbody id="scTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="ediv" style="display:none"></div>
+    </div><!-- /.content -->
+  </div><!-- /.main-wrap -->
+</div><!-- /.app-shell -->
 
 <script>
-/* ⚠️ Replace with your deployed Apps Script Web App /exec URL */
-var API = "https://script.google.com/a/macros/ugbolmalassociates.com/s/AKfycbzqpQNWEvLHylO5j7K9lzwYitGoU0QGEwIYx8evMwQ4p4pr13MEQhgt3msaiVZjNTYfZQ/exec";
-/* ⚠️ Must match the Apps Script backend's GOOGLE_CLIENT_ID */
+var API = "https://script.google.com/macros/s/AKfycbz_3a5ewt1qsewPKbkB9EvxJZTizCg-XLGuNxu_21HtM1O23A4FqxMzG4tOmv_pTPyn/exec";
+
+// ⚠️ Replace with your Google Cloud OAuth 2.0 Web Client ID (see setup notes)
 var GOOGLE_CLIENT_ID = "567925868040-kv22o4qhj5rmreiaka4odpth50v99ndf.apps.googleusercontent.com";
 
+var globalRawData = null;
 var currentIdToken = null;
 var currentUserEmail = null;
-var portalData = null;
-var notepadLoaded = false;
 
-/* ── Google Sign-In ───────────────────────────────────────────── */
+// ── Helpers ──────────────────────────────────────────────────────────────────
+function ini(n) {
+  var p = String(n).trim().split(' ');
+  return p.length >= 2 ? (p[0][0] + p[1][0]).toUpperCase() : String(n).substring(0, 2).toUpperCase();
+}
+function nb(v) {
+  var n = Number(v) || 0;
+  return '<span class="nb' + (n === 0 ? ' z' : '') + '">' + (n === 0 ? '–' : n) + '</span>';
+}
+function nbB(v) {
+  var n = Number(v) || 0;
+  return '<span class="nb-blue' + (n === 0 ? ' z' : '') + '">' + (n === 0 ? '–' : n) + '</span>';
+}
+function nbG(v) {
+  var n = Number(v) || 0;
+  return '<span class="nb-green' + (n === 0 ? ' z' : '') + '">' + (n === 0 ? '–' : n) + '</span>';
+}
+function pgCls(p) { return p >= 90 ? 'pg-g' : p >= 50 ? 'pg-o' : 'pg-r'; }
+function pg(p) {
+  p = parseFloat(p) || 0;
+  return '<div class="pgw ' + pgCls(p) + '"><div class="pgbg"><div class="pgf" style="width:' + Math.min(p, 100) + '%"></div></div><div class="pgp">' + Math.round(p) + '%</div></div>';
+}
+function ovCls(v) { return 'green'; }
+
+function statCard(label, value, color) {
+  return '<div class="stat-card"><div class="stat-label">' + label + '</div><div class="stat-value ' + color + '">' + value + '</div></div>';
+}
+
+function negScoreCard(label, rawPct) {
+  var color = rawPct <= 5 ? 'green' : 'red';
+  var display = rawPct === 0 ? '0.00%' : '-' + rawPct.toFixed(2) + '%';
+  return statCard(label, display, color);
+}
+
+function hmCell(val) {
+  if (!val || val === '-' || val === 'null' || val === 'undefined') return '<span class="hdash">–</span>';
+  var s = String(val).trim();
+  if (!s || s === '-') return '<span class="hdash">–</span>';
+  if (s.toLowerCase() === 'ok' || s.toLowerCase() === 'completed') return '<span class="hok">OK</span>';
+  if (s.toLowerCase() === 'x') return '<span class="hbad">✕</span>';
+  var pts = s.split('/');
+  if (pts.length === 2) {
+    var d = parseInt(pts[0]) || 0, t = parseInt(pts[1]) || 0;
+    if (t === 0) return '<span class="hdash">–</span>';
+    return d === t ? '<span class="hok">' + s + '</span>' : d === 0 ? '<span class="hbad">' + s + '</span>' : '<span class="hwarn">' + s + '</span>';
+  }
+  return '<span class="hok">' + s + '</span>';
+}
+
+// ── Tab pending-count badges ─────────────────────────────────────────────────
+function setTabBadge(id, count) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  var n = Number(count) || 0;
+  if (n > 0) {
+    el.textContent = n;
+    el.style.display = 'inline-flex';
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+// ── Greeting helper (time-of-day based) ───────────────────────────────────────
+function updateGreeting(name) {
+  var hr = new Date().getHours();
+  var text = 'Good Morning', emoji = '☀️';
+  if (hr >= 12 && hr < 17) { text = 'Good Afternoon'; emoji = '🌤️'; }
+  else if (hr >= 17 && hr < 21) { text = 'Good Evening'; emoji = '🌆'; }
+  else if (hr >= 21 || hr < 5) { text = 'Good Night'; emoji = '🌙'; }
+  var greetTextEl = document.getElementById('greetText');
+  var greetNameEl = document.getElementById('greetName');
+  var greetEmojiEl = document.querySelector('#greetLine .hg-emoji');
+  if (greetTextEl) greetTextEl.textContent = text;
+  if (greetNameEl) greetNameEl.textContent = name || 'there';
+  if (greetEmojiEl) greetEmojiEl.textContent = emoji;
+}
+
+// ── Refresh button (re-fetches latest data without a full reload) ────────────
+function refreshDashboard() {
+  var btn = document.getElementById('refreshBtn');
+  if (!currentIdToken) return;
+  if (btn) btn.classList.add('spinning');
+  fetch(API + '?action=getData&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now(), { redirect: 'follow' })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (btn) btn.classList.remove('spinning');
+      if (data.authorized === false) { showDenied(currentUserEmail); return; }
+      renderAll(data);
+    })
+    .catch(function() {
+      if (btn) btn.classList.remove('spinning');
+    });
+}
+
+// ── Date helpers ─────────────────────────────────────────────────────────────
+function toISO(ddmmyyyy) {
+  if (!ddmmyyyy) return '';
+  var p = String(ddmmyyyy).split('/');
+  if (p.length !== 3) return '';
+  return p[2] + '-' + p[1] + '-' + p[0];
+}
+function toDDMMYYYY(iso) {
+  if (!iso) return '';
+  var p = String(iso).split('-');
+  if (p.length !== 3) return '';
+  return p[2] + '/' + p[1] + '/' + p[0];
+}
+
+// Checks whether a delegation date field actually holds a real date value
+function hasValidDate(v) {
+  if (v === null || v === undefined) return false;
+  var s = String(v).trim();
+  if (!s || s === '-' || s === '—' || s.toLowerCase() === 'null' || s.toLowerCase() === 'undefined') return false;
+  return true;
+}
+
+// ── From/To Date Range ────────────────────────────────────────────────────────
+function applyDateRange() {
+  var fISO = document.getElementById('dtFrom').value;
+  var tISO = document.getElementById('dtTo').value;
+  if (!fISO || !tISO) { alert('Please select both From and To dates'); return; }
+  var from = toDDMMYYYY(fISO);
+  var to = toDDMMYYYY(tISO);
+  document.getElementById('savingTxt').classList.add('show');
+  document.getElementById('applyBtn').disabled = true;
+  fetch(API + '?action=setDates&from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to) + '&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now(), { redirect: 'follow' })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      document.getElementById('savingTxt').classList.remove('show');
+      document.getElementById('applyBtn').disabled = false;
+      if (data.authorized === false) { showDenied(currentUserEmail); return; }
+      renderAll(data);
+    })
+    .catch(function() {
+      document.getElementById('savingTxt').classList.remove('show');
+      document.getElementById('applyBtn').disabled = false;
+    });
+}
+
+// ── Google Sign-In / Access Control ─────────────────────────────────────────────
 function decodeJwtPayload(token) {
   try {
     var base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
@@ -222,7 +821,9 @@ function decodeJwtPayload(token) {
 
 function handleCredentialResponse(response) {
   currentIdToken = response.credential;
-  try { localStorage.setItem('ugb_portal_idtoken', currentIdToken); } catch (e) {}
+  try {
+    localStorage.setItem('emdash_idtoken', currentIdToken);
+  } catch (e) {}
   verifyAndEnter();
 }
 
@@ -230,335 +831,1038 @@ function verifyAndEnter() {
   if (!currentIdToken) return showSignIn();
   var payload = decodeJwtPayload(currentIdToken);
   if (!payload || !payload.exp || payload.exp * 1000 < Date.now()) {
-    try { localStorage.removeItem('ugb_portal_idtoken'); } catch (e) {}
+    try { localStorage.removeItem('emdash_idtoken'); } catch (e) {}
     return showSignIn();
   }
-  hideAll();
-  document.getElementById('authScreen').classList.add('show');
-  document.getElementById('authLoadingTxt').classList.add('show');
-  fetch(API + '?action=auth&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now())
+  document.getElementById('authScreen').style.display = 'flex';
+  document.getElementById('deniedScreen').style.display = 'none';
+  document.getElementById('appRoot').style.display = 'none';
+  document.getElementById('authLoadingTxt').style.display = 'block';
+  fetch(API + '?action=auth&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now(), { redirect: 'follow' })
     .then(function(r) { return r.json(); })
     .then(function(res) {
-      document.getElementById('authLoadingTxt').classList.remove('show');
+      document.getElementById('authLoadingTxt').style.display = 'none';
       if (res.authorized) {
         currentUserEmail = res.email || payload.email;
-        loadPortal();
+        enterApp(res.name || payload.name || currentUserEmail, currentUserEmail);
       } else {
         showDenied(res.email || payload.email);
       }
     })
     .catch(function() {
-      document.getElementById('authLoadingTxt').classList.remove('show');
+      document.getElementById('authLoadingTxt').style.display = 'none';
       showDenied(payload.email);
     });
 }
 
-function hideAll() {
-  document.getElementById('loader').style.display = 'none';
-  document.getElementById('authScreen').classList.remove('show');
-  document.getElementById('deniedScreen').classList.remove('show');
-  document.getElementById('app').style.display = 'none';
-}
-
 function showSignIn() {
-  hideAll();
-  document.getElementById('authScreen').classList.add('show');
+  document.getElementById('authScreen').style.display = 'flex';
+  document.getElementById('deniedScreen').style.display = 'none';
+  document.getElementById('appRoot').style.display = 'none';
   if (window.google && google.accounts && google.accounts.id) {
     google.accounts.id.renderButton(document.getElementById('googleSignInBtn'), { theme: 'outline', size: 'large', width: 260 });
   }
 }
 
 function showDenied(email) {
-  hideAll();
-  document.getElementById('deniedScreen').classList.add('show');
+  document.getElementById('authScreen').style.display = 'none';
+  document.getElementById('appRoot').style.display = 'none';
+  document.getElementById('deniedScreen').style.display = 'flex';
   document.getElementById('deniedEmail').textContent = email || '';
 }
 
+function enterApp(name, email) {
+  document.getElementById('authScreen').style.display = 'none';
+  document.getElementById('deniedScreen').style.display = 'none';
+  document.getElementById('appRoot').style.display = 'block';
+  document.getElementById('userChip').style.display = 'flex';
+  document.getElementById('logoutBtn').style.display = 'inline-block';
+  document.getElementById('userNameLabel').textContent = name;
+  document.getElementById('userAvatar').textContent = ini(name);
+  var emailSub = document.getElementById('userEmailSub');
+  if (emailSub) emailSub.textContent = email || 'ugbolmalassociates.com';
+  var firstName = String(name || '').trim().split(' ')[0] || name;
+  updateGreeting(firstName);
+  if (window._greetTimer) clearInterval(window._greetTimer);
+  window._greetTimer = setInterval(function() { updateGreeting(firstName); }, 60000);
+  initialLoad();
+}
+
 function doLogout() {
-  try { localStorage.removeItem('ugb_portal_idtoken'); } catch (e) {}
+  try { localStorage.removeItem('emdash_idtoken'); } catch (e) {}
   currentIdToken = null; currentUserEmail = null;
-  if (window.google && google.accounts && google.accounts.id) google.accounts.id.disableAutoSelect();
+  if (window.google && google.accounts && google.accounts.id) {
+    google.accounts.id.disableAutoSelect();
+  }
+  document.getElementById('userChip').style.display = 'none';
+  document.getElementById('logoutBtn').style.display = 'none';
   showSignIn();
 }
 
 function initGoogleAuth() {
-  if (!window.google || !google.accounts || !google.accounts.id) { setTimeout(initGoogleAuth, 200); return; }
-  google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleCredentialResponse, auto_select: true });
+  if (!window.google || !google.accounts || !google.accounts.id) {
+    setTimeout(initGoogleAuth, 200);
+    return;
+  }
+  google.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    callback: handleCredentialResponse,
+    auto_select: true
+  });
   var saved = null;
-  try { saved = localStorage.getItem('ugb_portal_idtoken'); } catch (e) {}
-  if (saved) { currentIdToken = saved; verifyAndEnter(); }
-  else { showSignIn(); google.accounts.id.prompt(); }
+  try { saved = localStorage.getItem('emdash_idtoken'); } catch (e) {}
+  if (saved) {
+    currentIdToken = saved;
+    verifyAndEnter();
+  } else {
+    showSignIn();
+    google.accounts.id.prompt();
+  }
 }
 
-/* ── Load portal data & render ───────────────────────────────── */
-function loadPortal() {
-  hideAll();
-  document.getElementById('loader').style.display = 'flex';
-  fetch(API + '?action=getData&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now())
+// ── Delegation status helpers ────────────────────────────────────────────────
+// The sheet's own "Status" column (Completed / Pending / Week Shifted) is the
+// single source of truth. We ONLY hide rows whose sheet status is
+// "Week Shifted" — everything else (Completed / Pending counts) is shown
+// exactly as it is in the sheet, on both the Summary tab and the Delegation
+// tab, so the two always match.
+function normalizeStatus(s) {
+  return String(s || '').trim().toLowerCase();
+}
+function isWeekShifted(r) {
+  return normalizeStatus(r.status) === 'week shifted';
+}
+function computeDelegationStatus(r) {
+  return normalizeStatus(r.status) === 'completed' ? 'Completed' : 'Pending';
+}
+
+// ── Main Render ───────────────────────────────────────────────────────────────
+function renderAll(data) {
+  globalRawData = data;
+  var em = data.emDashboard || {};
+  var t  = em.totals || {};
+  var bd = em.breakdown || {};
+
+  if (em.week) {
+    document.getElementById('dtFrom').value = toISO(em.week.from);
+    document.getElementById('dtTo').value = toISO(em.week.to);
+  }
+
+  // ── Summary card numbers ──────────────────────────────────────────────────
+  // These come straight from the EM DASHBOARD sheet (t = em.totals, bd =
+  // em.breakdown, as sent by the backend). No JS-side recomputation —
+  // whatever the sheet's N/O/P/Q/R/S cells say is what gets shown here,
+  // so the website always matches the EM DASHBOARD sheet exactly.
+  document.getElementById('cTP').textContent = t.totalPlan || 0;
+  document.getElementById('cTA').textContent = t.totalActual || 0;
+  document.getElementById('cFP').textContent = t.fmsPlan || 0;
+  document.getElementById('cCP').textContent = t.checklistPlan || 0;
+  document.getElementById('cDP').textContent = t.delegationPlan || 0;
+
+  var ovNum = (typeof t.overallNum === 'number') ? t.overallNum : (Number(t.totalPlan) > 0 ? (Number(t.totalActual) / Number(t.totalPlan) * 100) : 0);
+  var ovRounded = Math.round(ovNum) + '%';
+  document.getElementById('cTAs').textContent = ovRounded + ' complete';
+  var ovEl = document.getElementById('cOV');
+  ovEl.textContent = ovRounded;
+  ovEl.className = 'cv ' + ovCls(ovNum);
+
+  document.getElementById('cFPdetail').innerHTML =
+    '<span class="cs-done">' + bd.fmsDone + ' done</span>' +
+    '<span class="cs-pend">' + bd.fmsPending + ' pending</span>';
+  document.getElementById('cCPdetail').innerHTML =
+    '<span class="cs-done">' + bd.clDone + ' done</span>' +
+    '<span class="cs-pend">' + bd.clPending + ' pending</span>';
+  document.getElementById('cDPdetail').innerHTML =
+    '<span class="cs-done">' + bd.dlDone + ' done</span>' +
+    '<span class="cs-pend">' + bd.dlPending + ' pending</span>';
+
+  if (em.doers) {
+    document.getElementById('dBody').innerHTML = em.doers.map(function(d, i) {
+      return '<tr><td style="text-align:center">' + (i + 1) + '</td>' +
+        '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(d.name) + '</div>' + d.name + '</div></td>' +
+        '<td style="text-align:center">' + nbB(d.fmsPlan) + '</td><td style="text-align:center">' + nbG(d.fmsActual) + '</td>' +
+        '<td style="text-align:center">' + nbB(d.clPlan) + '</td><td style="text-align:center">' + nbG(d.clActual) + '</td>' +
+        '<td style="text-align:center">' + nbB(d.dlPlan) + '</td><td style="text-align:center">' + nbG(d.dlActual) + '</td>' +
+        '<td>' + pg(d.progress) + '</td></tr>';
+    }).join('');
+  }
+
+  renderOverviewWidgets(data);
+  renderFmsByProcess(data.fmsByProcess || []);
+  renderClByDoer(data.checklistByDoer || []);
+  populateFmsFilters(data.fmsFilterOptions || {});
+  applyFmsFilters();
+  populateChecklistDelegationFilters();
+  applyChecklistFilters();
+  applyDelegationFilters();
+
+  // Scores tab — reset filter on fresh load. Scores totals intentionally
+  // include Week-Shifted delegation rows (only the Delegation TAB itself
+  // hides them), so no adjustment is applied here.
+  document.getElementById('scFilterPerf').value = 'All';
+  var scData = data.scoresData || [];
+  if (!data.scoresData) console.warn('⚠️ scoresData missing from API response — check code.gs SCORES section');
+  else console.log('✅ scoresData received:', scData.length, 'rows');
+  populateScoreFilters(scData);
+  applyScoreFilters();
+}
+
+// ── OVERVIEW WIDGETS (Top/Bottom Performers, Task donut, FMS Bottleneck) ──────
+var OV_BAR_COLORS = ['#3B82F6','#10B981','#8B5CF6','#F59E0B','#EC4899','#06B6D4'];
+
+function renderPerformerBars(containerId, doers, colors) {
+  var el = document.getElementById(containerId);
+  if (!doers.length) { el.innerHTML = '<div class="ov-empty">No doer data for this period</div>'; return; }
+  var maxVal = Math.max.apply(null, doers.map(function(d) { return d.progress; }).concat([1]));
+  el.innerHTML = doers.map(function(d, i) {
+    var h = maxVal > 0 ? Math.max(6, (d.progress / maxVal) * 100) : 6;
+    return '<div class="ov-bar-col">' +
+      '<div class="ov-bar-val">' + Math.round(d.progress) + '%</div>' +
+      '<div class="ov-bar" style="height:' + h + '%;background:' + colors[i % colors.length] + '"></div>' +
+      '<div class="ov-bar-name" title="' + d.name + '">' + d.name + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function renderTaskDonut(completed, pending) {
+  var total = completed + pending;
+  var pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+  var deg = total > 0 ? (completed / total) * 360 : 0;
+  var wrap = document.getElementById('ovDonutWrap');
+  if (total === 0) { wrap.innerHTML = '<div class="ov-empty">No task data for this period</div>'; return; }
+  wrap.innerHTML =
+    '<div class="ov-donut" style="background:conic-gradient(#16a34a 0deg ' + deg + 'deg, #f59e0b ' + deg + 'deg 360deg)">' +
+      '<div class="ov-donut-center"><div class="ov-donut-num">' + pct + '%</div><div class="ov-donut-lbl">' + total + ' total</div></div>' +
+    '</div>' +
+    '<div class="ov-legend">' +
+      '<div class="ov-legend-row"><span class="ov-legend-dot" style="background:#16a34a"></span>Completed<span class="ov-legend-val">' + completed + '</span></div>' +
+      '<div class="ov-legend-row"><span class="ov-legend-dot" style="background:#f59e0b"></span>Pending<span class="ov-legend-val">' + pending + '</span></div>' +
+    '</div>';
+}
+
+function renderOverviewWidgets(data) {
+  var em = data.emDashboard || {};
+  var doers = (em.doers || []).map(function(d) {
+    return { name: d.name, progress: parseFloat(d.progress) || 0 };
+  });
+
+  var sortedDesc = doers.slice().sort(function(a, b) { return b.progress - a.progress; });
+  var sortedAsc  = doers.slice().sort(function(a, b) { return a.progress - b.progress; });
+
+  renderPerformerBars('ovTopBars', sortedDesc.slice(0, 5), OV_BAR_COLORS);
+  renderPerformerBars('ovBottomBars', sortedAsc.slice(0, 5), ['#EF4444','#F97316','#F59E0B','#EAB308','#84CC16']);
+
+  var t = em.totals || {};
+  var completed = Number(t.totalActual) || 0;
+  var pending = Math.max(0, (Number(t.totalPlan) || 0) - completed);
+  renderTaskDonut(completed, pending);
+
+  var bnRows = (data.fmsByProcess || []).filter(function(r) { return (r.missed || 0) > 0; })
+    .sort(function(a, b) { return (b.missed || 0) - (a.missed || 0); });
+  document.getElementById('ovBottleneckCount').textContent = bnRows.length + ' bottleneck' + (bnRows.length === 1 ? '' : 's');
+  document.getElementById('ovBottleneckBody').innerHTML = bnRows.map(function(r, i) {
+    return '<tr><td>' + (i + 1) + '</td>' +
+      '<td><span class="fms-type-pill">' + r.fmsType + '</span></td>' +
+      '<td>' + (r.doer || '—') + '</td>' +
+      '<td><span class="mb-num">' + r.missed + '</span></td>' +
+      '<td style="color:#9aa0ac">No delay data available</td></tr>';
+  }).join('') || '<tr><td colspan="5" style="text-align:center;color:#bbb;padding:20px">No bottlenecks — all FMS steps on track 🎉</td></tr>';
+}
+
+// ── FMS by Process panel ──────────────────────────────────────────────────────
+function renderFmsByProcess(rows) {
+  document.getElementById('fmsByProcessCount').textContent = rows.length + ' process types';
+  document.getElementById('fmsByProcessBody').innerHTML = rows.map(function(r, i) {
+    return '<tr>' +
+      '<td>' + (i + 1) + '</td>' +
+      '<td><span class="fms-type-pill">' + r.fmsType + '</span></td>' +
+      '<td>' + nb(r.plan) + '</td>' +
+      '<td>' + nb(r.actual) + '</td>' +
+      '<td>' + (r.missed === 0 ? '<span class="mb-ok">OK</span>' : '<span class="mb-num">' + r.missed + '</span>') + '</td>' +
+      '<td>' + pg(r.progress) + '</td>' +
+      '</tr>';
+  }).join('') || '<tr><td colspan="6" style="text-align:center;color:#bbb;padding:20px">No FMS data for this week</td></tr>';
+}
+
+// ── Checklist by Doer panel ───────────────────────────────────────────────────
+function renderClByDoer(rows) {
+  document.getElementById('clByDoerCount').textContent = rows.length + ' doers';
+  document.getElementById('clByDoerBody').innerHTML = rows.map(function(r, i) {
+    return '<tr>' +
+      '<td>' + (i + 1) + '</td>' +
+      '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(r.doer) + '</div>' + r.doer + '</div></td>' +
+      '<td><span class="dept-pill">' + r.dept + '</span></td>' +
+      '<td>' + nb(r.plan) + '</td>' +
+      '<td>' + nb(r.actual) + '</td>' +
+      '<td>' + pg(r.progress) + '</td>' +
+      '</tr>';
+  }).join('') || '<tr><td colspan="6" style="text-align:center;color:#bbb;padding:20px">No checklist data for this week</td></tr>';
+}
+
+// ── FMS Steps Tab ─────────────────────────────────────────────────────────────
+function populateFmsFilters(opts) {
+  var typesSel = document.getElementById('fmsFilterType');
+  var doersSel = document.getElementById('fmsFilterDoer');
+  var stepsSel = document.getElementById('fmsFilterStep');
+  var prevType = typesSel.value;
+  var prevDoer = doersSel.value;
+  var prevStep = stepsSel.value;
+
+  typesSel.innerHTML = '<option value="All">All Types</option>';
+  (opts.types || []).forEach(function(t) {
+    var o = document.createElement('option');
+    o.value = t; o.textContent = t;
+    if (t === prevType) o.selected = true;
+    typesSel.appendChild(o);
+  });
+
+  doersSel.innerHTML = '<option value="All">All Doers</option>';
+  (opts.doers || []).forEach(function(d) {
+    var o = document.createElement('option');
+    o.value = d; o.textContent = d;
+    if (d === prevDoer) o.selected = true;
+    doersSel.appendChild(o);
+  });
+
+  // Step dropdown — use backend-provided list if present, otherwise derive
+  // the unique set of step names straight from the fmsGroups payload.
+  var stepNames = opts.steps;
+  if (!stepNames || !stepNames.length) {
+    var stepSet = new Set();
+    (globalRawData && globalRawData.fmsGroups || []).forEach(function(g) {
+      (g.steps || []).forEach(function(s) { if (s.step) stepSet.add(s.step); });
+    });
+    stepNames = Array.from(stepSet).sort();
+  }
+  stepsSel.innerHTML = '<option value="All">All Steps</option>';
+  stepNames.forEach(function(s) {
+    var o = document.createElement('option');
+    o.value = s; o.textContent = s;
+    if (s === prevStep) o.selected = true;
+    stepsSel.appendChild(o);
+  });
+}
+
+function applyFmsFilters() {
+  var typeFilter = document.getElementById('fmsFilterType').value;
+  var doerFilter = document.getElementById('fmsFilterDoer').value;
+  var statusFilter = document.getElementById('fmsFilterStatus').value;
+  var stepFilter = document.getElementById('fmsFilterStep').value;
+  var groups = globalRawData ? (globalRawData.fmsGroups || []) : [];
+
+  var totalPlan = 0, totalActual = 0, totalOnTime = 0, groupCount = 0;
+
+  var html = groups.map(function(g) {
+    if (typeFilter !== 'All' && g.groupName !== typeFilter) return '';
+    var filteredSteps = g.steps.filter(function(s) {
+      if (doerFilter !== 'All' && s.doer !== doerFilter) return false;
+      if (stepFilter !== 'All' && s.step !== stepFilter) return false;
+      if (statusFilter === 'Completed' && (s.missed || 0) !== 0) return false;
+      if (statusFilter === 'Pending' && (s.missed || 0) === 0) return false;
+      return true;
+    });
+    if (filteredSteps.length === 0) return '';
+
+    var gPlan = filteredSteps.reduce(function(s, r) { return s + r.plan; }, 0);
+    var gActual = filteredSteps.reduce(function(s, r) { return s + r.actual; }, 0);
+    var gOnTime = filteredSteps.reduce(function(s, r) { return s + (r.onTime || 0); }, 0);
+    var gProg = gPlan > 0 ? (gActual / gPlan) * 100 : 0;
+    totalPlan += gPlan; totalActual += gActual; totalOnTime += gOnTime; groupCount++;
+
+    var rows = filteredSteps.map(function(s, idx) {
+      var missedCell;
+      if (s.missed === 0) {
+        missedCell = '<span class="mb-ok">OK</span>';
+      } else {
+        var tasks = s.pendingTasks || [];
+        var encoded = encodeURIComponent(JSON.stringify(tasks));
+        missedCell = '<span class="mb-num" style="cursor:pointer" onclick="showPendingModal(\'' +
+          s.step.replace(/'/g, "\\'") + '\',\'' + s.doer.replace(/'/g, "\\'") + '\',\'' + encoded + '\')">' + s.missed + '</span>';
+      }
+      return '<tr>' +
+        '<td style="width:40px">' + (idx + 1) + '</td>' +
+        '<td>' + s.step + '</td>' +
+        '<td style="width:180px"><div class="dc"><div class="av av' + (idx % 16) + '">' + ini(s.doer) + '</div>' + s.doer + '</div></td>' +
+        '<td style="width:70px">' + nb(s.plan) + '</td>' +
+        '<td style="width:70px">' + nb(s.actual) + '</td>' +
+        '<td style="width:80px">' + missedCell + '</td>' +
+        '<td style="width:160px">' + pg(s.progress) + '</td>' +
+        '</tr>';
+    }).join('');
+
+    return '<div class="fms-card">' +
+      '<div class="fms-card-top">' +
+        '<div class="fms-card-title"><span class="fms-dot"></span>' + g.groupName + '</div>' +
+        '<div class="fms-card-meta">' +
+          '<span class="fms-badge p-blue">' + gPlan + ' plan</span>' +
+          '<span class="fms-badge a-green">' + gActual + ' actual</span>' +
+          '<div style="width:120px">' + pg(gProg) + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<table><thead><tr><th>#</th><th>Step</th><th>Doer</th><th>Plan</th><th>Actual</th><th>Missed</th><th>Progress</th></tr></thead>' +
+      '<tbody>' + rows + '</tbody></table>' +
+      '</div>';
+  }).join('');
+
+  var missed = totalPlan - totalActual;
+  document.getElementById('fmsMetaBadges').innerHTML =
+    '<span class="m-badge b-blue">' + groupCount + ' groups</span>' +
+    '<span class="m-badge b-green">' + totalActual + ' done</span>' +
+    '<span class="m-badge b-red">' + Math.max(0, missed) + ' pending</span>';
+
+  setTabBadge('badgeFms', Math.max(0, missed));
+
+  var fmsWorkNotDonePct       = totalPlan   > 0 ? (Math.max(0, missed) / totalPlan * 100) : 0;
+  var fmsWorkNotDoneOnTimePct = totalActual > 0 ? Math.max(0, 100 - (totalOnTime / totalActual * 100)) : 0;
+
+  document.getElementById('fmsStatsGrid').innerHTML =
+    statCard('On Time Completed', totalOnTime, 'blue') +
+    negScoreCard('Work Not Done %', fmsWorkNotDonePct) +
+    negScoreCard('Work Not Done On Time %', fmsWorkNotDoneOnTimePct);
+
+  document.getElementById('fmsCardsContainer').innerHTML = html ||
+    '<div style="text-align:center;padding:40px;color:#bbb">No FMS data matches the selected filters</div>';
+}
+
+// ── Checklist & Delegation filter population ──────────────────────────────────
+function populateChecklistDelegationFilters() {
+  var clDoers = new Set(), clDepts = new Set();
+  if (globalRawData.checklistData) {
+    globalRawData.checklistData.forEach(function(r) { clDoers.add(r.doer); clDepts.add(r.dept); });
+  }
+  updateSelectOptions('clFilterDoer', clDoers);
+  updateSelectOptions('clFilterDept', clDepts);
+
+  var dlDoers = new Set();
+  if (globalRawData.delegationData) {
+    // Doer dropdown should only reflect doers with visible (non "Week Shifted") rows
+    globalRawData.delegationData.forEach(function(r) { if (!isWeekShifted(r)) dlDoers.add(r.client); });
+  }
+  updateSelectOptions('dlFilterDoer', dlDoers);
+}
+
+function updateSelectOptions(id, setObj) {
+  var sel = document.getElementById(id);
+  var currentVal = sel.value;
+  sel.innerHTML = '<option value="All">' + (id.includes('Doer') ? 'All Doers' : id.includes('Dept') ? 'All Depts' : 'All') + '</option>';
+  Array.from(setObj).sort().forEach(function(v) {
+    var o = document.createElement('option');
+    o.value = v; o.textContent = v;
+    if (v === currentVal) o.selected = true;
+    sel.appendChild(o);
+  });
+}
+
+// ── Checklist Tab ─────────────────────────────────────────────────────────────
+function applyChecklistFilters() {
+  var dFilter    = document.getElementById('clFilterDoer').value;
+  var deptFilter = document.getElementById('clFilterDept').value;
+  var sFilter    = document.getElementById('clFilterStatus').value;
+  var data = globalRawData ? (globalRawData.checklistData || []) : [];
+  var filtered = data.filter(function(r) {
+    return (dFilter === 'All' || r.doer === dFilter) &&
+           (deptFilter === 'All' || r.dept === deptFilter) &&
+           (sFilter === 'All' || r.status === sFilter);
+  });
+  var doneCount = filtered.filter(function(r) { return r.status === 'Done'; }).length;
+  var pendCount = filtered.length - doneCount;
+  document.getElementById('clMetaBadges').innerHTML =
+    '<span class="m-badge b-blue">' + filtered.length + ' planned</span>' +
+    '<span class="m-badge b-green">' + doneCount + ' done</span>' +
+    '<span class="m-badge b-red">' + pendCount + ' pending</span>';
+
+  setTabBadge('badgeChecklist', pendCount);
+
+  var onTimeCount = filtered.filter(function(r) {
+    return r.status === 'Done' && r.actualDate && r.actualDate !== '-' && r.plannedDate && r.plannedDate !== '-' && r.actualDate <= r.plannedDate;
+  }).length;
+
+  var clWorkNotDonePct       = filtered.length > 0 ? (pendCount / filtered.length * 100) : 0;
+  var clWorkNotDoneOnTimePct = doneCount > 0 ? Math.max(0, 100 - (onTimeCount / doneCount * 100)) : 0;
+
+  document.getElementById('clStatsGrid').innerHTML =
+    statCard('On Time Completed', onTimeCount, 'blue') +
+    negScoreCard('Work Not Done %', clWorkNotDonePct) +
+    negScoreCard('Work Not Done On Time %', clWorkNotDoneOnTimePct);
+
+  document.getElementById('clTableBody').innerHTML = filtered.map(function(r, i) {
+    return '<tr><td>' + (i + 1) + '</td>' +
+      '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(r.doer) + '</div>' + r.doer + '</div></td>' +
+      '<td><span class="dept-pill">' + r.dept + '</span></td>' +
+      '<td>' + r.task + '</td>' +
+      '<td><span class="freq-pill">' + r.freq + '</span></td>' +
+      '<td style="white-space:nowrap">' + r.plannedDate + '</td>' +
+      '<td style="white-space:nowrap">' + r.actualDate + '</td>' +
+      '<td><span class="' + (r.status === 'Done' ? 'st-done' : 'st-pend') + '">' + r.status + '</span></td></tr>';
+  }).join('');
+}
+
+// ── Delegation Tab ────────────────────────────────────────────────────────────
+// Rows whose sheet Status is "Week Shifted" are hidden entirely (they don't
+// appear in the list, filters, badges, or stat cards). Every remaining row
+// keeps the sheet's own Completed / Pending status exactly as-is.
+function applyDelegationFilters() {
+  var dFilter = document.getElementById('dlFilterDoer').value;
+  var sFilter = document.getElementById('dlFilterStatus').value;
+  var data = globalRawData ? (globalRawData.delegationData || []) : [];
+
+  var visible = data.filter(function(r) { return !isWeekShifted(r); });
+
+  var enriched = visible.map(function(r) {
+    return Object.assign({}, r, { status: computeDelegationStatus(r) });
+  });
+
+  var filtered = enriched.filter(function(r) {
+    if (dFilter !== 'All' && r.client !== dFilter) return false;
+    if (sFilter === 'All') return true;
+    return r.status.toLowerCase() === sFilter.toLowerCase();
+  });
+
+  var doneCount    = filtered.filter(function(r) { return r.status === 'Completed'; }).length;
+  var pendingCount = filtered.filter(function(r) { return r.status === 'Pending'; }).length;
+  var totalCount   = filtered.length;
+
+  var badgeHTML = '<span class="m-badge b-blue">' + totalCount + ' total</span>';
+  if (sFilter === 'All') {
+    badgeHTML += '<span class="m-badge b-green">' + doneCount + ' completed</span>' +
+      '<span class="m-badge" style="background:#fffbeb;color:#d97706">' + pendingCount + ' pending</span>';
+  } else if (sFilter === 'Completed') {
+    badgeHTML += '<span class="m-badge b-green">' + doneCount + ' completed</span>';
+  } else if (sFilter === 'Pending') {
+    badgeHTML += '<span class="m-badge" style="background:#fffbeb;color:#d97706">' + pendingCount + ' pending</span>';
+  }
+  document.getElementById('dlMetaBadges').innerHTML = badgeHTML;
+
+  // Badge should reflect the true pending total from ALL visible rows
+  // (not just the current filter selection), so switching the status
+  // filter doesn't make the notification disappear.
+  var allPendingCount = enriched.filter(function(r) {
+    return (dFilter === 'All' || r.client === dFilter) && r.status === 'Pending';
+  }).length;
+  setTabBadge('badgeDelegation', allPendingCount);
+
+  var yellowScore = totalCount > 0 ? (pendingCount / totalCount * 100) : 0;
+  var greenScore  = totalCount > 0 ? (doneCount    / totalCount * 100) : 0;
+  document.getElementById('dlStatsGrid').innerHTML =
+    statCard('Pending Score',   yellowScore.toFixed(2) + '%', 'orange') +
+    statCard('Completed Score', greenScore.toFixed(2)  + '%', 'green');
+
+  document.getElementById('dlTableBody').innerHTML = filtered.map(function(r, i) {
+    var sCls = r.status === 'Completed' ? 'st-done' : 'st-pend';
+    return '<tr><td>' + (i + 1) + '</td>' +
+      '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(r.client) + '</div>' + r.client + '</div></td>' +
+      '<td>' + r.task + '</td>' +
+      '<td style="white-space:nowrap">' + r.firstDate + '</td>' +
+      '<td style="white-space:nowrap">' + r.revision1 + '</td>' +
+      '<td style="white-space:nowrap">' + r.revision2 + '</td>' +
+      '<td style="white-space:nowrap">' + r.latestRevision + '</td>' +
+      '<td><span class="' + sCls + '">' + r.status + '</span></td></tr>';
+  }).join('');
+}
+
+// ── SCORES TAB ────────────────────────────────────────────────────────────────
+
+// Performance color — no blue. <50 red, 50–90 orange, 90–95 amber, 95–100 green.
+function perfColor(pct) {
+  if (pct >= 95) return { bg:'#dcfce7', color:'#166534', bar:'#16a34a' }; // green
+  if (pct >= 90) return { bg:'#fef9c3', color:'#854d0e', bar:'#f59e0b' }; // amber
+  if (pct >= 50) return { bg:'#ffedd5', color:'#c2410c', bar:'#f97316' }; // orange
+  return { bg:'#fee2e2', color:'#991b1b', bar:'#ef4444' }; // red
+}
+
+// Format a pct cell (Work Not Done On Time % values — shown negative in sheet)
+// Green when the value is -5% or higher (i.e. -5, -4, -3 ... 0, +), red when it drops below -5% (-6, -7, -8 ...).
+function pctCell(raw) {
+  // raw is a string like "-100.00%" or "0.00%" or "-12.26%"
+  var s = String(raw || '').trim();
+  if (!s || s === '' || s === '-') return '<span class="pct-zer">—</span>';
+  var num = parseFloat(s.replace('%','')) || 0;
+  var cls = num >= -5 ? 'pct-pos' : 'pct-neg';
+  var display = num === 0 ? '0.00%' : (num > 0 ? '+' : '') + num.toFixed(2) + '%';
+  return '<span class="' + cls + '">' + display + '</span>';
+}
+
+// Work Not Done % cell — green when within ±5%, red when it exceeds that band
+function workNotDoneCell(raw) {
+  var s = String(raw || '').trim();
+  if (!s || s === '' || s === '-') return '<span class="pct-zer">—</span>';
+  var num = parseFloat(s.replace('%','')) || 0;
+  var absNum = Math.abs(num);
+  var cls = absNum <= 5 ? 'pct-pos' : 'pct-neg';
+  var display = num === 0 ? '0.00%' : (num > 0 ? '+' : '') + num.toFixed(2) + '%';
+  return '<span class="' + cls + '">' + display + '</span>';
+}
+
+// Check if a scores row is all-zero (hide these)
+function isScoreRowAllZero(r) {
+  return (Number(r.totalPlan) || 0) === 0 &&
+         (Number(r.totalCompleted) || 0) === 0 &&
+         (Number(r.onTimeCompleted) || 0) === 0;
+}
+
+function populateScoreFilters(rows) {
+  // Only populate with employees that have any data
+  var active = rows.filter(function(r) { return !isScoreRowAllZero(r) && String(r.employee || '').trim() !== ''; });
+  var sel = document.getElementById('scFilterDoer');
+  var currentVal = sel.value;
+  sel.innerHTML = '<option value="All">All Employees</option>';
+  active.forEach(function(r) {
+    var o = document.createElement('option');
+    o.value = r.employee; o.textContent = r.employee;
+    if (r.employee === currentVal) o.selected = true;
+    sel.appendChild(o);
+  });
+}
+
+// Scores tab now shows the SCORES sheet's own numbers exactly as they are —
+// no cross-check against the Summary tab, no warning banner. Both tabs
+// simply display whatever their own source sheet says.
+function applyScoreFilters() {
+  var dFilter = document.getElementById('scFilterDoer').value;
+  var gFilter = document.getElementById('scFilterPerf').value;
+  var rows = globalRawData ? (globalRawData.scoresData || []) : [];
+
+  // Auto-hide: skip rows with no employee name OR all zeros
+  var filtered = rows.filter(function(r) {
+    var name = String(r.employee || '').trim();
+    if (!name) return false;
+    if (isScoreRowAllZero(r)) return false;
+    if (dFilter !== 'All' && r.employee !== dFilter) return false;
+    if (gFilter !== 'All') {
+      var perfPctF = parseFloat(String(r.performance || '0').replace('%','')) || 0;
+      if (gFilter === 'high' && perfPctF < 90) return false;
+      if (gFilter === 'mid' && (perfPctF < 50 || perfPctF >= 90)) return false;
+      if (gFilter === 'low' && perfPctF >= 50) return false;
+    }
+    return true;
+  });
+
+  // Hero summary cards — figures computed straight from the SCORES sheet rows
+  var totalEmployees = filtered.length;
+  var totalPlanSum   = filtered.reduce(function(s, r) { return s + (Number(r.totalPlan) || 0); }, 0);
+  var totalDoneSum   = filtered.reduce(function(s, r) { return s + (Number(r.totalCompleted) || 0); }, 0);
+  var onTimeSum      = filtered.reduce(function(s, r) { return s + (Number(r.onTimeCompleted) || 0); }, 0);
+  var totalPendingSum = Math.max(0, totalPlanSum - totalDoneSum);
+  window._scPendingEmployeeFilter = dFilter;
+
+  // Avg Performance = Total Completed / Total Plan * 100 (weighted across the
+  // filtered group), NOT a simple average of each employee's individual %.
+  var avgPerf = totalPlanSum > 0 ? (totalDoneSum / totalPlanSum * 100) : 0;
+
+  var heroTotalPlan = totalPlanSum;
+  var heroTotalDone = totalDoneSum;
+  var heroAvgPerf   = avgPerf;
+
+  var avgColor = heroAvgPerf >= 95 ? '#16a34a' : heroAvgPerf >= 90 ? '#f59e0b' : heroAvgPerf >= 50 ? '#f97316' : '#dc2626';
+
+  var pendingColor = totalPendingSum > 0 ? '#dc2626' : '#16a34a';
+  document.getElementById('scHeroCards').innerHTML =
+    '<div class="score-hero-card"><div class="score-hero-label">Active Employees</div><div class="score-hero-val" style="color:#2563eb">' + totalEmployees + '</div></div>' +
+    '<div class="score-hero-card"><div class="score-hero-label">Total Plan</div><div class="score-hero-val" style="color:#2563eb">' + heroTotalPlan + '</div></div>' +
+    '<div class="score-hero-card"><div class="score-hero-label">Total Completed</div><div class="score-hero-val" style="color:#16a34a">' + heroTotalDone + '</div></div>' +
+    '<div class="score-hero-card" onclick="showScorePendingModal()" style="cursor:pointer;position:relative" title="Click to see all pending tasks"><div class="score-hero-label">Pending</div><div class="score-hero-val" style="color:' + pendingColor + '">' + totalPendingSum + '</div><div style="font-size:8px;color:#c7c2b8;margin-top:1px;letter-spacing:.03em">tap to view</div></div>' +
+    '<div class="score-hero-card"><div class="score-hero-label">On Time Completed</div><div class="score-hero-val" style="color:#16a34a">' + onTimeSum + '</div></div>' +
+    '<div class="score-hero-card"><div class="score-hero-label">Avg Performance</div><div class="score-hero-val" style="color:' + avgColor + '">' + heroAvgPerf.toFixed(1) + '%</div></div>';
+
+  document.getElementById('scMetaBadges').innerHTML =
+    '<span class="m-badge b-blue">' + totalEmployees + ' employees</span>' +
+    '<span class="m-badge b-green">' + totalDoneSum + ' completed</span>' +
+    '<span class="m-badge" style="background:#eff6ff;color:#1d4ed8">' + onTimeSum + ' on time</span>';
+
+  document.getElementById('scTableCount').textContent = filtered.length + ' employees shown';
+
+  // Sort by performance descending (performance field still drives ranking
+  // even though the column itself is no longer displayed in the table)
+  var sorted = filtered.slice().sort(function(a, b) {
+    var pa = parseFloat(String(a.performance||'0').replace('%','')) || 0;
+    var pb = parseFloat(String(b.performance||'0').replace('%','')) || 0;
+    return pb - pa;
+  });
+
+  document.getElementById('scTableBody').innerHTML = sorted.map(function(r, i) {
+    return '<tr>' +
+      '<td style="text-align:center;font-weight:700;color:#9aa0ac">' + (i + 1) + '</td>' +
+      '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(r.employee) + '</div><strong>' + r.employee + '</strong></div></td>' +
+      '<td style="text-align:center">' + nbB(r.totalPlan) + '</td>' +
+      '<td style="text-align:center">' + nbG(r.totalCompleted) + '</td>' +
+      '<td style="text-align:center">' + nbG(r.onTimeCompleted) + '</td>' +
+      '<td style="text-align:center">' + pctCell(r.workNotDoneOnTimePct) + '</td>' +
+      '<td style="text-align:center">' + workNotDoneCell(r.workNotDonePct) + '</td>' +
+      '</tr>';
+  }).join('') || '<tr><td colspan="7" style="text-align:center;color:#bbb;padding:30px">No score data matches the selected filters</td></tr>';
+}
+
+// ── Scores tab: Pending card → combined pending-tasks modal ─────────────────
+function normalizeName(n) { return String(n || '').trim().toLowerCase(); }
+
+// Strips off trailing " - <phone/id>" style suffixes some source sheets add
+// to a doer's name (e.g. "Aishwarya - 9886160130" → "Aishwarya"), so the
+// same person doesn't get split into multiple pending-task buckets.
+function baseName(n) {
+  return String(n || '').split(/\s*-\s*/)[0].trim();
+}
+
+// Resolves any raw doer/client name coming from FMS/Checklist/Delegation
+// rows to a single canonical employee name (taken from the Scores sheet),
+// so name variants like "AISHWARYA" and "Aishwarya - 9886160130" always
+// collapse into one person instead of showing as separate pending cards.
+function resolveCanonicalEmployee(rawName) {
+  var canonicalList = (globalRawData && globalRawData.scoresData || [])
+    .map(function(r) { return r.employee; })
+    .filter(Boolean);
+  var base = normalizeName(baseName(rawName));
+  if (!base) return String(rawName || '').trim();
+
+  for (var i = 0; i < canonicalList.length; i++) {
+    if (normalizeName(canonicalList[i]) === base) return canonicalList[i];
+  }
+  for (var i = 0; i < canonicalList.length; i++) {
+    var c = normalizeName(canonicalList[i]);
+    if (c.indexOf(base) === 0 || base.indexOf(c) === 0) return canonicalList[i];
+  }
+  // No canonical match found — fall back to the cleaned base name so at
+  // least "Aishwarya" and "Aishwarya - 123" still merge with each other.
+  return baseName(rawName) || String(rawName || '').trim();
+}
+
+// Gathers every pending item across FMS / Checklist / Delegation into one
+// unified list — each tagged with its source type, doer, task, and planned
+// date — so the Scores tab's Pending card can show a single combined view.
+// Doer/client names are passed through resolveCanonicalEmployee() so name
+// variants for the same person are merged before grouping/filtering.
+function collectAllPendingTasks(employeeFilter) {
+  var data = globalRawData || {};
+  var list = [];
+
+  (data.fmsGroups || []).forEach(function(g) {
+    (g.steps || []).forEach(function(s) {
+      (s.pendingTasks || []).forEach(function(t) {
+        var doerName = resolveCanonicalEmployee(t.finalDoer || s.doer || '');
+        if (employeeFilter && employeeFilter !== 'All' && normalizeName(doerName) !== normalizeName(employeeFilter)) return;
+        list.push({ type: 'FMS', doer: doerName, task: s.step, client: t.client || '-', plannedDate: t.plannedDate || '-' });
+      });
+    });
+  });
+
+  (data.checklistData || []).forEach(function(r) {
+    if (r.status === 'Done') return;
+    var doerName = resolveCanonicalEmployee(r.doer);
+    if (employeeFilter && employeeFilter !== 'All' && normalizeName(doerName) !== normalizeName(employeeFilter)) return;
+    list.push({ type: 'Checklist', doer: doerName, task: r.task, client: '-', plannedDate: r.plannedDate || '-' });
+  });
+
+  (data.delegationData || []).forEach(function(r) {
+    if (isWeekShifted(r)) return;
+    if (computeDelegationStatus(r) !== 'Pending') return;
+    var doerName = resolveCanonicalEmployee(r.client);
+    if (employeeFilter && employeeFilter !== 'All' && normalizeName(doerName) !== normalizeName(employeeFilter)) return;
+    var dlDate = hasValidDate(r.latestRevision) ? r.latestRevision :
+                 hasValidDate(r.revision2) ? r.revision2 :
+                 hasValidDate(r.revision1) ? r.revision1 : (r.firstDate || '-');
+    list.push({ type: 'Delegation', doer: doerName, task: r.task, client: '-', plannedDate: dlDate });
+  });
+
+  // Most recent/overdue planned dates first where possible
+  list.sort(function(a, b) { return String(a.plannedDate).localeCompare(String(b.plannedDate)); });
+  return list;
+}
+
+function typeTagStyle(type) {
+  if (type === 'FMS') return 'background:#eff6ff;color:#1d4ed8';
+  if (type === 'Checklist') return 'background:#fff7ed;color:#ea580c';
+  return 'background:#f5f3ff;color:#7c3aed';
+}
+
+// ── Pending modal: employee picker view ──────────────────────────────────────
+// Builds the list of employees that currently have at least one pending item
+// (across FMS + Checklist + Delegation), with their pending count, so the
+// person taps an employee first instead of seeing one giant combined list.
+// Names are already canonicalized inside collectAllPendingTasks(), so each
+// employee appears here exactly once with FMS + Checklist + Delegation
+// combined into a single card.
+function buildEmployeePendingSummary() {
+  var allTasks = collectAllPendingTasks('All');
+  var map = {}; // name -> {fms, cl, dl, total}
+  allTasks.forEach(function(t) {
+    var key = t.doer || '(Unassigned)';
+    if (!map[key]) map[key] = { name: key, fms: 0, cl: 0, dl: 0, total: 0 };
+    if (t.type === 'FMS') map[key].fms++;
+    else if (t.type === 'Checklist') map[key].cl++;
+    else if (t.type === 'Delegation') map[key].dl++;
+    map[key].total++;
+  });
+  return Object.keys(map).map(function(k) { return map[k]; }).sort(function(a, b) { return b.total - a.total; });
+}
+
+function showScorePendingModal() {
+  var employeeFilter = window._scPendingEmployeeFilter || 'All';
+
+  document.getElementById('scoreModalMiniCards').style.display = 'none';
+  document.getElementById('scoreModalMiniHint').style.display = 'none';
+  document.getElementById('scoreModalTableWrap').style.display = 'none';
+  document.getElementById('scoreModalBackBtnWrap').innerHTML = '';
+
+  // If a specific employee is already selected via the tab filter, jump
+  // straight to their detail view. Otherwise show the employee picker.
+  if (employeeFilter !== 'All') {
+    renderScorePendingDetail(resolveCanonicalEmployee(employeeFilter));
+  } else {
+    renderScorePendingEmployeeList();
+  }
+
+  document.getElementById('scorePendingModal').style.display = 'flex';
+}
+
+function renderScorePendingEmployeeList() {
+  var employees = buildEmployeePendingSummary();
+
+  document.getElementById('scoreModalTitle').textContent = 'All Pending Tasks';
+  document.getElementById('scoreModalSubtitle').textContent = employees.length + ' employees with pending work · tap an employee to view details';
+  document.getElementById('scoreModalBackBtnWrap').innerHTML = '';
+
+  document.getElementById('scoreModalMiniCards').style.display = 'none';
+  document.getElementById('scoreModalMiniHint').style.display = 'none';
+  document.getElementById('scoreModalTableWrap').style.display = 'none';
+  document.getElementById('scoreModalEmpListWrap').style.display = 'block';
+
+  document.getElementById('scoreModalEmpList').innerHTML = employees.map(function(e) {
+    return '<div class="sc-emp-row" onclick="renderScorePendingDetail(\'' + e.name.replace(/'/g, "\\'") + '\')">' +
+      '<div class="sc-emp-left">' +
+        '<div class="av av' + (Math.abs(hashCode(e.name)) % 16) + '" style="width:32px;height:32px;font-size:10px">' + ini(e.name) + '</div>' +
+        '<div><div class="sc-emp-name">' + e.name + '</div>' +
+          '<div class="sc-emp-sub">FMS ' + e.fms + ' · Checklist ' + e.cl + ' · Delegation ' + e.dl + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="display:flex;align-items:center">' +
+        '<span class="sc-emp-count">' + e.total + ' pending</span>' +
+        '<span class="sc-emp-arrow">›</span>' +
+      '</div>' +
+    '</div>';
+  }).join('') || '<div style="text-align:center;color:#bbb;padding:40px">No pending tasks 🎉</div>';
+}
+
+function hashCode(str) {
+  var h = 0;
+  for (var i = 0; i < str.length; i++) { h = ((h << 5) - h) + str.charCodeAt(i); h |= 0; }
+  return h;
+}
+
+// Which type filter ('All' | 'FMS' | 'Checklist' | 'Delegation') is active
+// inside the employee detail view of the pending-tasks modal.
+var scoreModalTypeFilter = 'All';
+var scoreModalCurrentEmployee = '';
+
+function renderScorePendingDetail(employeeName) {
+  scoreModalTypeFilter = 'All';
+  scoreModalCurrentEmployee = employeeName;
+  var tasks = collectAllPendingTasks(employeeName);
+  var fmsCount = tasks.filter(function(t) { return t.type === 'FMS'; }).length;
+  var clCount  = tasks.filter(function(t) { return t.type === 'Checklist'; }).length;
+  var dlCount  = tasks.filter(function(t) { return t.type === 'Delegation'; }).length;
+
+  document.getElementById('scoreModalTitle').textContent = employeeName;
+  document.getElementById('scoreModalSubtitle').textContent = tasks.length + ' pending tasks';
+
+  document.getElementById('scoreModalBackBtnWrap').innerHTML =
+    '<button class="sc-back-btn" onclick="renderScorePendingEmployeeList()">‹ All Employees</button>';
+
+  document.getElementById('scoreModalEmpListWrap').style.display = 'none';
+  document.getElementById('scoreModalMiniCards').style.display = 'grid';
+  document.getElementById('scoreModalMiniHint').style.display = 'block';
+  document.getElementById('scoreModalTableWrap').style.display = 'block';
+
+  renderScoreModalMiniCards(fmsCount, clCount, dlCount);
+  renderScoreModalTable(tasks);
+}
+
+// Renders the FMS / Checklist / Delegation mini scorecards as clickable
+// filter chips — clicking one filters the table below to just that type;
+// clicking the same one again (or it's already active) resets to "All".
+function renderScoreModalMiniCards(fmsCount, clCount, dlCount) {
+  document.getElementById('scoreModalMiniCards').innerHTML =
+    '<div class="sc-mini-card sc-mini-fms' + (scoreModalTypeFilter === 'FMS' ? ' active' : '') + '" onclick="filterScoreModalByType(\'FMS\')"><div class="sc-mini-label">FMS</div><div class="sc-mini-val">' + fmsCount + '</div></div>' +
+    '<div class="sc-mini-card sc-mini-cl' + (scoreModalTypeFilter === 'Checklist' ? ' active' : '') + '" onclick="filterScoreModalByType(\'Checklist\')"><div class="sc-mini-label">Checklist</div><div class="sc-mini-val">' + clCount + '</div></div>' +
+    '<div class="sc-mini-card sc-mini-dl' + (scoreModalTypeFilter === 'Delegation' ? ' active' : '') + '" onclick="filterScoreModalByType(\'Delegation\')"><div class="sc-mini-label">Delegation</div><div class="sc-mini-val">' + dlCount + '</div></div>';
+}
+
+function filterScoreModalByType(type) {
+  scoreModalTypeFilter = (scoreModalTypeFilter === type) ? 'All' : type;
+  var allTasks = collectAllPendingTasks(scoreModalCurrentEmployee);
+  var fmsCount = allTasks.filter(function(t) { return t.type === 'FMS'; }).length;
+  var clCount  = allTasks.filter(function(t) { return t.type === 'Checklist'; }).length;
+  var dlCount  = allTasks.filter(function(t) { return t.type === 'Delegation'; }).length;
+  renderScoreModalMiniCards(fmsCount, clCount, dlCount);
+
+  var shown = scoreModalTypeFilter === 'All' ? allTasks : allTasks.filter(function(t) { return t.type === scoreModalTypeFilter; });
+  document.getElementById('scoreModalSubtitle').textContent = shown.length + ' pending tasks' + (scoreModalTypeFilter !== 'All' ? ' · ' + scoreModalTypeFilter : '');
+  renderScoreModalTable(shown);
+}
+
+function renderScoreModalTable(tasks) {
+  document.getElementById('scoreModalBody').innerHTML = tasks.map(function(t, i) {
+    return '<tr>' +
+      '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#555">' + (i + 1) + '</td>' +
+      '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6"><span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;' + typeTagStyle(t.type) + '">' + t.type + '</span></td>' +
+      '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151">' + t.task + '</td>' +
+      '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151">' + (t.client && t.client !== '-' ? t.client : '<span style="color:#d1d5db">—</span>') + '</td>' +
+      '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151;white-space:nowrap">' + t.plannedDate + '</td>' +
+      '</tr>';
+  }).join('') || '<tr><td colspan="5" style="text-align:center;color:#bbb;padding:30px">No pending tasks 🎉</td></tr>';
+}
+
+function closeScorePendingModal() {
+  document.getElementById('scorePendingModal').style.display = 'none';
+}
+
+function toggleSidebar() {
+  var sb = document.getElementById('sidebarNav');
+  if (sb) sb.classList.toggle('open');
+}
+
+// ── Tab switch ────────────────────────────────────────────────────────────────
+function switchTab(name, el) {
+  document.querySelectorAll('.sb-item').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.tab-content').forEach(function(t) { t.classList.remove('active'); });
+  el.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+  // On mobile, close the sidebar after picking a section
+  var sb = document.getElementById('sidebarNav');
+  if (sb) sb.classList.remove('open');
+  // Scores tab pe aate waqt Performance filter reset karo
+  if (name === 'scores') {
+    document.getElementById('scFilterPerf').value = 'All';
+    applyScoreFilters();
+  }
+}
+
+// ── Initial load (after sign-in is verified) ────────────────────────────────────
+function initialLoad() {
+  document.getElementById('ldiv').style.display = 'block';
+  document.getElementById('mdiv').style.display = 'none';
+  fetch(API + '?action=getData&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now(), { redirect: 'follow' })
     .then(function(r) { return r.json(); })
     .then(function(data) {
-      if (!data.authorized) { showDenied(currentUserEmail); return; }
-      portalData = data;
-      renderApp(data);
-      hideAll();
-      document.getElementById('app').style.display = 'block';
+      if (data.authorized === false) { showDenied(currentUserEmail); return; }
+      document.getElementById('ldiv').style.display = 'none';
+      document.getElementById('mdiv').style.display = 'block';
+      renderAll(data);
     })
     .catch(function(err) {
-      document.getElementById('loader').innerHTML = '<div class="err">⚠ Could not load.<br><small>' + err.message + '</small><br><button class="retry" onclick="location.reload()">Retry</button></div>';
+      document.getElementById('ldiv').innerHTML = '<div class="ebox">Error loading data. Please refresh.<br><small>' + err + '</small></div>';
     });
 }
 
-function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
-
-function renderApp(d) {
-  var profileIconHtml = d.photoUrl
-    ? '<div class="profile" onclick="toggleProfile()" id="profileBtn"><img src="' + d.photoUrl + '" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" onerror="this.parentNode.textContent=\'' + d.initials + '\'"></div>'
-    : '<div class="profile" onclick="toggleProfile()" id="profileBtn">' + d.initials + '</div>';
-
-  var profileBigHtml = '<div class="photo-edit-wrap">'
-    + (d.photoUrl
-      ? '<div class="profile-big" style="padding:0;overflow:hidden" id="profileBigDiv"><img id="profileBigImg" src="' + d.photoUrl + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.parentNode.textContent=\'' + d.initials + '\'" onclick="viewPhoto()"></div>'
-      : '<div class="profile-big" id="profileBigDiv">' + d.initials + '</div>')
-    + '<div class="photo-edit-btn" onclick="document.getElementById(\'photoFileInput\').click()" title="Change photo">✎</div></div>'
-    + '<input type="file" id="photoFileInput" accept="image/*" style="display:none" onchange="uploadProfilePhoto(this)">'
-    + '<div class="upload-status" id="uploadStatus"></div>'
-    + (d.photoUrl ? '<div class="view-photo-hint" onclick="viewPhoto()">👁 View Photo</div>' : '')
-    + '<div class="remove-photo-btn" id="removePhotoBtn" style="display:' + (d.photoUrl ? 'inline-block' : 'none') + '" onclick="removePhoto()">🗑 Remove Photo</div>';
-
-  var annCount = (d.announcements || []).length;
-  var annPanelHtml = (d.announcements || []).map(function(a) {
-    return '<div class="ann-item"><span class="ann-dot"></span><div class="ann-msg">' + esc(a.msg) + '</div>' + (a.date ? '<div class="ann-date">' + esc(a.date) + '</div>' : '') + '</div>';
-  }).join('') || '<div class="ann-empty">No new announcements</div>';
-
-  var hlHtml = '';
-  if (d.hasHighlights) {
-    if (d.birthdays.length) {
-      hlHtml += '<div class="hl-group"><div class="hl-label">🎂 Birthday Today</div><div class="hl-row">';
-      d.birthdays.forEach(function(b) {
-        hlHtml += '<div class="hl-card hl-card-birthday"><div class="hl-icon-wrap hl-icon-birthday">🎂</div><div><div class="hl-name">' + esc(b.name) + '</div><div class="hl-sub">Wishing a wonderful birthday!</div></div></div>';
-      });
-      hlHtml += '</div></div>';
-    }
-    if (d.anniversaries.length) {
-      hlHtml += '<div class="hl-group"><div class="hl-label">🎊 Work Anniversary Today</div><div class="hl-row">';
-      d.anniversaries.forEach(function(a) {
-        var cardClass = a.years === 0 ? 'hl-card-new' : 'hl-card-anniv';
-        var iconClass = a.years === 0 ? 'hl-icon-new' : 'hl-icon-anniv';
-        var icon = a.years === 0 ? '🎉' : '🎊';
-        hlHtml += '<div class="hl-card ' + cardClass + '"><div class="hl-icon-wrap ' + iconClass + '">' + icon + '</div><div><div class="hl-name">' + esc(a.name) + '</div><div class="hl-sub">' + esc(a.label) + '</div></div></div>';
-      });
-      hlHtml += '</div></div>';
-    }
-    if (d.upcoming7.length) {
-      hlHtml += '<div class="hl-group"><div class="hl-label">📅 Upcoming Birthday This Week</div><div class="hl-row">';
-      d.upcoming7.forEach(function(u) {
-        hlHtml += '<div class="hl-chip">' + esc(u.name) + ' · ' + esc(u.date) + '<span class="hl-badge">in ' + u.days + 'd</span></div>';
-      });
-      hlHtml += '</div></div>';
-    }
-  } else {
-    hlHtml = '<div class="hl-empty-grid">'
-      + '<div class="hl-empty-card"><span class="hl-empty-icon">🎂</span><div><div class="hl-empty-title">No Birthdays This Week</div><div class="hl-empty-desc">Check back next week for upcoming birthdays</div></div></div>'
-      + '<div class="hl-empty-card"><span class="hl-empty-icon">🎊</span><div><div class="hl-empty-title">No Work Anniversaries This Month</div><div class="hl-empty-desc">No joining anniversaries falling this month</div></div></div>'
-      + '<div class="hl-empty-card"><span class="hl-empty-icon">📅</span><div><div class="hl-empty-title">No Upcoming Staff Events This Week</div><div class="hl-empty-desc">All clear — nothing scheduled in the next 7 days</div></div></div>'
-      + '</div>';
-  }
-
-  var govLinksHtml = (d.quickLinks || []).map(function(l) {
-    return '<a class="btn" href="' + esc(l.url) + '" target="_blank">🔗 ' + esc(l.name) + '</a>';
-  }).join('');
-
-  var html = ''
-    + '<div class="wrapper">'
-    + '<div class="top">'
-    + '<div class="top-left"><div class="greet">' + esc(d.greeting) + ', ' + esc(d.name) + '!</div>'
-    + '<div class="firm-line"><div class="firm-divider"></div><div class="firm">Umesh Bolmal &amp; Associates</div></div>'
-    + '<div class="portal-sub">Internal Operations &amp; Staff Management Portal</div></div>'
-    + '<div class="top-right"><div class="icons-row">'
-    + '<div class="bell-wrap" onclick="toggleAnn()" id="bellBtn"><svg class="bell-svg" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>'
-    + (annCount > 0 ? '<span class="bell-badge">' + annCount + '</span>' : '') + '</div>'
-    + '<div class="notepad-btn-wrap" onclick="openNotepad()" title="My Notepad">📝</div>'
-    + profileIconHtml
-    + '</div><div class="date">' + esc(d.dateStr) + '</div><div class="time" id="clock"></div></div>'
-    + '<div class="ann-panel" id="annPanel"><div class="ann-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1F5FA6" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>Announcements</div>' + annPanelHtml + '</div>'
-    + '<div class="profile-popup" id="profilePopup">' + profileBigHtml + '<div class="profile-name">' + esc(d.name) + '</div><div class="profile-email">' + esc(d.email) + '</div></div>'
-    + '</div>'
-    + '<div class="top-accent"></div>'
-    + '<div class="ann-ticker-wrap" id="annTicker"><div class="ticker-label"><div class="ticker-live-dot"></div>Notice</div><div class="ticker-slider" id="tickerSlider"></div></div>'
-    + '<div class="photo-modal" id="photoModal" onclick="closePhoto()">'
-    + (d.photoUrl ? '<img src="' + d.photoUrl + '" id="photoModalImg" onclick="event.stopPropagation()">' : '')
-    + '<div class="photo-modal-name">' + esc(d.name) + '</div><div class="photo-modal-close" onclick="closePhoto()">✕ Close</div></div>'
-    + '<div class="btn-row">'
-    + '<a class="btn" href="https://datastudio.google.com/embed/reporting/b8cb5428-6c70-42f2-ba91-70fc3a64da3d/page/qzoyF" target="_blank">📋 My Tasks</a>'
-    + '<a class="btn" href="https://ugb-design.github.io/EM-DASHBOARD/INDEX.html" target="_blank">📅 My Dashboard</a>'
-    + '<a class="btn" href="https://script.google.com/a/macros/ugbolmalassociates.com/s/AKfycby4BXW15m-svwc744uWItA1nQGp4Kt3IiqZoWTlzwew3g3PDuJTwPbx4M49dwYc6AmqFQ/exec" target="_blank">📄 Google Forms</a>'
-    + '<a class="btn" href="https://script.google.com/a/macros/ugbolmalassociates.com/s/AKfycbzFqAcz5qcBmRTnav3Rze55Wd0SApEOpjm9KK-kQmndyletqJcNdzf3dlNrMKQir6r_Xg/exec" target="_blank">👤 My Profile</a>'
-    + '<a class="btn" href="https://www.appsheet.com/start/e593f206-628c-4174-a375-4012a703c619#view=Apply%20Leave" target="_blank">📅 Apply Leave</a>'
-    + '</div>'
-    + (govLinksHtml ? '<div class="gov-links-wrap"><div class="gov-links-title">🏛 Quick Access Portals</div><div class="btn-row gov-row">' + govLinksHtml + '</div></div>' : '')
-    + '<div class="highlights"><div class="hl-title">Staff Highlights</div>' + hlHtml + '</div>'
-    + '<div class="notepad-modal" id="notepadModal" onclick="notepadOutsideClick(event)"><div class="notepad-box" id="notepadBox">'
-    + '<div class="notepad-header"><div class="notepad-title">📝 My Private Notepad</div><button class="notepad-close" onclick="closeNotepad()">✕</button></div>'
-    + '<textarea class="notepad-area" id="notepadArea" placeholder="Write your private notes here… only you can see this." maxlength="2000" oninput="notepadInput()"></textarea>'
-    + '<div class="notepad-footer"><div class="notepad-saved" id="notepadSaved">Loading…</div><div class="notepad-chars" id="notepadChars">0 / 2000</div><button class="notepad-save-btn" id="notepadSaveBtn" onclick="saveNotepad()">💾 Save</button></div>'
-    + '</div></div>'
-    + '</div>';
-
-  document.getElementById('app').innerHTML = html;
-  wireUpEvents(d);
-}
-
-/* ── Wire up interactivity after render ─────────────────────── */
-function wireUpEvents(d) {
-  updateClock(); setInterval(updateClock, 1000);
-
-  document.addEventListener('click', function(e) {
-    var panel = document.getElementById('annPanel'), bell = document.getElementById('bellBtn');
-    var popup = document.getElementById('profilePopup'), prof = document.getElementById('profileBtn');
-    if (panel && bell && !bell.contains(e.target) && !panel.contains(e.target)) panel.classList.remove('open');
-    if (popup && prof && !prof.contains(e.target) && !popup.contains(e.target)) popup.classList.remove('open');
-  });
-
-  // Announcement ticker
-  var anns = d.announcements || [];
-  var slider = document.getElementById('tickerSlider');
-  var wrap = document.getElementById('annTicker');
-  if (!anns.length) { wrap.style.display = 'none'; }
-  else {
-    var sep = '<span class="ticker-sep">●</span>';
-    var pieces = anns.map(function(a) { return esc(a.msg) + (a.date ? " <span style='color:rgba(255,255,255,0.55);font-size:10px;'>· " + esc(a.date) + "</span>" : ''); });
-    var single = pieces.join(sep);
-    var track = document.createElement('div');
-    track.className = 'ticker-track';
-    track.innerHTML = single + sep + single + sep;
-    slider.appendChild(track);
-    function startMarquee() {
-      var contentWidth = track.scrollWidth / 2;
-      var duration = Math.max(contentWidth / 55, 10);
-      track.style.animationDuration = duration + 's';
-    }
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(startMarquee); else startMarquee();
-    setTimeout(startMarquee, 300);
-  }
-}
-
-function updateClock() {
-  var n = new Date(), h = n.getHours(), m = n.getMinutes().toString().padStart(2, '0'), ap = h >= 12 ? 'PM' : 'AM';
-  h = h % 12 || 12;
-  var el = document.getElementById('clock');
-  if (el) el.innerHTML = h + ':' + m + '<span class="ampm">' + ap + '</span>';
-}
-
-function toggleAnn() { document.getElementById('annPanel').classList.toggle('open'); document.getElementById('profilePopup').classList.remove('open'); }
-function toggleProfile() { document.getElementById('profilePopup').classList.toggle('open'); document.getElementById('annPanel').classList.remove('open'); }
-function viewPhoto() { document.getElementById('profilePopup').classList.remove('open'); document.getElementById('photoModal').classList.add('open'); }
-function closePhoto() { document.getElementById('photoModal').classList.remove('open'); }
-
-/* ── Profile photo upload/remove ──────────────────────────────── */
-function apiPost(action, extra) {
-  var body = Object.assign({ action: action, idToken: currentIdToken }, extra || {});
-  return fetch(API, {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // avoids CORS preflight on Apps Script
-    body: JSON.stringify(body)
-  }).then(function(r) { return r.json(); });
-}
-
-function uploadProfilePhoto(input) {
-  if (!input.files || !input.files[0]) return;
-  var file = input.files[0];
-  if (file.size > 3 * 1024 * 1024) { document.getElementById('uploadStatus').textContent = 'Max size is 3 MB'; return; }
-  document.getElementById('uploadStatus').textContent = 'Uploading…';
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    var b64 = e.target.result.split(',')[1];
-    apiPost('saveProfilePhoto', { base64Data: b64, mimeType: file.type }).then(function(res) {
-      if (res.authorized === false) { showDenied(currentUserEmail); return; }
-      if (res.photoUrl) {
-        document.getElementById('uploadStatus').textContent = '✔ Photo updated!';
-        setTimeout(function() { document.getElementById('uploadStatus').textContent = ''; }, 3000);
-        portalData.photoUrl = res.photoUrl;
-        var bigDiv = document.getElementById('profileBigDiv');
-        bigDiv.style.padding = '0'; bigDiv.style.overflow = 'hidden';
-        bigDiv.innerHTML = "<img id='profileBigImg' src='" + res.photoUrl + "' style='width:100%;height:100%;object-fit:cover;border-radius:50%' onclick='viewPhoto()'>";
-        if (!document.querySelector('.view-photo-hint')) {
-          var hint = document.createElement('div');
-          hint.className = 'view-photo-hint'; hint.textContent = '👁 View Photo'; hint.onclick = viewPhoto;
-          document.getElementById('uploadStatus').parentNode.insertBefore(hint, document.getElementById('uploadStatus').nextSibling);
-        }
-        var modalImg = document.getElementById('photoModalImg');
-        if (modalImg) modalImg.src = res.photoUrl;
-        else {
-          var mi = document.createElement('img'); mi.id = 'photoModalImg'; mi.src = res.photoUrl;
-          mi.style = "width:200px;height:200px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,0.4)";
-          mi.onclick = function(ev) { ev.stopPropagation(); };
-          document.getElementById('photoModal').insertBefore(mi, document.getElementById('photoModal').firstChild);
-        }
-        document.getElementById('profileBtn').innerHTML = "<img src='" + res.photoUrl + "' style='width:100%;height:100%;border-radius:50%;object-fit:cover'>";
-        var rb = document.getElementById('removePhotoBtn'); if (rb) rb.style.display = 'inline-block';
-      } else {
-        document.getElementById('uploadStatus').textContent = 'Upload failed. Try again.';
-      }
-    }).catch(function(err) { document.getElementById('uploadStatus').textContent = 'Error: ' + err.message; });
-  };
-  reader.readAsDataURL(file);
-}
-
-function removePhoto() {
-  if (!confirm('Remove your profile photo?')) return;
-  document.getElementById('uploadStatus').textContent = 'Removing…';
-  apiPost('removeProfilePhoto').then(function(res) {
-    if (res.authorized === false) { showDenied(currentUserEmail); return; }
-    document.getElementById('uploadStatus').textContent = '✔ Photo removed!';
-    setTimeout(function() { document.getElementById('uploadStatus').textContent = ''; }, 3000);
-    var initials = portalData.initials;
-    var bigDiv = document.getElementById('profileBigDiv');
-    bigDiv.style.padding = ''; bigDiv.style.overflow = ''; bigDiv.textContent = initials;
-    var hint = document.querySelector('.view-photo-hint'); if (hint) hint.style.display = 'none';
-    document.getElementById('removePhotoBtn').style.display = 'none';
-    document.getElementById('profileBtn').textContent = initials;
-    var mi = document.getElementById('photoModalImg'); if (mi) mi.remove();
-    portalData.photoUrl = '';
-  }).catch(function(err) { document.getElementById('uploadStatus').textContent = 'Error: ' + err.message; });
-}
-
-/* ── Notepad ──────────────────────────────────────────────────── */
-function openNotepad() {
-  document.getElementById('notepadModal').classList.add('open');
-  document.getElementById('annPanel').classList.remove('open');
-  document.getElementById('profilePopup').classList.remove('open');
-  if (!notepadLoaded) {
-    document.getElementById('notepadSaved').textContent = 'Loading…';
-    var area = document.getElementById('notepadArea');
-    var n = portalData.note || { note: '', saved: '' };
-    notepadLoaded = true;
-    area.value = n.note || '';
-    notepadInput();
-    document.getElementById('notepadSaved').textContent = n.saved ? 'Last saved: ' + n.saved : 'Not saved yet';
-  }
-}
-function closeNotepad() { document.getElementById('notepadModal').classList.remove('open'); }
-function notepadOutsideClick(e) { if (e.target === document.getElementById('notepadModal')) closeNotepad(); }
-function notepadInput() {
-  var len = document.getElementById('notepadArea').value.length;
-  document.getElementById('notepadChars').textContent = len + ' / 2000';
-}
-function saveNotepad() {
-  var text = document.getElementById('notepadArea').value;
-  var btn = document.getElementById('notepadSaveBtn');
-  btn.disabled = true; btn.textContent = 'Saving…';
-  apiPost('saveNote', { note: text }).then(function(res) {
-    btn.disabled = false; btn.textContent = '💾 Save';
-    if (res.authorized === false) { showDenied(currentUserEmail); return; }
-    document.getElementById('notepadSaved').textContent = 'Last saved: ' + res.saved;
-  }).catch(function(err) {
-    btn.disabled = false; btn.textContent = '💾 Save';
-    document.getElementById('notepadSaved').textContent = 'Save failed: ' + err.message;
-  });
-}
-
-/* ── Boot ─────────────────────────────────────────────────────── */
+// ── Boot ─────────────────────────────────────────────────────────────────────
 initGoogleAuth();
 </script>
+
+<!-- PENDING TASKS MODAL -->
+<div id="pendingModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:14px;width:90%;max-width:620px;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e8eaed">
+      <div>
+        <div id="modalTitle" style="font-size:15px;font-weight:700;color:#1a1a1a"></div>
+        <div id="modalSubtitle" style="font-size:12px;color:#9aa0ac;margin-top:2px"></div>
+      </div>
+      <button onclick="closePendingModal()" style="background:#f3f4f6;border:none;border-radius:8px;width:30px;height:30px;font-size:16px;cursor:pointer;color:#555;display:flex;align-items:center;justify-content:center">✕</button>
+    </div>
+    <div style="overflow-y:auto;padding:0">
+      <table style="width:100%;border-collapse:collapse">
+        <thead>
+          <tr>
+            <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa">#</th>
+            <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa">Planned Date</th>
+            <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa">Client Name</th>
+            <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa">Final Doer</th>
+            <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa">Status</th>
+          </tr>
+        </thead>
+        <tbody id="modalBody"></tbody>
+      </table>
+    </div>
+    <div style="padding:12px 20px;border-top:1px solid #e8eaed;text-align:right">
+      <button onclick="closePendingModal()" style="background:#1a1a1a;color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:13px;font-weight:600;cursor:pointer">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCORES: ALL PENDING TASKS MODAL (employee picker + drilldown) -->
+<div id="scorePendingModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:14px;width:92%;max-width:840px;max-height:82vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e8eaed">
+      <div style="display:flex;align-items:center">
+        <span id="scoreModalBackBtnWrap"></span>
+        <div>
+          <div id="scoreModalTitle" style="font-size:15px;font-weight:700;color:#1a1a1a"></div>
+          <div id="scoreModalSubtitle" style="font-size:12px;color:#9aa0ac;margin-top:2px"></div>
+        </div>
+      </div>
+      <button onclick="closeScorePendingModal()" style="background:#f3f4f6;border:none;border-radius:8px;width:30px;height:30px;font-size:16px;cursor:pointer;color:#555;display:flex;align-items:center;justify-content:center">✕</button>
+    </div>
+
+    <!-- Employee picker view -->
+    <div id="scoreModalEmpListWrap" style="overflow-y:auto">
+      <div class="sc-emp-list" id="scoreModalEmpList"></div>
+    </div>
+
+    <!-- Mini scorecards: FMS / Checklist / Delegation counts (clickable filters) -->
+    <div class="sc-mini-cards" id="scoreModalMiniCards" style="display:none"></div>
+    <div class="sc-mini-hint" id="scoreModalMiniHint" style="display:none">Tap a card to filter the list below · tap again to show all</div>
+
+    <!-- Detail table for the selected employee -->
+    <div id="scoreModalTableWrap" style="overflow-y:auto;padding:0;display:none">
+      <table style="width:100%;border-collapse:collapse">
+        <thead>
+          <tr>
+            <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa;position:sticky;top:0">#</th>
+            <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa;position:sticky;top:0">Type</th>
+            <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa;position:sticky;top:0">Task</th>
+            <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa;position:sticky;top:0">Client</th>
+            <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa;position:sticky;top:0">Planned Date</th>
+          </tr>
+        </thead>
+        <tbody id="scoreModalBody"></tbody>
+      </table>
+    </div>
+
+    <div style="padding:12px 20px;border-top:1px solid #e8eaed;text-align:right">
+      <button onclick="closeScorePendingModal()" style="background:#1a1a1a;color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:13px;font-weight:600;cursor:pointer">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('scorePendingModal').addEventListener('click', function(e) {
+  if (e.target === this) closeScorePendingModal();
+});
+</script>
+
+<script>
+function showPendingModal(step, doer, encoded) {
+  var tasks = JSON.parse(decodeURIComponent(encoded));
+  document.getElementById('modalTitle').textContent = step + '  —  Pending Tasks';
+  document.getElementById('modalSubtitle').textContent = 'Doer: ' + doer + '  ·  ' + tasks.length + ' pending';
+  document.getElementById('modalBody').innerHTML = tasks.map(function(t, i) {
+    return '<tr>' +
+      '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#555">' + (i+1) + '</td>' +
+      '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151;font-weight:600">' + t.plannedDate + '</td>' +
+      '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151">' + t.client + '</td>' +
+      '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151">' + t.finalDoer + '</td>' +
+      '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6"><span style="background:#fef2f2;color:#dc2626;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600">Pending</span></td>' +
+      '</tr>';
+  }).join('');
+  var modal = document.getElementById('pendingModal');
+  modal.style.display = 'flex';
+}
+function closePendingModal() {
+  document.getElementById('pendingModal').style.display = 'none';
+}
+document.getElementById('pendingModal').addEventListener('click', function(e) {
+  if (e.target === this) closePendingModal();
+});
+</script>
+
+</div><!-- /#appRoot -->
+
 </body>
 </html>
