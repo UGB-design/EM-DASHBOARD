@@ -100,6 +100,23 @@
   .slip-btn:hover{opacity:.8;}
   tr.holiday-soon td{background:var(--green-soft);}
   tr.holiday-soon:hover td{background:#d8f3e2;}
+  #tab-deductions table{table-layout:fixed;}
+  #tab-deductions thead th, #tab-deductions tbody td{padding:9px 8px;font-size:11px;}
+  #tab-deductions th:nth-child(1), #tab-deductions td:nth-child(1){width:14%;}
+  #tab-deductions th:nth-child(2), #tab-deductions td:nth-child(2){width:8%;}
+  #tab-deductions th:nth-child(3), #tab-deductions td:nth-child(3){width:6%;}
+  #tab-deductions th:nth-child(4), #tab-deductions td:nth-child(4){width:8%;}
+  #tab-deductions th:nth-child(5), #tab-deductions td:nth-child(5){width:8%;}
+  #tab-deductions th:nth-child(6), #tab-deductions td:nth-child(6){width:8%;}
+  #tab-deductions th:nth-child(7), #tab-deductions td:nth-child(7){width:9%;}
+  #tab-deductions th:nth-child(8), #tab-deductions td:nth-child(8){width:9%;}
+  #tab-deductions th:nth-child(9), #tab-deductions td:nth-child(9){width:9%;}
+  #tab-deductions th:nth-child(10), #tab-deductions td:nth-child(10){width:11%;}
+  #tab-deductions th:nth-child(11), #tab-deductions td:nth-child(11){width:10%;}
+  #tab-deductions .person .avatar{width:22px;height:22px;font-size:9.5px;}
+  #tab-deductions .person .name{font-size:11.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  #tab-deductions td, #tab-deductions th{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  #tab-deductions .slip-btn{padding:5px 9px;font-size:11px;}
   #tab-holidays table{table-layout:fixed;}
   #tab-holidays th:nth-child(1), #tab-holidays td:nth-child(1){width:130px;}
   #tab-holidays th:nth-child(2), #tab-holidays td:nth-child(2){width:120px;}
@@ -131,17 +148,6 @@
 
 <div class="wrap">
 
-  <header style="justify-content:flex-end;margin-bottom:16px;">
-    <div style="display:flex;align-items:center;gap:8px;">
-      <div class="signed-in-as" id="signedInAs" style="display:none;"></div>
-      <a class="apply-leave" id="applyLeaveBtn" href="https://www.appsheet.com/start/e593f206-628c-4174-a375-4012a703c619#view=Apply%20Leave" target="_blank" rel="noopener">
-        <span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></span>
-        Apply Leave
-      </a>
-      <button class="btn ghost sm" id="refreshBtn" title="Reload live data">Refresh</button>
-    </div>
-  </header>
-
   <div id="warnBanner" class="warn-banner"></div>
 
   <div class="tabs" id="tabs">
@@ -169,6 +175,10 @@
           <div class="mini-field">
             <label>&nbsp;</label>
             <input class="search" id="searchRequests" placeholder="Search employee...">
+          </div>
+          <div class="mini-field">
+            <label>&nbsp;</label>
+            <button class="btn ghost sm tabRefreshBtn" title="Reload live data">Refresh</button>
           </div>
         </div>
       </div>
@@ -200,6 +210,10 @@
             <label>&nbsp;</label>
             <input class="search" id="searchBalance" placeholder="Search employee...">
           </div>
+          <div class="mini-field">
+            <label>&nbsp;</label>
+            <button class="btn ghost sm tabRefreshBtn" title="Reload live data">Refresh</button>
+          </div>
         </div>
       </div>
       <div class="tablewrap">
@@ -228,14 +242,18 @@
             <label>&nbsp;</label>
             <input class="search" id="searchDeductions" placeholder="Search employee...">
           </div>
+          <div class="mini-field">
+            <label>&nbsp;</label>
+            <button class="btn ghost sm tabRefreshBtn" title="Reload live data">Refresh</button>
+          </div>
         </div>
       </div>
       <div class="tablewrap">
         <table>
           <thead><tr>
             <th>Employee</th><th>Month</th><th>Year</th><th>Planned</th>
-            <th>Completed</th><th>Pending</th><th>Work Not Done %</th><th>Deduction %</th>
-            <th>Unpaid Leave</th><th>Deduction Amount</th><th>Salary Slip</th>
+            <th>Completed</th><th>Pending</th><th>WND %</th><th>Ded %</th>
+            <th>Unpaid Lv</th><th>Deduction</th><th>Slip</th>
           </tr></thead>
           <tbody id="deductionsBody"></tbody>
         </table>
@@ -269,6 +287,10 @@
             <label>&nbsp;</label>
             <input class="search" id="searchHistory" placeholder="Search employee...">
           </div>
+          <div class="mini-field">
+            <label>&nbsp;</label>
+            <button class="btn ghost sm tabRefreshBtn" title="Reload live data">Refresh</button>
+          </div>
         </div>
       </div>
       <div class="tablewrap">
@@ -291,6 +313,10 @@
           <div class="mini-field">
             <label>&nbsp;</label>
             <input class="search" id="searchHolidays" placeholder="Search occasion...">
+          </div>
+          <div class="mini-field">
+            <label>&nbsp;</label>
+            <button class="btn ghost sm tabRefreshBtn" title="Reload live data">Refresh</button>
           </div>
         </div>
       </div>
@@ -326,6 +352,10 @@
           <div class="mini-field">
             <label>&nbsp;</label>
             <input class="search" id="searchAttendance" placeholder="Search employee...">
+          </div>
+          <div class="mini-field">
+            <label>&nbsp;</label>
+            <button class="btn ghost sm tabRefreshBtn" title="Reload live data">Refresh</button>
           </div>
         </div>
       </div>
@@ -661,7 +691,8 @@ async function loadAll(background=false){
 }
 
 function setLoading(state, background=false){
-  document.getElementById("refreshBtn").textContent = state ? (background ? "Syncing…" : "Loading…") : "Refresh";
+  const label = state ? (background ? "Syncing…" : "Loading…") : "Refresh";
+  document.querySelectorAll(".tabRefreshBtn").forEach(btn => btn.textContent = label);
 }
 
 function normalizeKey(s){
@@ -1358,7 +1389,7 @@ function renderDeductions(filterText=""){
       <td class="num-cell">${d["DEDUCTION %"]!==undefined && d["DEDUCTION %"]!==null ? pct(d["DEDUCTION %"]) : "–"}</td>
       <td class="num-cell">${d["UNPAID LEAVE"] ?? 0}</td>
       <td class="num-cell ${ded?'neg':''}" style="font-weight:700;">${money(ded)}</td>
-      <td><button class="btn sm slip-btn" data-idx="${idx}">⬇ Slip</button></td>
+      <td><button class="btn sm slip-btn" data-idx="${idx}" title="Download salary slip">⬇</button></td>
     `;
     body.appendChild(tr);
   });
@@ -1668,13 +1699,16 @@ document.getElementById("attendanceEmployeeFilter").addEventListener("change", (
 document.getElementById("attendanceStatusFilter").addEventListener("change", ()=>{ renderAttendanceCards(); renderAttendanceTable(); });
 document.getElementById("attendanceMonthSel").addEventListener("change", ()=>{ renderAttendanceCards(); renderAttendanceTable(); });
 document.getElementById("searchAttendance").addEventListener("input", ()=>{ renderAttendanceCards(); renderAttendanceTable(); });
-document.getElementById("refreshBtn").addEventListener("click", ()=>loadAll(false));
+document.querySelectorAll(".tabRefreshBtn").forEach(btn=>{
+  btn.addEventListener("click", ()=>loadAll(false));
+});
 
 function updateSignedInAsUI(){
+  const signedInAs = document.getElementById("signedInAs");
+  if(!signedInAs) return;
   const staffMatch = DATA.staff.length ? staffByEmail(CURRENT_USER_EMAIL) : null;
   const displayName = staffMatch ? staffMatch["Name"] : CURRENT_USER_EMAIL.split("@")[0];
 
-  const signedInAs = document.getElementById("signedInAs");
   signedInAs.style.display = "flex";
   signedInAs.innerHTML = `
     <div class="avatar" style="background:${colorFor(displayName)}">${initials(displayName)}</div>
