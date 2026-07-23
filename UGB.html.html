@@ -101,21 +101,25 @@
   tr.holiday-soon td{background:var(--green-soft);}
   tr.holiday-soon:hover td{background:#d8f3e2;}
   #tab-deductions table{table-layout:fixed;}
-  #tab-deductions thead th, #tab-deductions tbody td{padding:9px 8px;font-size:11px;}
-  #tab-deductions th:nth-child(1), #tab-deductions td:nth-child(1){width:14%;}
+  #tab-deductions thead th{padding:9px 6px;font-size:10px;white-space:normal;line-height:1.25;overflow:visible;text-overflow:clip;}
+  #tab-deductions tbody td{padding:8px 6px;font-size:11px;}
+  #tab-deductions th:nth-child(1), #tab-deductions td:nth-child(1){width:11%;}
   #tab-deductions th:nth-child(2), #tab-deductions td:nth-child(2){width:8%;}
   #tab-deductions th:nth-child(3), #tab-deductions td:nth-child(3){width:6%;}
   #tab-deductions th:nth-child(4), #tab-deductions td:nth-child(4){width:8%;}
-  #tab-deductions th:nth-child(5), #tab-deductions td:nth-child(5){width:8%;}
+  #tab-deductions th:nth-child(5), #tab-deductions td:nth-child(5){width:9%;}
   #tab-deductions th:nth-child(6), #tab-deductions td:nth-child(6){width:8%;}
   #tab-deductions th:nth-child(7), #tab-deductions td:nth-child(7){width:9%;}
-  #tab-deductions th:nth-child(8), #tab-deductions td:nth-child(8){width:9%;}
-  #tab-deductions th:nth-child(9), #tab-deductions td:nth-child(9){width:9%;}
-  #tab-deductions th:nth-child(10), #tab-deductions td:nth-child(10){width:11%;}
+  #tab-deductions th:nth-child(8), #tab-deductions td:nth-child(8){width:8%;}
+  #tab-deductions th:nth-child(9), #tab-deductions td:nth-child(9){width:10%;}
+  #tab-deductions th:nth-child(10), #tab-deductions td:nth-child(10){width:13%;}
   #tab-deductions th:nth-child(11), #tab-deductions td:nth-child(11){width:10%;}
-  #tab-deductions .person .avatar{width:22px;height:22px;font-size:9.5px;}
-  #tab-deductions .person .name{font-size:11.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  #tab-deductions td, #tab-deductions th{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  #tab-deductions .person{align-items:center;}
+  #tab-deductions .person .avatar{width:22px;height:22px;font-size:9.5px;flex-shrink:0;}
+  #tab-deductions .person .name{font-size:11px;line-height:1.2;overflow:hidden;}
+  #tab-deductions .person .name span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  #tab-deductions .person .name .last{font-weight:600;color:var(--ink-soft);font-size:9.5px;}
+  #tab-deductions td:not(:first-child), #tab-deductions th:not(:first-child){white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   #tab-deductions .slip-btn{padding:5px 9px;font-size:11px;}
   #tab-holidays table{table-layout:fixed;}
   #tab-holidays th:nth-child(1), #tab-holidays td:nth-child(1){width:130px;}
@@ -253,7 +257,7 @@
           <thead><tr>
             <th>Employee</th><th>Month</th><th>Year</th><th>Planned</th>
             <th>Completed</th><th>Pending</th><th>WND %</th><th>Ded %</th>
-            <th>Unpaid Lv</th><th>Deduction</th><th>Slip</th>
+            <th>Unpaid Leave</th><th>Deduction</th><th>Slip</th>
           </tr></thead>
           <tbody id="deductionsBody"></tbody>
         </table>
@@ -419,6 +423,17 @@ function moneyPDF(n){
   return "Rs. " + n.toLocaleString("en-IN", {maximumFractionDigits:0});
 }
 function titleCase(s){ return (s||"").toString().trim().replace(/\w\S*/g, t => t[0].toUpperCase()+t.slice(1).toLowerCase()); }
+
+/* For the narrow Deduction table: "Yogesh Chougule" -> first name on line 1,
+   remaining name(s) on line 2, so the column can stay compact without
+   truncating the neighbouring Completed/Unpaid Leave columns. */
+function twoLineNameHtml(name){
+  const parts = (name||"").trim().split(/\s+/).filter(Boolean);
+  if(parts.length <= 1) return `<div class="name"><span>${name||""}</span></div>`;
+  const first = parts[0];
+  const rest = parts.slice(1).join(" ");
+  return `<div class="name"><span>${first}</span><span class="last">${rest}</span></div>`;
+}
 
 function parseDMY(str){
   if(!str) return null;
@@ -1268,18 +1283,27 @@ function renderHolidays(filterText=""){
     );
   }
 
-  // Sort in calendar order (Jan -> Dec), and flag rows that fall in the
-  // current or next calendar month so they can be highlighted.
-  rows = rows.map(r=>{
-    const md = parseHolidayMD(r["DATE_f"] || r["DATE"]);
-    const isSoon = md ? (md.monthIdx === todayMonthIdx || md.monthIdx === nextMonthIdx) : false;
-    const isThisMonth = md ? (md.monthIdx === todayMonthIdx) : false;
-    return { ...r, __md: md, __isSoon: isSoon, __isThisMonth: isThisMonth };
-  }).sort((a,b)=>{
-    const am = a.__md ? a.__md.monthIdx*100 + a.__md.day : 9999;
-    const bm = b.__md ? b.__md.monthIdx*100 + b.__md.day : 9999;
-    return am - bm;
-  });
+  // Sort in calendar order (Jan -> Dec), keep only today-or-later (hide ones
+  // already passed this year), and flag rows in the current/next month.
+  const todayDate = today.getDate();
+  rows = rows
+    .map(r=>{
+      const md = parseHolidayMD(r["DATE_f"] || r["DATE"]);
+      const isSoon = md ? (md.monthIdx === todayMonthIdx || md.monthIdx === nextMonthIdx) : false;
+      const isThisMonth = md ? (md.monthIdx === todayMonthIdx) : false;
+      return { ...r, __md: md, __isSoon: isSoon, __isThisMonth: isThisMonth };
+    })
+    .filter(r=>{
+      if(!r.__md) return true; // keep unparseable dates rather than silently dropping them
+      if(r.__md.monthIdx > todayMonthIdx) return true;
+      if(r.__md.monthIdx === todayMonthIdx && r.__md.day >= todayDate) return true;
+      return false;
+    })
+    .sort((a,b)=>{
+      const am = a.__md ? a.__md.monthIdx*100 + a.__md.day : 9999;
+      const bm = b.__md ? b.__md.monthIdx*100 + b.__md.day : 9999;
+      return am - bm;
+    });
 
   if(rows.length===0){
     body.innerHTML = `<tr><td colspan="3"><div class="empty"><b>No holidays found</b>Add rows to the UPCOMING_HOLIDAY sheet and hit Refresh.</div></td></tr>`;
@@ -1379,7 +1403,7 @@ function renderDeductions(filterText=""){
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td><div class="person"><div class="avatar" style="background:${colorFor(d["EMPLOYEE"])}">${initials(d["EMPLOYEE"])}</div>
-        <div class="name">${titleCase(d["EMPLOYEE"])}</div></div></td>
+        ${twoLineNameHtml(titleCase(d["EMPLOYEE"]))}</div></td>
       <td>${d["MONTH"]||"–"}</td>
       <td class="num-cell">${d["YEAR"]||"–"}</td>
       <td class="num-cell">${d["PLANNED"] ?? "–"}</td>
