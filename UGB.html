@@ -92,6 +92,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .leave-link-btn .llb-icon{font-size:15px;line-height:1}
 .leave-link-btn::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(120deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.55) 50%,rgba(255,255,255,0) 100%);transform:skewX(-20deg);animation:llbShine 2.6s ease-in-out infinite}
 @keyframes llbShine{0%{left:-60%}55%{left:130%}100%{left:130%}}
+.add-delegation-btn{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#16a34a 0%,#22c55e 100%);color:#fff;text-decoration:none;font-size:13px;font-weight:700;padding:8px 16px;border-radius:10px;box-shadow:0 3px 10px rgba(22,163,74,.25);transition:transform .15s,box-shadow .15s;border:none;cursor:pointer}
+.add-delegation-btn:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(22,163,74,.32)}
+.add-delegation-btn .adb-plus{font-size:15px;font-weight:800;line-height:1}
 
 /* TABS NAV */
 .tabs-row{display:flex;gap:4px;overflow-x:auto;width:fit-content;max-width:100%;background:rgba(255,255,255,.6);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-radius:14px;padding:6px;margin:0 0 18px;box-shadow:0 6px 18px rgba(60,50,30,.07);position:sticky;top:14px;z-index:60}
@@ -329,6 +332,16 @@ tr:hover td{background:#fafbfc}
 /* ── LEAVE MANAGEMENT TAB (iframe embed) ───────────────────────── */
 .leave-iframe-wrap{background:#fff;border-radius:14px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed;overflow:hidden;height:calc(100vh - 120px);min-height:500px}
 .leave-iframe-wrap iframe{width:100%;height:100%;border:none;display:block}
+
+/* ── INTERNAL SHEETS TAB ─────────────────────────────────────── */
+.isheets-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.isheet-card{display:flex;align-items:center;gap:12px;background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed;padding:14px 16px;text-decoration:none;transition:box-shadow .15s,transform .15s}
+.isheet-card:hover{box-shadow:0 6px 18px rgba(22,163,74,.12);transform:translateY(-1px);border-color:#dcfce7}
+.isheet-ic{width:38px;height:38px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.isheet-txt{min-width:0}
+.isheet-name{font-size:13px;font-weight:700;color:#1a1a1a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.isheet-type{font-size:10.5px;color:#9aa0ac;font-weight:600;margin-top:2px;text-transform:uppercase;letter-spacing:.03em}
+.isheet-arrow{margin-left:auto;color:#c7c2b8;font-size:16px;flex-shrink:0}
 </style>
 </head>
 <body>
@@ -360,9 +373,20 @@ tr:hover td{background:#fafbfc}
   <!-- SIDEBAR NAVIGATION -->
   <div class="sidebar" id="sidebarNav">
     <div class="sb-brand">
-      <div class="sb-brand-mark">UB</div>
+      <div class="sb-brand-mark">
+        <svg viewBox="0 0 48 48" width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M24 3 L44 11 V22 C44 33 36 41.5 24 45 C12 41.5 4 33 4 22 V11 Z" fill="rgba(255,255,255,.14)" stroke="#fff" stroke-width="1.6"/>
+          <text x="24" y="28" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="15" font-weight="700" fill="#fff">CA</text>
+        </svg>
+      </div>
       <div class="sb-brand-txt">
         <div class="sb-brand-title">UMESH BOLMAL & ASSOCIATES</div>
+      </div>
+    </div>
+    <div class="sb-user-chip" id="userChip" style="display:none">
+      <span class="user-avatar" id="userAvatar"></span>
+      <div class="sb-user-txt">
+        <div class="sb-user-name" id="userNameLabel"></div>
       </div>
     </div>
     <div class="sb-nav">
@@ -395,17 +419,15 @@ tr:hover td{background:#fafbfc}
       </button>
       <button class="sb-item" data-tab="leave" onclick="switchTab('leave',this)">
         <span class="sb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></span>
-        <span class="sb-label">Leave Management</span>
+        <span class="sb-label">Leave & Attendance</span>
+        <span class="sb-count" id="badgeLeave" style="display:none">0</span>
+      </button>
+      <button class="sb-item" data-tab="internalsheets" onclick="switchTab('internalsheets',this)">
+        <span class="sb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg></span>
+        <span class="sb-label">Internal Sheets</span>
       </button>
     </div>
     <div class="sb-foot">
-      <div class="sb-user-chip" id="userChip" style="display:none">
-        <span class="user-avatar" id="userAvatar"></span>
-        <div class="sb-user-txt">
-          <div class="sb-user-name" id="userNameLabel"></div>
-          <div class="sb-user-firm">Umesh Bolmal &amp; Associates</div>
-        </div>
-      </div>
       <button class="logout-btn-side" id="logoutBtn" style="display:none" onclick="doLogout()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
         Logout
@@ -420,6 +442,9 @@ tr:hover td{background:#fafbfc}
           <svg viewBox="0 0 24 24" fill="none" stroke="#4b4538" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>
         </button>
         <div class="h-right" style="margin-left:auto">
+          <button class="add-delegation-btn" onclick="openAddDelegation()" title="Add a new delegation task">
+            <span class="adb-plus">+</span> Delegation
+          </button>
           <span class="wk-label">From</span>
           <input type="date" class="wk-sel dt-input" id="dtFrom">
           <span class="wk-label">To</span>
@@ -651,8 +676,16 @@ tr:hover td{background:#fafbfc}
   <!-- LEAVE MANAGEMENT TAB (embedded) -->
   <div class="tab-content" id="tab-leave">
     <div class="leave-iframe-wrap">
-      <iframe src="https://ugb-design.github.io/EM-DASHBOARD/UGB.html.html" title="Leave Management"></iframe>
+      <iframe id="leaveIframe" src="https://ugb-design.github.io/EM-DASHBOARD/UGB.html.html" title="Leave & Attendance"></iframe>
     </div>
+  </div>
+
+  <!-- INTERNAL SHEETS TAB -->
+  <div class="tab-content" id="tab-internalsheets">
+    <div class="meta-info-badge">
+      <span class="m-badge b-blue" id="isheetsCountBadge">0 sheets</span>
+    </div>
+    <div id="internalSheetsGrid" class="isheets-grid"></div>
   </div>
 
   <div id="ediv" style="display:none"></div>
@@ -662,6 +695,24 @@ tr:hover td{background:#fafbfc}
 
 <script>
 var API = "https://script.google.com/a/macros/ugbolmalassociates.com/s/AKfycbzQMXbT-15e7TvOHFEgNEQ4YwM0lk85WvJ-su4eelClrLN5eB4QLWLXDQRs-LzAR_1X/exec";
+var DELEGATION_ADD_URL = "https://script.google.com/a/macros/ugbolmalassociates.com/s/AKfycbzTLcL0bNC5n3eHwDW33ZXKa_O27KZ2Y9_hN2SjI__Lagf4mwagpNjMs9YBjx0f2weu9Q/exec";
+
+// Sheets shown on the "Internal Sheets" tab (source: Staff_info → GOOGLE_SHEETS tab)
+var INTERNAL_SHEETS = [
+  { code: "FMS1", name: "ACCOUNTING MONTHLY - FMS", type: "FMS", url: "https://docs.google.com/spreadsheets/d/1hqMIA4JHxUZ6ll8Ja2iWbLhMVGAEptcgEZoY1kdZoLI/edit?usp=sharing" },
+  { code: "FMS2", name: "GST RETURN - FMS", type: "FMS", url: "https://docs.google.com/spreadsheets/d/125PZqfJmm6AN9CDOBHD7ofrVJ5FDyx5bHUuDDHPvm2q/edit?usp=sharing" },
+  { code: "FMS3", name: "GST COMPOSITION - FMS", type: "FMS", url: "https://docs.google.com/spreadsheets/d/1bpCsskbhJPjbeJhkyq5YlEvFInNk-0pdsq-mPXe4l80/edit?usp=sharing" },
+  { code: "FMS4", name: "PROFESSIONAL TAX RETURN - FMS", type: "FMS", url: "https://docs.google.com/spreadsheets/d/13FC8pinTKSeun9jMNXaZRbquosp-oQZ3SsxLgei_NHA/edit?usp=sharing" },
+  { code: "FMS5", name: "PAN DATA COLLECTION - FMS", type: "FMS", url: "https://docs.google.com/spreadsheets/d/16T1IECpLqL3M8zXHbdksRl2cvuaVOMTqJKfP-ERQ2kQ/edit?usp=sharing" },
+  { code: "FMS6", name: "TAN DATA COLLECTION - FMS", type: "FMS", url: "https://docs.google.com/spreadsheets/d/1bh3z2GD__NG082aPsG74X1ZAGVvvmH2WZSt_9mCFstY/edit?usp=sharing" },
+  { code: "FMS7", name: "GSTR4 - FMS", type: "FMS", url: "https://docs.google.com/spreadsheets/d/1nOU_d1YS8NkvQVaE6aU5jaWqoC1sStYyHRCDhDvhb1E/edit?usp=sharing" },
+  { code: "CHECKLIST1", name: "OPENING & CLOSING - FMS", type: "CHECKLIST", url: "https://docs.google.com/spreadsheets/d/1wocXYw_qDA43cC69npu4AW7CFmGVjoL2NFWpoSONO-Q/edit?usp=sharing" },
+  { code: "DELEGATION1", name: "TASK DELEGATION", type: "DELEGATION", url: "https://docs.google.com/spreadsheets/d/18z1j3Zutq92iHZe-GJQ-4Dot5nAQuiwUGlZhouxZI6l/edit?usp=sharing" },
+  { code: "STAFF_INFO", name: "EMPLOYEE PROFILE HANDLING", type: "STAFF HANDLING", url: "https://docs.google.com/spreadsheets/d/1jHueyzxgMTQAmeaDgJUU8Y1q1td0D9yCo54EBdIxwDM/edit?usp=sharing" },
+  { code: "LEAVE & ATTENDANCE", name: "LEAVE MANAGEMENT", type: "LEAVE/ATTENDANCE TRACK", url: "https://docs.google.com/spreadsheets/d/1Q9ylhYjxTxWgX4fJbpI0rg9-WF3vy2AE5uTYnBv0PgA/edit?usp=sharing" },
+  { code: "DASHBOARD", name: "EM_DASHBOARD", type: "EM - DASHBOARD HANDLING", url: "https://docs.google.com/spreadsheets/d/19RZ-9IqBjVqy2xXZqgnbKG6utMtnirpWqexJ3gc_N-8/edit?usp=sharing" },
+  { code: "TRACKER", name: "FMS+CHECKLIST+DELEGATION", type: "CONSOLIDATED SHEET", url: "https://docs.google.com/spreadsheets/d/1ABmcxOrzGcltSyoDBAGDp9y_BFDyJKUf3bt2H05-SMw/edit?usp=sharing" }
+];
 
 // ⚠️ Replace with your Google Cloud OAuth 2.0 Web Client ID (see setup notes)
 var GOOGLE_CLIENT_ID = "567925868040-kv22o4qhj5rmreiaka4odpth50v99ndf.apps.googleusercontent.com";
@@ -731,6 +782,57 @@ function setTabBadge(id, count) {
     el.style.display = 'none';
   }
 }
+
+// ── "+ Delegation" button (opens the delegation Apps Script web app) ─────────
+function openAddDelegation() {
+  window.open(DELEGATION_ADD_URL, '_blank');
+}
+
+// ── Internal Sheets tab ───────────────────────────────────────────────────────
+function renderInternalSheets() {
+  var grid = document.getElementById('internalSheetsGrid');
+  if (!grid) return;
+  var sheetIconSvg = '<svg viewBox="0 0 48 48" width="30" height="30" xmlns="http://www.w3.org/2000/svg">' +
+    '<rect x="6" y="4" width="36" height="40" rx="4" fill="#0F9D58"/>' +
+    '<rect x="11" y="9" width="26" height="30" rx="1" fill="#fff"/>' +
+    '<rect x="14" y="14" width="7" height="5" fill="#0F9D58" opacity=".55"/>' +
+    '<rect x="22.5" y="14" width="7" height="5" fill="#0F9D58" opacity=".85"/>' +
+    '<rect x="31" y="14" width="2.5" height="5" fill="#0F9D58" opacity=".55"/>' +
+    '<rect x="14" y="20.5" width="7" height="5" fill="#0F9D58" opacity=".85"/>' +
+    '<rect x="22.5" y="20.5" width="7" height="5" fill="#0F9D58" opacity=".55"/>' +
+    '<rect x="31" y="20.5" width="2.5" height="5" fill="#0F9D58" opacity=".85"/>' +
+    '<rect x="14" y="27" width="7" height="5" fill="#0F9D58" opacity=".55"/>' +
+    '<rect x="22.5" y="27" width="7" height="5" fill="#0F9D58" opacity=".85"/>' +
+    '<rect x="31" y="27" width="2.5" height="5" fill="#0F9D58" opacity=".55"/>' +
+    '</svg>';
+
+  document.getElementById('isheetsCountBadge').textContent = INTERNAL_SHEETS.length + ' sheets';
+
+  grid.innerHTML = INTERNAL_SHEETS.map(function(s) {
+    return '<a class="isheet-card" href="' + s.url + '" target="_blank" rel="noopener">' +
+      '<span class="isheet-ic">' + sheetIconSvg + '</span>' +
+      '<div class="isheet-txt">' +
+        '<div class="isheet-name" title="' + s.name + '">' + s.name + '</div>' +
+        '<div class="isheet-type">' + s.type + '</div>' +
+      '</div>' +
+      '<span class="isheet-arrow">↗</span>' +
+    '</a>';
+  }).join('');
+}
+
+// ── Leave & Attendance pending-approvals badge ───────────────────────────────
+// The Leave & Attendance page is a separately hosted app rendered inside an
+// iframe, so this dashboard can't read its "Pending Approvals" count
+// directly. It listens for a postMessage from that page instead — the
+// embedded page (UGB.html.html) needs to send:
+//   window.parent.postMessage({ type: 'leavePendingCount', count: N }, '*');
+// whenever its pending-approvals count changes (e.g. on load and after any
+// approve/reject action) for this badge to update.
+window.addEventListener('message', function(evt) {
+  if (evt && evt.data && evt.data.type === 'leavePendingCount') {
+    setTabBadge('badgeLeave', evt.data.count);
+  }
+});
 
 // ── Greeting helper (time-of-day based) ───────────────────────────────────────
 function updateGreeting(name) {
@@ -885,6 +987,7 @@ function enterApp(name, email) {
   updateGreeting(firstName);
   if (window._greetTimer) clearInterval(window._greetTimer);
   window._greetTimer = setInterval(function() { updateGreeting(firstName); }, 60000);
+  renderInternalSheets();
   initialLoad();
 }
 
