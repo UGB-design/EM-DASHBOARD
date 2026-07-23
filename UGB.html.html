@@ -46,29 +46,25 @@
   .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--border);}
   .btn.sm{padding:6px 12px;font-size:11.5px;}
   .topbar{display:flex;justify-content:flex-end;margin-bottom:14px;}
-  .apply-leave{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(180deg,#0a58c2,#054a9f);color:#fff;border:none;border-radius:10px;padding:10px 18px 10px 14px;font-family:'Inter',sans-serif;font-size:13.5px;font-weight:700;letter-spacing:.01em;cursor:pointer;box-shadow:0 1px 2px rgba(5,74,159,.15),0 6px 16px rgba(5,74,159,.28);text-decoration:none;transition:transform .15s, box-shadow .15s, opacity .15s;}
+  .apply-leave{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(180deg,#0a58c2,#054a9f);color:#fff;border:none;border-radius:9px;padding:7px 13px 7px 9px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;letter-spacing:.01em;cursor:pointer;box-shadow:0 1px 2px rgba(5,74,159,.15),0 6px 16px rgba(5,74,159,.28);text-decoration:none;transition:transform .15s, box-shadow .15s, opacity .15s;}
   .apply-leave:hover{transform:translateY(-1px);box-shadow:0 2px 4px rgba(5,74,159,.2),0 10px 22px rgba(5,74,159,.32);}
-  .apply-leave .plus{width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-  .apply-leave .plus svg{width:12px;height:12px;}
+  .apply-leave .plus{width:15px;height:15px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .apply-leave .plus svg{width:9px;height:9px;}
   .tabs{display:flex;gap:4px;background:rgba(0,0,0,0.035);padding:4px;border-radius:12px;width:fit-content;margin-bottom:22px;flex-wrap:wrap;}
   .tab{position:relative;padding:8px 16px;font-size:13px;font-weight:600;color:var(--ink-soft);border-radius:9px;cursor:pointer;border:none;background:transparent;display:flex;align-items:center;gap:7px;}
   .tab.active{background:#fff;color:var(--ink);box-shadow:var(--shadow);}
   .tab-badge{background:var(--red);color:#fff;font-size:10.5px;font-weight:800;min-width:18px;height:18px;border-radius:20px;display:flex;align-items:center;justify-content:center;padding:0 5px;line-height:1;}
   .tab-badge.blue{background:var(--blue);}
-  .cards{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:22px;}
-  @media (max-width:1100px){.cards{grid-template-columns:repeat(2,1fr);}}
-  .cards-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px;}
-  @media (max-width:1100px){.cards-4{grid-template-columns:repeat(2,1fr);}}
-  .cards-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px;}
-  @media (max-width:1100px){.cards-3{grid-template-columns:repeat(2,1fr);}}
-  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 18px 16px;box-shadow:var(--shadow);}
-  .card .eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-faint);font-weight:700;margin-bottom:10px;}
-  .card .num{font-size:30px;font-weight:800;letter-spacing:-0.02em;line-height:1;}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px;margin-bottom:16px;}
+  @media (max-width:640px){.cards{grid-template-columns:repeat(2,1fr);}}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:11px 13px 10px;box-shadow:var(--shadow);}
+  .card .eyebrow{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);font-weight:700;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .card .num{font-size:20px;font-weight:800;letter-spacing:-0.02em;line-height:1;}
   .card .num.blue{color:var(--blue);}
   .card .num.green{color:var(--green);}
   .card .num.red{color:var(--red);}
   .card .num.amber{color:var(--amber);}
-  .card .sub{font-size:12px;color:var(--ink-faint);margin-top:8px;}
+  .card .sub{font-size:10px;color:var(--ink-faint);margin-top:5px;}
   .card .sub b{color:var(--ink-soft);}
   .panel{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:20px;}
   .panel-head{display:flex;align-items:flex-end;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:14px;}
@@ -115,9 +111,9 @@
   .login-card input{width:100%;border:1px solid var(--border);border-radius:9px;padding:10px 12px;font-family:inherit;font-size:13.5px;margin-bottom:10px;}
   .login-card .btn{width:100%;text-align:center;}
   .login-error{color:var(--red);font-size:12px;margin:-4px 0 10px;display:none;}
-  .signed-in-as{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-soft);background:#fff;border:1px solid var(--border);border-radius:100px;padding:5px 12px 5px 5px;}
-  .signed-in-as .avatar{width:22px;height:22px;font-size:9.5px;}
-  .signed-in-as button{background:none;border:none;color:var(--blue);font-size:11.5px;font-weight:700;cursor:pointer;padding:0;margin-left:4px;}
+  .signed-in-as{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-soft);background:#fff;border:1px solid var(--border);border-radius:100px;padding:4px 10px 4px 4px;}
+  .signed-in-as .avatar{width:18px;height:18px;font-size:8.5px;}
+  .signed-in-as button{background:none;border:none;color:var(--blue);font-size:10.5px;font-weight:700;cursor:pointer;padding:0;margin-left:2px;}
   ::selection{background:var(--blue-soft);}
 </style>
 </head>
@@ -135,18 +131,14 @@
 
 <div class="wrap">
 
-  <header>
-    <div class="brand">
-      <h1>UMESH BOLMAL & ASSOCIATES</h1>
-      <p>Leave Management • Payroll • Performance &nbsp;·&nbsp; <span id="scopeLabel">–</span></p>
-    </div>
-    <div style="display:flex;align-items:center;gap:10px;">
+  <header style="justify-content:flex-end;margin-bottom:16px;">
+    <div style="display:flex;align-items:center;gap:8px;">
       <div class="signed-in-as" id="signedInAs" style="display:none;"></div>
       <a class="apply-leave" id="applyLeaveBtn" href="https://www.appsheet.com/start/e593f206-628c-4174-a375-4012a703c619#view=Apply%20Leave" target="_blank" rel="noopener">
         <span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></span>
         Apply Leave
       </a>
-      <button class="btn ghost" id="refreshBtn" title="Reload live data">Refresh</button>
+      <button class="btn ghost sm" id="refreshBtn" title="Reload live data">Refresh</button>
     </div>
   </header>
 
@@ -314,8 +306,7 @@
   </section>
 
   <section id="tab-attendance" style="display:none;">
-    <div class="cards-3" id="attendanceCardsRow1"></div>
-    <div class="cards-3" id="attendanceCardsRow2"></div>
+    <div class="cards" id="attendanceCardsRow"></div>
     <div class="panel">
       <div class="panel-head">
         <h2>Attendance</h2>
@@ -909,12 +900,10 @@ function getFilteredAttendance(){
 
 function renderAttendanceCards(){
   const rows = getFilteredAttendance();
-  const row1 = document.getElementById("attendanceCardsRow1");
-  const row2 = document.getElementById("attendanceCardsRow2");
+  const wrap = document.getElementById("attendanceCardsRow");
 
   if(!rows.length){
-    row1.innerHTML = `<div class="card" style="grid-column:1/-1;"><div class="eyebrow">Attendance</div><div class="sub" style="margin-top:0;">No attendance records match the current filters.</div></div>`;
-    row2.innerHTML = "";
+    wrap.innerHTML = `<div class="card" style="grid-column:1/-1;"><div class="eyebrow">Attendance</div><div class="sub" style="margin-top:0;">No attendance records match the current filters.</div></div>`;
     return;
   }
 
@@ -929,12 +918,10 @@ function renderAttendanceCards(){
   const halfDay = rows.filter(r => fs(r).includes("/2") || fs(r).includes("HALF")).length;
   const workingDays = rows.length - weekOff - holiday;
 
-  row1.innerHTML = `
+  wrap.innerHTML = `
     <div class="card"><div class="eyebrow">Working Days</div><div class="num blue">${workingDays}</div><div class="sub">excl. week-off & holiday</div></div>
     <div class="card"><div class="eyebrow">Present</div><div class="num green">${present}</div></div>
     <div class="card"><div class="eyebrow">Absent</div><div class="num red">${absent}</div></div>
-  `;
-  row2.innerHTML = `
     <div class="card"><div class="eyebrow">Late Present</div><div class="num amber">${late}</div></div>
     <div class="card"><div class="eyebrow">Half Day</div><div class="num amber">${halfDay}</div></div>
     <div class="card"><div class="eyebrow">Week Off</div><div class="num blue">${weekOff}</div></div>
@@ -1687,7 +1674,6 @@ function updateSignedInAsUI(){
   const staffMatch = DATA.staff.length ? staffByEmail(CURRENT_USER_EMAIL) : null;
   const displayName = staffMatch ? staffMatch["Name"] : CURRENT_USER_EMAIL.split("@")[0];
 
-  document.getElementById("scopeLabel").textContent = CURRENT_USER_EMAIL;
   const signedInAs = document.getElementById("signedInAs");
   signedInAs.style.display = "flex";
   signedInAs.innerHTML = `
