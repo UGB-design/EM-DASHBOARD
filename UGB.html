@@ -12,12 +12,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 /* APP SHELL (sidebar + main) */
 .app-shell{display:flex;min-height:100vh}
 .sidebar{width:230px;flex-shrink:0;background:#ffffff;border-right:1px solid #ece7dc;display:flex;flex-direction:column;padding:22px 14px;position:sticky;top:0;height:100vh;overflow-y:auto;z-index:70}
-.sb-brand{display:flex;align-items:center;gap:10px;padding:0 8px 20px;border-bottom:1px solid #f0ece2;margin-bottom:14px}
-.sb-brand-mark{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#1d4ed8 0%,#3b82f6 100%);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;letter-spacing:-.5px;flex-shrink:0}
+.sb-brand{display:flex;align-items:center;gap:10px;padding:0 8px 12px}
+.sb-brand-mark{width:38px;height:38px;border-radius:9px;background:#0d3b8c;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
 .sb-brand-txt{line-height:1.25}
-.sb-brand-title{font-size:13px;font-weight:800;color:#1a1a1a}
+.sb-brand-title{font-size:12.5px;font-weight:800;color:#1a1a1a;letter-spacing:.01em}
 .sb-brand-sub{font-size:10px;color:#9aa0ac;font-weight:600;letter-spacing:.04em}
-.sb-nav{display:flex;flex-direction:column;gap:3px;flex:1}
+.sb-nav{display:flex;flex-direction:column;gap:3px;flex:1;margin-top:14px}
 .sb-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;color:#6b6558;font-size:13px;font-weight:600;cursor:pointer;border:none;background:transparent;text-align:left;width:100%;transition:all .15s;position:relative}
 .sb-item:hover:not(.active){background:#f7f4ee;color:#1a1a1a}
 .sb-item.active{background:#1d4ed8;color:#fff;box-shadow:0 4px 12px rgba(29,78,216,.28)}
@@ -28,7 +28,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .sb-item.active .sb-count{background:rgba(255,255,255,.25)}
 .sb-foot{border-top:1px solid #f0ece2;padding-top:12px;margin-top:8px}
 .sb-leave-btn{display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 100%);color:#fff;text-decoration:none;font-size:11.5px;font-weight:700;padding:10px 12px;border-radius:10px;box-shadow:0 4px 12px rgba(79,70,229,.25)}
-.sb-user-chip{display:flex;align-items:center;gap:10px;background:#f7f9fc;border:1px solid #e3ecfb;border-radius:12px;padding:9px 10px;margin-bottom:8px}
+.sb-user-chip{display:flex;align-items:center;gap:10px;background:#f7f9fc;border:1px solid #e3ecfb;border-radius:12px;padding:8px 10px;margin:0 0 14px}
 .sb-user-txt{line-height:1.3;min-width:0}
 .sb-user-name{font-size:12.5px;font-weight:700;color:#1a1a1a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sb-user-firm{font-size:9.5px;color:#8a8478;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -95,6 +95,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .add-delegation-btn{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#16a34a 0%,#22c55e 100%);color:#fff;text-decoration:none;font-size:13px;font-weight:700;padding:8px 16px;border-radius:10px;box-shadow:0 3px 10px rgba(22,163,74,.25);transition:transform .15s,box-shadow .15s;border:none;cursor:pointer}
 .add-delegation-btn:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(22,163,74,.32)}
 .add-delegation-btn .adb-plus{font-size:15px;font-weight:800;line-height:1}
+.teams-btn{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;background:#fff;border:1.5px solid #e3ddd2;border-radius:10px;cursor:pointer;box-shadow:0 2px 8px rgba(60,50,30,.08);transition:background .15s;text-decoration:none}
+.teams-btn:hover{background:#f9fafb}
 
 /* TABS NAV */
 .tabs-row{display:flex;gap:4px;overflow-x:auto;width:fit-content;max-width:100%;background:rgba(255,255,255,.6);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-radius:14px;padding:6px;margin:0 0 18px;box-shadow:0 6px 18px rgba(60,50,30,.07);position:sticky;top:14px;z-index:60}
@@ -248,6 +250,7 @@ tr:hover td{background:#fafbfc}
 .user-card-row .ucr-val{color:#374151;font-weight:600}
 .users-empty{grid-column:1/-1;text-align:center;color:#c7c2b8;font-size:13px;padding:50px 20px;background:#fff;border-radius:14px;border:1px dashed #e3ddd2}
 .users-empty .att-note{max-width:480px;margin:12px auto 0}
+.users-loading{grid-column:1/-1}
 
 /* ── SCORE TAB STYLES ─────────────────────────────────────────── */
 .score-hero{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:22px}
@@ -374,13 +377,16 @@ tr:hover td{background:#fafbfc}
   <div class="sidebar" id="sidebarNav">
     <div class="sb-brand">
       <div class="sb-brand-mark">
-        <svg viewBox="0 0 48 48" width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M24 3 L44 11 V22 C44 33 36 41.5 24 45 C12 41.5 4 33 4 22 V11 Z" fill="rgba(255,255,255,.14)" stroke="#fff" stroke-width="1.6"/>
-          <text x="24" y="28" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="15" font-weight="700" fill="#fff">CA</text>
+        <svg viewBox="0 0 64 64" width="38" height="38" xmlns="http://www.w3.org/2000/svg">
+          <rect width="64" height="64" rx="14" fill="#0d3b8c"/>
+          <rect x="4" y="4" width="56" height="56" rx="10" fill="#ffffff"/>
+          <rect x="7" y="7" width="50" height="50" rx="8" fill="#0d3b8c"/>
+          <text x="32" y="34" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="22" font-weight="700" fill="#fff">CA</text>
+          <text x="32" y="47" text-anchor="middle" font-family="Arial, sans-serif" font-size="8.5" font-weight="700" letter-spacing="1.5" fill="#fff">INDIA</text>
         </svg>
       </div>
       <div class="sb-brand-txt">
-        <div class="sb-brand-title">UMESH BOLMAL & ASSOCIATES</div>
+        <div class="sb-brand-title">UMESH BOLMAL<br>&amp; ASSOCIATES</div>
       </div>
     </div>
     <div class="sb-user-chip" id="userChip" style="display:none">
@@ -419,7 +425,7 @@ tr:hover td{background:#fafbfc}
       </button>
       <button class="sb-item" data-tab="leave" onclick="switchTab('leave',this)">
         <span class="sb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></span>
-        <span class="sb-label">Leave & Attendance</span>
+        <span class="sb-label">Leave &amp; Attendance</span>
         <span class="sb-count" id="badgeLeave" style="display:none">0</span>
       </button>
       <button class="sb-item" data-tab="internalsheets" onclick="switchTab('internalsheets',this)">
@@ -442,6 +448,9 @@ tr:hover td{background:#fafbfc}
           <svg viewBox="0 0 24 24" fill="none" stroke="#4b4538" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>
         </button>
         <div class="h-right" style="margin-left:auto">
+          <a class="teams-btn" href="https://teams.microsoft.com" target="_blank" rel="noopener" title="Open Microsoft Teams">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#4b4538" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h1"></path><rect x="9" y="8" width="12" height="10" rx="2"></rect><circle cx="14" cy="4.5" r="1.5"></circle></svg>
+          </a>
           <button class="add-delegation-btn" onclick="openAddDelegation()" title="Add a new delegation task">
             <span class="adb-plus">+</span> Delegation
           </button>
@@ -462,7 +471,9 @@ tr:hover td{background:#fafbfc}
 
   <!-- USERS TAB -->
   <div class="tab-content active" id="tab-users">
-    <div id="usersGrid" class="users-grid"></div>
+    <div id="usersGrid" class="users-grid">
+      <div class="loading users-loading" id="usersLoading"><div class="spin"></div> Loading employee profiles…</div>
+    </div>
   </div>
 
   <!-- SUMMARY TAB -->
@@ -821,18 +832,58 @@ function renderInternalSheets() {
 }
 
 // ── Leave & Attendance pending-approvals badge ───────────────────────────────
-// The Leave & Attendance page is a separately hosted app rendered inside an
-// iframe, so this dashboard can't read its "Pending Approvals" count
-// directly. It listens for a postMessage from that page instead — the
-// embedded page (UGB.html.html) needs to send:
+// Primary method: the Leave & Attendance page is hosted on the same origin
+// (ugb-design.github.io), so we can reach directly into its iframe DOM and
+// read the "Pending Approvals" tab count without needing that page to send
+// anything back to us. Falls back to postMessage in case the embedded page
+// is ever moved to a different origin — it can then send:
 //   window.parent.postMessage({ type: 'leavePendingCount', count: N }, '*');
-// whenever its pending-approvals count changes (e.g. on load and after any
-// approve/reject action) for this badge to update.
+function findPendingApprovalsCount(doc) {
+  try {
+    var candidates = doc.querySelectorAll('button, div, li, a, span');
+    for (var i = 0; i < candidates.length; i++) {
+      var el = candidates[i];
+      var txt = (el.textContent || '').replace(/\s+/g, ' ').trim();
+      if (/^pending approvals/i.test(txt)) {
+        var m = txt.match(/(\d+)\s*$/);
+        if (m) return parseInt(m[1], 10);
+        var badge = el.querySelector('span, div');
+        if (badge) {
+          var bn = parseInt((badge.textContent || '').trim(), 10);
+          if (!isNaN(bn)) return bn;
+        }
+      }
+    }
+  } catch (e) { /* cross-origin or not ready yet — ignore */ }
+  return null;
+}
+
+function pollLeaveBadge() {
+  var ifr = document.getElementById('leaveIframe');
+  if (!ifr) return;
+  var doc = null;
+  try { doc = ifr.contentDocument || (ifr.contentWindow && ifr.contentWindow.document); } catch (e) {}
+  if (!doc || !doc.body) return;
+  var count = findPendingApprovalsCount(doc);
+  if (count !== null) setTabBadge('badgeLeave', count);
+}
+
 window.addEventListener('message', function(evt) {
   if (evt && evt.data && evt.data.type === 'leavePendingCount') {
     setTabBadge('badgeLeave', evt.data.count);
   }
 });
+
+(function initLeaveBadgePolling() {
+  var ifr = document.getElementById('leaveIframe');
+  if (!ifr) return;
+  ifr.addEventListener('load', function() {
+    setTimeout(pollLeaveBadge, 600);
+    setTimeout(pollLeaveBadge, 2000);
+  });
+  if (window._leavePollTimer) clearInterval(window._leavePollTimer);
+  window._leavePollTimer = setInterval(pollLeaveBadge, 20000);
+})();
 
 // ── Greeting helper (time-of-day based) ───────────────────────────────────────
 function updateGreeting(name) {
@@ -1854,6 +1905,9 @@ function switchTab(name, el) {
   if (name === 'scores') {
     document.getElementById('scFilterPerf').value = 'All';
     applyScoreFilters();
+  }
+  if (name === 'leave') {
+    setTimeout(pollLeaveBadge, 500);
   }
 }
 
