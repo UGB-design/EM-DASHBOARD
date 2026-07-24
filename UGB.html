@@ -13,9 +13,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .app-shell{display:flex;min-height:100vh}
 .sidebar{width:230px;flex-shrink:0;background:#ffffff;border-right:1px solid #ece7dc;display:flex;flex-direction:column;padding:22px 14px;position:sticky;top:0;height:100vh;overflow-y:auto;z-index:70}
 .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 10px 14px;background:#ffffff;border-radius:12px}
-.sb-brand-mark{width:58px;height:58px;border-radius:10px;background:#ffffff;color:#1a1a1a;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
-.sb-brand-txt{line-height:1.25}
-.sb-brand-title{font-size:15px;font-weight:800;color:#1a1a1a;letter-spacing:.01em;line-height:1.3}
+.sb-brand-mark{width:50px;height:50px;border-radius:10px;background:#ffffff;color:#1a1a1a;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
+.sb-brand-title{font-size:13.5px;font-weight:800;color:#1a1a1a;letter-spacing:.01em;line-height:1.35;white-space:nowrap}
 .sb-brand-sub{font-size:10px;color:#9aa0ac;font-weight:600;letter-spacing:.04em}
 .sb-nav{display:flex;flex-direction:column;gap:3px;flex:1;margin-top:14px}
 .sb-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;color:#6b6558;font-size:13px;font-weight:600;cursor:pointer;border:none;background:transparent;text-align:left;width:100%;transition:all .15s;position:relative}
@@ -71,7 +70,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .h-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#1d4ed8 0%,#3b82f6 100%);color:#fff;font-size:14px;font-weight:800;letter-spacing:.06em;padding:5px 14px;border-radius:8px;margin-top:8px;box-shadow:0 3px 10px rgba(0,0,0,.15)}
 .h-badge .hb-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.25);animation:hbPulse 1.6s ease-in-out infinite}
 @keyframes hbPulse{0%,100%{opacity:1}50%{opacity:.4}}
-.h-greet{font-size:14px;color:#1a1a1a;font-weight:700;display:flex;align-items:center;white-space:nowrap}
+.h-greet{display:flex;align-items:center;background:#fff;border:1px solid #e3ddd2;border-radius:12px;padding:9px 16px;box-shadow:0 2px 8px rgba(60,50,30,.06);font-size:13.5px;color:#1a1a1a;font-weight:700;white-space:nowrap}
+.h-greet .hg-name{color:#1d4ed8}
+.h-greet .hg-name{color:#1d4ed8}
 .h-greet .hg-name{color:#1a1a1a;font-weight:800}
 .h-greet .hg-emoji{font-size:15px}
 .h-right{display:flex;align-items:center;gap:10px}
@@ -347,7 +348,7 @@ tr:hover td{background:#fafbfc}
 .isheets-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
 .isheet-card{display:flex;align-items:center;gap:12px;background:#fff;border-radius:10px;box-shadow:none;border:1px solid #e3ddd2;padding:14px 16px;text-decoration:none;transition:border-color .15s,background .15s}
 .isheet-card:hover{background:#fbf8f3;border-color:#c9c2b3}
-.isheet-ic{width:36px;height:36px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#f2ede3;border-radius:8px;color:#6b6558}
+.isheet-ic{width:38px;height:38px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
 .isheet-txt{min-width:0}
 .isheet-name{font-size:13px;font-weight:700;color:#1a1a1a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .isheet-type{font-size:10.5px;color:#9aa0ac;font-weight:600;margin-top:2px;text-transform:uppercase;letter-spacing:.03em}
@@ -448,7 +449,7 @@ tr:hover td{background:#fafbfc}
         <button class="refresh-btn sb-toggle-btn" id="sbToggleBtn" onclick="toggleSidebar()" title="Menu" style="display:none">
           <svg viewBox="0 0 24 24" fill="none" stroke="#4b4538" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>
         </button>
-       <div class="h-greet" id="greetLine">
+      <div class="h-greet" id="greetLine">
         <span id="greetText">Good Morning</span>, <span class="hg-name" id="greetName">there</span>..!
       </div>
       <div class="h-right" id="headerControls" style="margin-left:auto">
@@ -819,13 +820,19 @@ function openAddDelegation() {
 function renderInternalSheets() {
   var grid = document.getElementById('internalSheetsGrid');
   if (!grid) return;
-  var sheetIconSvg = '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">' +
-    '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>' +
-    '<polyline points="14 2 14 8 20 8"></polyline>' +
-    '<line x1="8" y1="13" x2="16" y2="13"></line>' +
-    '<line x1="8" y1="17" x2="13" y2="17"></line>' +
+  var sheetIconSvg = '<svg viewBox="0 0 48 48" width="30" height="30" xmlns="http://www.w3.org/2000/svg">' +
+    '<rect x="6" y="4" width="36" height="40" rx="4" fill="#0F9D58"/>' +
+    '<rect x="11" y="9" width="26" height="30" rx="1" fill="#fff"/>' +
+    '<rect x="14" y="14" width="7" height="5" fill="#0F9D58" opacity=".55"/>' +
+    '<rect x="22.5" y="14" width="7" height="5" fill="#0F9D58" opacity=".85"/>' +
+    '<rect x="31" y="14" width="2.5" height="5" fill="#0F9D58" opacity=".55"/>' +
+    '<rect x="14" y="20.5" width="7" height="5" fill="#0F9D58" opacity=".85"/>' +
+    '<rect x="22.5" y="20.5" width="7" height="5" fill="#0F9D58" opacity=".55"/>' +
+    '<rect x="31" y="20.5" width="2.5" height="5" fill="#0F9D58" opacity=".85"/>' +
+    '<rect x="14" y="27" width="7" height="5" fill="#0F9D58" opacity=".55"/>' +
+    '<rect x="22.5" y="27" width="7" height="5" fill="#0F9D58" opacity=".85"/>' +
+    '<rect x="31" y="27" width="2.5" height="5" fill="#0F9D58" opacity=".55"/>' +
     '</svg>';
-
   document.getElementById('isheetsCountBadge').textContent = INTERNAL_SHEETS.length + ' sheets';
 
   grid.innerHTML = INTERNAL_SHEETS.map(function(s) {
