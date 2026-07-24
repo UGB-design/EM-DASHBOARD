@@ -333,6 +333,8 @@ tr:hover td{background:#fafbfc}
 
 /* ── LEAVE MANAGEMENT TAB (iframe embed) ───────────────────────── */
 .leave-iframe-wrap{background:#fff;border-radius:14px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed;overflow:hidden;height:calc(100vh - 120px);min-height:500px}
+.content.leave-mode{padding-top:0}
+.content.leave-mode .leave-iframe-wrap{height:calc(100vh - 90px)}
 .leave-iframe-wrap iframe{width:100%;height:100%;border:none;display:block}
 
 /* ── INTERNAL SHEETS TAB ─────────────────────────────────────── */
@@ -440,7 +442,7 @@ tr:hover td{background:#fafbfc}
         <button class="refresh-btn sb-toggle-btn" id="sbToggleBtn" onclick="toggleSidebar()" title="Menu" style="display:none">
           <svg viewBox="0 0 24 24" fill="none" stroke="#4b4538" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>
         </button>
-        <div class="h-right" style="margin-left:auto">
+        <div class="h-right" id="headerControls" style="margin-left:auto">
         <a class="teams-btn" href="https://teams.microsoft.com" target="_blank" rel="noopener" title="Open Microsoft Teams">
   <svg width="20" height="20" viewBox="0 0 2228.833 2073.333" xmlns="http://www.w3.org/2000/svg">
     <path fill="#5059C9" d="M1554.637,777.5h575.713c54.391,0,98.483,44.092,98.483,98.483v524.398c0,199.901-162.051,361.952-361.952,361.952h-1.711c-199.901,0.028-361.976-161.999-362.004-361.9c0-0.018,0-0.035,0-0.053V828.971C1503.167,800.618,1526.285,777.5,1554.637,777.5L1554.637,777.5z"/>
@@ -1983,6 +1985,17 @@ function switchTab(name, el) {
   // On mobile, close the sidebar after picking a section
   var sb = document.getElementById('sidebarNav');
   if (sb) sb.classList.remove('open');
+  // Leave tab par top toolbar (Teams, +Delegation, Date range, Refresh) hide karo
+  // aur uske iframe ko full space do
+  var hc = document.getElementById('headerControls');
+  var contentEl = document.querySelector('.content');
+  if (name === 'leave') {
+    if (hc) hc.style.display = 'none';
+    if (contentEl) contentEl.classList.add('leave-mode');
+  } else {
+    if (hc) hc.style.display = 'flex';
+    if (contentEl) contentEl.classList.remove('leave-mode');
+  }
   // Scores tab pe aate waqt Performance filter reset karo
   if (name === 'scores') {
     document.getElementById('scFilterPerf').value = 'All';
