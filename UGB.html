@@ -1527,6 +1527,7 @@ function applyChecklistFilters() {
            (deptFilter === 'All' || r.dept === deptFilter) &&
            (sFilter === 'All' || r.status === sFilter);
   });
+  filtered.sort(function(a, b) { return String(a.plannedDate).localeCompare(String(b.plannedDate)); });
   var doneCount = filtered.filter(function(r) { return r.status === 'Done'; }).length;
   var pendCount = filtered.length - doneCount;
   document.getElementById('clMetaBadges').innerHTML =
@@ -1579,6 +1580,11 @@ function applyDelegationFilters() {
     if (dFilter !== 'All' && r.client !== dFilter) return false;
     if (sFilter === 'All') return true;
     return r.status.toLowerCase() === sFilter.toLowerCase();
+  });
+  filtered.sort(function(a, b) {
+    var da = a.latestRevision && a.latestRevision !== '-' ? a.latestRevision : a.firstDate;
+    var db = b.latestRevision && b.latestRevision !== '-' ? b.latestRevision : b.firstDate;
+    return String(da).localeCompare(String(db));
   });
 
   var doneCount    = filtered.filter(function(r) { return r.status === 'Completed'; }).length;
