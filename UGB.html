@@ -663,8 +663,14 @@ tr:hover td{background:#fafbfc}
     <div class="score-hero" id="scHeroCards"></div>
     <div class="tc">
       <div class="tc-top">
-        <div class="tc-title">Employee Scorecard</div>
-        <div id="scTableCount" style="font-size:12px;color:#9aa0ac;font-weight:500"></div>
+        <div class="tc-title">Employee Score Board</div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <button onclick="printScoreTable()" style="display:inline-flex;align-items:center;gap:6px;background:#1d4ed8;color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"></path><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+            Export / Print
+          </button>
+          <div id="scTableCount" style="font-size:12px;color:#9aa0ac;font-weight:500"></div>
+        </div>
       </div>
       <div style="overflow-x:auto">
         <table>
@@ -1978,7 +1984,49 @@ function renderScoreModalTable(tasks) {
       '</tr>';
   }).join('') || '<tr><td colspan="5" style="text-align:center;color:#bbb;padding:30px">No pending tasks 🎉</td></tr>';
 }
+function printScoreTable() {
+  var rows = document.querySelectorAll('#scTableBody tr');
+  if (!rows.length) { alert('No data to print'); return; }
 
+  var tableHTML = '<table style="width:100%;border-collapse:collapse;font-family:Arial,sans-serif">' +
+    '<thead><tr style="background:#f3f4f6">' +
+      '<th style="border:1px solid #ddd;padding:8px;text-align:center">#</th>' +
+      '<th style="border:1px solid #ddd;padding:8px;text-align:left">Employee</th>' +
+      '<th style="border:1px solid #ddd;padding:8px;text-align:center">Total Plan</th>' +
+      '<th style="border:1px solid #ddd;padding:8px;text-align:center">Total Completed</th>' +
+      '<th style="border:1px solid #ddd;padding:8px;text-align:center">On Time Completed</th>' +
+      '<th style="border:1px solid #ddd;padding:8px;text-align:center">Work Not Done On Time %</th>' +
+      '<th style="border:1px solid #ddd;padding:8px;text-align:center">Work Not Done %</th>' +
+    '</tr></thead><tbody>';
+
+  rows.forEach(function(row) {
+    var cells = row.querySelectorAll('td');
+    if (!cells.length) return;
+    tableHTML += '<tr>';
+    cells.forEach(function(cell, idx) {
+      var text = cell.innerText.trim();
+      var align = (idx === 1) ? 'left' : 'center';
+      tableHTML += '<td style="border:1px solid #ddd;padding:8px;text-align:' + align + '">' + text + '</td>';
+    });
+    tableHTML += '</tr>';
+  });
+  tableHTML += '</tbody></table>';
+
+  var dateRange = document.getElementById('dtFrom').value + ' to ' + document.getElementById('dtTo').value;
+  var win = window.open('', '_blank');
+  win.document.write(
+    '<html><head><title>Employee Score Board</title>' +
+    '<style>body{font-family:Arial,sans-serif;padding:24px;color:#1a1a1a}' +
+    'h2{margin-bottom:4px}.sub{color:#777;font-size:13px;margin-bottom:18px}' +
+    '@media print{button{display:none}}</style></head><body>' +
+    '<h2>Employee Score Board</h2>' +
+    '<div class="sub">Period: ' + dateRange + '</div>' +
+    tableHTML +
+    '<div style="margin-top:20px"><button onclick="window.print()" style="padding:8px 20px;background:#1d4ed8;color:#fff;border:none;border-radius:6px;cursor:pointer">Print / Save as PDF</button></div>' +
+    '</body></html>'
+  );
+  win.document.close();
+}
 function closeScorePendingModal() {
   document.getElementById('scorePendingModal').style.display = 'none';
 }
