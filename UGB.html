@@ -13,9 +13,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .app-shell{display:flex;min-height:100vh}
 .sidebar{width:230px;flex-shrink:0;background:#ffffff;border-right:1px solid #ece7dc;display:flex;flex-direction:column;padding:22px 14px;position:sticky;top:0;height:100vh;overflow-y:auto;z-index:70}
 .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 10px 14px;background:#ffffff;border-radius:12px}
-.sb-brand-mark{width:44px;height:44px;border-radius:9px;background:#ffffff;color:#1a1a1a;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
+.sb-brand-mark{width:58px;height:58px;border-radius:10px;background:#ffffff;color:#1a1a1a;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
 .sb-brand-txt{line-height:1.25}
-.sb-brand-title{font-size:12.5px;font-weight:800;color:#1a1a1a;letter-spacing:.01em}
+.sb-brand-title{font-size:15px;font-weight:800;color:#1a1a1a;letter-spacing:.01em;line-height:1.3}
 .sb-brand-sub{font-size:10px;color:#9aa0ac;font-weight:600;letter-spacing:.04em}
 .sb-nav{display:flex;flex-direction:column;gap:3px;flex:1;margin-top:14px}
 .sb-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;color:#6b6558;font-size:13px;font-weight:600;cursor:pointer;border:none;background:transparent;text-align:left;width:100%;transition:all .15s;position:relative}
@@ -28,7 +28,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .sb-item.active .sb-count{background:rgba(255,255,255,.25)}
 .sb-foot{border-top:1px solid #f0ece2;padding-top:12px;margin-top:8px}
 .sb-leave-btn{display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 100%);color:#fff;text-decoration:none;font-size:11.5px;font-weight:700;padding:10px 12px;border-radius:10px;box-shadow:0 4px 12px rgba(79,70,229,.25)}
-.sb-user-chip{display:flex;align-items:center;gap:10px;background:#f7f9fc;border:1px solid #e3ecfb;border-radius:12px;padding:8px 10px;margin:0 0 14px}
+.sb-user-chip{display:none !important}
 .sb-user-txt{line-height:1.3;min-width:0}
 .sb-user-name{font-size:12.5px;font-weight:700;color:#1a1a1a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sb-user-firm{font-size:9.5px;color:#8a8478;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -345,9 +345,9 @@ tr:hover td{background:#fafbfc}
 
 /* ── INTERNAL SHEETS TAB ─────────────────────────────────────── */
 .isheets-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
-.isheet-card{display:flex;align-items:center;gap:12px;background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed;padding:14px 16px;text-decoration:none;transition:box-shadow .15s,transform .15s}
-.isheet-card:hover{box-shadow:0 6px 18px rgba(22,163,74,.12);transform:translateY(-1px);border-color:#dcfce7}
-.isheet-ic{width:38px;height:38px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.isheet-card{display:flex;align-items:center;gap:12px;background:#fff;border-radius:10px;box-shadow:none;border:1px solid #e3ddd2;padding:14px 16px;text-decoration:none;transition:border-color .15s,background .15s}
+.isheet-card:hover{background:#fbf8f3;border-color:#c9c2b3}
+.isheet-ic{width:36px;height:36px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#f2ede3;border-radius:8px;color:#6b6558}
 .isheet-txt{min-width:0}
 .isheet-name{font-size:13px;font-weight:700;color:#1a1a1a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .isheet-type{font-size:10.5px;color:#9aa0ac;font-weight:600;margin-top:2px;text-transform:uppercase;letter-spacing:.03em}
@@ -819,18 +819,11 @@ function openAddDelegation() {
 function renderInternalSheets() {
   var grid = document.getElementById('internalSheetsGrid');
   if (!grid) return;
-  var sheetIconSvg = '<svg viewBox="0 0 48 48" width="30" height="30" xmlns="http://www.w3.org/2000/svg">' +
-    '<rect x="6" y="4" width="36" height="40" rx="4" fill="#0F9D58"/>' +
-    '<rect x="11" y="9" width="26" height="30" rx="1" fill="#fff"/>' +
-    '<rect x="14" y="14" width="7" height="5" fill="#0F9D58" opacity=".55"/>' +
-    '<rect x="22.5" y="14" width="7" height="5" fill="#0F9D58" opacity=".85"/>' +
-    '<rect x="31" y="14" width="2.5" height="5" fill="#0F9D58" opacity=".55"/>' +
-    '<rect x="14" y="20.5" width="7" height="5" fill="#0F9D58" opacity=".85"/>' +
-    '<rect x="22.5" y="20.5" width="7" height="5" fill="#0F9D58" opacity=".55"/>' +
-    '<rect x="31" y="20.5" width="2.5" height="5" fill="#0F9D58" opacity=".85"/>' +
-    '<rect x="14" y="27" width="7" height="5" fill="#0F9D58" opacity=".55"/>' +
-    '<rect x="22.5" y="27" width="7" height="5" fill="#0F9D58" opacity=".85"/>' +
-    '<rect x="31" y="27" width="2.5" height="5" fill="#0F9D58" opacity=".55"/>' +
+  var sheetIconSvg = '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">' +
+    '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>' +
+    '<polyline points="14 2 14 8 20 8"></polyline>' +
+    '<line x1="8" y1="13" x2="16" y2="13"></line>' +
+    '<line x1="8" y1="17" x2="13" y2="17"></line>' +
     '</svg>';
 
   document.getElementById('isheetsCountBadge').textContent = INTERNAL_SHEETS.length + ' sheets';
