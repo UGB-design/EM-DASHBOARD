@@ -71,7 +71,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .h-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#1d4ed8 0%,#3b82f6 100%);color:#fff;font-size:14px;font-weight:800;letter-spacing:.06em;padding:5px 14px;border-radius:8px;margin-top:8px;box-shadow:0 3px 10px rgba(0,0,0,.15)}
 .h-badge .hb-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.25);animation:hbPulse 1.6s ease-in-out infinite}
 @keyframes hbPulse{0%,100%{opacity:1}50%{opacity:.4}}
-.h-greet{font-size:13.5px;color:#4b4538;margin-top:9px;font-weight:600;display:flex;align-items:center;gap:6px}
+.h-greet{font-size:13.5px;color:#4b4538;margin-right:14px;font-weight:600;display:flex;align-items:center;gap:6px;white-space:nowrap}
 .h-greet .hg-name{color:#1a1a1a;font-weight:800}
 .h-greet .hg-emoji{font-size:15px}
 .h-right{display:flex;align-items:center;gap:10px}
@@ -449,6 +449,10 @@ tr:hover td{background:#fafbfc}
           <svg viewBox="0 0 24 24" fill="none" stroke="#4b4538" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>
         </button>
         <div class="h-right" id="headerControls" style="margin-left:auto">
+          <div class="h-greet" id="greetLine">
+          <span class="hg-emoji"></span>
+          <span><span id="greetText">Good Morning</span>, <span class="hg-name" id="greetName">there</span>..!</span>
+        </div>
         <a class="teams-btn" href="https://teams.microsoft.com" target="_blank" rel="noopener" title="Open Microsoft Teams">
   <svg width="20" height="20" viewBox="0 0 2228.833 2073.333" xmlns="http://www.w3.org/2000/svg">
     <path fill="#5059C9" d="M1554.637,777.5h575.713c54.391,0,98.483,44.092,98.483,98.483v524.398c0,199.901-162.051,361.952-361.952,361.952h-1.711c-199.901,0.028-361.976-161.999-362.004-361.9c0-0.018,0-0.035,0-0.053V828.971C1503.167,800.618,1526.285,777.5,1554.637,777.5L1554.637,777.5z"/>
@@ -1999,12 +2003,19 @@ function printScoreTable() {
       '<th style="border:1px solid #ddd;padding:8px;text-align:center">Work Not Done %</th>' +
     '</tr></thead><tbody>';
 
-  rows.forEach(function(row) {
+ rows.forEach(function(row) {
     var cells = row.querySelectorAll('td');
     if (!cells.length) return;
     tableHTML += '<tr>';
     cells.forEach(function(cell, idx) {
-      var text = cell.innerText.trim();
+      var text;
+      if (idx === 1) {
+        // Employee column — avatar ke initials chhod ke sirf naam lo
+        var nameEl = cell.querySelector('strong');
+        text = nameEl ? nameEl.innerText.trim() : cell.innerText.trim();
+      } else {
+        text = cell.innerText.trim();
+      }
       var align = (idx === 1) ? 'left' : 'center';
       tableHTML += '<td style="border:1px solid #ddd;padding:8px;text-align:' + align + '">' + text + '</td>';
     });
