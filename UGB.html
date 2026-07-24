@@ -251,7 +251,9 @@ tr:hover td{background:#fafbfc}
 .users-empty{grid-column:1/-1;text-align:center;color:#c7c2b8;font-size:13px;padding:50px 20px;background:#fff;border-radius:14px;border:1px dashed #e3ddd2}
 .users-empty .att-note{max-width:480px;margin:12px auto 0}
 .users-loading{grid-column:1/-1}
-
+.user-card-row .ucr-val a{color:#1d4ed8;text-decoration:none;font-weight:700}
+.user-card-row .ucr-val a:hover{text-decoration:underline}
+.user-card-row .ucr-missing{color:#dc2626;font-weight:600}
 /* ── SCORE TAB STYLES ─────────────────────────────────────────── */
 .score-hero{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:22px}
 .score-hero-card{background:linear-gradient(160deg,#ffffff 0%,#fbf8f3 100%);border-radius:16px;padding:18px 20px;box-shadow:0 4px 18px rgba(60,50,30,.07);border:1px solid rgba(255,255,255,.8);text-align:center}
@@ -426,10 +428,6 @@ tr:hover td{background:#fafbfc}
         <span class="sb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg></span>
         <span class="sb-label">Internal Sheets</span>
       </button>
-      <button class="sb-item" data-tab="staffdocs" onclick="switchTab('staffdocs',this)">
-    <span class="sb-ic">📄</span>
-    <span class="sb-label">Staff Documents</span>
-</button>
     </div>
     <div class="sb-foot">
       <button class="logout-btn-side" id="logoutBtn" style="display:none" onclick="doLogout()">
@@ -446,9 +444,15 @@ tr:hover td{background:#fafbfc}
           <svg viewBox="0 0 24 24" fill="none" stroke="#4b4538" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>
         </button>
         <div class="h-right" style="margin-left:auto">
-          <a class="teams-btn" href="https://teams.microsoft.com" target="_blank" rel="noopener" title="Open Microsoft Teams">
-            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#4b4538" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h1"></path><rect x="9" y="8" width="12" height="10" rx="2"></rect><circle cx="14" cy="4.5" r="1.5"></circle></svg>
-          </a>
+        <a class="teams-btn" href="https://teams.microsoft.com" target="_blank" rel="noopener" title="Open Microsoft Teams">
+  <svg width="20" height="20" viewBox="0 0 2228.833 2073.333" xmlns="http://www.w3.org/2000/svg">
+    <path fill="#5059C9" d="M1554.637,777.5h575.713c54.391,0,98.483,44.092,98.483,98.483v524.398c0,199.901-162.051,361.952-361.952,361.952h-1.711c-199.901,0.028-361.976-161.999-362.004-361.9c0-0.018,0-0.035,0-0.053V828.971C1503.167,800.618,1526.285,777.5,1554.637,777.5L1554.637,777.5z"/>
+    <circle fill="#5059C9" cx="1943.75" cy="440.583" r="233.25"/>
+    <circle fill="#7B83EB" cx="1218.083" cy="336.917" r="336.917"/>
+    <path fill="#7B83EB" d="M1667.323,777.5H717.01c-53.743,1.33-96.257,45.931-95.01,99.676v598.105c-7.505,322.519,247.657,590.16,570.167,598.053c322.51-7.893,577.671-275.534,570.167-598.053V877.176C1763.579,823.431,1721.066,778.83,1667.323,777.5z"/>
+    <path fill="#FFFFFF" d="M1245.417,1037.5h-190v520h-127.5v-520h-190v-105h507.5V1037.5z"/>
+  </svg>
+</a>
           <button class="add-delegation-btn" onclick="openAddDelegation()" title="Add a new delegation task">
             <span class="adb-plus">+</span> Delegation
           </button>
@@ -697,19 +701,6 @@ tr:hover td{background:#fafbfc}
     </div>
     <div id="internalSheetsGrid" class="isheets-grid"></div>
   </div>
-<div class="tab-content" id="tab-staffdocs">
-
-    <div class="leave-iframe-wrap">
-
-        <iframe
-            src="https://datastudio.google.com/embed/u/0/reporting/3148dcf5-ce32-4f26-8be3-46321ae399ca/page/5CczF"
-            title="Staff Documents"
-            allowfullscreen>
-        </iframe>
-
-    </div>
-
-</div>
   <div id="ediv" style="display:none"></div>
     </div><!-- /.content -->
   </div><!-- /.main-wrap -->
@@ -1180,6 +1171,8 @@ var UCR_ICONS = {
   phone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>',
   emg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>',
   addr: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>'
+  blood: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C12 2 5 10.5 5 15a7 7 0 0 0 14 0c0-4.5-7-13-7-13z"></path></svg>';
+  file: = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>';
 };
 
 function renderUsers(staff) {
@@ -1209,6 +1202,9 @@ function renderUsers(staff) {
         '<div class="user-card-row"><span class="ucr-ic">' + UCR_ICONS.phone + '</span><span class="ucr-lbl">Contact</span><span class="ucr-val">' + (r.phone || '—') + '</span></div>' +
         '<div class="user-card-row"><span class="ucr-ic">' + UCR_ICONS.emg + '</span><span class="ucr-lbl">Emergency</span><span class="ucr-val">' + (r.emergencyContact || '—') + '</span></div>' +
         '<div class="user-card-row"><span class="ucr-ic">' + UCR_ICONS.addr + '</span><span class="ucr-lbl">Address</span><span class="ucr-val">' + (r.address || '—') + '</span></div>' +
+         '<div class="user-card-row"><span class="ucr-ic">' + UCR_ICONS.blood + '</span><span class="ucr-lbl">Blood Group</span><span class="ucr-val">' + (r.bloodGroup || '—') + '</span></div>' +
+         '<div class="user-card-row"><span class="ucr-ic">' + UCR_ICONS.file + '</span><span class="ucr-lbl">PAN File</span><span class="ucr-val">' + (r.panFileUrl ? '<a href="' + r.panFileUrl + '" target="_blank" rel="noopener">View PAN</a>' : '<span class="ucr-missing">Not Uploaded</span>') + '</span></div>' +
+         '<div class="user-card-row"><span class="ucr-ic">' + UCR_ICONS.file + '</span><span class="ucr-lbl">Aadhar File</span><span class="ucr-val">' + (r.aadharFileUrl ? '<a href="' + r.aadharFileUrl + '" target="_blank" rel="noopener">View Aadhar</a>' : '<span class="ucr-missing">Not Uploaded</span>') + '</span></div>' +
       '</div>' +
     '</div>';
   }).join('');
@@ -1217,79 +1213,71 @@ function renderUsers(staff) {
 // ── Upcoming Birthdays & Work Anniversaries banner (Users tab) ───────────────
 // Parses a DD/MM/YYYY (or similar) date string and returns {day, month} only
 // — the year is ignored since we're checking recurring yearly events.
-function parseDayMonth(v) {
+function parseFullDate(v) {
   if (!v) return null;
   var s = String(v).trim();
   if (!s || s === '-' || s === '—') return null;
   var parts = s.split(/[\/\-\.]/);
   if (parts.length < 2) return null;
-  var day, month;
-  // Assume DD/MM/YYYY (matches toDDMMYYYY used elsewhere in this file)
-  if (parts[0].length === 4) { // YYYY-MM-DD
-    month = parseInt(parts[1], 10);
-    day = parseInt(parts[2], 10);
-  } else {
-    day = parseInt(parts[0], 10);
-    month = parseInt(parts[1], 10);
-  }
+  var day, month, year;
+  if (parts[0].length === 4) { year = parseInt(parts[0],10); month = parseInt(parts[1],10); day = parseInt(parts[2],10); }
+  else { day = parseInt(parts[0],10); month = parseInt(parts[1],10); year = parts[2] ? parseInt(parts[2],10) : null; }
   if (!day || !month || day > 31 || month > 12) return null;
-  return { day: day, month: month };
+  return { day: day, month: month, year: year };
 }
 
-// Days from today until the next occurrence of the given day/month (0 = today)
-function daysUntilNext(dayMonth) {
-  var today = new Date();
-  today.setHours(0, 0, 0, 0);
+function daysUntilNext(dm) {
+  var today = new Date(); today.setHours(0,0,0,0);
   var year = today.getFullYear();
-  var candidate = new Date(year, dayMonth.month - 1, dayMonth.day);
-  if (candidate < today) candidate = new Date(year + 1, dayMonth.month - 1, dayMonth.day);
+  var candidate = new Date(year, dm.month - 1, dm.day);
+  if (candidate < today) candidate = new Date(year + 1, dm.month - 1, dm.day);
   return Math.round((candidate - today) / 86400000);
 }
 
 function renderUsersUpcomingBanner(rows) {
   var host = document.getElementById('usersUpcomingBanner');
   if (!host) return;
-
-  var WINDOW_DAYS = 7; // upcoming window
-  var items = [];
+  var WINDOW_DAYS = 7, todayItems = [], upcomingItems = [], thisYear = new Date().getFullYear();
 
   rows.forEach(function(r) {
-    var dob = parseDayMonth(r.dob);
+    var dob = parseFullDate(r.dob);
     if (dob) {
       var d = daysUntilNext(dob);
-      if (d <= WINDOW_DAYS) items.push({ type: 'birthday', name: r.name, days: d });
+      if (d === 0) todayItems.push({ type:'birthday', name:r.name, years: dob.year ? (thisYear - dob.year) : null });
+      else if (d <= WINDOW_DAYS) upcomingItems.push({ type:'birthday', name:r.name, days:d });
     }
-    var doj = parseDayMonth(r.joiningDate);
+    var doj = parseFullDate(r.joiningDate);
     if (doj) {
       var d2 = daysUntilNext(doj);
-      if (d2 <= WINDOW_DAYS) items.push({ type: 'anniversary', name: r.name, days: d2 });
+      if (d2 === 0) todayItems.push({ type:'anniversary', name:r.name, years: doj.year ? (thisYear - doj.year) : null });
+      else if (d2 <= WINDOW_DAYS) upcomingItems.push({ type:'anniversary', name:r.name, days:d2 });
     }
   });
 
-  if (!items.length) { host.innerHTML = ''; return; }
-
-  items.sort(function(a, b) { return a.days - b.days; });
-
-  function whenLabel(d) {
-    if (d === 0) return 'Today';
-    if (d === 1) return 'Tomorrow';
-    return 'in ' + d + ' days';
+  var html = '';
+  if (todayItems.length) {
+    var chips = todayItems.map(function(it) {
+      if (it.type === 'birthday') {
+        var t = it.years ? (' — turns ' + it.years + ' today') : ' — Birthday today';
+        return '<span style="display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid #fde8c8;border-radius:20px;padding:6px 14px;font-size:12.5px;font-weight:700;color:#92400e;margin:3px 6px 3px 0">🎂 <strong>' + it.name + '</strong>' + t + '</span>';
+      }
+      var t2 = it.years ? (' — ' + it.years + ' year' + (it.years === 1 ? '' : 's') + ' with the firm') : ' — Work Anniversary today';
+      return '<span style="display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid #c7f0d8;border-radius:20px;padding:6px 14px;font-size:12.5px;font-weight:700;color:#166534;margin:3px 6px 3px 0">🎉 <strong>' + it.name + '</strong>' + t2 + '</span>';
+    }).join('');
+    html += '<div style="background:linear-gradient(135deg,#f0fdf4 0%,#fffbeb 100%);border:1px solid #bbf7d0;border-radius:14px;padding:12px 16px;margin-bottom:12px"><div style="font-size:11px;font-weight:700;color:#166534;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">✨ Celebrating Today</div><div>' + chips + '</div></div>';
   }
-
-  var chips = items.map(function(it) {
-    var icon = it.type === 'birthday' ? '🎂' : '🎉';
-    var label = it.type === 'birthday' ? 'Birthday' : 'Work Anniversary';
-    return '<span style="display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid #fde8c8;border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;color:#92400e;margin:3px 6px 3px 0">' +
-      icon + ' <strong>' + it.name + '</strong> — ' + label + ' ' + whenLabel(it.days) +
-    '</span>';
-  }).join('');
-
-  host.innerHTML = '<div style="background:linear-gradient(135deg,#fffbeb 0%,#fff7e6 100%);border:1px solid #fbe7b8;border-radius:14px;padding:12px 16px;margin-bottom:16px">' +
-    '<div style="font-size:11px;font-weight:700;color:#b45309;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">🎁 Upcoming Birthdays &amp; Work Anniversaries</div>' +
-    '<div>' + chips + '</div>' +
-  '</div>';
+  if (upcomingItems.length) {
+    upcomingItems.sort(function(a,b){ return a.days - b.days; });
+    var chips2 = upcomingItems.map(function(it) {
+      var icon = it.type === 'birthday' ? '🎂' : '🎉';
+      var label = it.type === 'birthday' ? 'Birthday' : 'Work Anniversary';
+      var when = it.days === 1 ? 'Tomorrow' : 'in ' + it.days + ' days';
+      return '<span style="display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid #fde8c8;border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;color:#92400e;margin:3px 6px 3px 0">' + icon + ' <strong>' + it.name + '</strong> — ' + label + ' ' + when + '</span>';
+    }).join('');
+    html += '<div style="background:linear-gradient(135deg,#fffbeb 0%,#fff7e6 100%);border:1px solid #fbe7b8;border-radius:14px;padding:12px 16px;margin-bottom:16px"><div style="font-size:11px;font-weight:700;color:#b45309;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">🎁 Upcoming Birthdays &amp; Work Anniversaries</div><div>' + chips2 + '</div></div>';
+  }
+  host.innerHTML = html;
 }
-
 // ── OVERVIEW WIDGETS (Top/Bottom Performers, Task donut, FMS Bottleneck) ──────
 var OV_BAR_COLORS = ['#3B82F6','#10B981','#8B5CF6','#F59E0B','#EC4899','#06B6D4'];
 
