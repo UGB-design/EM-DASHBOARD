@@ -817,9 +817,10 @@ function openAddDelegation() {
 }
 
 // ── Internal Sheets tab ───────────────────────────────────────────────────────
-function renderInternalSheets() {
+function renderInternalSheets(dynamicSheets) {
   var grid = document.getElementById('internalSheetsGrid');
   if (!grid) return;
+  var list = (dynamicSheets && dynamicSheets.length) ? dynamicSheets : INTERNAL_SHEETS;
   var sheetIconSvg = '<svg viewBox="0 0 48 48" width="30" height="30" xmlns="http://www.w3.org/2000/svg">' +
     '<rect x="6" y="4" width="36" height="40" rx="4" fill="#0F9D58"/>' +
     '<rect x="11" y="9" width="26" height="30" rx="1" fill="#fff"/>' +
@@ -833,9 +834,9 @@ function renderInternalSheets() {
     '<rect x="22.5" y="27" width="7" height="5" fill="#0F9D58" opacity=".85"/>' +
     '<rect x="31" y="27" width="2.5" height="5" fill="#0F9D58" opacity=".55"/>' +
     '</svg>';
-  document.getElementById('isheetsCountBadge').textContent = INTERNAL_SHEETS.length + ' sheets';
+ document.getElementById('isheetsCountBadge').textContent = list.length + ' sheets';
 
-  grid.innerHTML = INTERNAL_SHEETS.map(function(s) {
+  grid.innerHTML = list.map(function(s) {
     return '<a class="isheet-card" href="' + s.url + '" target="_blank" rel="noopener">' +
       '<span class="isheet-ic">' + sheetIconSvg + '</span>' +
       '<div class="isheet-txt">' +
@@ -1153,8 +1154,8 @@ function renderAll(data) {
         '<td>' + pg(d.progress) + '</td></tr>';
     }).join('');
   }
-
   renderUsers(data.staffData || []);
+  renderInternalSheets(data.internalSheets);
   renderOverviewWidgets(data);
   renderFmsByProcess(data.fmsByProcess || []);
   renderClByDoer(data.checklistByDoer || []);
