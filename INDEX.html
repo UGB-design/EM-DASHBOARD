@@ -20,11 +20,32 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #authOverlay .manual-signin-label{font-size:12px;color:#9aa0ac;font-weight:500}
 #authOverlay .retry-link{font-size:12px;color:#2563eb;font-weight:600;cursor:pointer;text-decoration:underline;background:none;border:none}
 
-.header{background:#fff;padding:20px 32px 0;border-bottom:1px solid #e8eaed}
-.h-top{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;flex-wrap:wrap;gap:10px}
-.h-title{font-size:24px;font-weight:700;color:#1a1a1a;letter-spacing:-.3px}
-.h-sub{font-size:12px;color:#9aa0ac;margin-top:3px}
-.h-right{display:flex;align-items:center;gap:10px}
+/* ===== APP SHELL / SIDEBAR ===== */
+.app-shell{display:flex;min-height:100vh}
+.sidebar{width:230px;flex-shrink:0;background:#fff;border-right:1px solid #e8eaed;display:flex;flex-direction:column;padding:22px 14px;position:sticky;top:0;height:100vh}
+.sb-brand{display:flex;align-items:center;gap:10px;padding:0 8px 20px;border-bottom:1px solid #f0f0f0;margin-bottom:16px}
+.sb-brand-badge{width:38px;height:38px;border-radius:10px;background:#2563eb;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
+.sb-brand-text{line-height:1.25;min-width:0}
+.sb-brand-title{font-size:14px;font-weight:700;color:#1a1a1a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-brand-sub{font-size:10.5px;color:#9aa0ac;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-nav{flex:1;display:flex;flex-direction:column;gap:3px;overflow-y:auto}
+.sb-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:9px;border:none;background:transparent;font-size:13px;font-weight:600;color:#666;cursor:pointer;text-align:left;width:100%;transition:all .15s}
+.sb-item svg{flex-shrink:0;width:17px;height:17px}
+.sb-item span.lbl{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-item.active{background:#2563eb;color:#fff;box-shadow:0 2px 6px rgba(37,99,235,.25)}
+.sb-item:hover:not(.active){background:#f3f4f6;color:#1a1a1a}
+.sb-badge{background:#dc2626;color:#fff;font-size:10px;font-weight:700;border-radius:20px;padding:2px 7px;min-width:18px;text-align:center;line-height:1.4}
+.sb-badge.zero{display:none}
+.sb-item.active .sb-badge{background:rgba(255,255,255,.28)}
+.sb-logout{margin-top:10px;background:#f3f4f6;border:1px solid #e8eaed;border-radius:9px;padding:10px 12px;font-size:12px;font-weight:700;cursor:pointer;color:#555;display:flex;align-items:center;gap:9px}
+.sb-logout:hover{background:#ececec}
+
+.main-area{flex:1;min-width:0;display:flex;flex-direction:column}
+
+.topbar{background:#fff;padding:16px 28px;border-bottom:1px solid #e8eaed;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.tb-greet{font-size:16px;font-weight:700;color:#1a1a1a}
+.tb-greet .em{color:#9aa0ac;font-size:11px;font-weight:600;display:block;margin-top:2px}
+.tb-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .wk-label{font-size:13px;color:#888;font-weight:500}
 .wk-sel{background:#fff;border:1.5px solid #d1d5db;border-radius:8px;padding:7px 14px;font-size:13px;color:#333;font-weight:500;cursor:pointer;outline:none;box-shadow:0 1px 3px rgba(0,0,0,.06);max-width:320px}
 .saving{font-size:11px;color:#888;display:none}
@@ -33,12 +54,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .user-chip img{width:24px;height:24px;border-radius:50%;object-fit:cover}
 .user-chip span{max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-.tabs-row{display:flex;gap:0;overflow-x:auto;padding-bottom:0}
-.tab-btn{padding:11px 24px;border-radius:0;font-size:13px;cursor:pointer;color:#9aa0ac;border:none;border-bottom:2px solid transparent;background:transparent;font-weight:500;transition:all .15s;white-space:nowrap}
-.tab-btn.active{color:#1a1a1a;font-weight:700;border-bottom:2px solid #1a1a1a}
-.tab-btn:hover:not(.active){color:#555;background:#f7f8fa}
-
-.content{padding:24px 32px}
+.content{padding:24px 28px}
 .tab-content{display:none}
 .tab-content.active{display:block}
 
@@ -134,15 +150,25 @@ tr:hover td{background:#fafbfc}
 .ebox{background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:18px;margin:14px 0}
 .empty-state{text-align:center;padding:40px;color:#9aa0ac;font-size:13px}
 
+/* My Task (Looker Studio) */
+.mytask-wrap{background:#fff;border-radius:12px;border:1px solid #e8eaed;box-shadow:0 1px 3px rgba(0,0,0,.08);overflow:hidden;height:calc(100vh - 150px);min-height:520px;display:flex;flex-direction:column}
+.mytask-wrap iframe{width:100%;height:100%;border:0;flex:1}
+
 @media(max-width:900px){
   .c5{grid-template-columns:repeat(3,1fr)}
   .c1{grid-template-columns:1fr}
   .summary-panels{grid-template-columns:1fr}
   .content{padding:16px}
+  .sidebar{width:74px;padding:16px 8px}
+  .sb-brand-text,.sb-item span.lbl,.sb-logout span.lbl{display:none}
+  .sb-brand{justify-content:center;padding-bottom:14px}
+  .sb-item{justify-content:center;padding:12px}
+  .sb-logout{justify-content:center}
+  .mytask-wrap{height:calc(100vh - 210px)}
 }
 @media(max-width:600px){
   .c5{grid-template-columns:1fr 1fr}
-  .header{padding:16px 16px 0}
+  .topbar{padding:14px 16px}
 }
 </style>
 </head>
@@ -168,138 +194,181 @@ tr:hover td{background:#fafbfc}
 </div>
 
 <div id="dashboardWrap" style="display:none">
+<div class="app-shell">
 
-<div class="header">
-  <div class="h-top">
-    <div>
-      <div class="h-title">EM Dashboard</div>
-      <div class="h-sub" id="hSub">FMS + Checklist + Delegation &nbsp;&middot;&nbsp; <span id="hSubEmail"></span></div>
-    </div>
-    <div class="h-right">
-      <span class="wk-label">From</span>
-      <input type="date" class="wk-sel" id="dateFrom" style="max-width:155px;cursor:pointer">
-      <span class="wk-label">To</span>
-      <input type="date" class="wk-sel" id="dateTo" style="max-width:155px;cursor:pointer">
-      <button id="applyDateBtn" onclick="applyCustomDateRange()" style="background:#1a1a1a;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:12px;font-weight:600;cursor:pointer">Apply</button>
-      <span class="saving" id="savingTxt"> Updating...</span>
-      <div class="user-chip" id="userChip" style="display:none">
-        <img id="userAvatar" src="" alt="">
-        <span id="userName"></span>
+  <aside class="sidebar">
+    <div class="sb-brand">
+      <div class="sb-brand-badge">EM</div>
+      <div class="sb-brand-text">
+        <div class="sb-brand-title">EM Dashboard</div>
+        <div class="sb-brand-sub">FMS + Checklist + Delegation</div>
       </div>
-      <button onclick="doLogout()" style="background:#f3f4f6;border:1px solid #e8eaed;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer;color:#555">Logout</button>
     </div>
-  </div>
-  <div class="tabs-row">
-    <button class="tab-btn active" onclick="switchTab('summary',this)">Summary</button>
-    <button class="tab-btn" onclick="switchTab('fms',this)">FMS Steps</button>
-    <button class="tab-btn" onclick="switchTab('checklist',this)">Checklist</button>
-    <button class="tab-btn" onclick="switchTab('delegation',this)">Delegation</button>
-    <button class="tab-btn" onclick="switchTab('myscore',this)">My Score</button>
-  </div>
-</div>
+    <nav class="sb-nav">
+      <button class="sb-item active" onclick="switchTab('summary',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+        <span class="lbl">Summary</span>
+      </button>
+      <button class="sb-item" onclick="switchTab('fms',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+        <span class="lbl">FMS Steps</span>
+        <span class="sb-badge zero" id="sbBadgeFms">0</span>
+      </button>
+      <button class="sb-item" onclick="switchTab('checklist',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 12l2 2 4-4"></path></svg>
+        <span class="lbl">Checklist</span>
+        <span class="sb-badge zero" id="sbBadgeCl">0</span>
+      </button>
+      <button class="sb-item" onclick="switchTab('delegation',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        <span class="lbl">Delegation</span>
+        <span class="sb-badge zero" id="sbBadgeDl">0</span>
+      </button>
+      <button class="sb-item" onclick="switchTab('mytask',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"></rect><path d="M8 21h8"></path><path d="M12 18v3"></path></svg>
+        <span class="lbl">My Task</span>
+      </button>
+      <button class="sb-item" onclick="switchTab('myscore',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M18 17V9"></path><path d="M13 17V5"></path><path d="M8 17v-3"></path></svg>
+        <span class="lbl">My Score</span>
+      </button>
+    </nav>
+    <button class="sb-logout" onclick="doLogout()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      <span class="lbl">Logout</span>
+    </button>
+  </aside>
 
-<div class="content">
-
-  <div class="tab-content active" id="tab-summary">
-    <div id="ldiv" class="loading"><div class="spin"></div> Loading Summary...</div>
-    <div id="mdiv" style="display:none">
-      <div class="c5" style="margin-bottom:12px">
-        <div class="card"><div class="cl">Total Plan</div><div class="cv blue" id="cTP">&mdash;</div><div class="cs">FMS + CHECKLIST + DELEGATION</div></div>
-        <div class="card"><div class="cl">Total Actual</div><div class="cv green" id="cTA">&mdash;</div><div class="cs" id="cTAs">&mdash;</div></div>
-        <div class="card"><div class="cl">FMS Plan</div><div class="cv blue" id="cFP">&mdash;</div><div class="cs-detail" id="cFPdetail"></div></div>
-        <div class="card"><div class="cl">Checklist Plan</div><div class="cv blue" id="cCP">&mdash;</div><div class="cs-detail" id="cCPdetail"></div></div>
-        <div class="card"><div class="cl">Delegation Plan</div><div class="cv blue" id="cDP">&mdash;</div><div class="cs-detail" id="cDPdetail"></div></div>
+  <main class="main-area">
+    <div class="topbar">
+      <div class="tb-greet" id="tbGreet">Hello..!
+        <span class="em" id="hSubEmail"></span>
       </div>
-      <div class="c1" style="margin-bottom:22px">
-        <div class="card"><div class="cl">Overall Score</div><div class="cv green" id="cOV">&mdash;</div><div class="cs">monthly progress rate</div></div>
-        <div class="card" style="display:flex;align-items:center;justify-content:center">
-          <div id="overallProgressBar" style="width:100%"></div>
+      <div class="tb-right">
+        <span class="wk-label">From</span>
+        <input type="date" class="wk-sel" id="dateFrom" style="max-width:155px;cursor:pointer">
+        <span class="wk-label">To</span>
+        <input type="date" class="wk-sel" id="dateTo" style="max-width:155px;cursor:pointer">
+        <button id="applyDateBtn" onclick="applyCustomDateRange()" style="background:#1a1a1a;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:12px;font-weight:600;cursor:pointer">Apply</button>
+        <span class="saving" id="savingTxt"> Updating...</span>
+        <div class="user-chip" id="userChip" style="display:none">
+          <img id="userAvatar" src="" alt="">
+          <span id="userName"></span>
         </div>
       </div>
-      <div class="tc" style="margin-bottom:16px">
-        <div class="tc-top"><div class="tc-title">My Summary</div></div>
-        <div style="overflow-x:auto">
-          <table>
-            <thead><tr>
-              <th>#</th><th>Doer</th>
-              <th>FMS Plan</th><th>FMS Actual</th>
-              <th>CL Plan</th><th>CL Actual</th>
-              <th>DL Plan</th><th>DL Actual</th>
-              <th>Progress</th>
-            </tr></thead>
-            <tbody id="mySummaryBody"></tbody>
-          </table>
-        </div>
-      </div>
-      <div class="summary-panels">
-        <div class="sp-card">
-          <div class="sp-head"><div class="sp-title">FMS by Process</div><div class="sp-count" id="fmsByProcessCount"></div></div>
-          <div style="overflow-x:auto">
-            <table><thead><tr><th>#</th><th>FMS Type</th><th>Plan</th><th>Actual</th><th>Missed</th><th>Progress</th></tr></thead>
-            <tbody id="fmsByProcessBody"></tbody></table>
+    </div>
+
+    <div class="content">
+
+      <div class="tab-content active" id="tab-summary">
+        <div id="ldiv" class="loading"><div class="spin"></div> Loading Summary...</div>
+        <div id="mdiv" style="display:none">
+          <div class="c5" style="margin-bottom:12px">
+            <div class="card"><div class="cl">Total Plan</div><div class="cv blue" id="cTP">&mdash;</div><div class="cs">FMS + CHECKLIST + DELEGATION</div></div>
+            <div class="card"><div class="cl">Total Actual</div><div class="cv green" id="cTA">&mdash;</div><div class="cs" id="cTAs">&mdash;</div></div>
+            <div class="card"><div class="cl">FMS Plan</div><div class="cv blue" id="cFP">&mdash;</div><div class="cs-detail" id="cFPdetail"></div></div>
+            <div class="card"><div class="cl">Checklist Plan</div><div class="cv blue" id="cCP">&mdash;</div><div class="cs-detail" id="cCPdetail"></div></div>
+            <div class="card"><div class="cl">Delegation Plan</div><div class="cv blue" id="cDP">&mdash;</div><div class="cs-detail" id="cDPdetail"></div></div>
+          </div>
+          <div class="c1" style="margin-bottom:22px">
+            <div class="card"><div class="cl">Overall Score</div><div class="cv green" id="cOV">&mdash;</div><div class="cs">monthly progress rate</div></div>
+            <div class="card" style="display:flex;align-items:center;justify-content:center">
+              <div id="overallProgressBar" style="width:100%"></div>
+            </div>
+          </div>
+          <div class="tc" style="margin-bottom:16px">
+            <div class="tc-top"><div class="tc-title">My Summary</div></div>
+            <div style="overflow-x:auto">
+              <table>
+                <thead><tr>
+                  <th>#</th><th>Doer</th>
+                  <th>FMS Plan</th><th>FMS Actual</th>
+                  <th>CL Plan</th><th>CL Actual</th>
+                  <th>DL Plan</th><th>DL Actual</th>
+                  <th>Progress</th>
+                </tr></thead>
+                <tbody id="mySummaryBody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="summary-panels">
+            <div class="sp-card">
+              <div class="sp-head"><div class="sp-title">FMS by Process</div><div class="sp-count" id="fmsByProcessCount"></div></div>
+              <div style="overflow-x:auto">
+                <table><thead><tr><th>#</th><th>FMS Type</th><th>Plan</th><th>Actual</th><th>Missed</th><th>Progress</th></tr></thead>
+                <tbody id="fmsByProcessBody"></tbody></table>
+              </div>
+            </div>
+            <div class="sp-card">
+              <div class="sp-head"><div class="sp-title">Checklist Summary</div><div class="sp-count" id="clByDoerCount"></div></div>
+              <div style="overflow-x:auto">
+                <table><thead><tr><th>#</th><th>Doer</th><th>Dept</th><th>Plan</th><th>Actual</th><th>Progress</th></tr></thead>
+                <tbody id="clByDoerBody"></tbody></table>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="sp-card">
-          <div class="sp-head"><div class="sp-title">Checklist Summary</div><div class="sp-count" id="clByDoerCount"></div></div>
-          <div style="overflow-x:auto">
-            <table><thead><tr><th>#</th><th>Doer</th><th>Dept</th><th>Plan</th><th>Actual</th><th>Progress</th></tr></thead>
-            <tbody id="clByDoerBody"></tbody></table>
-          </div>
+      </div>
+
+      <div class="tab-content" id="tab-fms">
+        <div class="filter-bar">
+          <label>FMS Type:</label>
+          <select id="fmsFilterType" onchange="applyFmsFilters()"><option value="All">All Types</option></select>
+        </div>
+        <div class="meta-info-badge" id="fmsMetaBadges"></div>
+        <div class="stat-grid" id="fmsStatsGrid"></div>
+        <div id="fmsCardsContainer"><div class="loading">Fetching FMS groups...</div></div>
+      </div>
+
+      <div class="tab-content" id="tab-checklist">
+        <div class="filter-bar">
+          <label>Dept:</label>
+          <select id="clFilterDept" onchange="applyChecklistFilters()"><option value="All">All Depts</option></select>
+          <label>Status:</label>
+          <select id="clFilterStatus" onchange="applyChecklistFilters()">
+            <option value="All">All Status</option><option value="Done">Done</option><option value="Pending">Pending</option>
+          </select>
+        </div>
+        <div class="meta-info-badge" id="clMetaBadges"></div>
+        <div class="stat-grid" id="clStatsGrid"></div>
+        <div class="tc"><div style="overflow-x:auto">
+          <table><thead><tr><th>#</th><th>Doer</th><th>Dept</th><th>Task Details</th><th>Freq</th><th>Planned Date</th><th>Actual Date</th><th>Status</th></tr></thead>
+          <tbody id="clTableBody"></tbody></table>
+        </div></div>
+      </div>
+
+      <div class="tab-content" id="tab-delegation">
+        <div class="filter-bar">
+          <label>Status:</label>
+          <select id="dlFilterStatus" onchange="applyDelegationFilters()">
+            <option value="All">All Status</option>
+            <option value="Completed">Completed</option>
+            <option value="Week Shifted">Week Shifted</option>
+            <option value="Pending">Pending</option>
+          </select>
+        </div>
+        <div class="meta-info-badge" id="dlMetaBadges"></div>
+        <div class="stat-grid" id="dlStatsGrid"></div>
+        <div class="tc"><div style="overflow-x:auto">
+          <table><thead><tr><th>#</th><th>Doer</th><th>Task</th><th>First Date</th><th>Revision 1</th><th>Revision 2</th><th>Latest Revision</th><th>Status</th></tr></thead>
+          <tbody id="dlTableBody"></tbody></table>
+        </div></div>
+      </div>
+
+      <div class="tab-content" id="tab-mytask">
+        <div class="mytask-wrap">
+          <iframe src="https://datastudio.google.com/embed/reporting/b8cb5428-6c70-42f2-ba91-70fc3a64da3d/page/qzoyF" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms"></iframe>
         </div>
       </div>
+
+      <div class="tab-content" id="tab-myscore">
+        <div id="myScoreContainer"><div class="loading"><div class="spin"></div> Loading scores...</div></div>
+      </div>
+
+      <div id="ediv" style="display:none"></div>
     </div>
-  </div>
+  </main>
 
-  <div class="tab-content" id="tab-fms">
-    <div class="filter-bar">
-      <label>FMS Type:</label>
-      <select id="fmsFilterType" onchange="applyFmsFilters()"><option value="All">All Types</option></select>
-    </div>
-    <div class="meta-info-badge" id="fmsMetaBadges"></div>
-    <div class="stat-grid" id="fmsStatsGrid"></div>
-    <div id="fmsCardsContainer"><div class="loading">Fetching FMS groups...</div></div>
-  </div>
-
-  <div class="tab-content" id="tab-checklist">
-    <div class="filter-bar">
-      <label>Dept:</label>
-      <select id="clFilterDept" onchange="applyChecklistFilters()"><option value="All">All Depts</option></select>
-      <label>Status:</label>
-      <select id="clFilterStatus" onchange="applyChecklistFilters()">
-        <option value="All">All Status</option><option value="Done">Done</option><option value="Pending">Pending</option>
-      </select>
-    </div>
-    <div class="meta-info-badge" id="clMetaBadges"></div>
-    <div class="stat-grid" id="clStatsGrid"></div>
-    <div class="tc"><div style="overflow-x:auto">
-      <table><thead><tr><th>#</th><th>Doer</th><th>Dept</th><th>Task Details</th><th>Freq</th><th>Planned Date</th><th>Actual Date</th><th>Status</th></tr></thead>
-      <tbody id="clTableBody"></tbody></table>
-    </div></div>
-  </div>
-
-  <div class="tab-content" id="tab-delegation">
-    <div class="filter-bar">
-      <label>Status:</label>
-      <select id="dlFilterStatus" onchange="applyDelegationFilters()">
-        <option value="All">All Status</option>
-        <option value="Completed">Completed</option>
-        <option value="Week Shifted">Week Shifted</option>
-        <option value="Pending">Pending</option>
-      </select>
-    </div>
-    <div class="meta-info-badge" id="dlMetaBadges"></div>
-    <div class="stat-grid" id="dlStatsGrid"></div>
-    <div class="tc"><div style="overflow-x:auto">
-      <table><thead><tr><th>#</th><th>Doer</th><th>Task</th><th>First Date</th><th>Revision 1</th><th>Revision 2</th><th>Latest Revision</th><th>Status</th></tr></thead>
-      <tbody id="dlTableBody"></tbody></table>
-    </div></div>
-  </div>
-
-  <div class="tab-content" id="tab-myscore">
-    <div id="myScoreContainer"><div class="loading"><div class="spin"></div> Loading scores...</div></div>
-  </div>
-
-  <div id="ediv" style="display:none"></div>
 </div>
 </div>
 
@@ -311,6 +380,13 @@ var SESSION = { email:'', doerName:'', picture:'', name:'' };
 
 function sessionParams() {
   return '&email='+encodeURIComponent(SESSION.email)+'&doerName='+encodeURIComponent(SESSION.doerName);
+}
+
+function greetingWord(){
+  var h=new Date().getHours();
+  if(h<12)return 'Good Morning';
+  if(h<17)return 'Good Afternoon';
+  return 'Good Evening';
 }
 
 function onGoogleToken(response) {
@@ -335,6 +411,10 @@ function showUserChip(name,picture) {
   chip.style.display='flex';
   var emailSpan=document.getElementById('hSubEmail');
   if(emailSpan)emailSpan.textContent=SESSION.email||'';
+  var greetEl=document.getElementById('tbGreet');
+  if(greetEl){
+    greetEl.childNodes[0].nodeValue=greetingWord()+', '+(name?name.split(' ')[0]:'')+'..! ';
+  }
 }
 
 function showAuthErr(msg) {
@@ -538,7 +618,6 @@ function renderMyScore(ms,debugEmail,debugDoerName){
     var wndot=Math.abs(ms.workNotDoneOnTimePct||0);
     var planVsCompletedPct=tP>0?(tC/tP*100):0;
 
-    // Top row: My Performance + Plan vs Completed
     html+='<div class="c1" style="margin-bottom:16px">'+
       '<div class="card"><div class="cl">My Performance</div>'+
       '<div class="cv '+perfColor+'">'+ms.performance.toFixed(2)+'%</div>'+
@@ -549,7 +628,6 @@ function renderMyScore(ms,debugEmail,debugDoerName){
       '<div class="cs" style="margin-top:8px">'+tC+' of '+tP+' total tasks completed</div>'+
       '</div></div>';
 
-    // Bottom row: 5 stat cards
     html+='<div class="c5">'+
       statCard('Total Plan', tP, 'blue')+
       statCard('Total Completed', tC, 'green')+
@@ -574,6 +652,14 @@ function populateFmsFilters(opts){
   var pt=ts.value;
   ts.innerHTML='<option value="All">All Types</option>';
   (opts.types||[]).forEach(function(t){var o=document.createElement('option');o.value=t;o.textContent=t;if(t===pt)o.selected=true;ts.appendChild(o);});
+}
+
+function setSbBadge(id,val){
+  var el=document.getElementById(id);
+  if(!el)return;
+  var n=Math.max(0,val||0);
+  el.textContent=n;
+  el.classList.toggle('zero',n===0);
 }
 
 function applyFmsFilters(){
@@ -627,6 +713,8 @@ function applyFmsFilters(){
     negScoreCard('Work Not Done %',wndPct)+
     negScoreCard('Work Not Done On Time %',wndotPct);
   document.getElementById('fmsCardsContainer').innerHTML=html||'<div class="empty-state">No FMS data matches the selected filters</div>';
+
+  setSbBadge('sbBadgeFms',Math.max(0,missed));
 }
 
 function escQ(s){return String(s).replace(/'/g,"\\'");}
@@ -674,6 +762,8 @@ function applyChecklistFilters(){
       '<td style="white-space:nowrap">'+r.actualDate+'</td>'+
       '<td><span class="'+(r.status==='Done'?'st-done':'st-pend')+'">'+r.status+'</span></td></tr>';
   }).join('')||'<tr><td colspan="8" class="empty-state">No checklist data for this period</td></tr>';
+
+  setSbBadge('sbBadgeCl',pend);
 }
 
 function applyDelegationFilters(){
@@ -713,10 +803,12 @@ function applyDelegationFilters(){
       '<td style="white-space:nowrap">'+fmtDMY(r.latestRevision)+'</td>'+
       '<td><span class="'+sc+'">'+displayStatus+'</span></td></tr>';
   }).join('')||'<tr><td colspan="8" class="empty-state">No delegation data for this period</td></tr>';
+
+  setSbBadge('sbBadgeDl',pend);
 }
 
 function switchTab(name,el){
-  document.querySelectorAll('.tab-btn').forEach(function(t){t.classList.remove('active');});
+  document.querySelectorAll('.sb-item').forEach(function(t){t.classList.remove('active');});
   document.querySelectorAll('.tab-content').forEach(function(t){t.classList.remove('active');});
   el.classList.add('active');
   document.getElementById('tab-'+name).classList.add('active');
