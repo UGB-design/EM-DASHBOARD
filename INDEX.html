@@ -44,9 +44,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .main-area{flex:1;min-width:0;display:flex;flex-direction:column}
 
 .topbar{background:#fff;padding:16px 28px;border-bottom:1px solid #e8eaed;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
-.tb-greet{font-size:16px;font-weight:700;color:#1a1a1a;flex:1;}
+.tb-greet{font-size:16px;font-weight:700;color:#1a1a1a}
 .tb-greet .em{color:#9aa0ac;font-size:11px;font-weight:600;display:block;margin-top:2px}
-.my-snapshot{display:flex;gap:8px; flex-wrap:wrap;width:100%;margin-top:12px;}
+.my-snapshot{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
 .snap-item{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #e8eaed;border-radius:10px;padding:7px 13px 7px 10px;box-shadow:0 1px 3px rgba(0,0,0,.06);min-width:88px}
 .snap-icon{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .snap-icon svg{width:14px;height:14px}
@@ -65,7 +65,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .snap-score.mid .snap-val{color:#d97706}
 .apply-leave-btn{display:inline-block;background:#16a34a;color:#fff;font-size:11px;font-weight:700;padding:6px 16px;border-radius:20px;text-decoration:none;letter-spacing:.01em;box-shadow:0 2px 6px rgba(22,163,74,.25);transition:background .15s}
 .apply-leave-btn:hover{background:#15803d}
-.tb-right{display:flex;align-items:center;gap:10px;margin-left:auto;flex-wrap:nowrap}
+.tb-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .wk-label{font-size:13px;color:#888;font-weight:500}
 .wk-sel{background:#fff;border:1.5px solid #d1d5db;border-radius:8px;padding:7px 14px;font-size:13px;color:#333;font-weight:500;cursor:pointer;outline:none;box-shadow:0 1px 3px rgba(0,0,0,.06);max-width:320px}
 .saving{font-size:11px;color:#888;display:none}
@@ -286,7 +286,11 @@ tr:hover td{background:#fafbfc}
   <main class="main-area">
     <div class="topbar">
       <div class="tb-greet" id="tbGreet"><span id="tbGreetText">Hello..!</span>
-       
+        <div class="my-snapshot" id="mySnapshot" style="display:none">
+          <div class="snap-item snap-today">
+            <div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M8 2v4M16 2v4M3 10h18"></path></svg></div>
+            <div class="snap-text"><div class="snap-val" id="snapToday">&mdash;</div><div class="snap-lbl">Today's Tasks</div></div>
+          </div>
           <div class="snap-item snap-fms">
             <div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></div>
             <div class="snap-text"><div class="snap-val" id="snapFms">&mdash;</div><div class="snap-lbl">FMS</div></div>
@@ -319,11 +323,6 @@ tr:hover td{background:#fafbfc}
         </div>
       </div>
     </div>
-   <div class="my-snapshot" id="mySnapshot" style="display:none">
-          <div class="snap-item snap-today">
-            <div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M8 2v4M16 2v4M3 10h18"></path></svg></div>
-            <div class="snap-text"><div class="snap-val" id="snapToday">&mdash;</div><div class="snap-lbl">Today's Tasks</div></div>
-          </div>
 
     <div class="content">
 
