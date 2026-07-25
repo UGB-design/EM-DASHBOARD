@@ -387,6 +387,8 @@ tr:hover td{background:#fafbfc}
 var API = "https://script.google.com/macros/s/AKfycbxYjGOqNf_6FuGivAx3qBsBDx-nW5RzMCJlAeshC_ynIf1SdvPUg2NSKIB86bzYClAb/exec";
 var ALLOWED_DOMAIN = "ugbolmalassociates.com";
 var globalRawData = null;
+var weekShiftedByDoerGlobal = {};
+var totalWeekShiftedGlobal = 0;
 var SESSION = { email:'', doerName:'', picture:'', name:'' };
 
 function sessionParams() {
@@ -543,22 +545,35 @@ function renderAll(data){
 
   if(em.week)setDateInputs(em.week.from,em.week.to);
 
-  var totalPlan=t.totalPlan||0, totalActual=t.totalActual||0;
+  // Week Shifted delegation entries should NOT count toward any plan/score totals anywhere in the app
+  var delegData=data.delegationData||[];
+  weekShiftedByDoerGlobal={};
+  totalWeekShiftedGlobal=0;
+  delegData.forEach(function(r){
+    if(String(r.status||'').toLowerCase()==='week shifted'){
+      var key=String(r.doer||'').trim().toLowerCase();
+      weekShiftedByDoerGlobal[key]=(weekShiftedByDoerGlobal[key]||0)+1;
+      totalWeekShiftedGlobal++;
+    }
+  });
 
-  var ovNum=parseFloat(t.overallNum||0)||0;
-  if(!ovNum&&t.overall){ovNum=parseFloat(String(t.overall).replace('%',''))||0;}
-  if(!ovNum&&totalPlan>0){ovNum=(totalActual/totalPlan)*100;}
-  if(ovNum>0&&ovNum<=1)ovNum=ovNum*100;
+  var dlPlanAdj=Math.max(0,(t.delegationPlan||0)-totalWeekShiftedGlobal);
+  var dlDoneAdj=bd.dlDone||0;
+  var dlPendingAdj=Math.max(0,dlPlanAdj-dlDoneAdj);
+
+  var totalPlan=Math.max(0,(t.totalPlan||0)-totalWeekShiftedGlobal), totalActual=t.totalActual||0;
+
+  var ovNum=totalPlan>0?(totalActual/totalPlan*100):0;
 
   document.getElementById('cTP').textContent=totalPlan;
   document.getElementById('cTA').textContent=totalActual;
   document.getElementById('cTAs').textContent=Math.round(totalPlan>0?(totalActual/totalPlan)*100:0)+'% complete';
   document.getElementById('cFP').textContent=t.fmsPlan||0;
   document.getElementById('cCP').textContent=t.checklistPlan||0;
-  document.getElementById('cDP').textContent=t.delegationPlan||0;
+  document.getElementById('cDP').textContent=dlPlanAdj;
   document.getElementById('cFPdetail').innerHTML='<span class="cs-done">'+(bd.fmsDone||0)+' done</span><span class="cs-pend">'+(bd.fmsPending||0)+' pending</span>';
   document.getElementById('cCPdetail').innerHTML='<span class="cs-done">'+(bd.clDone||0)+' done</span><span class="cs-pend">'+(bd.clPending||0)+' pending</span>';
-  document.getElementById('cDPdetail').innerHTML='<span class="cs-done">'+(bd.dlDone||0)+' done</span><span class="cs-pend">'+(bd.dlPending||0)+' pending</span>';
+  document.getElementById('cDPdetail').innerHTML='<span class="cs-done">'+dlDoneAdj+' done</span><span class="cs-pend">'+dlPendingAdj+' pending</span>';
 
   var ovEl=document.getElementById('cOV');
   ovEl.textContent=ovNum.toFixed(1)+'%';
@@ -566,16 +581,16 @@ function renderAll(data){
 
   if(em.doers){
     document.getElementById('mySummaryBody').innerHTML=em.doers.map(function(d,i){
-      var tP=d.fmsPlan+d.clPlan+d.dlPlan;
+      var key=String(d.name||'').trim().toLowerCase();
+      var dlPlanDoerAdj=Math.max(0,(d.dlPlan||0)-(weekShiftedByDoerGlobal[key]||0));
+      var tP=d.fmsPlan+d.clPlan+dlPlanDoerAdj;
       var tA=d.fmsActual+d.clActual+d.dlActual;
-      var prog=parseFloat(d.progress)||0;
-      if(prog>0&&prog<=1)prog=prog*100;
-      if(!prog&&tP>0)prog=(tA/tP)*100;
+      var prog=tP>0?(tA/tP*100):0;
       return '<tr><td>'+(i+1)+'</td>'+
         '<td><div class="dc"><div class="av av'+(i%16)+'">'+ini(d.name)+'</div>'+d.name+'</div></td>'+
         '<td>'+nb(d.fmsPlan)+'</td><td>'+nb(d.fmsActual)+'</td>'+
         '<td>'+nb(d.clPlan)+'</td><td>'+nb(d.clActual)+'</td>'+
-        '<td>'+nb(d.dlPlan)+'</td><td>'+nb(d.dlActual)+'</td>'+
+        '<td>'+nb(dlPlanDoerAdj)+'</td><td>'+nb(d.dlActual)+'</td>'+
         '<td>'+pg(prog)+'</td></tr>';
     }).join('');
   }
@@ -618,15 +633,20 @@ function renderMyScore(ms,debugEmail,debugDoerName){
   var html='';
 
   if(ms){
-    var tP=ms.totalPlan||0, tC=ms.totalCompleted||0, onT=ms.onTimeCompleted||0;
-    var perfColor=ms.performance>=70?'green':ms.performance>=50?'orange':'red';
-    var wnd=Math.abs(ms.workNotDonePct||0);
-    var wndot=Math.abs(ms.workNotDoneOnTimePct||0);
+    var msKey=String(ms.employee||debugDoerName||'').trim().toLowerCase();
+    var wsCount=weekShiftedByDoerGlobal.hasOwnProperty(msKey)?weekShiftedByDoerGlobal[msKey]:totalWeekShiftedGlobal;
+
+    var tP=Math.max(0,(ms.totalPlan||0)-wsCount), tC=ms.totalCompleted||0, onT=ms.onTimeCompleted||0;
+    if(tC>tP)tC=tP;
+    var wnd=tP>0?Math.max(0,(tP-tC)/tP*100):0;
+    var wndot=tP>0?Math.max(0,(tP-onT)/tP*100):Math.abs(ms.workNotDoneOnTimePct||0);
     var planVsCompletedPct=tP>0?(tC/tP*100):0;
+    var perfValue=planVsCompletedPct;
+    var perfColor=perfValue>=70?'green':perfValue>=50?'orange':'red';
 
     html+='<div class="c1" style="margin-bottom:16px">'+
       '<div class="card"><div class="cl">My Performance</div>'+
-      '<div class="cv '+perfColor+'">'+ms.performance.toFixed(2)+'%</div>'+
+      '<div class="cv '+perfColor+'">'+perfValue.toFixed(2)+'%</div>'+
       '<div class="cs">'+ms.employee+'</div></div>'+
       '<div class="card">'+
       '<div class="cl">Plan vs Completed</div>'+
