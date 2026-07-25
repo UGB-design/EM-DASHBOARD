@@ -46,6 +46,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .topbar{background:#fff;padding:16px 28px;border-bottom:1px solid #e8eaed;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
 .tb-greet{font-size:16px;font-weight:700;color:#1a1a1a}
 .tb-greet .em{color:#9aa0ac;font-size:11px;font-weight:600;display:block;margin-top:2px}
+.my-snapshot{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.snap-item{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #e8eaed;border-radius:10px;padding:7px 13px 7px 10px;box-shadow:0 1px 3px rgba(0,0,0,.06);min-width:88px}
+.snap-icon{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.snap-icon svg{width:14px;height:14px}
+.snap-text{line-height:1.15}
+.snap-val{font-size:15px;font-weight:800;color:#1a1a1a}
+.snap-lbl{font-size:9px;color:#9aa0ac;font-weight:700;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.snap-today .snap-icon{background:#eff6ff;color:#2563eb}
+.snap-fms .snap-icon{background:#f0fdf4;color:#16a34a}
+.snap-cl .snap-icon{background:#fff7ed;color:#ea580c}
+.snap-dl .snap-icon{background:#f5f3ff;color:#7c3aed}
+.snap-score .snap-icon{background:#fef2f2;color:#dc2626}
+.snap-score .snap-val{color:#dc2626}
+.snap-score.good .snap-icon{background:#f0fdf4;color:#16a34a}
+.snap-score.good .snap-val{color:#16a34a}
+.snap-score.mid .snap-icon{background:#fffbeb;color:#d97706}
+.snap-score.mid .snap-val{color:#d97706}
 .apply-leave-btn{display:inline-block;background:#16a34a;color:#fff;font-size:11px;font-weight:700;padding:6px 16px;border-radius:20px;text-decoration:none;letter-spacing:.01em;box-shadow:0 2px 6px rgba(22,163,74,.25);transition:background .15s}
 .apply-leave-btn:hover{background:#15803d}
 .tb-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -194,7 +211,7 @@ tr:hover td{background:#fafbfc}
 <body>
 
 <div id="authOverlay">
-  <div class="auth-title">UMESH BOLMAL & ASSOCIATES</div>
+  <div class="auth-title">UMESH BOLMAL &amp; ASSOCIATES</div>
   <div class="auth-sub">EM-DASHBOARD</div>
   <div class="spin"></div>
   <div class="auth-msg" id="authMsg">Signing you in automatically...</div>
@@ -268,7 +285,30 @@ tr:hover td{background:#fafbfc}
 
   <main class="main-area">
     <div class="topbar">
-      <div class="tb-greet" id="tbGreet">Hello..!</div>
+      <div class="tb-greet" id="tbGreet"><span id="tbGreetText">Hello..!</span>
+        <div class="my-snapshot" id="mySnapshot" style="display:none">
+          <div class="snap-item snap-today">
+            <div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M8 2v4M16 2v4M3 10h18"></path></svg></div>
+            <div class="snap-text"><div class="snap-val" id="snapToday">&mdash;</div><div class="snap-lbl">Today's Tasks</div></div>
+          </div>
+          <div class="snap-item snap-fms">
+            <div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></div>
+            <div class="snap-text"><div class="snap-val" id="snapFms">&mdash;</div><div class="snap-lbl">FMS</div></div>
+          </div>
+          <div class="snap-item snap-cl">
+            <div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 12l2 2 4-4"></path></svg></div>
+            <div class="snap-text"><div class="snap-val" id="snapChecklist">&mdash;</div><div class="snap-lbl">Checklist</div></div>
+          </div>
+          <div class="snap-item snap-dl">
+            <div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
+            <div class="snap-text"><div class="snap-val" id="snapDelegation">&mdash;</div><div class="snap-lbl">Delegation</div></div>
+          </div>
+          <div class="snap-item snap-score" id="snapScoreItem">
+            <div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M18 17V9"></path><path d="M13 17V5"></path><path d="M8 17v-3"></path></svg></div>
+            <div class="snap-text"><div class="snap-val" id="snapScore">&mdash;</div><div class="snap-lbl">My Score</div></div>
+          </div>
+        </div>
+      </div>
       <div class="tb-right">
         <a class="apply-leave-btn" href="https://www.appsheet.com/start/e593f206-628c-4174-a375-4012a703c619#view=Apply%20Leave" target="_blank" rel="noopener">Apply Leave</a>
         <span class="wk-label">From</span>
@@ -443,10 +483,11 @@ function showUserChip(name,picture) {
   if(picture){img.src=picture;img.style.display='block';}else{img.style.display='none';}
   span.textContent=name.split(' ')[0];
   chip.style.display='flex';
-  var greetEl=document.getElementById('tbGreet');
+  var greetEl=document.getElementById('tbGreetText');
   if(greetEl){
     greetEl.textContent=greetingWord()+', '+(name?name.split(' ')[0]:'')+'..! ';
   }
+  loadMySnapshot();
 }
 
 function showAuthErr(msg) {
@@ -455,6 +496,70 @@ function showAuthErr(msg) {
   if(spinEl)spinEl.style.display='none';
   msgEl.style.display='none';
   errEl.textContent=msg;errEl.style.display='block';
+}
+
+var SNAPSHOT_SHEET_ID = "1jHueyzxgMTQAmeaDgJUU8Y1q1td0D9yCo54EBdIxwDM";
+var SNAPSHOT_SHEET_NAME = "EMP_DASHBOARD";
+
+function csvParseLine(line) {
+  var result = [], cur = '', inQuotes = false;
+  for (var i = 0; i < line.length; i++) {
+    var ch = line[i];
+    if (ch === '"') {
+      if (inQuotes && line[i + 1] === '"') { cur += '"'; i++; }
+      else inQuotes = !inQuotes;
+    } else if (ch === ',' && !inQuotes) {
+      result.push(cur); cur = '';
+    } else {
+      cur += ch;
+    }
+  }
+  result.push(cur);
+  return result;
+}
+
+function setSnapScoreColor(pct) {
+  var el = document.getElementById('snapScoreItem');
+  if (!el) return;
+  el.classList.remove('good', 'mid');
+  if (pct >= 70) el.classList.add('good');
+  else if (pct >= 50) el.classList.add('mid');
+}
+
+function loadMySnapshot() {
+  if (!SESSION.email) return;
+  var url = "https://docs.google.com/spreadsheets/d/" + SNAPSHOT_SHEET_ID +
+    "/gviz/tq?tqx=out:csv&sheet=" + encodeURIComponent(SNAPSHOT_SHEET_NAME) + "&cb=" + Date.now();
+  fetch(url)
+    .then(function (r) { if (!r.ok) throw new Error('snapshot fetch failed'); return r.text(); })
+    .then(function (csv) {
+      var lines = csv.split(/\r?\n/).filter(function (l) { return l.trim() !== ''; });
+      if (!lines.length) return;
+      var rows = lines.map(csvParseLine);
+      var header = rows[0].map(function (h) { return h.replace(/^"|"$/g, '').trim().toLowerCase(); });
+      var emailIdx = header.findIndex(function (h) { return h.indexOf('email') > -1; });
+      var todayIdx = header.findIndex(function (h) { return h.indexOf('today') > -1; });
+      var fmsIdx = header.findIndex(function (h) { return h === 'fms'; });
+      var clIdx = header.findIndex(function (h) { return h.indexOf('checklist') > -1; });
+      var dlIdx = header.findIndex(function (h) { return h.indexOf('delegation') > -1; });
+      if (emailIdx === -1) return;
+      var myEmail = (SESSION.email || '').trim().toLowerCase();
+      var match = null;
+      for (var i = 1; i < rows.length; i++) {
+        var cellEmail = (rows[i][emailIdx] || '').replace(/^"|"$/g, '').trim().toLowerCase();
+        if (cellEmail === myEmail) { match = rows[i]; break; }
+      }
+      if (!match) return;
+      var clean = function (v) { return (v || '0').replace(/^"|"$/g, '').trim() || '0'; };
+      document.getElementById('snapToday').textContent = clean(match[todayIdx]);
+      document.getElementById('snapFms').textContent = fmsIdx > -1 ? clean(match[fmsIdx]) : '0';
+      document.getElementById('snapChecklist').textContent = clIdx > -1 ? clean(match[clIdx]) : '0';
+      document.getElementById('snapDelegation').textContent = dlIdx > -1 ? clean(match[dlIdx]) : '0';
+      document.getElementById('mySnapshot').style.display = 'flex';
+    })
+    .catch(function (err) {
+      console.warn('My snapshot could not be loaded:', err);
+    });
 }
 
 function doLogout() {
@@ -662,6 +767,9 @@ function renderMyScore(ms,debugEmail,debugDoerName){
     var planVsCompletedPct=tP>0?(tC/tP*100):0;
     var perfValue=planVsCompletedPct;
     var perfColor=perfValue>=70?'green':perfValue>=50?'orange':'red';
+
+    var snapScoreEl=document.getElementById('snapScore');
+    if(snapScoreEl){ snapScoreEl.textContent=perfValue.toFixed(0)+'%'; setSnapScoreColor(perfValue); }
 
     html+='<div class="card" style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:18px">'+
       '<div>'+
