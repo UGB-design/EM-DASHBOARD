@@ -12,7 +12,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 /* APP SHELL (sidebar + main) */
 .app-shell{display:flex;min-height:100vh}
 .sidebar{width:230px;flex-shrink:0;background:#ffffff;border-right:1px solid #ece7dc;display:flex;flex-direction:column;padding:22px 14px;position:sticky;top:0;height:100vh;overflow-y:auto;z-index:70}
-.sb-brand{display:flex;align-items:center;gap:10px;padding:10px 10px 14px;background:#ffffff;border-radius:12px}
+.sb-brand{display:flex;align-items:center;gap:10px;padding:10px 10px 14px;background:#ffffff;border-radius:12px;border-bottom:1px solid #f0ece2;margin-bottom:8px}
 .sb-brand-mark{width:50px;height:50px;border-radius:10px;background:#ffffff;color:#1a1a1a;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
 .sb-brand-title{font-size:13.5px;font-weight:800;color:#1a1a1a;letter-spacing:.01em;line-height:1.35;white-space:nowrap}
 .sb-brand-sub{font-size:10px;color:#9aa0ac;font-weight:600;letter-spacing:.04em}
@@ -65,17 +65,51 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 /* HEADER */
 .header{background:transparent;padding:20px 32px 0}
 .h-top{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;flex-wrap:wrap;gap:10px}
+  <div class="stat-badges-row">
+  <div class="stat-badge sb-blue">
+    <span class="sbi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></span>
+    <div><div class="sb-val" id="badgeTodayTasks">0</div><div class="sb-lbl">Today's Tasks</div></div>
+  </div>
+  <div class="stat-badge sb-green">
+    <span class="sbi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></span>
+    <div><div class="sb-val" id="badgeTodayFms">0</div><div class="sb-lbl">FMS</div></div>
+  </div>
+  <div class="stat-badge sb-orange">
+    <span class="sbi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></span>
+    <div><div class="sb-val" id="badgeTodayChecklist">0</div><div class="sb-lbl">Checklist</div></div>
+  </div>
+  <div class="stat-badge sb-purple">
+    <span class="sbi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21v-1a7 7 0 0 1 14 0v1"></path></svg></span>
+    <div><div class="sb-val" id="badgeTodayDelegation">0</div><div class="sb-lbl">Delegation</div></div>
+  </div>
+  <div class="stat-badge sb-red">
+    <span class="sbi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M7 15l4-6 4 3 5-8"></path></svg></span>
+    <div><div class="sb-val" id="badgeMyScore">0%</div><div class="sb-lbl">My Score</div></div>
+  </div>
+</div>
 .h-title{font-size:24px;font-weight:700;color:#1a1a1a;letter-spacing:-0.3px}
 .h-sub{font-size:12px;color:#8a8478;margin-top:3px}
 .h-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#1d4ed8 0%,#3b82f6 100%);color:#fff;font-size:14px;font-weight:800;letter-spacing:.06em;padding:5px 14px;border-radius:8px;margin-top:8px;box-shadow:0 3px 10px rgba(0,0,0,.15)}
 .h-badge .hb-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.25);animation:hbPulse 1.6s ease-in-out infinite}
-@keyframes hbPulse{0%,100%{opacity:1}50%{opacity:.4}}
+.stat-badges-row{display:flex;gap:14px;margin:0 32px 18px;flex-wrap:wrap}
+.stat-badge{display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid #e3ddd2;border-radius:12px;padding:10px 16px;box-shadow:0 2px 8px rgba(60,50,30,.06);min-width:150px}
+.stat-badge .sbi{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.stat-badge .sbi svg{width:17px;height:17px}
+.stat-badge .sb-val{font-size:18px;font-weight:800;line-height:1.1;color:#1a1a1a}
+.stat-badge .sb-lbl{font-size:10px;color:#9aa0ac;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
+.sb-blue .sbi{background:#eff6ff;color:#1d4ed8}
+.sb-green .sbi{background:#f0fdf4;color:#16a34a}
+.sb-orange .sbi{background:#fff7ed;color:#ea580c}
+.sb-purple .sbi{background:#f5f3ff;color:#7c3aed}
+.sb-red .sbi{background:#fef2f2;color:#dc2626}
+@media(max-width:700px){.stat-badges-row{margin:0 16px 14px;gap:8px}.stat-badge{min-width:auto;flex:1 1 45%;padding:8px 12px}}
+  @keyframes hbPulse{0%,100%{opacity:1}50%{opacity:.4}}
 .h-greet{display:flex;align-items:center;background:#fff;border:1px solid #e3ddd2;border-radius:12px;padding:9px 16px;box-shadow:0 2px 8px rgba(60,50,30,.06);font-size:13.5px;color:#1a1a1a;font-weight:700;white-space:nowrap}
 .h-greet .hg-name{color:#1d4ed8}
 .h-greet .hg-name{color:#1d4ed8}
 .h-greet .hg-name{color:#1a1a1a;font-weight:800}
 .h-greet .hg-emoji{font-size:15px}
-.h-right{display:flex;align-items:center;gap:10px}
+.h-right{display:flex;align-items:center;gap:10px;margin-left:auto;background:#fff;border:1.5px solid #e3ddd2;border-radius:16px;padding:8px 14px;box-shadow:0 2px 8px rgba(60,50,30,.06)}
 .refresh-btn{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;background:#fff;border:1.5px solid #e3ddd2;border-radius:10px;cursor:pointer;box-shadow:0 2px 8px rgba(60,50,30,.08);transition:background .15s}
 .refresh-btn:hover{background:#f9fafb}
 .refresh-btn svg{width:16px;height:16px;stroke:#4b4538;transition:transform .5s ease}
@@ -163,7 +197,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 /* TABLES */
 table{width:100%;border-collapse:collapse}
 th{font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 14px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fdfbf7;white-space:nowrap}
-td{padding:13px 14px;border-bottom:1px solid #f3f4f6;vertical-align:middle;font-size:13px;color:#374151}
+table thead th{position:sticky;top:66px;z-index:40}
+  td{padding:13px 14px;border-bottom:1px solid #f3f4f6;vertical-align:middle;font-size:13px;color:#374151}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:#fafbfc}
 
@@ -573,7 +608,7 @@ tr:hover td{background:#fafbfc}
           </div>
           <div style="overflow-x:auto">
             <table>
-              <thead><tr><th>#</th><th>Doer</th><th>Dept</th><th>Plan</th><th>Actual</th><th>Progress</th></tr></thead>
+              <thead><tr><th>#</th><th>Doer</th><th>Dept</th><th>Plan</th><th>Actual</th><th>Missed</th><th>Progress</th></tr></thead>
               <tbody id="clByDoerBody"></tbody>
             </table>
           </div>
@@ -1118,10 +1153,43 @@ function isWeekShifted(r) {
 function computeDelegationStatus(r) {
   return normalizeStatus(r.status) === 'completed' ? 'Completed' : 'Pending';
 }
+  function getTodayDDMMYYYY() {
+  var d = new Date();
+  var dd = String(d.getDate()).padStart(2, '0');
+  var mm = String(d.getMonth() + 1).padStart(2, '0');
+  return dd + '/' + mm + '/' + d.getFullYear();
+}
+function renderTodayStatBadges(data) {
+  var today = getTodayDDMMYYYY();
+  var fmsCount = 0;
+  (data.fmsGroups || []).forEach(function(g) {
+    (g.steps || []).forEach(function(s) {
+      (s.pendingTasks || []).forEach(function(t) {
+        if (t.plannedDate === today) fmsCount++;
+      });
+    });
+  });
+  var clCount = (data.checklistData || []).filter(function(r) { return r.plannedDate === today; }).length;
+  var dlCount = (data.delegationData || []).filter(function(r) {
+    if (isWeekShifted(r)) return false;
+    var dt = hasValidDate(r.latestRevision) ? r.latestRevision : hasValidDate(r.revision2) ? r.revision2 : hasValidDate(r.revision1) ? r.revision1 : r.firstDate;
+    return dt === today;
+  }).length;
+  var em = data.emDashboard || {};
+  var t = em.totals || {};
+  var myScore = (typeof t.overallNum === 'number') ? t.overallNum : 0;
+
+  document.getElementById('badgeTodayTasks').textContent = fmsCount + clCount + dlCount;
+  document.getElementById('badgeTodayFms').textContent = fmsCount;
+  document.getElementById('badgeTodayChecklist').textContent = clCount;
+  document.getElementById('badgeTodayDelegation').textContent = dlCount;
+  document.getElementById('badgeMyScore').textContent = Math.round(myScore) + '%';
+}
 
 // ── Main Render ───────────────────────────────────────────────────────────────
 function renderAll(data) {
   globalRawData = data;
+  renderTodayStatBadges(data);
   var em = data.emDashboard || {};
   var t  = em.totals || {};
   var bd = em.breakdown || {};
@@ -1373,15 +1441,17 @@ function renderFmsByProcess(rows) {
 function renderClByDoer(rows) {
   document.getElementById('clByDoerCount').textContent = rows.length + ' doers';
   document.getElementById('clByDoerBody').innerHTML = rows.map(function(r, i) {
+    var missed = Math.max(0, (Number(r.plan) || 0) - (Number(r.actual) || 0));
     return '<tr>' +
       '<td>' + (i + 1) + '</td>' +
       '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(r.doer) + '</div>' + r.doer + '</div></td>' +
       '<td><span class="dept-pill">' + r.dept + '</span></td>' +
       '<td>' + nb(r.plan) + '</td>' +
       '<td>' + nb(r.actual) + '</td>' +
+      '<td>' + (missed === 0 ? '<span class="mb-ok">OK</span>' : '<span class="mb-num">' + missed + '</span>') + '</td>' +
       '<td>' + pg(r.progress) + '</td>' +
       '</tr>';
-  }).join('') || '<tr><td colspan="6" style="text-align:center;color:#bbb;padding:20px">No checklist data for this week</td></tr>';
+  }).join('') || '<tr><td colspan="7" style="text-align:center;color:#bbb;padding:20px">No checklist data for this week</td></tr>';
 }
 
 // ── FMS Steps Tab ─────────────────────────────────────────────────────────────
