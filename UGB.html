@@ -783,6 +783,9 @@ tr:hover td{background:#fafbfc}
 
   <!-- BCI NOTES TAB (embedded Google Doc) -->
   <div class="tab-content" id="tab-bcinotes">
+    <button id="bciBackBtn" onclick="switchTab('users', document.querySelector('[data-tab=users]'))" style="display:none;position:fixed;top:14px;left:14px;z-index:10000;background:#1a1a1a;color:#fff;border:none;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25);align-items:center;gap:6px">
+  ← Back to Dashboard
+</button>
     <div class="leave-iframe-wrap">
       <iframe src="https://docs.google.com/document/d/e/2PACX-1vRIYZEhKRY2YSLAspROjngCdWEufAkemtj9n7qOW4A_Wm4IW8zTQMCViqdu4Ndu9sbxEc34pyvrXBQg/pub?embedded=true" title="BCI Notes"></iframe>
     </div>
@@ -2169,13 +2172,17 @@ function switchTab(name, el) {
     if (contentEl) contentEl.classList.add('bci-mode');
     if (sidebarEl) sidebarEl.style.display = 'none';
     document.body.style.overflow = 'hidden';
+    var bciBackBtn = document.getElementById('bciBackBtn');
+      if (bciBackBtn) bciBackBtn.style.display = 'inline-flex';
   } else {
     if (greetEl) greetEl.style.display = 'flex';
     var headerEl2 = document.querySelector('.header');
     if (headerEl2) headerEl2.style.display = 'block';
-    if (contentEl) contentEl.classList.remove('bci-mode');
+    if (contentEl) contentEl.classList.remove('bci-mode'); 
     if (sidebarEl) sidebarEl.style.display = 'flex';
     document.body.style.overflow = '';
+    var bciBackBtn2 = document.getElementById('bciBackBtn');
+      if (bciBackBtn2) bciBackBtn2.style.display = 'none';
   }  
 
   if (name === 'scores') {
