@@ -2156,7 +2156,7 @@ function switchTab(name, el) {
 
   if (topbarEl) topbarEl.style.display = (name === 'users' || name === 'bcinotes') ? 'none' : 'flex';
 
-  if (name === 'leave' || name === 'bcinotes') {
+  if (name === 'leave') {
     if (hc) hc.style.display = 'none';
     if (contentEl) contentEl.classList.add('leave-mode');
   } else {
