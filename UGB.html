@@ -373,8 +373,14 @@ tr:hover td{background:#fafbfc}
   box-shadow:none;
   background:transparent;
 }
+.content.bci-mode{padding:0 !important}
 .content.bci-mode .leave-iframe-wrap{
   height:100vh;
+  border:none;
+  border-radius:0;
+  box-shadow:none;
+  background:transparent;
+}
 }
 .leave-iframe-wrap iframe{width:100%;height:100%;border:none;display:block}
 
@@ -2137,13 +2143,16 @@ function switchTab(name, el) {
   // On mobile, close the sidebar after picking a section
   var sb = document.getElementById('sidebarNav');
   if (sb) sb.classList.remove('open');
-  // Leave tab par top toolbar (Teams, +Delegation, Date range, Refresh) hide karo
-  // aur uske iframe ko full space do
-var hc = document.getElementById('headerControls');
+
+  var hc = document.getElementById('headerControls');
   var contentEl = document.querySelector('.content');
   var greetEl = document.getElementById('greetLine');
   var topbarEl = document.getElementById('mainTopbar');
+
+  // Team Directory: hide the whole topbar (greeting + badges)
   if (topbarEl) topbarEl.style.display = (name === 'users') ? 'none' : 'flex';
+
+  // Leave / BCI Notes: hide the header controls row (Teams, +Delegation, dates, refresh)
   if (name === 'leave' || name === 'bcinotes') {
     if (hc) hc.style.display = 'none';
     if (contentEl) contentEl.classList.add('leave-mode');
@@ -2151,18 +2160,20 @@ var hc = document.getElementById('headerControls');
     if (hc) hc.style.display = 'flex';
     if (contentEl) contentEl.classList.remove('leave-mode');
   }
-if (name === 'bcinotes') {
+
+  // BCI Notes: also hide greeting line + header block, give iframe full page
+  if (name === 'bcinotes') {
     if (greetEl) greetEl.style.display = 'none';
     var headerEl = document.querySelector('.header');
     if (headerEl) headerEl.style.display = 'none';
     if (contentEl) contentEl.classList.add('bci-mode');
-    if (topbarEl) topbarEl.style.display = 'none';
   } else {
     if (greetEl) greetEl.style.display = 'flex';
     var headerEl2 = document.querySelector('.header');
     if (headerEl2) headerEl2.style.display = 'block';
     if (contentEl) contentEl.classList.remove('bci-mode');
   }
+
   // Scores tab pe aate waqt Performance filter reset karo
   if (name === 'scores') {
     document.getElementById('scFilterPerf').value = 'All';
@@ -2172,7 +2183,6 @@ if (name === 'bcinotes') {
     setTimeout(pollLeaveBadge, 500);
   }
 }
-
 // ── Initial load (after sign-in is verified) ────────────────────────────────────
 function initialLoad() {
   document.getElementById('ldiv').style.display = 'block';
