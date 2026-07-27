@@ -80,6 +80,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .refresh-btn:hover{background:#f9fafb}
 .refresh-btn svg{width:16px;height:16px;stroke:#4b4538;transition:transform .5s ease}
 .refresh-btn.spinning svg{animation:refreshSpin .7s linear infinite}
+  .stat-badges-row{display:flex;gap:14px;margin:0 32px 18px;flex-wrap:wrap}
+.stat-badge{display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid #e3ddd2;border-radius:12px;padding:10px 16px;box-shadow:0 2px 8px rgba(60,50,30,.06);min-width:150px}
+.stat-badge .sbi{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.stat-badge .sbi svg{width:17px;height:17px}
+.stat-badge .sb-val{font-size:18px;font-weight:800;line-height:1.1;color:#1a1a1a}
+.stat-badge .sb-lbl{font-size:10px;color:#9aa0ac;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
+.sb-blue .sbi{background:#eff6ff;color:#1d4ed8}
+.sb-green .sbi{background:#f0fdf4;color:#16a34a}
+.sb-orange .sbi{background:#fff7ed;color:#ea580c}
+.sb-purple .sbi{background:#f5f3ff;color:#7c3aed}
+.sb-red .sbi{background:#fef2f2;color:#dc2626}
+@media(max-width:700px){.stat-badges-row{margin:0 16px 14px;gap:8px}.stat-badge{min-width:auto;flex:1 1 45%;padding:8px 12px}}
 @keyframes refreshSpin{to{transform:rotate(360deg)}}
 .wk-label{font-size:13px;color:#7a756a;font-weight:500}
 .wk-sel{background:#fff;border:1.5px solid #e3ddd2;border-radius:10px;padding:7px 14px;font-size:13px;color:#333;font-weight:500;cursor:pointer;outline:none;box-shadow:0 2px 8px rgba(60,50,30,.08);max-width:260px}
@@ -486,6 +498,28 @@ tr:hover td{background:#fafbfc}
     </div>
 
     <div class="content">
+      <div class="stat-badges-row">
+  <div class="stat-badge sb-blue">
+    <span class="sbi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></span>
+    <div><div class="sb-val" id="badgeTodayTasks">0</div><div class="sb-lbl">Today's Tasks</div></div>
+  </div>
+  <div class="stat-badge sb-green">
+    <span class="sbi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></span>
+    <div><div class="sb-val" id="badgeTodayFms">0</div><div class="sb-lbl">FMS</div></div>
+  </div>
+  <div class="stat-badge sb-orange">
+    <span class="sbi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></span>
+    <div><div class="sb-val" id="badgeTodayChecklist">0</div><div class="sb-lbl">Checklist</div></div>
+  </div>
+  <div class="stat-badge sb-purple">
+    <span class="sbi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21v-1a7 7 0 0 1 14 0v1"></path></svg></span>
+    <div><div class="sb-val" id="badgeTodayDelegation">0</div><div class="sb-lbl">Delegation</div></div>
+  </div>
+  <div class="stat-badge sb-red">
+    <span class="sbi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M7 15l4-6 4 3 5-8"></path></svg></span>
+    <div><div class="sb-val" id="badgeMyScore">0%</div><div class="sb-lbl">My Score</div></div>
+  </div>
+</div>
 
   <!-- USERS TAB -->
   <div class="tab-content active" id="tab-users">
@@ -1118,9 +1152,29 @@ function isWeekShifted(r) {
 function computeDelegationStatus(r) {
   return normalizeStatus(r.status) === 'completed' ? 'Completed' : 'Pending';
 }
+function renderTodayStatBadges(data) {
+  try {
+    var ts = (data && data.todayStats) ? data.todayStats : { tasks: 0, fms: 0, checklist: 0, delegation: 0 };
+    var em = (data && data.emDashboard) ? data.emDashboard : {};
+    var t  = em.totals || {};
+    var myScore = (typeof t.overallNum === 'number') ? t.overallNum : 0;
 
+    var setTxt = function(id, val) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = val;
+    };
+    setTxt('badgeTodayTasks', ts.tasks || 0);
+    setTxt('badgeTodayFms', ts.fms || 0);
+    setTxt('badgeTodayChecklist', ts.checklist || 0);
+    setTxt('badgeTodayDelegation', ts.delegation || 0);
+    setTxt('badgeMyScore', Math.round(myScore) + '%');
+  } catch (ex) {
+    console.warn('renderTodayStatBadges failed:', ex);
+  }
+}
 // ── Main Render ───────────────────────────────────────────────────────────────
 function renderAll(data) {
+  renderTodayStatBadges(data);
   globalRawData = data;
   var em = data.emDashboard || {};
   var t  = em.totals || {};
