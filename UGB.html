@@ -192,6 +192,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 table{width:100%;border-collapse:collapse}
 th{font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 14px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fdfbf7;white-space:nowrap}
 table thead th{position:sticky;top:0;z-index:40;background:#fdfbf7}
+.table-scroll-wrap{overflow-x:auto;overflow-y:auto;max-height:65vh}
+.table-scroll-wrap table thead th{position:sticky;top:0;z-index:20;background:#fdfbf7}
 td{padding:13px 14px;border-bottom:1px solid #f3f4f6;vertical-align:middle;font-size:13px;color:#374151}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:#fafbfc}
@@ -480,7 +482,7 @@ tr:hover td{background:#fafbfc}
   </div>
 
   <div class="main-wrap">
-<div class="topbar">
+<div class="topbar" id="mainTopbar">
   <div class="tb-row1">
     <button class="refresh-btn sb-toggle-btn" id="sbToggleBtn" onclick="toggleSidebar()" title="Menu" style="display:none">
       <svg viewBox="0 0 24 24" fill="none" stroke="#4b4538" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>
@@ -583,7 +585,7 @@ tr:hover td{background:#fafbfc}
         <div class="tc-top">
           <div class="tc-title">Employee Summary</div>
         </div>
-        <div style="overflow-x:auto">
+        <div class="table-scroll-wrap">
           <table id="masterDoerTable">
             <thead>
               <tr>
@@ -1106,6 +1108,8 @@ function enterApp(name, email) {
   document.getElementById('logoutBtn').style.display = 'flex';
   document.getElementById('userNameLabel').textContent = name;
   document.getElementById('userAvatar').textContent = ini(name);
+  var topbarEl0 = document.getElementById('mainTopbar');
+  if (topbarEl0) topbarEl0.style.display = 'none';
   var emailSub = document.getElementById('userEmailSub');
   if (emailSub) emailSub.textContent = email || 'ugbolmalassociates.com';
     var fullName = String(name || '').trim() || name;
@@ -2138,6 +2142,8 @@ function switchTab(name, el) {
 var hc = document.getElementById('headerControls');
   var contentEl = document.querySelector('.content');
   var greetEl = document.getElementById('greetLine');
+  var topbarEl = document.getElementById('mainTopbar');
+  if (topbarEl) topbarEl.style.display = (name === 'users') ? 'none' : 'flex';
   if (name === 'leave' || name === 'bcinotes') {
     if (hc) hc.style.display = 'none';
     if (contentEl) contentEl.classList.add('leave-mode');
