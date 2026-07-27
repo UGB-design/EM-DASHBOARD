@@ -590,7 +590,6 @@ tr:hover td{background:#fafbfc}
         <div class="tc-top">
           <div class="tc-title">Employee Summary</div>
         </div>
-        <div class="table-scroll-wrap">
           <table id="masterDoerTable">
             <thead>
               <tr>
@@ -603,7 +602,6 @@ tr:hover td{background:#fafbfc}
             </thead>
             <tbody id="dBody"></tbody>
           </table>
-        </div>
       </div>
       <div class="summary-panels">
         <div class="sp-card">
@@ -611,24 +609,20 @@ tr:hover td{background:#fafbfc}
             <div class="sp-title">FMS Performance by Process</div>
             <div class="sp-count" id="fmsByProcessCount"></div>
           </div>
-          <div style="overflow-x:auto">
-            <table>
+       <table>
               <thead><tr><th>#</th><th>FMS</th><th>Plan</th><th>Actual</th><th>Miss</th><th>Progress</th></tr></thead>
               <tbody id="fmsByProcessBody"></tbody>
             </table>
-          </div>
         </div>
         <div class="sp-card">
           <div class="sp-head">
             <div class="sp-title">Checklist Performance by Employee</div>
             <div class="sp-count" id="clByDoerCount"></div>
           </div>
-          <div style="overflow-x:auto">
-            <table>
+         <table>
               <thead><tr><th>#</th><th>Doer</th><th>Dept</th><th>Plan</th><th>Actual</th><th>Progress</th></tr></thead>
               <tbody id="clByDoerBody"></tbody>
             </table>
-          </div>
         </div>
       </div>
     </div>
@@ -672,14 +666,12 @@ tr:hover td{background:#fafbfc}
     <div class="meta-info-badge" id="clMetaBadges"></div>
     <div class="stat-grid" id="clStatsGrid"></div>
     <div class="tc">
-      <div style="overflow-x:auto">
         <table>
           <thead>
             <tr><th>#</th><th>Doer</th><th>Dept</th><th>Task Details</th><th>Freq</th><th>Planned Date</th><th>Actual Date</th><th>Status</th></tr>
           </thead>
           <tbody id="clTableBody"></tbody>
         </table>
-      </div>
     </div>
   </div>
 
@@ -697,18 +689,15 @@ tr:hover td{background:#fafbfc}
     </div>
     <div class="meta-info-badge" id="dlMetaBadges"></div>
     <div class="stat-grid" id="dlStatsGrid"></div>
-    <div class="tc">
-      <div style="overflow-x:auto">
+  <div class="tc">
         <table>
           <thead>
             <tr><th>#</th><th>Doer</th><th>Task Description</th><th>First Date</th><th>Revision 1</th><th>Revision 2</th><th>Latest Revision</th><th>Status</th></tr>
           </thead>
           <tbody id="dlTableBody"></tbody>
         </table>
-      </div>
     </div>
   </div>
-
   <!-- SCORES TAB -->
   <div class="tab-content" id="tab-scores">
     <div class="filter-bar">
@@ -735,8 +724,7 @@ tr:hover td{background:#fafbfc}
           <div id="scTableCount" style="font-size:12px;color:#9aa0ac;font-weight:500"></div>
         </div>
       </div>
-      <div style="overflow-x:auto">
-        <table>
+      <table>
           <thead>
             <tr>
               <th style="text-align:center">#</th>
@@ -750,7 +738,6 @@ tr:hover td{background:#fafbfc}
           </thead>
           <tbody id="scTableBody"></tbody>
         </table>
-      </div>
     </div>
     <div class="ov-card" style="margin-top:16px">
       <div class="ov-card-top">
