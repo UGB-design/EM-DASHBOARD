@@ -790,6 +790,13 @@ tr:hover td{background:#fafbfc}
       <iframe src="https://docs.google.com/document/d/e/2PACX-1vRIYZEhKRY2YSLAspROjngCdWEufAkemtj9n7qOW4A_Wm4IW8zTQMCViqdu4Ndu9sbxEc34pyvrXBQg/pub?embedded=true" title="BCI Notes"></iframe>
     </div>
   </div>
+    <!-- BCI NOTES — INDEPENDENT FULLSCREEN OVERLAY (bypasses all parent layout issues) -->
+<div id="bciFullscreenOverlay" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:#fff;z-index:99999;">
+  <button onclick="switchTab('users', document.querySelector('[data-tab=users]'))" style="position:absolute;top:14px;left:14px;z-index:100000;background:#1a1a1a;color:#fff;border:none;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25);display:inline-flex;align-items:center;gap:6px">
+    ← Back to Dashboard
+  </button>
+  <iframe src="https://docs.google.com/document/d/e/2PACX-1vRIYZEhKRY2YSLAspROjngCdWEufAkemtj9n7qOW4A_Wm4IW8zTQMCViqdu4Ndu9sbxEc34pyvrXBQg/pub?embedded=true" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;display:block" title="BCI Notes"></iframe>
+</div>
   <div id="ediv" style="display:none"></div>
     </div><!-- /.content -->
   </div><!-- /.main-wrap -->
@@ -2173,6 +2180,8 @@ function switchTab(name, el) {
     if (sidebarEl) sidebarEl.style.display = 'none';
     document.body.style.overflow = 'hidden';
     var bciBackBtn = document.getElementById('bciBackBtn');
+    var bciOverlay = document.getElementById('bciFullscreenOverlay');
+      if (bciOverlay) bciOverlay.style.display = 'block';
       if (bciBackBtn) bciBackBtn.style.display = 'inline-flex';
   } else {
     if (greetEl) greetEl.style.display = 'flex';
@@ -2182,6 +2191,8 @@ function switchTab(name, el) {
     if (sidebarEl) sidebarEl.style.display = 'flex';
     document.body.style.overflow = '';
     var bciBackBtn2 = document.getElementById('bciBackBtn');
+    var bciOverlay2 = document.getElementById('bciFullscreenOverlay');
+      if (bciOverlay2) bciOverlay2.style.display = 'none';
       if (bciBackBtn2) bciBackBtn2.style.display = 'none';
   }  
 
