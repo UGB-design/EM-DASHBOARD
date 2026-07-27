@@ -12,7 +12,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 /* APP SHELL (sidebar + main) */
 .app-shell{display:flex;min-height:100vh}
 .sidebar{width:230px;flex-shrink:0;background:#ffffff;border-right:1px solid #ece7dc;display:flex;flex-direction:column;padding:22px 14px;position:sticky;top:0;height:100vh;overflow-y:auto;z-index:70}
-.sb-brand{display:flex;align-items:center;gap:10px;padding:10px 10px 14px;background:#ffffff;border-radius:12px}
+.sb-brand{display:flex;align-items:center;gap:10px;padding:10px 10px 14px;background:#ffffff;border-radius:12px;border-bottom:2px solid #1a1a1a;margin-bottom:10px}
 .sb-brand-mark{width:50px;height:50px;border-radius:10px;background:#ffffff;color:#1a1a1a;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
 .sb-brand-title{font-size:13.5px;font-weight:800;color:#1a1a1a;letter-spacing:.01em;line-height:1.35;white-space:nowrap}
 .sb-brand-sub{font-size:10px;color:#9aa0ac;font-weight:600;letter-spacing:.04em}
@@ -75,7 +75,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .h-greet .hg-name{color:#1d4ed8}
 .h-greet .hg-name{color:#1a1a1a;font-weight:800}
 .h-greet .hg-emoji{font-size:15px}
-.h-right{display:flex;align-items:center;gap:10px}
+.h-right{display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid #e3ddd2;border-radius:16px;padding:8px 14px;box-shadow:0 2px 8px rgba(60,50,30,.06)}
 .refresh-btn{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;background:#fff;border:1.5px solid #e3ddd2;border-radius:10px;cursor:pointer;box-shadow:0 2px 8px rgba(60,50,30,.08);transition:background .15s}
 .refresh-btn:hover{background:#f9fafb}
 .refresh-btn svg{width:16px;height:16px;stroke:#4b4538;transition:transform .5s ease}
@@ -459,7 +459,7 @@ tr:hover td{background:#fafbfc}
       <div class="h-greet" id="greetLine">
         <span id="greetText">Good Morning</span>, <span class="hg-name" id="greetName">there</span>..!
       </div>
-      <div class="h-right" id="headerControls" style="margin-left:auto">
+    <div class="h-right" id="headerControls">
         <a class="teams-btn" href="https://teams.microsoft.com" target="_blank" rel="noopener" title="Open Microsoft Teams">
   <svg width="20" height="20" viewBox="0 0 2228.833 2073.333" xmlns="http://www.w3.org/2000/svg">
     <path fill="#5059C9" d="M1554.637,777.5h575.713c54.391,0,98.483,44.092,98.483,98.483v524.398c0,199.901-162.051,361.952-361.952,361.952h-1.711c-199.901,0.028-361.976-161.999-362.004-361.9c0-0.018,0-0.035,0-0.053V828.971C1503.167,800.618,1526.285,777.5,1554.637,777.5L1554.637,777.5z"/>
