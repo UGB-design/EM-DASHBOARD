@@ -79,7 +79,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .refresh-btn:hover{background:#f9fafb}
 .refresh-btn svg{width:16px;height:16px;stroke:#4b4538;transition:transform .5s ease}
 .refresh-btn.spinning svg{animation:refreshSpin .7s linear infinite}
-  .topbar{background:#fff;padding:14px 28px;border-bottom:1px solid #e8eaed;display:flex;flex-direction:column;gap:10px;border-radius:14px;margin:0 32px 18px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.topbar{background:#fff;padding:20px 32px 16px;border-bottom:1px solid #e8eaed;display:flex;flex-direction:column;gap:14px;box-shadow:0 1px 3px rgba(0,0,0,.04);margin-bottom:18px}
 .tb-row1{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
 .my-snapshot{display:flex;gap:8px;flex-wrap:wrap}
 .snap-item{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #e8eaed;border-radius:10px;padding:7px 13px 7px 10px;box-shadow:0 1px 3px rgba(0,0,0,.06);min-width:88px}
@@ -107,6 +107,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 @media(max-width:700px){.stat-badges-row{margin:0 16px 14px;gap:8px}.stat-pill{min-width:auto;flex:1 1 45%;padding:8px 12px}}
 @keyframes refreshSpin{to{transform:rotate(360deg)}}
 .wk-label{font-size:13px;color:#7a756a;font-weight:500}
+  .tb-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;row-gap:10px}
+.tb-right .wk-label{white-space:nowrap;margin-left:4px}
+.dt-input{min-width:150px}
 .wk-sel{background:#fff;border:1.5px solid #e3ddd2;border-radius:10px;padding:7px 14px;font-size:13px;color:#333;font-weight:500;cursor:pointer;outline:none;box-shadow:0 2px 8px rgba(60,50,30,.08);max-width:260px}
 .saving{font-size:11px;color:#888;display:none}
 .saving.show{display:inline}
