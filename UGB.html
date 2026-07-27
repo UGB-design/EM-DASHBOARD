@@ -374,14 +374,23 @@ tr:hover td{background:#fafbfc}
   box-shadow:none;
   background:transparent;
 }
-.content.bci-mode{padding:0 !important;margin:0 !important}
+.content.bci-mode{
+  padding:0 !important;
+  margin:0 !important;
+  position:fixed;
+  inset:0;
+  z-index:200;
+  background:#fff;
+}
 .content.bci-mode .leave-iframe-wrap{
+  position:fixed;
+  inset:0;
+  width:100vw;
   height:100vh;
-  width:100%;
   border:none;
   border-radius:0;
   box-shadow:none;
-  background:transparent;
+  background:#fff;
   margin:0;
 }
 .content.bci-mode .leave-iframe-wrap iframe{
@@ -2152,17 +2161,22 @@ function switchTab(name, el) {
     if (contentEl) contentEl.classList.remove('leave-mode');
   }
 
+ var sidebarEl = document.getElementById('sidebarNav');
   if (name === 'bcinotes') {
     if (greetEl) greetEl.style.display = 'none';
     var headerEl = document.querySelector('.header');
     if (headerEl) headerEl.style.display = 'none';
     if (contentEl) contentEl.classList.add('bci-mode');
+    if (sidebarEl) sidebarEl.style.display = 'none';
+    document.body.style.overflow = 'hidden';
   } else {
     if (greetEl) greetEl.style.display = 'flex';
     var headerEl2 = document.querySelector('.header');
     if (headerEl2) headerEl2.style.display = 'block';
     if (contentEl) contentEl.classList.remove('bci-mode');
-  }
+    if (sidebarEl) sidebarEl.style.display = 'flex';
+    document.body.style.overflow = '';
+  }  
 
   if (name === 'scores') {
     document.getElementById('scFilterPerf').value = 'All';
