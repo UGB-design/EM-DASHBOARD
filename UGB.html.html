@@ -575,7 +575,7 @@ function getFieldFuzzy(row, ...names){
 async function loadSheet(name){
   if (USE_APPS_SCRIPT) {
     const controller = new AbortController();
-    const timeoutId = setTimeout(()=>controller.abort(), 20000);
+    const timeoutId = setTimeout(()=>controller.abort(), 45000);
     try{
       const res = await fetch(`${APPS_SCRIPT_URL}?sheet=${encodeURIComponent(name)}`, { signal: controller.signal });
       const rows = await res.json();
