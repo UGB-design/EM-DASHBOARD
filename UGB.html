@@ -287,7 +287,8 @@ tr:hover td{background:#fafbfc}
 .ebox{background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:18px;margin:14px 0}
 
 /* ── USERS TAB (employee profile cards) ──────────────────────── */
-.users-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.users-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+@media(max-width:700px){.users-grid{grid-template-columns:1fr}}
 .user-card{background:#fff;border-radius:14px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed;overflow:hidden;transition:box-shadow .15s,transform .15s;position:relative}
 .user-card:hover{box-shadow:0 6px 18px rgba(29,78,216,.1);transform:translateY(-1px)}
 .user-card-top{display:flex;align-items:center;gap:12px;padding:16px 18px;background:linear-gradient(135deg,#eff6ff 0%,#f7faff 100%);border-bottom:1px solid #eef2fb}
@@ -560,13 +561,6 @@ tr:hover td{background:#fafbfc}
      <button class="refresh-btn" id="refreshBtn" onclick="refreshDashboard()" title="Refresh data">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
       </button>
-    </div>
-  </div>
-  <div class="global-search-row">
-    <div class="global-search-box" id="globalSearchWrap">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-      <input type="text" id="globalSearchBox" placeholder="Search employee, task, client..." oninput="applyGlobalSearch()">
-      <span class="gs-clear" onclick="clearGlobalSearch()">✕</span>
     </div>
   </div>
   <div class="my-snapshot">
@@ -1378,7 +1372,8 @@ function renderUsers(staff) {
       '</div>' +
       '<div class="user-card-body">' +
         '<div class="user-card-row"><span class="ucr-ic">' + UCR_ICONS.dob + '</span><span class="ucr-lbl">Date Of Birth</span><span class="ucr-val">' + (r.dob || '—') + '</span></div>' +
-        '<div class="user-card-row"><span class="ucr-ic">' + UCR_ICONS.join + '</span><span class="ucr-lbl">Date Of Joining</span><span class="ucr-val">' + (r.joiningDate || '—') + '</span></div>' +
+          '<div class="user-card-row"><span class="ucr-ic">' + UCR_ICONS.join + '</span><span class="ucr-lbl">Date Of Joining</span><span class="ucr-val">' + (r.joiningDate || '—') + '</span></div>' +
+        '<div class="user-card-row"><span class="ucr-ic">' + UCR_ICONS.join + '</span><span class="ucr-lbl">Experience</span><span class="ucr-val">' + (calcExperience(r.joiningDate) || '—') + '</span></div>' +
         '<div class="user-card-row"><span class="ucr-ic">' + UCR_ICONS.phone + '</span><span class="ucr-lbl">Contact</span><span class="ucr-val">' + (r.phone || '—') + '</span></div>' +
         '<div class="user-card-row"><span class="ucr-ic">' + UCR_ICONS.emg + '</span><span class="ucr-lbl">Emergency</span><span class="ucr-val">' + (r.emergencyContact || '—') + '</span></div>' +
         '<div class="user-card-row"><span class="ucr-ic">' + UCR_ICONS.addr + '</span><span class="ucr-lbl">Address</span><span class="ucr-val">' + (r.address || '—') + '</span></div>' +
@@ -1404,8 +1399,28 @@ function parseFullDate(v) {
   if (!day || !month || day > 31 || month > 12) return null;
   return { day: day, month: month, year: year };
 }
-
-function daysUntilNext(dm) {
+function calcExperience(joiningDateStr) {
+  var dm = parseFullDate(joiningDateStr);
+  if (!dm || !dm.year) return null;
+  var today = new Date(); today.setHours(0,0,0,0);
+  var join = new Date(dm.year, dm.month - 1, dm.day);
+  if (join > today) return null;
+  var years = today.getFullYear() - join.getFullYear();
+  var months = today.getMonth() - join.getMonth();
+  var days = today.getDate() - join.getDate();
+  if (days < 0) {
+    months--;
+    var prevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+    days += prevMonth.getDate();
+  }
+  if (months < 0) { years--; months += 12; }
+  var parts = [];
+  if (years > 0) parts.push(years + ' yr');
+  if (months > 0) parts.push(months + ' mo');
+  if (years === 0) parts.push(days + ' day' + (days === 1 ? '' : 's'));
+  return parts.join(' ') || '0 days';
+}
+function daysUntilNext(dm) {  
   var today = new Date(); today.setHours(0,0,0,0);
   var year = today.getFullYear();
   var candidate = new Date(year, dm.month - 1, dm.day);
@@ -2221,8 +2236,8 @@ function applyGlobalSearch() {
   });
 }
 function clearGlobalSearch() {
-  document.getElementById('globalSearchBox').value = '';
-  applyGlobalSearch();
+  var box = document.getElementById('globalSearchBox');
+  if (box) box.value = '';
 }
 function toggleSidebar() {
   var sb = document.getElementById('sidebarNav');
