@@ -594,14 +594,12 @@ tr:hover td{background:#fafbfc}
     <div id="usersUpcomingBanner"></div>
     <div id="usersGrid" class="users-grid">
       <div id="usersLoading"></div>
-<script>document.getElementById('usersLoading').innerHTML = skeletonUsersHTML(6);</script>
     </div>
   </div>
 
   <!-- SUMMARY TAB -->
   <div class="tab-content" id="tab-summary">
     <div id="ldiv"></div>
-<script>document.getElementById('ldiv').innerHTML = skeletonSummaryHTML();</script>
     <div id="mdiv" style="display:none">
 
       <div class="c5">
@@ -699,7 +697,6 @@ tr:hover td{background:#fafbfc}
     <div class="meta-info-badge" id="fmsMetaBadges"></div>
     <div class="stat-grid" id="fmsStatsGrid"></div>
    <div id="fmsCardsContainer"></div>
-<script>document.getElementById('fmsCardsContainer').innerHTML = skeletonTableHTML(6);</script>
   </div>
 
   <!-- CHECKLIST TAB -->
@@ -2231,13 +2228,10 @@ function clearGlobalSearch() {
   document.getElementById('globalSearchBox').value = '';
   applyGlobalSearch();
 }
-
-function toggleSidebar() {
 function toggleSidebar() {
   var sb = document.getElementById('sidebarNav');
   if (sb) sb.classList.toggle('open');
 }
-
 // ── Tab switch ────────────────────────────────────────────────────────────────
 function switchTab(name, el) {
   clearGlobalSearch();
@@ -2314,6 +2308,9 @@ function initialLoad() {
 }
 
 // ── Boot ─────────────────────────────────────────────────────────────────────
+document.getElementById('ldiv').innerHTML = skeletonSummaryHTML();
+document.getElementById('usersLoading').innerHTML = skeletonUsersHTML(6);
+document.getElementById('fmsCardsContainer').innerHTML = skeletonTableHTML(6);
 initGoogleAuth();
 </script>
 
