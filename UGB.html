@@ -114,6 +114,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .wk-sel{background:#fff;border:1.5px solid #e3ddd2;border-radius:10px;padding:7px 14px;font-size:13px;color:#333;font-weight:500;cursor:pointer;outline:none;box-shadow:0 2px 8px rgba(60,50,30,.08);max-width:260px}
 .saving{font-size:11px;color:#888;display:none}
 .saving.show{display:inline}
+.global-search-row{display:flex;justify-content:flex-end;margin-top:10px}
+.global-search-box{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid #e3ddd2;border-radius:10px;padding:8px 14px;box-shadow:0 2px 8px rgba(60,50,30,.06);min-width:260px}
+.global-search-box svg{color:#9aa0ac;flex-shrink:0}
+.global-search-box input{border:none;outline:none;font-size:13px;color:#333;width:100%;background:transparent}
+.global-search-box .gs-clear{cursor:pointer;color:#c7c2b8;font-size:15px;font-weight:700;display:none;padding:0 2px}
+.global-search-box.has-val .gs-clear{display:inline}
 .leave-link-row{display:flex;justify-content:flex-end;margin:2px 0 14px}
 .leave-link-btn{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 100%);color:#fff;text-decoration:none;font-size:12.5px;font-weight:700;padding:9px 18px;border-radius:12px;box-shadow:0 4px 14px rgba(79,70,229,.28);transition:transform .15s,box-shadow .15s}
 .leave-link-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(79,70,229,.36)}
@@ -262,6 +268,22 @@ tr:hover td{background:#fafbfc}
 .loading{text-align:center;padding:60px;color:#bbb}
 .spin{width:32px;height:32px;border:3px solid #e5e7eb;border-top-color:#2563eb;border-radius:50%;animation:sp .8s linear infinite;margin:0 auto 14px}
 @keyframes sp{to{transform:rotate(360deg)}}
+  @keyframes skel-shimmer{0%{background-position:100% 50%}100%{background-position:0 50%}}
+.skel{background:linear-gradient(90deg,#eeece5 25%,#e4e0d5 37%,#eeece5 63%);background-size:400% 100%;animation:skel-shimmer 1.4s ease infinite;border-radius:6px}
+.skel-line{height:12px;margin-bottom:9px}
+.skel-avatar{width:34px;height:34px;border-radius:50%;flex-shrink:0}
+.skel-card{background:#fff;border-radius:14px;padding:18px 20px;box-shadow:0 4px 18px rgba(60,50,30,.07);border:1px solid rgba(255,255,255,.8)}
+.skel-c5{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:14px}
+.skel-c1{margin-bottom:20px}
+.skel-table-wrap{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8eaed;overflow:hidden}
+.skel-row{display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid #f3f4f6}
+.skel-row:last-child{border-bottom:none}
+.skel-users-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.skel-user-card{background:#fff;border-radius:14px;border:1px solid #e8eaed;overflow:hidden}
+.skel-user-top{display:flex;align-items:center;gap:12px;padding:16px 18px;background:#fbfbfa;border-bottom:1px solid #eef2fb}
+.skel-user-body{padding:14px 18px;display:flex;flex-direction:column;gap:12px}
+@media(max-width:900px){.skel-c5{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:600px){.skel-c5{grid-template-columns:1fr 1fr}}
 .ebox{background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:18px;margin:14px 0}
 
 /* ── USERS TAB (employee profile cards) ──────────────────────── */
@@ -535,9 +557,16 @@ tr:hover td{background:#fafbfc}
       <input type="date" class="wk-sel dt-input" id="dtTo">
       <button class="apply-btn" id="applyBtn" onclick="applyDateRange()">Apply</button>
       <span class="saving" id="savingTxt"> Please Wait...</span>
-      <button class="refresh-btn" id="refreshBtn" onclick="refreshDashboard()" title="Refresh data">
+     <button class="refresh-btn" id="refreshBtn" onclick="refreshDashboard()" title="Refresh data">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
       </button>
+    </div>
+  </div>
+  <div class="global-search-row">
+    <div class="global-search-box" id="globalSearchWrap">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <input type="text" id="globalSearchBox" placeholder="Search employee, task, client..." oninput="applyGlobalSearch()">
+      <span class="gs-clear" onclick="clearGlobalSearch()">✕</span>
     </div>
   </div>
   <div class="my-snapshot">
@@ -564,13 +593,15 @@ tr:hover td{background:#fafbfc}
   <div class="tab-content active" id="tab-users">
     <div id="usersUpcomingBanner"></div>
     <div id="usersGrid" class="users-grid">
-      <div class="loading users-loading" id="usersLoading"><div class="spin"></div> Loading employee profiles…</div>
+      <div id="usersLoading"></div>
+<script>document.getElementById('usersLoading').innerHTML = skeletonUsersHTML(6);</script>
     </div>
   </div>
 
   <!-- SUMMARY TAB -->
   <div class="tab-content" id="tab-summary">
-    <div id="ldiv" class="loading"><div class="spin"></div> Please Wait Loading Summary...</div>
+    <div id="ldiv"></div>
+<script>document.getElementById('ldiv').innerHTML = skeletonSummaryHTML();</script>
     <div id="mdiv" style="display:none">
 
       <div class="c5">
@@ -667,7 +698,8 @@ tr:hover td{background:#fafbfc}
     </div>
     <div class="meta-info-badge" id="fmsMetaBadges"></div>
     <div class="stat-grid" id="fmsStatsGrid"></div>
-    <div id="fmsCardsContainer"><div class="loading">Fetching FMS structured groups...</div></div>
+   <div id="fmsCardsContainer"></div>
+<script>document.getElementById('fmsCardsContainer').innerHTML = skeletonTableHTML(6);</script>
   </div>
 
   <!-- CHECKLIST TAB -->
@@ -858,6 +890,32 @@ function pg(p) {
   return '<div class="pgw ' + pgCls(p) + '"><div class="pgbg"><div class="pgf" style="width:' + Math.min(p, 100) + '%"></div></div><div class="pgp">' + Math.round(p) + '%</div></div>';
 }
 function ovCls(v) { return 'green'; }
+  function skelLine(w, h) { return '<div class="skel skel-line" style="width:' + (w||'70%') + ';' + (h ? 'height:'+h+';' : '') + '"></div>'; }
+function skeletonSummaryHTML() {
+  var cardHTML = '<div class="skel-card">' + skelLine('50%','9px') + '<div class="skel skel-line" style="width:60%;height:26px;margin-top:6px"></div>' + skelLine('80%') + '</div>';
+  var c5 = '<div class="skel-c5">' + cardHTML.repeat(5) + '</div>';
+  var c1 = '<div class="skel-c1">' + cardHTML + '</div>';
+  var rows = '';
+  for (var i=0;i<6;i++) {
+    rows += '<div class="skel-row"><div class="skel skel-avatar"></div>' + skelLine('22%') + skelLine('8%') + skelLine('8%') + skelLine('8%') + skelLine('8%') + skelLine('12%') + '</div>';
+  }
+  return c5 + c1 + '<div class="skel-table-wrap">' + rows + '</div>';
+}
+function skeletonUsersHTML(n) {
+  var card = '<div class="skel-user-card"><div class="skel-user-top"><div class="skel skel-avatar" style="width:44px;height:44px"></div><div style="flex:1">' + skelLine('60%') + skelLine('35%') + '</div></div><div class="skel-user-body">' + skelLine('90%').repeat(6) + '</div></div>';
+  var out = '<div class="skel-users-grid">';
+  for (var i=0;i<(n||6);i++) out += card;
+  return out + '</div>';
+}
+function skeletonTableHTML(n) {
+  var rows = '';
+  for (var i=0;i<(n||6);i++) {
+    rows += '<div class="skel-row">' + skelLine('4%') + skelLine('20%') + skelLine('14%') + skelLine('14%') + skelLine('10%') + skelLine('14%') + '</div>';
+  }
+  return '<div class="skel-table-wrap">' + rows + '</div>';
+}
+
+function statCard(label, value, color) {
 
 function statCard(label, value, color) {
   return '<div class="stat-card"><div class="stat-label">' + label + '</div><div class="stat-value ' + color + '">' + value + '</div></div>';
@@ -2155,7 +2213,26 @@ function printScoreTable() {
 function closeScorePendingModal() {
   document.getElementById('scorePendingModal').style.display = 'none';
 }
+function applyGlobalSearch() {
+  var box = document.getElementById('globalSearchBox');
+  var wrap = document.getElementById('globalSearchWrap');
+  var term = box.value.trim().toLowerCase();
+  wrap.classList.toggle('has-val', term.length > 0);
+  var activeTab = document.querySelector('.tab-content.active');
+  if (!activeTab) return;
+  ['tbody tr', '.user-card', '.fms-card'].forEach(function(sel) {
+    activeTab.querySelectorAll(sel).forEach(function(el) {
+      var text = el.textContent.toLowerCase();
+      el.style.display = (!term || text.indexOf(term) !== -1) ? '' : 'none';
+    });
+  });
+}
+function clearGlobalSearch() {
+  document.getElementById('globalSearchBox').value = '';
+  applyGlobalSearch();
+}
 
+function toggleSidebar() {
 function toggleSidebar() {
   var sb = document.getElementById('sidebarNav');
   if (sb) sb.classList.toggle('open');
@@ -2163,6 +2240,7 @@ function toggleSidebar() {
 
 // ── Tab switch ────────────────────────────────────────────────────────────────
 function switchTab(name, el) {
+  clearGlobalSearch();
   document.querySelectorAll('.sb-item').forEach(function(t) { t.classList.remove('active'); });
   document.querySelectorAll('.tab-content').forEach(function(t) { t.classList.remove('active'); });
   el.classList.add('active');
