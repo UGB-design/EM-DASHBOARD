@@ -633,49 +633,52 @@ function loadCacheData(){
     return parsed;
   }catch(e){ return null; }
 }
+async function fetchAllSheetsCombined(){
+  const controller = new AbortController();
+  const timeoutId = setTimeout(()=>controller.abort(), 45000);
+  try{
+    const res = await fetch(`${APPS_SCRIPT_URL}?sheets=all`, { signal: controller.signal });
+    const data = await res.json();
+    if (data && data.error) throw new Error(data.error);
+    return data;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+function withFCopy(rows){
+  return (rows||[]).map(r=>{
+    const obj = {...r};
+    Object.keys(r).forEach(k => obj[k+"_f"] = r[k]);
+    return obj;
+  });
+}
 
 async function loadAll(background=false){
   setLoading(true, background);
-
   const failed = [];
-  const unwrap = (res, label) => { if (Array.isArray(res)) return res; failed.push(label); return []; };
-
-  // ── Stage 1: the data the default "Pending Approvals" tab needs. Resolve
-  // and paint this first so the person sees real rows almost immediately
-  // instead of waiting on every sheet in the workbook to come back. ───────
-  const [staffRes, requestsRes] = await Promise.all([
-    safeLoad("Staff_Info"),
-    safeLoad("Leave_Requests"),
-  ]);
-  DATA.staff = unwrap(staffRes, "Staff_Info").filter(r=>r["Name"]);
-  DATA.requests = unwrap(requestsRes, "Leave_Requests").filter(r=>r["Staff_Name"] || r["Email"]);
-  if(!IS_ADMIN){
-    const me0 = CURRENT_USER_EMAIL.toLowerCase();
-    DATA.requests = DATA.requests.filter(r => (r["Email"]||"").toLowerCase() === me0);
+  let combined;
+  try{
+    combined = await fetchAllSheetsCombined();
+  }catch(e){
+    console.error("Failed to load dashboard data", e);
+    failed.push("Staff_Info","Leave_Requests","Leave_Balance","PERFORMANCE_DEDUCTION","UPCOMING_HOLIDAY","Attendance");
+    combined = {};
   }
-  updateSignedInAsUI();
-  updatePendingBadge();
-  renderRequests(document.getElementById("searchRequests").value);
-  document.getElementById("lastUpdated").textContent = "🟡 Pending approvals ready · loading balance, deductions, holidays, attendance…";
 
-  // ── Stage 2: everything else, in parallel ───────────────────────────────
-  const [balanceRes, deductionRes, holidayRes, attendanceRes] = await Promise.all([
-    safeLoad("Leave_Balance"),
-    safeLoad("PERFORMANCE_DEDUCTION"),
-    safeLoad("UPCOMING_HOLIDAY"),
-    safeLoad("Attendance"),
-  ]);
-
-  const balanceRaw = unwrap(balanceRes, "Leave_Balance");
+  DATA.staff = withFCopy(combined["Staff_Info"]).filter(r=>r["Name"]);
+  DATA.requests = withFCopy(combined["Leave_Requests"]).filter(r=>r["Staff_Name"] || r["Email"]);
+  const balanceRaw = withFCopy(combined["Leave_Balance"]);
   DATA.balance = balanceRaw.filter(r=>r["Email"]);
-  DATA.deduction = unwrap(deductionRes, "PERFORMANCE_DEDUCTION").filter(r=>r["EMPLOYEE"]);
-  DATA.holidays = unwrap(holidayRes, "UPCOMING_HOLIDAY").filter(r=>r["OCCASION"] || r["DATE"]);
-  DATA.attendance = unwrap(attendanceRes, "Attendance").filter(r=>r["Emp Name"] && r["Date"]);
+  DATA.deduction = withFCopy(combined["PERFORMANCE_DEDUCTION"]).filter(r=>r["EMPLOYEE"]);
+  DATA.holidays = withFCopy(combined["UPCOMING_HOLIDAY"]).filter(r=>r["OCCASION"] || r["DATE"]);
+  DATA.attendance = withFCopy(combined["Attendance"]).filter(r=>r["Emp Name"] && r["Date"]);
   DATA.scorecards = extractScorecards(balanceRaw);
-  if(!DATA.scorecards) failed.push("Leave Balance summary cards");
+  if(!DATA.scorecards && balanceRaw.length) failed.push("Leave Balance summary cards");
 
   if(!IS_ADMIN){
     const me = CURRENT_USER_EMAIL.toLowerCase();
+    DATA.requests = DATA.requests.filter(r => (r["Email"]||"").toLowerCase() === me);
     DATA.balance = DATA.balance.filter(r => (r["Email"]||"").toLowerCase() === me);
     DATA.deduction = DATA.deduction.filter(d => {
       const staff = findStaffForDeductionRow(d);
@@ -687,10 +690,12 @@ async function loadAll(background=false){
     DATA.attendance = myName ? DATA.attendance.filter(a => a["Emp Name"] === myName) : [];
   }
 
+  updateSignedInAsUI();
+
   const banner = document.getElementById("warnBanner");
   if (failed.length){
     banner.style.display = "block";
-    banner.textContent = `⚠ Could not load: ${failed.join(", ")}. Other tabs still work — hit Refresh to retry.`;
+    banner.textContent = `⚠ Could not load: ${[...new Set(failed)].join(", ")}. Other tabs still work — hit Refresh to retry.`;
   } else {
     banner.style.display = "none";
   }
