@@ -1306,9 +1306,7 @@ function renderUsers(staff) {
       '<div class="att-note">To show employee cards here (Name, DOB, Joining Date, Contact, Emergency Contact, Address), connect the Staff_Info sheet to the backend and return it as <code>staffData</code> — it\'ll render the same way as the other panels.</div></div>';
     return;
   }
-
   el.innerHTML = rows.map(function(r, i) {
-    el.innerHTML = rows.map(function(r, i) {
   var fields = [r.dob, r.joiningDate, r.phone, r.emergencyContact, r.address, r.bloodGroup, r.panFileUrl, r.aadharFileUrl];
   var filled = fields.filter(function(v){ return v && String(v).trim() !== '' && v !== '-'; }).length;
   var pct = Math.round((filled / fields.length) * 100);
@@ -1323,26 +1321,18 @@ function renderUsers(staff) {
         '<div class="user-card-progress">Profile <b>' + pct + '%</b> complete</div>' +
         '</div>' +
       '</div>' +
-    return '<div class="user-card">' +
-      '<div class="user-card-top">' +
-        '<div class="user-card-avatar">' + ini(r.name) + '</div>' +
-        '<div><div class="user-card-name">' + r.name + '</div>' +
-        (r.designation ? '<div class="user-card-role">' + r.designation + '</div>' : '') +
-        '</div>' +
-      '</div>' +
       '<div class="user-card-body">' +
         '<div class="user-card-row"><span class="ucr-ic">' + UCR_ICONS.dob + '</span><span class="ucr-lbl">Date Of Birth</span><span class="ucr-val">' + (r.dob || '—') + '</span></div>' +
         '<div class="user-card-row"><span class="ucr-ic">' + UCR_ICONS.join + '</span><span class="ucr-lbl">Date Of Joining</span><span class="ucr-val">' + (r.joiningDate || '—') + '</span></div>' +
         '<div class="user-card-row"><span class="ucr-ic">' + UCR_ICONS.phone + '</span><span class="ucr-lbl">Contact</span><span class="ucr-val">' + (r.phone || '—') + '</span></div>' +
         '<div class="user-card-row"><span class="ucr-ic">' + UCR_ICONS.emg + '</span><span class="ucr-lbl">Emergency</span><span class="ucr-val">' + (r.emergencyContact || '—') + '</span></div>' +
         '<div class="user-card-row"><span class="ucr-ic">' + UCR_ICONS.addr + '</span><span class="ucr-lbl">Address</span><span class="ucr-val">' + (r.address || '—') + '</span></div>' +
-         '<div class="user-card-row"><span class="ucr-ic">' + UCR_ICONS.blood + '</span><span class="ucr-lbl">Blood Group</span><span class="ucr-val">' + (r.bloodGroup || '—') + '</span></div>' +
+        '<div class="user-card-row"><span class="ucr-ic">' + UCR_ICONS.blood + '</span><span class="ucr-lbl">Blood Group</span><span class="ucr-val">' + (r.bloodGroup || '—') + '</span></div>' +
         '<div class="user-card-row"><span class="ucr-ic">' + UCR_ICONS.file + '</span><span class="ucr-lbl">PAN File</span><span class="ucr-val">' + fileViewLink(r.panFileUrl, 'PAN') + '</span></div>' +
         '<div class="user-card-row"><span class="ucr-ic">' + UCR_ICONS.file + '</span><span class="ucr-lbl">Aadhar File</span><span class="ucr-val">' + fileViewLink(r.aadharFileUrl, 'Aadhar') + '</span></div>' +
       '</div>' +
     '</div>';
-  }).join('');
-}
+}).join('');
 var EYE_ICON = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
 function fileViewLink(url, label) {
   if (!url) return '<span class="ucr-missing">Not Uploaded</span>';
