@@ -911,13 +911,9 @@ function skeletonTableHTML(n) {
   }
   return '<div class="skel-table-wrap">' + rows + '</div>';
 }
-
-function statCard(label, value, color) {
-
 function statCard(label, value, color) {
   return '<div class="stat-card"><div class="stat-label">' + label + '</div><div class="stat-value ' + color + '">' + value + '</div></div>';
 }
-
 function negScoreCard(label, rawPct) {
   var color = rawPct <= 5 ? 'green' : 'red';
   var display = rawPct === 0 ? '0.00%' : '-' + rawPct.toFixed(2) + '%';
