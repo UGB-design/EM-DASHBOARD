@@ -465,14 +465,21 @@ tr:hover td{background:#fafbfc}
 .ud-empbar-track{flex:1;height:8px;border-radius:4px;background:#f1f5f9;overflow:hidden}
 .ud-empbar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#3b82f6,#2563eb)}
 .ud-empbar-pct{font-size:11px;font-weight:800;color:#1a1a1a;width:32px;text-align:right}
+  .snap-perf{gap:10px}
+.snap-perf-ring{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.snap-perf-ring span{background:#fff;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#1a1a1a}
   /* ── COMPACT TEAM DIRECTORY CARDS ─────────────────────────────── */
-.users-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px}
-.ucc-card{background:#fff;border-radius:18px;border:1px solid #e2e8f0;box-shadow:0 2px 10px rgba(30,41,59,.05);padding:26px 18px 20px;text-align:center;cursor:pointer;transition:all .2s ease;position:relative}
+.users-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+@media(max-width:1200px){.users-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:800px){.users-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.users-grid{grid-template-columns:1fr}}
+.ucc-card{background:#fff;border-radius:20px;border:1px solid #eef1f6;box-shadow:0 3px 14px rgba(30,41,59,.06);padding:24px 24px 20px;text-align:left;cursor:pointer;transition:all .2s ease;position:relative}
 .ucc-card:hover{box-shadow:0 14px 32px rgba(29,78,216,.16);transform:translateY(-4px);border-color:#bfdbfe}
-.ucc-avatar{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#1d4ed8 0%,#3b82f6 100%);color:#fff;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;margin:0 auto 12px;box-shadow:0 3px 8px rgba(29,78,216,.16)}
+.ucc-top-row{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.ucc-avatar{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#1d4ed8 0%,#3b82f6 100%);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;flex-shrink:0;box-shadow:0 3px 8px rgba(29,78,216,.16)}
 .ucc-name{font-size:14.5px;font-weight:800;color:#1a1a1a;line-height:1.3}
-.ucc-role{font-size:10.5px;color:#2563eb;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-top:4px}
-.ucc-exp{font-size:11.5px;color:#64748b;margin-top:7px;font-weight:600}
+.ucc-role{font-size:10.5px;color:#2563eb;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-top:3px}
+.ucc-exp{font-size:11.5px;color:#64748b;margin-top:2px;font-weight:600}
 .ucc-progress-wrap{margin-top:14px;display:flex;align-items:center;gap:7px}
 .ucc-progress-bar{flex:1;height:6px;border-radius:4px;background:#eef1f6;overflow:hidden}
 .ucc-progress-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#16a34a,#22c55e);transition:width .5s}
@@ -650,13 +657,16 @@ tr:hover td{background:#fafbfc}
       <div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 12l2 2 4-4"></path></svg></div>
       <div class="snap-text"><div class="snap-val" id="badgeTodayChecklist">0</div><div class="snap-lbl">Checklist</div></div>
     </div>
-    <div class="snap-item snap-dl">
+   <div class="snap-item snap-dl">
       <div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
       <div class="snap-text"><div class="snap-val" id="badgeTodayDelegation">0</div><div class="snap-lbl">Delegation</div></div>
     </div>
+    <div class="snap-item snap-perf" id="snapPerfCard">
+      <div class="snap-perf-ring" id="snapPerfRing"><span id="snapPerfPct">0%</span></div>
+      <div class="snap-text"><div class="snap-lbl" style="margin-top:0">Overall Performance</div><div class="snap-lbl" style="color:#c7ceda">This Period</div></div>
+    </div>
   </div>
 </div>
-
   <!-- USERS TAB -->
  <!-- USERS TAB -->
 <!-- USERS TAB -->
@@ -1356,8 +1366,13 @@ function renderTodayStatBadges(data) {
     setTxt('badgeTodayTasks', ts.tasks || 0);
     setTxt('badgeTodayFms', ts.fms || 0);
     setTxt('badgeTodayChecklist', ts.checklist || 0);
-    setTxt('badgeTodayDelegation', ts.delegation || 0);
+  setTxt('badgeTodayDelegation', ts.delegation || 0);
     setTxt('badgeMyScore', Math.round(myScore) + '%');
+    var perfPct = Math.round(myScore);
+    var pctEl = document.getElementById('snapPerfPct');
+    var ringEl = document.getElementById('snapPerfRing');
+    if (pctEl) pctEl.textContent = perfPct + '%';
+    if (ringEl) ringEl.style.background = 'conic-gradient(#7c3aed ' + (perfPct*3.6) + 'deg,#eef1f6 0deg)';
   } catch (ex) {
     console.warn('renderTodayStatBadges failed:', ex);
   }
@@ -1510,7 +1525,10 @@ function renderUsers(staff) {
   el.innerHTML = rows.map(function(r, i) {
     var pct = profileCompletePct(r);
    var sc = (globalRawData && globalRawData.scoresData || []).find(function(s) {
-      return normalizeName(baseName(s.employee)) === normalizeName(baseName(r.name));
+      var a = normalizeName(baseName(s.employee));
+      var b = normalizeName(baseName(r.name));
+      if (!a || !b) return false;
+      return a === b || a.indexOf(b) === 0 || b.indexOf(a) === 0;
     });
     var scPlan = sc ? Number(sc.totalPlan)||0 : 0;
     var scDone = sc ? Number(sc.totalCompleted)||0 : 0;
@@ -1520,10 +1538,14 @@ function renderUsers(staff) {
 
     return '<div class="ucc-card" onclick="showUserDetail(' + i + ')" data-name="' + (r.name||'').toLowerCase() + '" data-desig="' + (r.designation||'') + '" data-progress="' + pct + '" data-expdays="' + (expDaysOf(r.joiningDate)||0) + '">' +
       '<div class="ucc-status-dot"></div>' +
-      '<div class="ucc-avatar">' + ini(r.name) + '</div>' +
-      '<div class="ucc-name">' + r.name + '</div>' +
-      (r.designation ? '<div class="ucc-role">' + r.designation + '</div>' : '') +
-      '<div class="ucc-exp">' + (calcExperience(r.joiningDate) || 'Experience —') + '</div>' +
+      '<div class="ucc-top-row">' +
+        '<div class="ucc-avatar">' + ini(r.name) + '</div>' +
+        '<div>' +
+          '<div class="ucc-name">' + r.name + '</div>' +
+          (r.designation ? '<div class="ucc-role">' + r.designation + '</div>' : '') +
+          '<div class="ucc-exp">' + (calcExperience(r.joiningDate) || 'Experience —') + '</div>' +
+        '</div>' +
+      '</div>' +
       '<div class="ucc-stats-row">' +
         '<div class="ucc-stat pending"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>Pending ' + scPend + '</div>' +
         '<div class="ucc-stat completed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>' + scDone + '</div>' +
