@@ -81,7 +81,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .refresh-btn.spinning svg{animation:refreshSpin .7s linear infinite}
 .topbar{background:#fff;padding:20px 32px 16px;border-bottom:1px solid #e8eaed;display:flex;flex-direction:column;gap:14px;box-shadow:0 1px 3px rgba(0,0,0,.04);margin-bottom:18px}
 .tb-row1{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
-.my-snapshot{display:flex;gap:8px;flex-wrap:wrap}
+.my-snapshot{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
 .snap-item{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #e8eaed;border-radius:14px;padding:16px 22px 16px 16px;box-shadow:0 2px 8px rgba(0,0,0,.07);min-width:150px}
 .snap-icon svg{width:18px;height:18px}
 .snap-text{line-height:1.15}
@@ -446,6 +446,9 @@ tr:hover td{background:#fafbfc}
 .ucc-stat svg{width:13px;height:13px}
 .ucc-stat.pending{color:#ea580c}
 .ucc-stat.completed{color:#16a34a}
+  .ucc-stat-txt{display:flex;flex-direction:column;line-height:1.2}
+.ucc-stat-lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:.04em;font-weight:700;opacity:.75}
+.ucc-stat-num{font-size:14px;font-weight:800}
 .ucc-ring{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:800}
 .ucc-viewprofile{display:block;text-align:center;margin-top:12px;font-size:11.5px;font-weight:700;color:#2563eb;cursor:pointer}
 .ucc-viewprofile:hover{text-decoration:underline}
@@ -516,7 +519,7 @@ tr:hover td{background:#fafbfc}
   .users-search-wrap{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:10px 16px;margin-bottom:16px;box-shadow:0 2px 8px rgba(30,41,59,.05);max-width:340px}
 .users-search-wrap svg{color:#94a3b8;flex-shrink:0}
 .users-search-wrap input{border:none;outline:none;font-size:13px;color:#333;width:100%;background:transparent}
-  .users-toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+ .users-toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;margin-top:18px}
 .users-toolbar .users-search-wrap{margin-bottom:0;flex:1;min-width:220px}
 .users-filter-sel{background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:10px 14px;font-size:12.5px;color:#374151;font-weight:600;cursor:pointer;outline:none;box-shadow:0 2px 8px rgba(30,41,59,.05)}
 </style>
@@ -1548,9 +1551,9 @@ function renderUsers(staff) {
           '<div class="ucc-exp">' + (calcExperience(r.joiningDate) || 'Experience —') + '</div>' +
         '</div>' +
       '</div>' +
-      '<div class="ucc-stats-row">' +
-        '<div class="ucc-stat pending"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>Pending ' + scPend + '</div>' +
-        '<div class="ucc-stat completed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>' + scDone + '</div>' +
+    '<div class="ucc-stats-row">' +
+        '<div class="ucc-stat pending"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg><div class="ucc-stat-txt"><span class="ucc-stat-lbl">Pending</span><span class="ucc-stat-num">' + scPend + '</span></div></div>' +
+        '<div class="ucc-stat completed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg><div class="ucc-stat-txt"><span class="ucc-stat-lbl">Completed</span><span class="ucc-stat-num">' + scDone + '</span></div></div>' +
         '<div class="ucc-ring" style="background:conic-gradient(' + ringColor + ' ' + (scPct*3.6) + 'deg,#eef1f6 0deg);color:' + ringColor + '"><div style="background:#fff;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center">' + scPct + '%</div></div>' +
       '</div>' +
       '<div class="ucc-viewprofile">View Profile →</div>' +
@@ -2535,6 +2538,12 @@ function printScoreTable() {
 function closeScorePendingModal() {
   document.getElementById('scorePendingModal').style.display = 'none';
 }
+  function isSameAsToday(dateStr) {
+  var dm = parseFullDate(dateStr);
+  if (!dm || !dm.year) return false;
+  var t = new Date();
+  return dm.day === t.getDate() && dm.month === (t.getMonth() + 1) && dm.year === t.getFullYear();
+}
   function getTodayDDMMYYYY() {
   var d = new Date();
   var dd = String(d.getDate()).padStart(2,'0');
@@ -2548,21 +2557,21 @@ function collectTodayTasks() {
   (data.fmsGroups || []).forEach(function(g) {
     (g.steps || []).forEach(function(s) {
       (s.pendingTasks || []).forEach(function(t) {
-        if (t.plannedDate === today) {
+       if (isSameAsToday(t.plannedDate)) {
           list.push({ type:'FMS', doer: resolveCanonicalEmployee(t.finalDoer || s.doer || ''), task: s.step, client: t.client || '-', plannedDate: t.plannedDate });
         }
       });
     });
   });
   (data.checklistData || []).forEach(function(r) {
-    if (r.plannedDate === today) {
+    if (isSameAsToday(r.plannedDate)) {
       list.push({ type:'Checklist', doer: resolveCanonicalEmployee(r.doer), task: r.task, client:'-', plannedDate:r.plannedDate });
     }
   });
   (data.delegationData || []).forEach(function(r) {
     if (isWeekShifted(r)) return;
     var d = hasValidDate(r.latestRevision) ? r.latestRevision : hasValidDate(r.revision2) ? r.revision2 : hasValidDate(r.revision1) ? r.revision1 : r.firstDate;
-    if (d === today) {
+    if (isSameAsToday(d)) {
       list.push({ type:'Delegation', doer: resolveCanonicalEmployee(r.client), task: r.task, client:'-', plannedDate:d });
     }
   });
