@@ -437,6 +437,34 @@ tr:hover td{background:#fafbfc}
 .isheet-name{font-size:13px;font-weight:700;color:#1a1a1a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .isheet-type{font-size:10.5px;color:#9aa0ac;font-weight:600;margin-top:2px;text-transform:uppercase;letter-spacing:.03em}
 .isheet-arrow{margin-left:auto;color:#c7c2b8;font-size:16px;flex-shrink:0}
+  /* ── TEAM DIRECTORY: full redesign ─────────────────────────────── */
+.ucc-card{position:relative}
+.ucc-status-dot{position:absolute;top:16px;right:16px;width:9px;height:9px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.18)}
+.ucc-stats-row{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:12px;border-top:1px solid #f1f5f9}
+.ucc-stat{display:flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;color:#475569}
+.ucc-stat svg{width:13px;height:13px}
+.ucc-stat.pending{color:#ea580c}
+.ucc-stat.completed{color:#16a34a}
+.ucc-ring{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:800}
+.ucc-viewprofile{display:block;text-align:center;margin-top:12px;font-size:11.5px;font-weight:700;color:#2563eb;cursor:pointer}
+.ucc-viewprofile:hover{text-decoration:underline}
+
+.ud-bottom-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:20px}
+@media(max-width:1100px){.ud-bottom-grid{grid-template-columns:repeat(2,1fr)}}
+.ud-panel{background:#fff;border-radius:16px;border:1px solid #e2e8f0;box-shadow:0 2px 10px rgba(30,41,59,.05);padding:18px 20px}
+.ud-panel-title{font-size:13px;font-weight:800;color:#1a1a1a;margin-bottom:14px}
+.ud-att-row{display:flex;justify-content:space-between;margin-bottom:10px}
+.ud-att-item{text-align:left}
+.ud-att-val{font-size:19px;font-weight:800}
+.ud-att-lbl{font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;margin-top:2px}
+.ud-leave-row{display:flex;justify-content:space-between;font-size:12.5px;color:#475569;font-weight:600;padding:6px 0;border-bottom:1px solid #f1f5f9}
+.ud-leave-row:last-child{border-bottom:none}
+.ud-leave-row b{color:#1a1a1a;font-weight:800}
+.ud-empbar-row{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+.ud-empbar-name{font-size:11px;color:#475569;font-weight:600;width:80px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ud-empbar-track{flex:1;height:8px;border-radius:4px;background:#f1f5f9;overflow:hidden}
+.ud-empbar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#3b82f6,#2563eb)}
+.ud-empbar-pct{font-size:11px;font-weight:800;color:#1a1a1a;width:32px;text-align:right}
   /* ── COMPACT TEAM DIRECTORY CARDS ─────────────────────────────── */
 .users-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px}
 .ucc-card{background:#fff;border-radius:18px;border:1px solid #e2e8f0;box-shadow:0 2px 10px rgba(30,41,59,.05);padding:26px 18px 20px;text-align:center;cursor:pointer;transition:all .2s ease;position:relative}
@@ -631,6 +659,7 @@ tr:hover td{background:#fafbfc}
 
   <!-- USERS TAB -->
  <!-- USERS TAB -->
+<!-- USERS TAB -->
   <div class="tab-content active" id="tab-users">
     <div id="usersUpcomingBanner"></div>
     <div class="users-toolbar">
@@ -648,8 +677,26 @@ tr:hover td{background:#fafbfc}
     <div id="usersGrid" class="users-grid">
       <div id="usersLoading"></div>
     </div>
-  </div>
 
+    <div class="ud-bottom-grid">
+      <div class="ud-panel">
+        <div class="ud-panel-title">Task Summary</div>
+        <div class="ov-donut-wrap" id="udTaskDonut"></div>
+      </div>
+      <div class="ud-panel">
+        <div class="ud-panel-title">Attendance Overview</div>
+        <div class="ud-att-row" id="udAttendanceRow"></div>
+      </div>
+      <div class="ud-panel">
+        <div class="ud-panel-title">Leave Summary</div>
+        <div id="udLeaveSummary"></div>
+      </div>
+      <div class="ud-panel">
+        <div class="ud-panel-title">Employee Wise Score</div>
+        <div id="udEmpScoreBars"></div>
+      </div>
+    </div>
+  </div>
   <!-- SUMMARY TAB -->
   <div class="tab-content" id="tab-summary">
     <div id="ldiv"></div>
@@ -1366,8 +1413,9 @@ function renderAll(data) {
         '<td>' + pg(d.progress) + '</td></tr>';
     }).join('');
   }
-  renderUsers(data.staffData || []);
+   renderUsers(data.staffData || []);
   renderInternalSheets(data.internalSheets);
+  renderUsersDashboardPanels(data);
   renderOverviewWidgets(data);
   renderFmsByProcess(data.fmsByProcess || []);
   renderClByDoer(data.checklistByDoer || []);
@@ -1461,19 +1509,89 @@ function renderUsers(staff) {
 
   el.innerHTML = rows.map(function(r, i) {
     var pct = profileCompletePct(r);
+   var sc = (globalRawData && globalRawData.scoresData || []).find(function(s) {
+      return normalizeName(baseName(s.employee)) === normalizeName(baseName(r.name));
+    });
+    var scPlan = sc ? Number(sc.totalPlan)||0 : 0;
+    var scDone = sc ? Number(sc.totalCompleted)||0 : 0;
+    var scPend = Math.max(0, scPlan - scDone);
+    var scPct  = scPlan > 0 ? Math.round((scDone / scPlan) * 100) : 0;
+    var ringColor = scPct >= 90 ? '#16a34a' : scPct >= 50 ? '#f59e0b' : '#dc2626';
+
     return '<div class="ucc-card" onclick="showUserDetail(' + i + ')" data-name="' + (r.name||'').toLowerCase() + '" data-desig="' + (r.designation||'') + '" data-progress="' + pct + '" data-expdays="' + (expDaysOf(r.joiningDate)||0) + '">' +
+      '<div class="ucc-status-dot"></div>' +
       '<div class="ucc-avatar">' + ini(r.name) + '</div>' +
       '<div class="ucc-name">' + r.name + '</div>' +
       (r.designation ? '<div class="ucc-role">' + r.designation + '</div>' : '') +
       '<div class="ucc-exp">' + (calcExperience(r.joiningDate) || 'Experience —') + '</div>' +
-      '<div class="ucc-progress-wrap">' +
-        '<div class="ucc-progress-bar"><div class="ucc-progress-fill" style="width:' + pct + '%"></div></div>' +
-        '<div class="ucc-progress-pct">' + pct + '%</div>' +
+      '<div class="ucc-stats-row">' +
+        '<div class="ucc-stat pending"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>Pending ' + scPend + '</div>' +
+        '<div class="ucc-stat completed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>' + scDone + '</div>' +
+        '<div class="ucc-ring" style="background:conic-gradient(' + ringColor + ' ' + (scPct*3.6) + 'deg,#eef1f6 0deg);color:' + ringColor + '"><div style="background:#fff;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center">' + scPct + '%</div></div>' +
       '</div>' +
-      '<div class="ucc-viewhint">Tap to view full profile</div>' +
+      '<div class="ucc-viewprofile">View Profile →</div>' +
     '</div>';
  }).join('');
   populateUsersDesigFilter();
+}
+  function renderUsersDashboardPanels(data) {
+  // Task Summary donut (reuse same style as Scores tab)
+  var em = data.emDashboard || {};
+  var t = em.totals || {};
+  var completed = Number(t.totalActual) || 0;
+  var pending = Math.max(0, (Number(t.totalPlan) || 0) - completed);
+  var total = completed + pending;
+  var pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+  var deg = total > 0 ? (completed / total) * 360 : 0;
+  var donutWrap = document.getElementById('udTaskDonut');
+  if (donutWrap) {
+    donutWrap.innerHTML = total === 0 ? '<div class="ov-empty">No task data</div>' :
+      '<div class="ov-donut" style="background:conic-gradient(#16a34a 0deg ' + deg + 'deg, #f59e0b ' + deg + 'deg 360deg)">' +
+        '<div class="ov-donut-center"><div class="ov-donut-num">' + pct + '%</div><div class="ov-donut-lbl">' + total + ' total</div></div>' +
+      '</div>' +
+      '<div class="ov-legend">' +
+        '<div class="ov-legend-row"><span class="ov-legend-dot" style="background:#16a34a"></span>Completed<span class="ov-legend-val">' + completed + '</span></div>' +
+        '<div class="ov-legend-row"><span class="ov-legend-dot" style="background:#f59e0b"></span>Pending<span class="ov-legend-val">' + pending + '</span></div>' +
+      '</div>';
+  }
+
+  // Attendance Overview
+  var att = data.attendanceOverview || { presentPct: 0, latePct: 0, absentPct: 0 };
+  var attEl = document.getElementById('udAttendanceRow');
+  if (attEl) {
+    attEl.innerHTML =
+      '<div class="ud-att-item"><div class="ud-att-val" style="color:#16a34a">' + att.presentPct + '%</div><div class="ud-att-lbl">Present</div></div>' +
+      '<div class="ud-att-item"><div class="ud-att-val" style="color:#f59e0b">' + att.latePct + '%</div><div class="ud-att-lbl">Late</div></div>' +
+      '<div class="ud-att-item"><div class="ud-att-val" style="color:#dc2626">' + att.absentPct + '%</div><div class="ud-att-lbl">Absent</div></div>';
+  }
+
+  // Leave Summary
+  var lv = data.leaveSummary || { totalEntitlement: 0, used: 0, balance: 0 };
+  var lvEl = document.getElementById('udLeaveSummary');
+  if (lvEl) {
+    lvEl.innerHTML =
+      '<div class="ud-leave-row"><span>Total Entitlement</span><b>' + lv.totalEntitlement + '</b></div>' +
+      '<div class="ud-leave-row"><span>Leave Used</span><b>' + lv.used + '</b></div>' +
+      '<div class="ud-leave-row"><span>Balance</span><b>' + lv.balance + '</b></div>';
+  }
+
+  // Employee Wise Score bars (from scoresData)
+  var scores = (data.scoresData || []).slice().sort(function(a, b) {
+    var pa = parseFloat(String(a.performance||'0').replace('%','')) || 0;
+    var pb = parseFloat(String(b.performance||'0').replace('%','')) || 0;
+    return pb - pa;
+  }).slice(0, 8);
+  var barsEl = document.getElementById('udEmpScoreBars');
+  if (barsEl) {
+    barsEl.innerHTML = scores.map(function(s) {
+      var pct = parseFloat(String(s.performance||'0').replace('%','')) || 0;
+      return '<div class="ud-empbar-row">' +
+        '<div class="ud-empbar-name" title="' + s.employee + '">' + s.employee + '</div>' +
+        '<div class="ud-empbar-track"><div class="ud-empbar-fill" style="width:' + Math.min(pct,100) + '%"></div></div>' +
+        '<div class="ud-empbar-pct">' + Math.round(pct) + '%</div>' +
+      '</div>';
+    }).join('') || '<div style="color:#bbb;font-size:12px;text-align:center;padding:20px">No score data</div>';
+  }
 }
 
 function expDaysOf(joiningDateStr) {
