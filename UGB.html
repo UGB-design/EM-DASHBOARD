@@ -473,6 +473,12 @@ tr:hover td{background:#fafbfc}
 .fvm-content{max-width:86vw;max-height:78vh;overflow:auto;background:#f8fafc;display:flex;align-items:center;justify-content:center}
 .fvm-content img{max-width:86vw;max-height:78vh;display:block}
 .fvm-content iframe{width:86vw;height:78vh;border:none}
+  #usersLoading{grid-column:1/-1;width:100%}
+.skel-users-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px}
+.skel-user-card{background:#fff;border-radius:18px;border:1px solid #e2e8f0;padding:26px 18px 20px;text-align:center}
+  .users-search-wrap{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:10px 16px;margin-bottom:16px;box-shadow:0 2px 8px rgba(30,41,59,.05);max-width:340px}
+.users-search-wrap svg{color:#94a3b8;flex-shrink:0}
+.users-search-wrap input{border:none;outline:none;font-size:13px;color:#333;width:100%;background:transparent}
 </style>
 </head>
 <body>
@@ -621,8 +627,13 @@ tr:hover td{background:#fafbfc}
 </div>
 
   <!-- USERS TAB -->
+ <!-- USERS TAB -->
   <div class="tab-content active" id="tab-users">
     <div id="usersUpcomingBanner"></div>
+    <div class="users-search-wrap">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <input type="text" id="usersSearchInput" placeholder="Search by name or designation..." oninput="filterUsersSearch()">
+    </div>
     <div id="usersGrid" class="users-grid">
       <div id="usersLoading"></div>
     </div>
@@ -732,7 +743,7 @@ tr:hover td{background:#fafbfc}
 
   <!-- CHECKLIST TAB -->
   <div class="tab-content" id="tab-checklist">
-    <div class="filter-bar">
+  <div class="filter-bar">
       <label>Doer:</label>
       <select id="clFilterDoer" onchange="applyChecklistFilters()"><option value="All">All Doers</option></select>
       <label>Dept:</label>
@@ -743,6 +754,8 @@ tr:hover td{background:#fafbfc}
         <option value="Done">Done</option>
         <option value="Pending">Pending</option>
       </select>
+      <label>Freq:</label>
+      <select id="clFilterFreq" onchange="applyChecklistFilters()"><option value="All">All Freq</option></select>
     </div>
     <div class="meta-info-badge" id="clMetaBadges"></div>
     <div class="stat-grid" id="clStatsGrid"></div>
@@ -930,9 +943,9 @@ function skeletonSummaryHTML() {
   return c5 + c1 + '<div class="skel-table-wrap">' + rows + '</div>';
 }
 function skeletonUsersHTML(n) {
-  var card = '<div class="skel-user-card"><div class="skel-user-top"><div class="skel skel-avatar" style="width:44px;height:44px"></div><div style="flex:1">' + skelLine('60%') + skelLine('35%') + '</div></div><div class="skel-user-body">' + skelLine('90%').repeat(6) + '</div></div>';
+  var card = '<div class="skel-user-card"><div class="skel skel-avatar" style="width:60px;height:60px;margin:0 auto 12px"></div>' + skelLine('70%') + '<div style="margin-top:14px">' + skelLine('100%','6px') + '</div></div>';
   var out = '<div class="skel-users-grid">';
-  for (var i=0;i<(n||6);i++) out += card;
+  for (var i=0;i<(n||10);i++) out += card;
   return out + '</div>';
 }
 function skeletonTableHTML(n) {
@@ -1380,7 +1393,14 @@ function fileViewLink(url, label) {
   return '<span onclick="event.stopPropagation();showFileView(\'' + url + '\',\'' + label + '\')" style="display:inline-flex;align-items:center;gap:5px;color:#1d4ed8;font-weight:700;cursor:pointer">' + EYE_ICON + ' View</span>';
 }
 var _staffRows = [];
-
+function filterUsersSearch() {
+  var box = document.getElementById('usersSearchInput');
+  var term = box ? box.value.trim().toLowerCase() : '';
+  document.querySelectorAll('#usersGrid .ucc-card').forEach(function(card) {
+    var text = card.textContent.toLowerCase();
+    card.style.display = (!term || text.indexOf(term) !== -1) ? '' : 'none';
+  });
+}
 function renderUsers(staff) {
   var el = document.getElementById('usersGrid');
   if (!el) return;
@@ -1769,13 +1789,13 @@ function applyFmsFilters() {
 
 // ── Checklist & Delegation filter population ──────────────────────────────────
 function populateChecklistDelegationFilters() {
-  var clDoers = new Set(), clDepts = new Set();
+  var clDoers = new Set(), clDepts = new Set(), clFreqs = new Set();
   if (globalRawData.checklistData) {
-    globalRawData.checklistData.forEach(function(r) { clDoers.add(r.doer); clDepts.add(r.dept); });
+    globalRawData.checklistData.forEach(function(r) { clDoers.add(r.doer); clDepts.add(r.dept); clFreqs.add(r.freq); });
   }
   updateSelectOptions('clFilterDoer', clDoers);
   updateSelectOptions('clFilterDept', clDepts);
-
+  updateSelectOptions('clFilterFreq', clFreqs);
   var dlDoers = new Set();
   if (globalRawData.delegationData) {
     // Doer dropdown should only reflect doers with visible (non "Week Shifted") rows
@@ -1809,11 +1829,13 @@ function applyChecklistFilters() {
   var dFilter    = document.getElementById('clFilterDoer').value;
   var deptFilter = document.getElementById('clFilterDept').value;
   var sFilter    = document.getElementById('clFilterStatus').value;
+  var fFilter    = document.getElementById('clFilterFreq').value;
   var data = globalRawData ? (globalRawData.checklistData || []) : [];
   var filtered = data.filter(function(r) {
     return (dFilter === 'All' || r.doer === dFilter) &&
            (deptFilter === 'All' || r.dept === deptFilter) &&
-           (sFilter === 'All' || r.status === sFilter);
+           (sFilter === 'All' || r.status === sFilter) &&
+           (fFilter === 'All' || r.freq === fFilter);
   });
   filtered.sort(function(a, b) { return String(a.plannedDate).localeCompare(String(b.plannedDate)); });
   var doneCount = filtered.filter(function(r) { return r.status === 'Done'; }).length;
