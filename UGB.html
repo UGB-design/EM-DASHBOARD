@@ -700,7 +700,11 @@ tr:hover td{background:#fafbfc}
     <div class="ud-panel">
         <div class="ud-panel-title" style="display:flex;justify-content:space-between;align-items:center">
           <span>Attendance Overview</span>
-          <select class="users-filter-sel" style="font-size:11px;padding:5px 10px" disabled><option>This Period</option></select>
+          <select id="attPeriodSel" class="users-filter-sel" style="font-size:11px;padding:5px 10px" onchange="changeAttendancePeriod(this.value)">
+  <option value="week">This Week</option>
+  <option value="month" selected>This Month</option>
+  <option value="year">This Year</option>
+</select>
         </div>
         <div class="ud-att-row" id="udAttendanceRow"></div>
         <div id="udAttendanceChart" style="margin-top:14px"></div>
@@ -708,7 +712,10 @@ tr:hover td{background:#fafbfc}
       <div class="ud-panel">
         <div class="ud-panel-title" style="display:flex;justify-content:space-between;align-items:center">
           <span>Leave Summary</span>
-          <select class="users-filter-sel" style="font-size:11px;padding:5px 10px" disabled><option>This Year</option></select>
+          <select id="leaveYearSel" class="users-filter-sel" style="font-size:11px;padding:5px 10px" onchange="changeLeaveYear(this.value)">
+  <option value="2026-27">2026-27</option>
+  <option value="2027-28">2027-28</option>
+</select>
         </div>
         <div id="udLeaveSummary"></div>
       </div>
@@ -912,13 +919,19 @@ tr:hover td{background:#fafbfc}
           <tbody id="scTableBody"><tr><td colspan="7"><div class="skel skel-line" style="width:100%;height:16px;margin:8px 0"></div><div class="skel skel-line" style="width:90%;height:16px;margin:8px 0"></div><div class="skel skel-line" style="width:95%;height:16px;margin:8px 0"></div><div class="skel skel-line" style="width:85%;height:16px;margin:8px 0"></div></td></tr></tbody>
         </table>
     </div>
-    <div class="ov-card" style="margin-top:16px">
-      <div class="ov-card-top">
-        <div class="ov-card-title">Task Chart</div>
-        <div class="ov-card-sub" id="ovDonutSub">this period</div>
-      </div>
-      <div class="ov-donut-wrap" id="ovDonutWrap"></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px">
+  <div class="ov-card">
+    <div class="ov-card-top">
+      <div class="ov-card-title">Task Chart</div>
+      <div class="ov-card-sub" id="ovDonutSub">this period</div>
     </div>
+    <div class="ov-donut-wrap" id="ovDonutWrap"></div>
+  </div>
+  <div class="ov-card">
+    <div class="ov-card-top"><div class="ov-card-title">Employee Wise Score</div></div>
+    <div id="scEmpScoreBars"></div>
+  </div>
+</div>
   </div>
 
   <!-- LEAVE MANAGEMENT TAB (embedded) -->
@@ -1174,6 +1187,24 @@ function updateGreeting(name) {
   if (greetTextEl) greetTextEl.textContent = text;
   if (greetNameEl) greetNameEl.textContent = name || 'there';
 }
+  function changeAttendancePeriod(period) {
+  fetch(API + '?action=getData&idToken=' + encodeURIComponent(currentIdToken) + '&attPeriod=' + period + '&cb=' + Date.now())
+    .then(function(r){return r.json();})
+    .then(function(data){ renderUsersDashboardPanels(data); });
+}
+function changeLeaveYear(year) {
+  fetch(API + '?action=getData&idToken=' + encodeURIComponent(currentIdToken) + '&leaveYear=' + year + '&cb=' + Date.now())
+    .then(function(r){return r.json();})
+    .then(function(data){ renderUsersDashboardPanels(data); });
+}
+  function showLeaveBalanceModal() {
+  var lv = (globalRawData && globalRawData.leaveSummary) || {};
+  document.getElementById('leaveBalBody').innerHTML =
+    '<div style="font-size:28px;font-weight:800;color:#16a34a;text-align:center">' + (lv.used||0) + ' days</div>' +
+    '<div style="text-align:center;color:#9aa0ac;font-size:12px;margin-top:4px">Leave Used</div>';
+  document.getElementById('leaveBalModal').style.display = 'flex';
+}
+function closeLeaveBalModal(){ document.getElementById('leaveBalModal').style.display='none'; }
 // ── Refresh button (re-fetches latest data without a full reload) ────────────
 function refreshDashboard() {
   var btn = document.getElementById('refreshBtn');
@@ -1383,7 +1414,7 @@ function renderTodayStatBadges(data) {
     var pctEl = document.getElementById('snapPerfPct');
     var ringEl = document.getElementById('snapPerfRing');
     if (pctEl) pctEl.innerHTML = perfPct + '%<small>This Period</small>';
-    if (ringEl) ringEl.style.background = 'conic-gradient(#7c3aed ' + (perfPct*3.6) + 'deg,#eef1f6 0deg)';
+    if (ringEl) ringEl.style.background = 'conic-gradient(#16a34a ' + (perfPct*3.6) + 'deg,#eef1f6 0deg)';
   } catch (ex) {
     console.warn('renderTodayStatBadges failed:', ex);
   }
@@ -1460,6 +1491,7 @@ function renderAll(data) {
   else console.log('✅ scoresData received:', scData.length, 'rows');
   populateScoreFilters(scData);
   applyScoreFilters();
+  renderEmpScoreBarsInto('scEmpScoreBars', filtered);
 }
 
 // ── USERS TAB (employee profile cards, from Staff_info sheet) ────────────────
@@ -1640,7 +1672,7 @@ function renderUsersDashboardPanels(data) {
           '<div class="ov-donut-center"><div class="ov-donut-num" style="font-size:15px">' + (lv.usedPct||0) + '%</div><div class="ov-donut-lbl" style="font-size:8px">Used</div></div>' +
         '</div>' +
       '</div>' +
-      '<a class="snap-link" style="display:inline-block;margin-top:12px" onclick="switchTab(\'leave\', document.querySelector(\'[data-tab=leave]\'))">View Leave Details →</a>';
+      '<a class="snap-link" style="display:inline-block;margin-top:12px" onclick="showLeaveBalanceModal()">View Leave Details →</a>';
   }
 
   // Employee Wise Score bars (from scoresData)
@@ -1668,7 +1700,22 @@ function renderUsersDashboardPanels(data) {
     }
   }
 }
-
+function renderEmpScoreBarsInto(containerId, scores) {
+  var top = (scores||[]).slice().sort(function(a,b){
+    var pa = parseFloat(String(a.performance||'0').replace('%',''))||0;
+    var pb = parseFloat(String(b.performance||'0').replace('%',''))||0;
+    return pb - pa;
+  }).slice(0,6);
+  var el = document.getElementById(containerId);
+  if (!el) return;
+  if (!top.length) { el.innerHTML = '<div style="color:#bbb;font-size:12px;text-align:center;padding:20px">No score data</div>'; return; }
+  el.innerHTML = '<div class="ov-bars" style="height:130px">' + top.map(function(s){
+    var pct = parseFloat(String(s.performance||'0').replace('%',''))||0;
+    var h = Math.max(6, pct);
+    var col = pct>=90?'#16a34a':pct>=50?'#3b82f6':'#93c5fd';
+    return '<div class="ov-bar-col"><div class="ov-bar-val">' + Math.round(pct) + '%</div><div class="ov-bar" style="height:' + h + '%;background:' + col + '"></div><div class="ov-bar-name">' + s.employee + '</div></div>';
+  }).join('') + '</div>';
+}
 function expDaysOf(joiningDateStr) {
   var dm = parseFullDate(joiningDateStr);
   if (!dm || !dm.year) return 0;
@@ -2879,6 +2926,13 @@ document.getElementById('pendingModal').addEventListener('click', function(e) {
       <button class="fvm-close" onclick="closeFileView()">✕</button>
     </div>
     <div class="fvm-content" id="fvmContent"></div>
+  </div>
+</div>
+  <div class="udm-overlay" id="leaveBalModal" onclick="if(event.target===this)closeLeaveBalModal()">
+  <div class="udm-box" style="max-width:380px">
+    <div class="udm-header"><div class="udm-name">Leave Balance</div>
+      <button class="udm-close" onclick="closeLeaveBalModal()">✕</button></div>
+    <div class="udm-body" id="leaveBalBody"></div>
   </div>
 </div>
 </body>
