@@ -2551,31 +2551,16 @@ function closeScorePendingModal() {
   return dd + '/' + mm + '/' + d.getFullYear();
 }
 function collectTodayTasks() {
-  var today = getTodayDDMMYYYY();
   var data = globalRawData || {};
-  var list = [];
-  (data.fmsGroups || []).forEach(function(g) {
-    (g.steps || []).forEach(function(s) {
-      (s.pendingTasks || []).forEach(function(t) {
-       if (isSameAsToday(t.plannedDate)) {
-          list.push({ type:'FMS', doer: resolveCanonicalEmployee(t.finalDoer || s.doer || ''), task: s.step, client: t.client || '-', plannedDate: t.plannedDate });
-        }
-      });
-    });
+  return (data.todayTaskList || []).map(function(t) {
+    return {
+      type: t.type,
+      doer: resolveCanonicalEmployee(t.doer),
+      task: t.task,
+      client: t.client || '-',
+      plannedDate: t.plannedDate
+    };
   });
-  (data.checklistData || []).forEach(function(r) {
-    if (isSameAsToday(r.plannedDate)) {
-      list.push({ type:'Checklist', doer: resolveCanonicalEmployee(r.doer), task: r.task, client:'-', plannedDate:r.plannedDate });
-    }
-  });
-  (data.delegationData || []).forEach(function(r) {
-    if (isWeekShifted(r)) return;
-    var d = hasValidDate(r.latestRevision) ? r.latestRevision : hasValidDate(r.revision2) ? r.revision2 : hasValidDate(r.revision1) ? r.revision1 : r.firstDate;
-    if (isSameAsToday(d)) {
-      list.push({ type:'Delegation', doer: resolveCanonicalEmployee(r.client), task: r.task, client:'-', plannedDate:d });
-    }
-  });
-  return list;
 }
 function openTodayTasksModal(filterType) {
   var tasks = collectTodayTasks();
