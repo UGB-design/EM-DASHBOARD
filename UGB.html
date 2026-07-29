@@ -82,12 +82,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .topbar{background:#fff;padding:20px 32px 16px;border-bottom:1px solid #e8eaed;display:flex;flex-direction:column;gap:14px;box-shadow:0 1px 3px rgba(0,0,0,.04);margin-bottom:18px}
 .tb-row1{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
 .my-snapshot{display:flex;gap:8px;flex-wrap:wrap}
-.snap-item{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #e8eaed;border-radius:10px;padding:7px 13px 7px 10px;box-shadow:0 1px 3px rgba(0,0,0,.06);min-width:88px}
+.snap-item{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:12px 18px 12px 14px;box-shadow:0 2px 6px rgba(0,0,0,.06);min-width:120px}
 .snap-icon{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .snap-icon svg{width:14px;height:14px}
 .snap-text{line-height:1.15}
 .snap-val{font-size:15px;font-weight:800;color:#1a1a1a}
 .snap-lbl{font-size:9px;color:#9aa0ac;font-weight:700;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+  .snap-link{display:inline-block;margin-top:2px;font-size:11.5px;font-weight:700;color:#1d4ed8;text-decoration:none;cursor:pointer}
+.snap-link:hover{text-decoration:underline}
 .snap-today .snap-icon{background:#eff6ff;color:#2563eb}
 .snap-fms .snap-icon{background:#f0fdf4;color:#16a34a}
 .snap-cl .snap-icon{background:#fff7ed;color:#ea580c}
@@ -465,9 +467,10 @@ tr:hover td{background:#fafbfc}
 .ud-empbar-track{flex:1;height:8px;border-radius:4px;background:#f1f5f9;overflow:hidden}
 .ud-empbar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#3b82f6,#2563eb)}
 .ud-empbar-pct{font-size:11px;font-weight:800;color:#1a1a1a;width:32px;text-align:right}
-  .snap-perf{gap:10px}
-.snap-perf-ring{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.snap-perf-ring span{background:#fff;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#1a1a1a}
+  .snap-perf{gap:14px;padding:10px 20px 10px 14px !important;min-width:190px !important}
+.snap-perf-ring{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.snap-perf-ring span{background:#fff;width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#1a1a1a}
+.snap-perf .snap-lbl{font-size:11px}
   /* ── COMPACT TEAM DIRECTORY CARDS ─────────────────────────────── */
 .users-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
 @media(max-width:1200px){.users-grid{grid-template-columns:repeat(3,1fr)}}
@@ -644,34 +647,34 @@ tr:hover td{background:#fafbfc}
       </button>
     </div>
   </div>
-  <div class="my-snapshot">
-    <div class="snap-item snap-today">
-      <div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M8 2v4M16 2v4M3 10h18"></path></svg></div>
-      <div class="snap-text"><div class="snap-val" id="badgeTodayTasks">0</div><div class="snap-lbl">Today's Tasks</div><a class="snap-link" onclick="openTodayTasksModal()">View all tasks →</a></div>
-    </div>
-    <div class="snap-item snap-fms">
-      <div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></div>
-      <div class="snap-text"><div class="snap-val" id="badgeTodayFms">0</div><div class="snap-lbl">FMS</div><a class="snap-link" onclick="switchTab('fms', document.querySelector('[data-tab=fms]'))">View details →</a></div>
-    </div>
-    <div class="snap-item snap-cl">
-      <div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 12l2 2 4-4"></path></svg></div>
-      <div class="snap-text"><div class="snap-val" id="badgeTodayChecklist">0</div><div class="snap-lbl">Checklist</div><a class="snap-link" onclick="switchTab('checklist', document.querySelector('[data-tab=checklist]'))">View details →</a></div>
-    </div>
-   <div class="snap-item snap-dl">
-      <div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
-     <div class="snap-text"><div class="snap-val" id="badgeTodayDelegation">0</div><div class="snap-lbl">Delegation</div><a class="snap-link" onclick="switchTab('delegation', document.querySelector('[data-tab=delegation]'))">View details →</a></div>
-    </div>
-    <div class="snap-item snap-perf" id="snapPerfCard">
-      <div class="snap-perf-ring" id="snapPerfRing"><span id="snapPerfPct">0%</span></div>
-      <div class="snap-text"><div class="snap-lbl" style="margin-top:0">Overall Performance</div><div class="snap-lbl" style="color:#c7ceda">This Period</div></div>
-    </div>
-  </div>
 </div>
   <!-- USERS TAB -->
  <!-- USERS TAB -->
 <!-- USERS TAB -->
   <div class="tab-content active" id="tab-users">
     <div id="usersUpcomingBanner"></div>
+    <div class="my-snapshot">
+    <div class="snap-item snap-today">
+      <div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M8 2v4M16 2v4M3 10h18"></path></svg></div>
+      <div class="snap-text"><div class="snap-val" id="badgeTodayTasks">0</div><div class="snap-lbl">Today's Tasks</div><a class="snap-link" onclick="openTodayTasksModal()">View all tasks →</a></div>
+    </div>
+    <div class="snap-item snap-fms">
+      <div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></div>
+      <a class="snap-link" onclick="openTodayTasksModal('FMS')">View details →</a>
+    </div>
+    <div class="snap-item snap-cl">
+      <div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 12l2 2 4-4"></path></svg></div>
+      <a class="snap-link" onclick="openTodayTasksModal('Checklist')">View details →</a>
+    </div>
+   <div class="snap-item snap-dl">
+      <div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
+     <a class="snap-link" onclick="openTodayTasksModal('Delegation')">View details →</a>
+    </div>
+    <div class="snap-item snap-perf" id="snapPerfCard">
+      <div class="snap-perf-ring" id="snapPerfRing"><span id="snapPerfPct">0%</span></div>
+      <div class="snap-text"><div class="snap-lbl" style="margin-top:0">Overall Performance</div><div class="snap-lbl" style="color:#c7ceda">This Period</div></div>
+    </div>
+  </div>
     <div class="users-toolbar">
       <div class="users-search-wrap">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
@@ -2566,9 +2569,13 @@ function collectTodayTasks() {
   });
   return list;
 }
-function openTodayTasksModal() {
+function openTodayTasksModal(filterType) {
   var tasks = collectTodayTasks();
-  document.getElementById('modalTitle').textContent = "Today's Tasks";
+  if (filterType && filterType !== 'All') {
+    tasks = tasks.filter(function(t) { return t.type === filterType; });
+  }
+  var titleMap = { FMS: "Today's FMS Tasks", Checklist: "Today's Checklist Tasks", Delegation: "Today's Delegation Tasks" };
+  document.getElementById('modalTitle').textContent = titleMap[filterType] || "Today's Tasks";
   document.getElementById('modalSubtitle').textContent = getTodayDDMMYYYY() + '  ·  ' + tasks.length + ' tasks';
   document.getElementById('modalBody').innerHTML = tasks.map(function(t, i) {
     return '<tr>' +
