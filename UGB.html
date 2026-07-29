@@ -466,19 +466,22 @@ tr:hover td{background:#fafbfc}
 
 /* ── FILE PREVIEW MODAL (PAN / Aadhar) ────────────────────────── */
 .fvm-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.65);z-index:10000;align-items:center;justify-content:center;padding:20px}
-.fvm-box{background:#fff;border-radius:16px;max-width:92vw;max-height:92vh;overflow:hidden;position:relative;box-shadow:0 24px 60px rgba(0,0,0,.35)}
+.fvm-box{background:#fff;border-radius:16px;width:min(96vw,900px);max-width:96vw;max-height:95vh;overflow:hidden;position:relative;box-shadow:0 24px 60px rgba(0,0,0,.35)}
 .fvm-titlebar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #eef1f6;background:#fff}
 .fvm-title{font-size:13px;font-weight:700;color:#1a1a1a}
 .fvm-close{width:30px;height:30px;border-radius:8px;background:#f3f4f6;border:none;cursor:pointer;font-size:15px;color:#555;display:flex;align-items:center;justify-content:center}
-.fvm-content{max-width:86vw;max-height:78vh;overflow:auto;background:#f8fafc;display:flex;align-items:center;justify-content:center}
-.fvm-content img{max-width:86vw;max-height:78vh;display:block}
-.fvm-content iframe{width:86vw;height:78vh;border:none}
+.fvm-content{width:min(94vw,880px);height:85vh;overflow:auto;background:#f8fafc;display:flex;align-items:center;justify-content:center}
+.fvm-content img{max-width:100%;max-height:85vh;display:block}
+.fvm-content iframe{width:100%;height:85vh;border:none}
   #usersLoading{grid-column:1/-1;width:100%}
 .skel-users-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px}
 .skel-user-card{background:#fff;border-radius:18px;border:1px solid #e2e8f0;padding:26px 18px 20px;text-align:center}
   .users-search-wrap{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:10px 16px;margin-bottom:16px;box-shadow:0 2px 8px rgba(30,41,59,.05);max-width:340px}
 .users-search-wrap svg{color:#94a3b8;flex-shrink:0}
 .users-search-wrap input{border:none;outline:none;font-size:13px;color:#333;width:100%;background:transparent}
+  .users-toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.users-toolbar .users-search-wrap{margin-bottom:0;flex:1;min-width:220px}
+.users-filter-sel{background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:10px 14px;font-size:12.5px;color:#374151;font-weight:600;cursor:pointer;outline:none;box-shadow:0 2px 8px rgba(30,41,59,.05)}
 </style>
 </head>
 <body>
@@ -630,9 +633,17 @@ tr:hover td{background:#fafbfc}
  <!-- USERS TAB -->
   <div class="tab-content active" id="tab-users">
     <div id="usersUpcomingBanner"></div>
-    <div class="users-search-wrap">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-      <input type="text" id="usersSearchInput" placeholder="Search by name or designation..." oninput="filterUsersSearch()">
+    <div class="users-toolbar">
+      <div class="users-search-wrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input type="text" id="usersSearchInput" placeholder="Search by name or designation..." oninput="filterUsersSearch()">
+      </div>
+      <select id="usersDesigFilter" class="users-filter-sel" onchange="filterUsersSearch()"><option value="All">All Designation</option></select>
+      <select id="usersSortSel" class="users-filter-sel" onchange="filterUsersSearch()">
+        <option value="name">Sort: Name A-Z</option>
+        <option value="exp">Sort: Experience</option>
+        <option value="progress">Sort: Profile %</option>
+      </select>
     </div>
     <div id="usersGrid" class="users-grid">
       <div id="usersLoading"></div>
@@ -1393,13 +1404,46 @@ function fileViewLink(url, label) {
   return '<span onclick="event.stopPropagation();showFileView(\'' + url + '\',\'' + label + '\')" style="display:inline-flex;align-items:center;gap:5px;color:#1d4ed8;font-weight:700;cursor:pointer">' + EYE_ICON + ' View</span>';
 }
 var _staffRows = [];
+function populateUsersDesigFilter() {
+  var sel = document.getElementById('usersDesigFilter');
+  if (!sel) return;
+  var cur = sel.value;
+  var set = new Set();
+  _staffRows.forEach(function(r) { if (r.designation) set.add(r.designation); });
+  sel.innerHTML = '<option value="All">All Designation</option>';
+  Array.from(set).sort().forEach(function(d) {
+    var o = document.createElement('option');
+    o.value = d; o.textContent = d;
+    if (d === cur) o.selected = true;
+    sel.appendChild(o);
+  });
+}
+
 function filterUsersSearch() {
   var box = document.getElementById('usersSearchInput');
   var term = box ? box.value.trim().toLowerCase() : '';
+  var desigSel = document.getElementById('usersDesigFilter');
+  var desig = desigSel ? desigSel.value : 'All';
   document.querySelectorAll('#usersGrid .ucc-card').forEach(function(card) {
     var text = card.textContent.toLowerCase();
-    card.style.display = (!term || text.indexOf(term) !== -1) ? '' : 'none';
+    var matchesSearch = !term || text.indexOf(term) !== -1;
+    var matchesDesig = desig === 'All' || card.getAttribute('data-desig') === desig;
+    card.style.display = (matchesSearch && matchesDesig) ? '' : 'none';
   });
+  var sortSel = document.getElementById('usersSortSel');
+  if (sortSel) sortUsersCards(sortSel.value);
+}
+
+function sortUsersCards(mode) {
+  var grid = document.getElementById('usersGrid');
+  var cards = Array.from(grid.querySelectorAll('.ucc-card'));
+  cards.sort(function(a, b) {
+    if (mode === 'name') return a.getAttribute('data-name').localeCompare(b.getAttribute('data-name'));
+    if (mode === 'progress') return Number(b.getAttribute('data-progress')) - Number(a.getAttribute('data-progress'));
+    if (mode === 'exp') return Number(b.getAttribute('data-expdays')) - Number(a.getAttribute('data-expdays'));
+    return 0;
+  });
+  cards.forEach(function(c) { grid.appendChild(c); });
 }
 function renderUsers(staff) {
   var el = document.getElementById('usersGrid');
@@ -1417,7 +1461,7 @@ function renderUsers(staff) {
 
   el.innerHTML = rows.map(function(r, i) {
     var pct = profileCompletePct(r);
-    return '<div class="ucc-card" onclick="showUserDetail(' + i + ')">' +
+    return '<div class="ucc-card" onclick="showUserDetail(' + i + ')" data-name="' + (r.name||'').toLowerCase() + '" data-desig="' + (r.designation||'') + '" data-progress="' + pct + '" data-expdays="' + (expDaysOf(r.joiningDate)||0) + '">' +
       '<div class="ucc-avatar">' + ini(r.name) + '</div>' +
       '<div class="ucc-name">' + r.name + '</div>' +
       (r.designation ? '<div class="ucc-role">' + r.designation + '</div>' : '') +
@@ -1428,7 +1472,15 @@ function renderUsers(staff) {
       '</div>' +
       '<div class="ucc-viewhint">Tap to view full profile</div>' +
     '</div>';
-  }).join('');
+ }).join('');
+  populateUsersDesigFilter();
+}
+
+function expDaysOf(joiningDateStr) {
+  var dm = parseFullDate(joiningDateStr);
+  if (!dm || !dm.year) return 0;
+  var join = new Date(dm.year, dm.month - 1, dm.day);
+  return Math.round((new Date() - join) / 86400000);
 }
 
 function profileCompletePct(r) {
