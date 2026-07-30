@@ -457,6 +457,7 @@
   .ud-bottom-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:22px}
   @media(max-width:1100px){.ud-bottom-grid{grid-template-columns:repeat(2,1fr)}}
   .ud-panel{background:#fff;border-radius:16px;border:1px solid #e2e8f0;box-shadow:0 2px 10px rgba(30,41,59,.05);padding:26px 26px 30px;min-height:340px;display:flex;flex-direction:column}
+  #udLeaveSummary{display:flex;flex-direction:column;flex:1}
   .ud-panel-title{font-size:13px;font-weight:800;color:#1a1a1a;margin-bottom:14px}
   .ud-att-row{display:flex;justify-content:space-between;margin-bottom:10px}
   .ud-att-item{text-align:left}
@@ -682,18 +683,25 @@
         <div class="snap-perf-ring" id="snapPerfRing"><span id="snapPerfPct" class="val-loading">0%</span></div>
       </div>
     </div>
-  <div class="ud-bottom-grid" style="grid-template-columns:1fr 1fr;margin-top:16px">
-      <div class="ud-panel" style="min-height:auto">
-        <div class="ud-panel-title" style="color:#dc2626">🔔 Pending Approvals</div>
-        <div style="text-align:center;padding:6px 0 4px">
-          <div style="font-size:34px;font-weight:800;color:#dc2626" id="badgePendingApprovals">0</div>
-          <div style="font-size:10.5px;color:#9aa0ac;font-weight:700;text-transform:uppercase;letter-spacing:.05em">Awaiting Approval</div>
+  <div class="my-snapshot" style="margin-bottom:16px">
+      <div class="snap-item" style="border:1px solid #fecaca">
+        <div class="snap-icon" style="background:#fef2f2;color:#dc2626">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
         </div>
-        <a class="snap-link" style="display:block;text-align:center;margin-top:6px" onclick="showPendingApprovalsModal()">View Details →</a>
+        <div class="snap-text">
+          <div class="snap-val val-loading" id="badgePendingApprovals">0</div>
+          <div class="snap-lbl">Pending Approvals</div>
+          <a class="snap-link" onclick="showPendingApprovalsModal()">View Details →</a>
+        </div>
       </div>
-      <div class="ud-panel" style="min-height:auto">
-        <div class="ud-panel-title" id="upcomingHolidayTitle">🎉 Upcoming Holidays</div>
-        <div id="upcomingHolidayList"></div>
+      <div class="snap-item" style="border:1px solid #bbf7d0;align-items:flex-start;min-width:220px;flex:1.6 1 0">
+        <div class="snap-icon" style="background:#f0fdf4;color:#16a34a;margin-top:2px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        </div>
+        <div class="snap-text" style="width:100%">
+          <div class="snap-lbl" style="margin-bottom:6px" id="upcomingHolidayLbl">Upcoming Holidays</div>
+          <div id="upcomingHolidayNotice" style="max-height:72px;overflow-y:auto;display:flex;flex-direction:column;gap:5px"></div>
+        </div>
       </div>
     </div>
       <div class="ud-bottom-grid">
@@ -712,7 +720,7 @@
           </div>
           <div class="ud-att-row" id="udAttendanceRow"></div>
           <div id="udAttendanceChart" style="margin-top:14px"></div>
-          <a class="snap-link" style="display:inline-block;margin-top:12px" onclick="showAttendanceTableModal()">View Attendance →</a>
+         <a class="snap-link" style="display:inline-block;margin-top:auto;padding-top:12px" onclick="showAttendanceTableModal()">View Attendance →</a>
         </div>
         <div class="ud-panel">
           <div class="ud-panel-title" style="display:flex;justify-content:space-between;align-items:center">
@@ -1653,14 +1661,17 @@
   }
   function renderUsersDashboardPanels(data) {
     // Task Summary donut (Completed / Pending / Week Shifted)
-    var em = data.emDashboard || {};
+   var em = data.emDashboard || {};
     var t = em.totals || {};
-    var completed = Number(t.totalActual) || 0;
+    var bd = em.breakdown || {};
+    var completed = (Number(bd.fmsDone)||0) + (Number(bd.clDone)||0) + (Number(bd.dlDone)||0);
+    if (!completed) completed = Number(t.totalActual) || 0;
     var weekShifted = (data.delegationData || []).filter(function(r) {
       return String(r.status || '').trim().toLowerCase() === 'week shifted';
     }).length;
-    var pending = Math.max(0, (Number(t.totalPlan) || 0) - completed - weekShifted);
-    var total = completed + pending + weekShifted;
+    var totalPlan = Number(t.totalPlan) || 0;
+    var pending = Math.max(0, totalPlan - completed - weekShifted);
+    var total = totalPlan > 0 ? totalPlan : (completed + pending + weekShifted);
     var pct = total > 0 ? Math.round((completed / total) * 100) : 0;
     var deg1 = total > 0 ? (completed / total) * 360 : 0;
     var deg2 = total > 0 ? deg1 + (pending / total) * 360 : 0;
@@ -1724,7 +1735,7 @@
             '<div class="ov-donut-center"><div class="ov-donut-num" style="font-size:15px">' + (lv.usedPct||0) + '%</div><div class="ov-donut-lbl" style="font-size:8px">Used</div></div>' +
           '</div>' +
      '</div>' +
-        '<a class="snap-link" style="display:inline-block;margin-top:12px" onclick="showLeaveTableModal()">View Leave Details →</a>';
+        '<a class="snap-link" style="display:inline-block;margin-top:auto;padding-top:12px" onclick="showLeaveTableModal()">View Leave Details →</a>';
     }  
     // Employee Wise Score — vertical bar chart
     var scores = (data.scoresData || []).slice().sort(function(a, b) {
@@ -1750,27 +1761,31 @@
       }
     }
   }
-    function renderPendingApprovalsAndHolidays(data) {
+   function renderPendingApprovalsAndHolidays(data) {
     var pa = data.pendingApprovals || { count: 0, rows: [] };
     var badge = document.getElementById('badgePendingApprovals');
     if (badge) badge.textContent = pa.count || 0;
     window._pendingApprovalsRows = pa.rows || [];
 
     var uh = data.upcomingHolidays || { label: '', rows: [] };
-    var titleEl = document.getElementById('upcomingHolidayTitle');
-    if (titleEl) titleEl.textContent = '🎉 Holidays — ' + (uh.label || '');
-    var listEl = document.getElementById('upcomingHolidayList');
-    if (listEl) {
-      if (!uh.rows || !uh.rows.length) {
-        listEl.innerHTML = '<div style="color:#bbb;font-size:12px;text-align:center;padding:20px">No holidays found</div>';
+    var lblEl = document.getElementById('upcomingHolidayLbl');
+    if (lblEl) lblEl.textContent = 'Upcoming Holidays' + (uh.label ? ' — ' + uh.label : '');
+
+    var noticeEl = document.getElementById('upcomingHolidayNotice');
+    if (noticeEl) {
+      var rows = uh.rows || [];
+      if (!rows.length) {
+        noticeEl.innerHTML = '<div style="font-size:11.5px;color:#c7c2b8">No holidays found</div>';
       } else {
-        listEl.innerHTML = uh.rows.map(function(h) {
-          return '<div class="ud-leave-row"><span>' + h.name + '</span><b>' + h.date + '</b></div>';
+        noticeEl.innerHTML = rows.map(function(h) {
+          return '<div style="display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:#166534;background:#f0fdf4;border:1px solid #dcfce7;border-radius:8px;padding:5px 10px">' +
+            '<span style="font-weight:600">' + h.name + '</span>' +
+            '<span style="font-weight:700;white-space:nowrap;margin-left:8px">' + h.date + '</span>' +
+          '</div>';
         }).join('');
       }
     }
   }
-
   function showPendingApprovalsModal() {
     var rows = window._pendingApprovalsRows || [];
     document.getElementById('pendingApprovalsBody').innerHTML = rows.map(function(r, i) {
@@ -2951,6 +2966,7 @@
   </script>
   
   <!-- PENDING TASKS MODAL -->
+    <!-- UPCOMING HOLIDAYS MODAL -->
     <!-- PENDING APPROVALS MODAL -->
   <div id="pendingApprovalsModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center" onclick="if(event.target===this)closePendingApprovalsModal()">
     <div style="background:#fff;border-radius:14px;width:92%;max-width:700px;max-height:82vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
