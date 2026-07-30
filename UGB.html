@@ -697,7 +697,7 @@ tr:hover td{background:#fafbfc}
         <div class="ud-panel-title">Task Summary</div>
         <div class="ov-donut-wrap" id="udTaskDonut"></div>
       </div>
-    <div class="ud-panel">
+  <div class="ud-panel">
         <div class="ud-panel-title" style="display:flex;justify-content:space-between;align-items:center">
           <span>Attendance Overview</span>
           <select id="attPeriodSel" class="users-filter-sel" style="font-size:11px;padding:5px 10px" onchange="changeAttendancePeriod(this.value)">
@@ -708,6 +708,7 @@ tr:hover td{background:#fafbfc}
         </div>
         <div class="ud-att-row" id="udAttendanceRow"></div>
         <div id="udAttendanceChart" style="margin-top:14px"></div>
+        <a class="snap-link" style="display:inline-block;margin-top:12px" href="https://docs.google.com/spreadsheets/d/1Q9ylhYjxTxWgX4fJbpI0rg9-WF3vy2AE5uTYnBv0PgA/edit?gid=2140043622#gid=2140043622" target="_blank" rel="noopener">View Attendance →</a>
       </div>
       <div class="ud-panel">
         <div class="ud-panel-title" style="display:flex;justify-content:space-between;align-items:center">
@@ -1666,7 +1667,7 @@ function renderUsersDashboardPanels(data) {
           '<div class="ov-donut-center"><div class="ov-donut-num" style="font-size:15px">' + (lv.usedPct||0) + '%</div><div class="ov-donut-lbl" style="font-size:8px">Used</div></div>' +
         '</div>' +
       '</div>' +
-      '<a class="snap-link" style="display:inline-block;margin-top:12px" onclick="showLeaveBalanceModal()">View Leave Details →</a>';
+      <a class="snap-link" style="display:inline-block;margin-top:12px" href="https://docs.google.com/spreadsheets/d/1Q9ylhYjxTxWgX4fJbpI0rg9-WF3vy2AE5uTYnBv0PgA/edit?gid=1922968365#gid=1922968365" target="_blank" rel="noopener">View Leave Details →</a>
   }
 
   // Employee Wise Score bars (from scoresData)
