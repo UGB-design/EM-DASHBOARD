@@ -1184,6 +1184,15 @@ function updateGreeting(name) {
   if (greetTextEl) greetTextEl.textContent = text;
   if (greetNameEl) greetNameEl.textContent = name || 'there';
 }
+  function changeAttendancePeriod(period) {
+  fetch(API + '?action=getData&idToken=' + encodeURIComponent(currentIdToken) + '&attPeriod=' + period + '&cb=' + Date.now())
+    .then(function(r){return r.json();})
+    .then(function(data){
+      console.log('ATT DEBUG →', 'error:', data.debugAttendanceError, 'rows:', data.debugAttendanceRowCount);
+      globalRawData = data;
+      renderUsersDashboardPanels(data);
+    });
+}
 function changeLeaveYear(year) {
   fetch(API + '?action=getData&idToken=' + encodeURIComponent(currentIdToken) + '&leaveYear=' + year + '&cb=' + Date.now())
     .then(function(r){return r.json();})
@@ -1193,6 +1202,7 @@ function changeLeaveYear(year) {
       renderUsersDashboardPanels(data);
     });
 }
+  
   function showLeaveBalanceModal() {
   var lv = (globalRawData && globalRawData.leaveSummary) || {};
   document.getElementById('leaveBalBody').innerHTML =
