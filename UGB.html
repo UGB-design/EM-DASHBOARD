@@ -2779,6 +2779,7 @@ function initialLoad() {
 function showAttendanceTableModal() {
   var rows = (globalRawData && globalRawData.attendanceOverview && globalRawData.attendanceOverview.rows) || [];
   populateAttendanceEmpFilter(rows);
+  populateAttendanceMonthFilter(rows);
   renderAttendanceTable(rows);
   document.getElementById('attTableModal').style.display = 'flex';
 }
@@ -2787,10 +2788,17 @@ function populateAttendanceEmpFilter(rows) {
   var names = Array.from(new Set(rows.map(function(r){ return r.name; }))).sort();
   sel.innerHTML = '<option value="All">All Employees</option>' + names.map(function(n){ return '<option value="' + n + '">' + n + '</option>'; }).join('');
 }
+function populateAttendanceMonthFilter(rows) {
+  var sel = document.getElementById('attTableMonthFilter');
+  var months = Array.from(new Set(rows.map(function(r){ return r.month; }).filter(Boolean)));
+  sel.innerHTML = '<option value="All">All Months</option>' + months.map(function(m){ return '<option value="' + m + '">' + m + '</option>'; }).join('');
+}
 function filterAttendanceTable() {
   var emp = document.getElementById('attTableEmpFilter').value;
+  var month = document.getElementById('attTableMonthFilter').value;
   var rows = (globalRawData && globalRawData.attendanceOverview && globalRawData.attendanceOverview.rows) || [];
   if (emp !== 'All') rows = rows.filter(function(r){ return r.name === emp; });
+  if (month !== 'All') rows = rows.filter(function(r){ return r.month === month; });
   renderAttendanceTable(rows);
 }
 function renderAttendanceTable(rows) {
@@ -2803,19 +2811,42 @@ function closeAttendanceTableModal(){ document.getElementById('attTableModal').s
 // ── Leave Table Modal ────────────────────────────────────────────────────
 function showLeaveTableModal() {
   var rows = (globalRawData && globalRawData.leaveSummary && globalRawData.leaveSummary.rows) || [];
+  populateLeaveEmpFilter(rows);
+  populateLeaveYearFilter(rows);
   renderLeaveTable(rows);
   document.getElementById('leaveTableModal').style.display = 'flex';
 }
-function renderLeaveTable(rows) {
+function leaveDisplayName_(r) {
   var staff = (globalRawData && globalRawData.staffData) || [];
+  var match = staff.find(function(s) { return String(s.email||'').toLowerCase().trim() === String(r.email||'').toLowerCase().trim(); });
+  return match ? match.name : r.email;
+}
+function populateLeaveEmpFilter(rows) {
+  var sel = document.getElementById('leaveTableEmpFilter');
+  var names = Array.from(new Set(rows.map(leaveDisplayName_))).sort();
+  sel.innerHTML = '<option value="All">All Employees</option>' + names.map(function(n){ return '<option value="' + n + '">' + n + '</option>'; }).join('');
+}
+function populateLeaveYearFilter(rows) {
+  var sel = document.getElementById('leaveTableYearFilter');
+  var years = Array.from(new Set(rows.map(function(r){ return r.year; }).filter(Boolean))).sort();
+  sel.innerHTML = '<option value="All">All Years</option>' + years.map(function(y){ return '<option value="' + y + '">' + y + '</option>'; }).join('');
+}
+function filterLeaveTable() {
+  var emp = document.getElementById('leaveTableEmpFilter').value;
+  var year = document.getElementById('leaveTableYearFilter').value;
+  var rows = (globalRawData && globalRawData.leaveSummary && globalRawData.leaveSummary.rows) || [];
+  rows = rows.map(function(r) { return Object.assign({}, r, { displayName: leaveDisplayName_(r) }); });
+  if (emp !== 'All') rows = rows.filter(function(r){ return r.displayName === emp; });
+  if (year !== 'All') rows = rows.filter(function(r){ return r.year === year; });
+  renderLeaveTable(rows);
+}
+function renderLeaveTable(rows) {
   document.getElementById('leaveTableBody').innerHTML = rows.map(function(r, i) {
-    var match = staff.find(function(s) { return String(s.email || '').toLowerCase().trim() === String(r.email || '').toLowerCase().trim(); });
-    var name = match ? match.name : r.email;
+    var name = r.displayName || leaveDisplayName_(r);
     return '<tr><td>' + (i + 1) + '</td><td>' + name + '</td><td style="text-align:center">' + r.totalPaidLeave + '</td><td style="text-align:center">' + r.usedLeave + '</td><td style="text-align:center">' + r.balance + '</td><td style="text-align:center">' + r.halfDayCount + '</td><td style="text-align:center">' + r.unpaidLeave + '</td></tr>';
   }).join('') || '<tr><td colspan="7" style="text-align:center;color:#bbb;padding:20px">No leave data</td></tr>';
 }
 function closeLeaveTableModal(){ document.getElementById('leaveTableModal').style.display = 'none'; }
-
 // ── Boot ─────────────────────────────────────────────────────────────────────
 document.getElementById('ldiv').innerHTML = skeletonSummaryHTML();
 document.getElementById('usersLoading').innerHTML = skeletonUsersHTML(6);
@@ -2975,8 +3006,9 @@ document.getElementById('pendingModal').addEventListener('click', function(e) {
       <div style="font-size:15px;font-weight:700;color:#1a1a1a">Attendance Details</div>
       <button onclick="closeAttendanceTableModal()" style="background:#f3f4f6;border:none;border-radius:8px;width:30px;height:30px;font-size:16px;cursor:pointer;color:#555">✕</button>
     </div>
-    <div style="padding:12px 20px;border-bottom:1px solid #f0f0f0">
+   <div style="padding:12px 20px;border-bottom:1px solid #f0f0f0;display:flex;gap:10px;flex-wrap:wrap">
       <select id="attTableEmpFilter" class="users-filter-sel" onchange="filterAttendanceTable()"><option value="All">All Employees</option></select>
+      <select id="attTableMonthFilter" class="users-filter-sel" onchange="filterAttendanceTable()"><option value="All">All Months</option></select>
     </div>
     <div style="overflow-y:auto;padding:0">
       <table style="width:100%;border-collapse:collapse">
@@ -3003,9 +3035,13 @@ document.getElementById('pendingModal').addEventListener('click', function(e) {
 <!-- LEAVE TABLE MODAL -->
 <div id="leaveTableModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center" onclick="if(event.target===this)closeLeaveTableModal()">
   <div style="background:#fff;border-radius:14px;width:92%;max-width:760px;max-height:82vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e8eaed">
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e8eaed">
       <div style="font-size:15px;font-weight:700;color:#1a1a1a">Leave Details</div>
       <button onclick="closeLeaveTableModal()" style="background:#f3f4f6;border:none;border-radius:8px;width:30px;height:30px;font-size:16px;cursor:pointer;color:#555">✕</button>
+    </div>
+    <div style="padding:12px 20px;border-bottom:1px solid #f0f0f0;display:flex;gap:10px;flex-wrap:wrap">
+      <select id="leaveTableEmpFilter" class="users-filter-sel" onchange="filterLeaveTable()"><option value="All">All Employees</option></select>
+      <select id="leaveTableYearFilter" class="users-filter-sel" onchange="filterLeaveTable()"><option value="All">All Years</option></select>
     </div>
     <div style="overflow-y:auto;padding:0">
       <table style="width:100%;border-collapse:collapse">
