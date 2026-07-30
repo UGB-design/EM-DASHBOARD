@@ -441,7 +441,7 @@ tr:hover td{background:#fafbfc}
   /* ── TEAM DIRECTORY: full redesign ─────────────────────────────── */
 .ucc-card{position:relative}
 .ucc-status-dot{position:absolute;top:16px;right:16px;width:9px;height:9px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.18)}
-.ucc-stats-row{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:14px;border-top:1px solid #f1f5f9}
+.ucc-stats-row{display:flex;justify-content:center;align-items:center;gap:22px;margin-top:16px;padding-top:14px;border-top:1px solid #f1f5f9}
 .ucc-stat{display:flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;color:#475569}
 .ucc-stat svg{width:13px;height:13px}
 .ucc-stat.pending{color:#ea580c}
@@ -449,7 +449,7 @@ tr:hover td{background:#fafbfc}
   .ucc-stat-txt{display:flex;flex-direction:column;line-height:1.2}
 .ucc-stat-lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:.04em;font-weight:700;opacity:.75}
 .ucc-stat-num{font-size:14px;font-weight:800}
-.ucc-ring{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:800}
+.ucc-ring{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:400}
 .ucc-viewprofile{display:block;text-align:center;margin-top:12px;font-size:11.5px;font-weight:700;color:#2563eb;cursor:pointer}
 .ucc-viewprofile:hover{text-decoration:underline}
 
@@ -478,11 +478,11 @@ tr:hover td{background:#fafbfc}
 @media(max-width:1200px){.users-grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:800px){.users-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:520px){.users-grid{grid-template-columns:1fr}}
-.ucc-card{background:#fff;border-radius:20px;border:1px solid #eef1f6;box-shadow:0 3px 14px rgba(30,41,59,.06);padding:24px 24px 22px;text-align:left;cursor:pointer;transition:all .2s ease;position:relative;min-height:auto;display:flex;flex-direction:column}
+.ucc-card{background:#fff;border-radius:20px;border:1px solid #eef1f6;box-shadow:0 3px 14px rgba(30,41,59,.06);padding:24px 24px 22px;text-align:left;cursor:pointer;transition:all .2s ease;position:relative;min-height:260px;display:flex;flex-direction:column;justify-content:space-between}
 .ucc-card:hover{box-shadow:0 14px 32px rgba(29,78,216,.16);transform:translateY(-4px);border-color:#bfdbfe}
-.ucc-top-row{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.ucc-top-row{display:flex;align-items:center;gap:12px;margin-bottom:14px;min-height:74px}
 .ucc-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#1d4ed8 0%,#3b82f6 100%);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;flex-shrink:0;box-shadow:0 3px 8px rgba(29,78,216,.16)}
-.ucc-name{font-size:14.5px;font-weight:800;color:#1a1a1a;line-height:1.3}
+.ucc-name{font-size:14.5px;font-weight:600;color:#1a1a1a;line-height:1.3}
 .ucc-role{font-size:10.5px;color:#2563eb;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-top:3px}
 .ucc-exp{font-size:11.5px;color:#64748b;margin-top:2px;font-weight:600}
 .ucc-progress-wrap{margin-top:14px;display:flex;align-items:center;gap:7px}
@@ -718,10 +718,6 @@ tr:hover td{background:#fafbfc}
 </select>
         </div>
         <div id="udLeaveSummary"></div>
-      </div>
-      <div class="ud-panel">
-        <div class="ud-panel-title">Employee Wise Score</div>
-        <div id="udEmpScoreBars"></div>
       </div>
     </div>
   </div>
@@ -1489,11 +1485,9 @@ function renderAll(data) {
   var scData = data.scoresData || [];
   if (!data.scoresData) console.warn('⚠️ scoresData missing from API response — check code.gs SCORES section');
   else console.log('✅ scoresData received:', scData.length, 'rows');
-  populateScoreFilters(scData);
+ populateScoreFilters(scData);
   applyScoreFilters();
-  renderEmpScoreBarsInto('scEmpScoreBars', filtered);
 }
-
 // ── USERS TAB (employee profile cards, from Staff_info sheet) ────────────────
 var UCR_ICONS = {
   dob: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>',
@@ -1712,7 +1706,7 @@ function renderEmpScoreBarsInto(containerId, scores) {
   el.innerHTML = '<div class="ov-bars" style="height:130px">' + top.map(function(s){
     var pct = parseFloat(String(s.performance||'0').replace('%',''))||0;
     var h = Math.max(6, pct);
-    var col = pct>=90?'#16a34a':pct>=50?'#3b82f6':'#93c5fd';
+    var col = '#16a34a';
     return '<div class="ov-bar-col"><div class="ov-bar-val">' + Math.round(pct) + '%</div><div class="ov-bar" style="height:' + h + '%;background:' + col + '"></div><div class="ov-bar-name">' + s.employee + '</div></div>';
   }).join('') + '</div>';
 }
@@ -2361,8 +2355,8 @@ function applyScoreFilters() {
       '<td style="text-align:center">' + workNotDoneCell(r.workNotDonePct) + '</td>' +
       '</tr>';
   }).join('') || '<tr><td colspan="7" style="text-align:center;color:#bbb;padding:30px">No score data matches the selected filters</td></tr>';
+  renderEmpScoreBarsInto('scEmpScoreBars', sorted);
 }
-
 // ── Scores tab: Pending card → combined pending-tasks modal ─────────────────
 function normalizeName(n) { return String(n || '').trim().toLowerCase(); }
 
