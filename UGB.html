@@ -52,14 +52,17 @@
   .ov-bar-name{font-size:10px;color:#8a8478;font-weight:600;text-align:center;line-height:1.3;max-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .ov-donut-wrap{display:flex;align-items:center;gap:22px}
   .ov-donut{width:160px;height:160px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;position:relative}
+    #udTaskDonut .ov-donut{width:120px;height:120px}
+#udTaskDonut .ov-donut-num{font-size:16px}
+#udTaskDonut .ov-donut-lbl{font-size:8px}
   .ov-donut::before{content:'';position:absolute;inset:16px;border-radius:50%;background:#fff}
   .ov-donut-center{position:relative;z-index:1;text-align:center}
   .ov-donut-num{font-size:20px;font-weight:800;color:#1a1a1a;line-height:1}
   .ov-donut-lbl{font-size:9px;color:#9aa0ac;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
-  .ov-legend{display:flex;flex-direction:column;gap:9px}
-  .ov-legend-row{display:flex;align-items:center;gap:8px;font-size:12px;color:#4b4538;font-weight:600}
+  .ov-legend{display:flex;flex-direction:column;gap:9px;min-width:130px}
+  .ov-legend-row{display:flex;align-items:center;gap:6px;font-size:11.5px;color:#4b4538;font-weight:600;white-space:nowrap}
   .ov-legend-dot{width:9px;height:9px;border-radius:3px;flex-shrink:0}
-  .ov-legend-val{margin-left:auto;font-weight:700;color:#1a1a1a}
+ .ov-legend-val{margin-left:auto;font-weight:700;color:#1a1a1a;white-space:nowrap}
   .ov-empty{text-align:center;color:#c7c2b8;font-size:12px;padding:30px 10px}
   .att-note{background:#fffbeb;border:1px dashed #fbbf24;border-radius:10px;padding:10px 14px;font-size:11.5px;color:#92400e;margin-top:8px;line-height:1.5}
   /* HEADER */
@@ -456,7 +459,7 @@
   .ucc-viewprofile:hover{text-decoration:underline}
   .ud-bottom-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:22px}
   @media(max-width:1100px){.ud-bottom-grid{grid-template-columns:repeat(2,1fr)}}
-  .ud-panel{background:#fff;border-radius:16px;border:1px solid #e2e8f0;box-shadow:0 2px 10px rgba(30,41,59,.05);padding:26px 26px 30px;min-height:340px;display:flex;flex-direction:column}
+ .ud-panel{background:#fff;border-radius:16px;border:1px solid #e2e8f0;box-shadow:0 2px 10px rgba(30,41,59,.05);padding:20px 22px 18px;min-height:auto;display:flex;flex-direction:column}
   #udLeaveSummary{display:flex;flex-direction:column;flex:1}
   .ud-panel-title{font-size:13px;font-weight:800;color:#1a1a1a;margin-bottom:14px}
   .ud-att-row{display:flex;justify-content:space-between;margin-bottom:10px}
@@ -683,8 +686,8 @@
         <div class="snap-perf-ring" id="snapPerfRing"><span id="snapPerfPct" class="val-loading">0%</span></div>
       </div>
     </div>
-  <div class="my-snapshot" style="margin-bottom:16px">
-      <div class="snap-item" style="border:1px solid #fecaca">
+  <div class="my-snapshot" style="margin-bottom:16px;align-items:stretch">
+      <div class="snap-item" style="border:1px solid #fecaca;flex:0.8 1 0;min-width:180px">
         <div class="snap-icon" style="background:#fef2f2;color:#dc2626">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
         </div>
@@ -694,13 +697,13 @@
           <a class="snap-link" onclick="showPendingApprovalsModal()">View Details →</a>
         </div>
       </div>
-      <div class="snap-item" style="border:1px solid #bbf7d0;align-items:flex-start;min-width:220px;flex:1.6 1 0">
+      <div class="snap-item" style="border:1px solid #bbf7d0;align-items:flex-start;flex:2.2 1 0;min-width:260px">
         <div class="snap-icon" style="background:#f0fdf4;color:#16a34a;margin-top:2px">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
         </div>
         <div class="snap-text" style="width:100%">
           <div class="snap-lbl" style="margin-bottom:6px" id="upcomingHolidayLbl">Upcoming Holidays</div>
-          <div id="upcomingHolidayNotice" style="max-height:72px;overflow-y:auto;display:flex;flex-direction:column;gap:5px"></div>
+          <div id="upcomingHolidayNotice" style="max-height:78px;overflow-y:auto;display:flex;flex-direction:column;gap:5px"></div>
         </div>
       </div>
     </div>
@@ -1771,16 +1774,16 @@
     var lblEl = document.getElementById('upcomingHolidayLbl');
     if (lblEl) lblEl.textContent = 'Upcoming Holidays' + (uh.label ? ' — ' + uh.label : '');
 
-    var noticeEl = document.getElementById('upcomingHolidayNotice');
+   var noticeEl = document.getElementById('upcomingHolidayNotice');
     if (noticeEl) {
       var rows = uh.rows || [];
       if (!rows.length) {
-        noticeEl.innerHTML = '<div style="font-size:11.5px;color:#c7c2b8">No holidays found</div>';
+        noticeEl.innerHTML = '<div style="font-size:11.5px;color:#c7c2b8;padding:6px 2px">No holidays found</div>';
       } else {
         noticeEl.innerHTML = rows.map(function(h) {
-          return '<div style="display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:#166534;background:#f0fdf4;border:1px solid #dcfce7;border-radius:8px;padding:5px 10px">' +
-            '<span style="font-weight:600">' + h.name + '</span>' +
-            '<span style="font-weight:700;white-space:nowrap;margin-left:8px">' + h.date + '</span>' +
+          return '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:11px;color:#166534;background:#f0fdf4;border:1px solid #dcfce7;border-radius:8px;padding:5px 10px">' +
+            '<span style="font-weight:700;white-space:nowrap">' + h.date + (h.day ? ' (' + h.day + ')' : '') + '</span>' +
+            '<span style="font-weight:600;text-align:right">' + h.name + '</span>' +
           '</div>';
         }).join('');
       }
