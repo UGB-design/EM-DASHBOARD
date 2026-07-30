@@ -1184,15 +1184,14 @@ function updateGreeting(name) {
   if (greetTextEl) greetTextEl.textContent = text;
   if (greetNameEl) greetNameEl.textContent = name || 'there';
 }
-  function changeAttendancePeriod(period) {
-  fetch(API + '?action=getData&idToken=' + encodeURIComponent(currentIdToken) + '&attPeriod=' + period + '&cb=' + Date.now())
-    .then(function(r){return r.json();})
-    .then(function(data){ globalRawData = data; renderUsersDashboardPanels(data); });
-}
 function changeLeaveYear(year) {
   fetch(API + '?action=getData&idToken=' + encodeURIComponent(currentIdToken) + '&leaveYear=' + year + '&cb=' + Date.now())
     .then(function(r){return r.json();})
-    .then(function(data){ globalRawData = data; renderUsersDashboardPanels(data); });
+    .then(function(data){
+      console.log('LEAVE DEBUG →', 'error:', data.debugLeaveError, 'rows:', data.debugLeaveRowCount);
+      globalRawData = data;
+      renderUsersDashboardPanels(data);
+    });
 }
   function showLeaveBalanceModal() {
   var lv = (globalRawData && globalRawData.leaveSummary) || {};
