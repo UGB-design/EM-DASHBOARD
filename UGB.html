@@ -567,7 +567,11 @@ tr:hover td{background:#fafbfc}
       </div>
     </div>
     <div class="sb-nav">
-      <button class="sb-item active" data-tab="users" onclick="switchTab('users',this)">
+      <button class="sb-item active" data-tab="dashboard" onclick="switchTab('dashboard',this)">
+        <span class="sb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"></rect><rect x="14" y="3" width="7" height="5" rx="1"></rect><rect x="14" y="12" width="7" height="9" rx="1"></rect><rect x="3" y="16" width="7" height="5" rx="1"></rect></svg></span>
+        <span class="sb-label">Dashboard</span>
+      </button>
+      <button class="sb-item" data-tab="users" onclick="switchTab('users',this)">
         <span class="sb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span>
         <span class="sb-label">Team Directory</span>
       </button>
@@ -653,7 +657,8 @@ tr:hover td{background:#fafbfc}
   <!-- USERS TAB -->
  <!-- USERS TAB -->
 <!-- USERS TAB -->
-  <div class="tab-content active" id="tab-users">
+  <!-- DASHBOARD TAB -->
+  <div class="tab-content active" id="tab-dashboard">
     <div id="usersUpcomingBanner"></div>
    <div class="my-snapshot">
     <div class="snap-item snap-today">
@@ -676,21 +681,6 @@ tr:hover td{background:#fafbfc}
       <div class="snap-perf-ring" id="snapPerfRing"><span id="snapPerfPct">0%</span></div>
     </div>
   </div>
-    <div class="users-toolbar">
-      <div class="users-search-wrap">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        <input type="text" id="usersSearchInput" placeholder="Search by name or designation..." oninput="filterUsersSearch()">
-      </div>
-      <select id="usersDesigFilter" class="users-filter-sel" onchange="filterUsersSearch()"><option value="All">All Designation</option></select>
-      <select id="usersSortSel" class="users-filter-sel" onchange="filterUsersSearch()">
-        <option value="name">Sort: Name A-Z</option>
-        <option value="exp">Sort: Experience</option>
-        <option value="progress">Sort: Profile %</option>
-      </select>
-    </div>
-    <div id="usersGrid" class="users-grid">
-      <div id="usersLoading"></div>
-    </div>
 
     <div class="ud-bottom-grid">
       <div class="ud-panel">
@@ -720,6 +710,25 @@ tr:hover td{background:#fafbfc}
         </div>
         <div id="udLeaveSummary"></div>
       </div>
+    </div>
+  </div>
+
+  <!-- TEAM DIRECTORY TAB -->
+  <div class="tab-content" id="tab-users">
+    <div class="users-toolbar">
+      <div class="users-search-wrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input type="text" id="usersSearchInput" placeholder="Search by name or designation..." oninput="filterUsersSearch()">
+      </div>
+      <select id="usersDesigFilter" class="users-filter-sel" onchange="filterUsersSearch()"><option value="All">All Designation</option></select>
+      <select id="usersSortSel" class="users-filter-sel" onchange="filterUsersSearch()">
+        <option value="name">Sort: Name A-Z</option>
+        <option value="exp">Sort: Experience</option>
+        <option value="progress">Sort: Profile %</option>
+      </select>
+    </div>
+    <div id="usersGrid" class="users-grid">
+      <div id="usersLoading"></div>
     </div>
   </div>
   <!-- SUMMARY TAB -->
