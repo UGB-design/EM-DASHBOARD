@@ -1332,11 +1332,11 @@ function openAddDelegation() {
   }
   function closeLeaveBalModal(){ document.getElementById('leaveBalModal').style.display='none'; }
   // ── Refresh button (re-fetches latest data without a full reload) ────────────
-  function refreshDashboard() {
+function refreshDashboard() {
     var btn = document.getElementById('refreshBtn');
     if (!currentIdToken) return;
     if (btn) btn.classList.add('spinning');
-    fetch(API + '?action=getData&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now(), { redirect: 'follow' })
+    fetch(API + '?action=getData&forceRefresh=1&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now(), { redirect: 'follow' })
       .then(function(r) { return r.json(); })
       .then(function(data) {
         if (btn) btn.classList.remove('spinning');
