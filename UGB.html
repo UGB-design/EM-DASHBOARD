@@ -536,9 +536,40 @@
     .users-search-wrap{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:10px 16px;margin-bottom:16px;box-shadow:0 2px 8px rgba(30,41,59,.05);max-width:340px}
   .users-search-wrap svg{color:#94a3b8;flex-shrink:0}
   .users-search-wrap input{border:none;outline:none;font-size:13px;color:#333;width:100%;background:transparent}
-   .users-toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;margin-top:18px}
+  .users-toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;margin-top:18px}
   .users-toolbar .users-search-wrap{margin-bottom:0;flex:1;min-width:220px}
   .users-filter-sel{background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:10px 14px;font-size:12.5px;color:#374151;font-weight:600;cursor:pointer;outline:none;box-shadow:0 2px 8px rgba(30,41,59,.05)}
+
+  /* ═══════ MOBILE RESPONSIVE FIXES ═══════ */
+  @media(max-width:600px){
+    .ud-bottom-grid{grid-template-columns:1fr !important}
+    .my-snapshot{gap:10px}
+    .snap-item{flex:1 1 100% !important;min-width:100% !important}
+    .snap-perf{flex:1 1 100% !important}
+    .tb-row1{flex-direction:column;align-items:flex-start}
+    .tb-right{width:100%;justify-content:flex-start}
+    .dt-input{min-width:120px;flex:1}
+    .filter-bar{flex-direction:column;align-items:stretch;gap:10px}
+    .filter-bar select,.filter-bar input{width:100%}
+    .tc,.fms-card,.sp-card{overflow-x:auto}
+    table{min-width:600px}
+    .table-scroll-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+    .udm-box,.fvm-box{width:94vw;max-width:94vw}
+    .h-title{font-size:19px}
+    .stat-badges-row{gap:8px}
+    .stat-pill{min-width:auto;flex:1 1 45%}
+    .leave-iframe-wrap{height:calc(100vh - 90px)}
+    .users-toolbar{flex-direction:column;align-items:stretch}
+    .users-toolbar select{width:100%}
+    #pendingModal > div, #pendingApprovalsModal > div, #scorePendingModal > div,
+    #attTableModal > div, #leaveTableModal > div{width:95%;max-width:95%}
+  }
+
+  @media(max-width:400px){
+    .snap-icon{width:32px;height:32px}
+    .snap-val{font-size:16px}
+    .h-greet{font-size:12px}
+  }
   </style>
   </head>
   <body>
