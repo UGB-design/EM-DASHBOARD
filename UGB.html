@@ -52,12 +52,15 @@
   .ov-bar-col{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;height:100%;justify-content:flex-end}
   .ov-bar-val{font-size:11px;font-weight:700;color:#374151}
   .ov-bar{width:100%;max-width:34px;border-radius:6px 6px 3px 3px;transition:height .6s ease}
-  .ov-bar-name{font-size:10px;color:#8a8478;font-weight:600;text-align:center;line-height:1.3;max-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ov-bar-name{font-size:10px;color:#8a8478;font-weight:600;text-align:center;line-height:1.3;max-width:76px;white-space:normal;word-break:break-word}
   .ov-donut-wrap{display:flex;align-items:center;gap:22px}
   .ov-donut{width:160px;height:160px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;position:relative}
-    #udTaskDonut .ov-donut{width:120px;height:120px}
+   #udTaskDonut .ov-donut{width:120px;height:120px}
 #udTaskDonut .ov-donut-num{font-size:16px}
 #udTaskDonut .ov-donut-lbl{font-size:8px}
+#ovDonutWrap .ov-donut{width:120px;height:120px}
+#ovDonutWrap .ov-donut-num{font-size:16px}
+#ovDonutWrap .ov-donut-lbl{font-size:8px}
   .ov-donut::before{content:'';position:absolute;inset:16px;border-radius:50%;background:#fff}
   .ov-donut-center{position:relative;z-index:1;text-align:center}
   .ov-donut-num{font-size:20px;font-weight:800;color:#1a1a1a;line-height:1}
@@ -355,8 +358,10 @@
   }
   
   /* ── AUTH / DATE RANGE / USER CHIP ───────────────────────────── */
-  .auth-screen,.denied-screen{position:fixed;inset:0;background:linear-gradient(135deg,#eef2f9 0%,#eef4f6 28%,#eef1ea 58%,#e6ecf3 100%);display:flex;align-items:center;justify-content:center;z-index:9999}
-  .auth-box,.denied-box{background:#fff;border-radius:18px;padding:40px 44px;box-shadow:0 10px 40px rgba(30,41,59,.15);text-align:center;max-width:380px}
+  .auth-screen{position:fixed;inset:0;background:linear-gradient(135deg,rgba(11,20,55,.72) 0%,rgba(11,20,55,.5) 50%,rgba(11,20,55,.72) 100%),url('https://lh3.googleusercontent.com/d/1EtIeK1_FbUaPZc9fjsmdOzYjAFME2JtO=w1920') center/cover no-repeat;display:flex;align-items:center;justify-content:center;z-index:9999}
+.denied-screen{position:fixed;inset:0;background:linear-gradient(135deg,#eef2f9 0%,#eef4f6 28%,#eef1ea 58%,#e6ecf3 100%);display:flex;align-items:center;justify-content:center;z-index:9999}
+  .auth-box,.denied-box{background:#fff;border-radius:18px;padding:40px 44px;box-shadow:0 20px 60px rgba(0,0,0,.35);text-align:center;max-width:380px}
+.auth-box{background:rgba(255,255,255,.97);backdrop-filter:blur(6px)}
   .auth-title{font-size:20px;font-weight:700;margin-bottom:6px;color:#1a1a1a}
   .auth-sub{font-size:13px;color:#8a8478;margin-bottom:24px}
   .auth-btn-wrap{display:flex;justify-content:center;min-height:44px}
@@ -562,8 +567,8 @@
     <div class="sidebar" id="sidebarNav">
       <div class="sb-brand">
         <div class="sb-brand-row">
-          <div class="sb-brand-mark">
-          
+         <div class="sb-brand-mark">
+            <img src="https://lh3.googleusercontent.com/d/158_HBHOHewJ0wG2BY3ZiBdT_uD7eoDQX=w200" style="width:100%;height:100%;object-fit:contain;border-radius:10px" alt="CA Logo">
           </div>
           <div class="sb-brand-title">Umesh Bolmal<br>&amp; Associates</div>
         </div>
@@ -964,7 +969,7 @@
             <tbody id="scTableBody"><tr><td colspan="7"><div class="skel skel-line" style="width:100%;height:16px;margin:8px 0"></div><div class="skel skel-line" style="width:90%;height:16px;margin:8px 0"></div><div class="skel skel-line" style="width:95%;height:16px;margin:8px 0"></div><div class="skel skel-line" style="width:85%;height:16px;margin:8px 0"></div></td></tr></tbody>
           </table>
       </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px">
+ <div style="display:grid;grid-template-columns:0.75fr 1.6fr;gap:16px;margin-top:16px">
     <div class="ov-card">
       <div class="ov-card-top">
         <div class="ov-card-title">Task Chart</div>
@@ -1684,18 +1689,29 @@
    }).join('');
     populateUsersDesigFilter();
   }
-  function renderUsersDashboardPanels(data) {
-    // Task Summary donut (Completed / Pending / Week Shifted)
-   var em = data.emDashboard || {};
-    var t = em.totals || {};
-    var bd = em.breakdown || {};
-    var completed = (Number(bd.fmsDone)||0) + (Number(bd.clDone)||0) + (Number(bd.dlDone)||0);
-    if (!completed) completed = Number(t.totalActual) || 0;
-    var weekShifted = (data.delegationData || []).filter(function(r) {
-      return String(r.status || '').trim().toLowerCase() === 'week shifted';
-    }).length;
-    var totalPlan = Number(t.totalPlan) || 0;
-    var pending = Math.max(0, totalPlan - completed - weekShifted);
+function renderUsersDashboardPanels(data) {
+    // Task Summary donut — computed directly from the same raw arrays used
+    // by the FMS/Checklist/Delegation tabs, so numbers always match exactly.
+    var fmsPlan = 0, fmsActual = 0;
+    (data.fmsGroups || []).forEach(function(g) {
+      (g.steps || []).forEach(function(s) {
+        fmsPlan += Number(s.plan) || 0;
+        fmsActual += Number(s.actual) || 0;
+      });
+    });
+    var clRows = data.checklistData || [];
+    var clDone = clRows.filter(function(r){ return r.status === 'Done'; }).length;
+    var clPending = clRows.length - clDone;
+
+    var dlRows = data.delegationData || [];
+    var weekShifted = dlRows.filter(function(r){ return isWeekShifted(r); }).length;
+    var dlVisible = dlRows.filter(function(r){ return !isWeekShifted(r); });
+    var dlDone = dlVisible.filter(function(r){ return computeDelegationStatus(r) === 'Completed'; }).length;
+    var dlPending = dlVisible.length - dlDone;
+
+    var completed = fmsActual + clDone + dlDone;
+    var pending = fmsPlan - fmsActual + clPending + dlPending;
+    var totalPlan = fmsPlan + clRows.length + dlVisible.length;
     var total = totalPlan > 0 ? totalPlan : (completed + pending + weekShifted);
     var pct = total > 0 ? Math.round((completed / total) * 100) : 0;
     var deg1 = total > 0 ? (completed / total) * 360 : 0;
@@ -1834,16 +1850,17 @@
       var pa = parseFloat(String(a.performance||'0').replace('%',''))||0;
       var pb = parseFloat(String(b.performance||'0').replace('%',''))||0;
       return pb - pa;
-    }).slice(0,6);
+    });
     var el = document.getElementById(containerId);
     if (!el) return;
     if (!top.length) { el.innerHTML = '<div style="color:#bbb;font-size:12px;text-align:center;padding:20px">No score data</div>'; return; }
-    el.innerHTML = '<div class="ov-bars" style="height:130px">' + top.map(function(s){
+    var justify = top.length > 6 ? 'flex-start' : 'space-around';
+    el.innerHTML = '<div style="overflow-x:auto"><div class="ov-bars" style="height:150px;justify-content:' + justify + '">' + top.map(function(s){
       var pct = parseFloat(String(s.performance||'0').replace('%',''))||0;
       var h = Math.max(6, pct);
       var col = '#16a34a';
-      return '<div class="ov-bar-col"><div class="ov-bar-val">' + Math.round(pct) + '%</div><div class="ov-bar" style="height:' + h + '%;background:' + col + '"></div><div class="ov-bar-name">' + s.employee + '</div></div>';
-    }).join('') + '</div>';
+      return '<div class="ov-bar-col" style="flex:0 0 74px"><div class="ov-bar-val">' + Math.round(pct) + '%</div><div class="ov-bar" style="height:' + h + '%;background:' + col + '"></div><div class="ov-bar-name">' + s.employee + '</div></div>';
+    }).join('') + '</div></div>';
   }
   function expDaysOf(joiningDateStr) {
     var dm = parseFullDate(joiningDateStr);
@@ -1989,7 +2006,7 @@
           var t = it.years ? (' — turns ' + it.years) : '';
           return '<span style="display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid #fde8c8;border-radius:20px;padding:6px 14px;font-size:12.5px;font-weight:700;color:#92400e;margin:3px 6px 3px 0">🎂 <strong>' + it.name + '</strong>' + t + '</span>';
         }).join('');
-        html += '<div style="background:linear-gradient(135deg,#fffbeb 0%,#fff7e6 100%);border:1px solid #fbe7b8;border-radius:14px;padding:12px 16px;margin-bottom:12px"><div style="font-size:11px;font-weight:700;color:#92400e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">🎂 Birthday Today</div><div>' + bChips + '</div></div>';
+        html += '<div style="background:linear-gradient(135deg,#fffbeb 0%,#fff7e6 100%);border:1px solid #fbe7b8;border-radius:14px;padding:12px 16px;margin-bottom:12px"><div style="font-size:11px;font-weight:700;color:#92400e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">🎂 Birthday Today</div><div style="white-space:nowrap;overflow-x:auto;padding-bottom:2px">' + bChips + '</div></div>';
       }
   
       if (annivItems.length) {
@@ -1997,7 +2014,7 @@
           var t2 = it.years ? (' — ' + it.years + ' year' + (it.years === 1 ? '' : 's') + ' with the firm') : '';
           return '<span style="display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid #c7f0d8;border-radius:20px;padding:6px 14px;font-size:12.5px;font-weight:700;color:#166534;margin:3px 6px 3px 0">🎉 <strong>' + it.name + '</strong>' + t2 + '</span>';
         }).join('');
-        html += '<div style="background:linear-gradient(135deg,#f0fdf4 0%,#ecfdf5 100%);border:1px solid #bbf7d0;border-radius:14px;padding:12px 16px;margin-bottom:12px"><div style="font-size:11px;font-weight:700;color:#166534;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px"> Work Anniversary Today</div><div>' + aChips + '</div></div>';
+        html += '<div style="background:linear-gradient(135deg,#f0fdf4 0%,#ecfdf5 100%);border:1px solid #bbf7d0;border-radius:14px;padding:12px 16px;margin-bottom:12px"><div style="font-size:11px;font-weight:700;color:#166534;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px"> Work Anniversary Today</div><div style="white-space:nowrap;overflow-x:auto;padding-bottom:2px">' + aChips + '</div></div>';
       }
     }
     if (upcomingItems.length) {
@@ -2008,7 +2025,7 @@
         var when = it.days === 1 ? 'Tomorrow' : 'in ' + it.days + ' days';
         return '<span style="display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid #fde8c8;border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;color:#92400e;margin:3px 6px 3px 0">' + icon + ' <strong>' + it.name + '</strong> — ' + label + ' ' + when + '</span>';
       }).join('');
-      html += '<div style="background:linear-gradient(135deg,#fffbeb 0%,#fff7e6 100%);border:1px solid #fbe7b8;border-radius:14px;padding:12px 16px;margin-bottom:16px"><div style="font-size:11px;font-weight:700;color:#b45309;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">🎁 Upcoming Birthdays &amp; Work Anniversaries</div><div>' + chips2 + '</div></div>';
+      html += '<div style="background:linear-gradient(135deg,#fffbeb 0%,#fff7e6 100%);border:1px solid #fbe7b8;border-radius:14px;padding:12px 16px;margin-bottom:16px"><div style="font-size:11px;font-weight:700;color:#b45309;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">🎁 Upcoming Birthdays &amp; Work Anniversaries</div><div style="white-space:nowrap;overflow-x:auto;padding-bottom:2px">' + chips2 + '</div></div>';
     }
     host.innerHTML = html;
   }
