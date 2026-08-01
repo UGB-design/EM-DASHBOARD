@@ -227,9 +227,9 @@ tr:hover td{background:#fafbfc}
 <div id="g_id_onload"
   data-client_id="567925868040-kv22o4qhj5rmreiaka4odpth50v99ndf.apps.googleusercontent.com"
   data-context="signin" data-ux_mode="popup" data-callback="onGoogleToken"
-  data-auto_prompt="true" data-auto_select="true" data-itp_support="true">
+  data-auto_prompt="true" data-auto_select="true" data-itp_support="true"
+  data-use_fedcm_for_prompt="true">
 </div>
-
 <div id="dashboardWrap" style="display:none">
 <div class="app-shell">
 
@@ -946,11 +946,10 @@ setTimeout(function(){
   if(overlay&&overlay.style.display!=='none'){
     var w=document.getElementById('manualSigninWrap');if(w)w.classList.add('show');
     var msg=document.getElementById('authMsg');
-    if(msg&&!msg.dataset.updated){msg.textContent="Waiting for Google... if nothing happens, use the button above.";msg.dataset.updated='1';}
+    if(msg&&!msg.dataset.updated){msg.textContent="Auto sign-in didn't complete — please use the Google button above.";msg.dataset.updated='1';}
   }
-},6000);
+},2000);
 </script>
-
 <div id="pendingModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center">
   <div style="background:#fff;border-radius:14px;width:90%;max-width:620px;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
     <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e8eaed">
