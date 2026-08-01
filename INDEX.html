@@ -242,10 +242,14 @@ tr:hover td{background:#fafbfc}
       </div>
     </div>
     <nav class="sb-nav">
-      <button class="sb-item active" onclick="switchTab('summary',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
-        <span class="lbl">Summary</span>
-      </button>
+     <button class="sb-item active" onclick="switchTab('dashboard',this)">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+  <span class="lbl">Dashboard</span>
+</button>
+<button class="sb-item" onclick="switchTab('summary',this)">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+  <span class="lbl">Summary</span>
+</button>
       <button class="sb-item" onclick="switchTab('fms',this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
         <span class="lbl">FMS Steps</span>
@@ -327,8 +331,38 @@ tr:hover td{background:#fafbfc}
     </div>
 
     <div class="content">
+      <div class="tab-content active" id="tab-dashboard">
+  <div class="c5">
+    <div class="card">
+      <div class="cl">Today's Tasks</div>
+      <div class="cv blue" id="dashToday">&mdash;</div>
+      <div class="cs">Plan for this period</div>
+    </div>
+    <div class="card">
+      <div class="cl">FMS</div>
+      <div class="cv green" id="dashFms">&mdash;</div>
+      <div class="cs">View details &rarr;</div>
+    </div>
+    <div class="card">
+      <div class="cl">Checklist</div>
+      <div class="cv orange" id="dashChecklist">&mdash;</div>
+      <div class="cs">View details &rarr;</div>
+    </div>
+    <div class="card">
+      <div class="cl">Delegation</div>
+      <div class="cv" style="color:#7c3aed" id="dashDelegation">&mdash;</div>
+      <div class="cs">View details &rarr;</div>
+    </div>
+    <div class="card" style="display:flex;align-items:center;justify-content:center;text-align:center">
+      <div>
+        <div class="cv green" id="dashScore" style="font-size:30px;margin-bottom:2px">&mdash;</div>
+        <div class="cs">This Period</div>
+      </div>
+    </div>
+  </div>
+</div>
 
-      <div class="tab-content active" id="tab-summary">
+     <div class="tab-content" id="tab-summary">
         <div id="ldiv" class="loading"><div class="spin"></div> Loading Summary...</div>
         <div id="mdiv" style="display:none">
           <div class="c6">
@@ -690,7 +724,13 @@ function renderAll(data){
   var totalPlan=Math.max(0,(t.totalPlan||0)-totalWeekShiftedGlobal), totalActual=t.totalActual||0;
 
   var ovNum=totalPlan>0?(totalActual/totalPlan*100):0;
-
+  document.getElementById('dashToday').textContent=totalPlan;
+document.getElementById('dashFms').textContent=t.fmsPlan||0;
+document.getElementById('dashChecklist').textContent=t.checklistPlan||0;
+document.getElementById('dashDelegation').textContent=dlPlanAdj;
+document.getElementById('dashScore').textContent=ovNum.toFixed(0)+'%';
+document.getElementById('cTP').textContent=totalPlan;
+document.getElementById('cTA').textContent=totalActual;
   document.getElementById('cTP').textContent=totalPlan;
   document.getElementById('cTA').textContent=totalActual;
   document.getElementById('cTAs').textContent=Math.round(totalPlan>0?(totalActual/totalPlan)*100:0)+'% complete';
