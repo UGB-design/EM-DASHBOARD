@@ -306,28 +306,6 @@ tr:hover td{background:#fafbfc}
           </div>
         </div>
       </div>
-      <div class="my-snapshot" id="mySnapshot" style="display:none">
-        <div class="snap-item snap-today">
-          <div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M8 2v4M16 2v4M3 10h18"></path></svg></div>
-          <div class="snap-text"><div class="snap-val" id="snapToday">&mdash;</div><div class="snap-lbl">Today's Tasks</div></div>
-        </div>
-        <div class="snap-item snap-fms">
-          <div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></div>
-          <div class="snap-text"><div class="snap-val" id="snapFms">&mdash;</div><div class="snap-lbl">FMS</div></div>
-        </div>
-        <div class="snap-item snap-cl">
-          <div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 12l2 2 4-4"></path></svg></div>
-          <div class="snap-text"><div class="snap-val" id="snapChecklist">&mdash;</div><div class="snap-lbl">Checklist</div></div>
-        </div>
-        <div class="snap-item snap-dl">
-          <div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
-          <div class="snap-text"><div class="snap-val" id="snapDelegation">&mdash;</div><div class="snap-lbl">Delegation</div></div>
-        </div>
-        <div class="snap-item snap-score" id="snapScoreItem">
-          <div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M18 17V9"></path><path d="M13 17V5"></path><path d="M8 17v-3"></path></svg></div>
-          <div class="snap-text"><div class="snap-val" id="snapScore">&mdash;</div><div class="snap-lbl">My Score</div></div>
-        </div>
-      </div>
     </div>
 
     <div class="content">
@@ -511,21 +489,6 @@ function onGoogleToken(response) {
   showUserChip(name,picture);
   loadDashboard();
 }
-
-function showUserChip(name,picture) {
-  var chip=document.getElementById('userChip');
-  var img=document.getElementById('userAvatar');
-  var span=document.getElementById('userName');
-  if(picture){img.src=picture;img.style.display='block';}else{img.style.display='none';}
-  span.textContent=name.split(' ')[0];
-  chip.style.display='flex';
-  var greetEl=document.getElementById('tbGreetText');
-  if(greetEl){
-    greetEl.textContent=greetingWord()+', '+(name?name.split(' ')[0]:'')+'..! ';
-  }
-  loadMySnapshot();
-}
-
 function showAuthErr(msg) {
   var msgEl=document.getElementById('authMsg'),errEl=document.getElementById('authErr');
   var spinEl=document.querySelector('#authOverlay .spin');
@@ -553,51 +516,6 @@ function csvParseLine(line) {
   result.push(cur);
   return result;
 }
-
-function setSnapScoreColor(pct) {
-  var el = document.getElementById('snapScoreItem');
-  if (!el) return;
-  el.classList.remove('good', 'mid');
-  if (pct >= 70) el.classList.add('good');
-  else if (pct >= 50) el.classList.add('mid');
-}
-
-function loadMySnapshot() {
-  if (!SESSION.email) return;
-  var url = "https://docs.google.com/spreadsheets/d/" + SNAPSHOT_SHEET_ID +
-    "/gviz/tq?tqx=out:csv&sheet=" + encodeURIComponent(SNAPSHOT_SHEET_NAME) + "&cb=" + Date.now();
-  fetch(url)
-    .then(function (r) { if (!r.ok) throw new Error('snapshot fetch failed'); return r.text(); })
-    .then(function (csv) {
-      var lines = csv.split(/\r?\n/).filter(function (l) { return l.trim() !== ''; });
-      if (!lines.length) return;
-      var rows = lines.map(csvParseLine);
-      var header = rows[0].map(function (h) { return h.replace(/^"|"$/g, '').trim().toLowerCase(); });
-      var emailIdx = header.findIndex(function (h) { return h.indexOf('email') > -1; });
-      var todayIdx = header.findIndex(function (h) { return h.indexOf('today') > -1; });
-      var fmsIdx = header.findIndex(function (h) { return h === 'fms'; });
-      var clIdx = header.findIndex(function (h) { return h.indexOf('checklist') > -1; });
-      var dlIdx = header.findIndex(function (h) { return h.indexOf('delegation') > -1; });
-      if (emailIdx === -1) return;
-      var myEmail = (SESSION.email || '').trim().toLowerCase();
-      var match = null;
-      for (var i = 1; i < rows.length; i++) {
-        var cellEmail = (rows[i][emailIdx] || '').replace(/^"|"$/g, '').trim().toLowerCase();
-        if (cellEmail === myEmail) { match = rows[i]; break; }
-      }
-      if (!match) return;
-      var clean = function (v) { return (v || '0').replace(/^"|"$/g, '').trim() || '0'; };
-      document.getElementById('snapToday').textContent = clean(match[todayIdx]);
-      document.getElementById('snapFms').textContent = fmsIdx > -1 ? clean(match[fmsIdx]) : '0';
-      document.getElementById('snapChecklist').textContent = clIdx > -1 ? clean(match[clIdx]) : '0';
-      document.getElementById('snapDelegation').textContent = dlIdx > -1 ? clean(match[dlIdx]) : '0';
-      document.getElementById('mySnapshot').style.display = 'flex';
-    })
-    .catch(function (err) {
-      console.warn('My snapshot could not be loaded:', err);
-    });
-}
-
 function doLogout() {
   SESSION={email:'',doerName:'',picture:'',name:''};
   sessionStorage.clear();
