@@ -712,7 +712,7 @@
         </div>
       </div>
       <div class="tb-right" id="headerControls">
-        <a class="teams-btn" href="https://teams.microsoft.com" target="_blank" rel="noopener" title="Open Microsoft Teams">
+        <button class="teams-btn" onclick="switchTab('teams', document.querySelector('[data-tab=teams]'))" title="Open Microsoft Teams">
           <svg width="20" height="20" viewBox="0 0 2228.833 2073.333" xmlns="http://www.w3.org/2000/svg">
             <path fill="#5059C9" d="M1554.637,777.5h575.713c54.391,0,98.483,44.092,98.483,98.483v524.398c0,199.901-162.051,361.952-361.952,361.952h-1.711c-199.901,0.028-361.976-161.999-362.004-361.9c0-0.018,0-0.035,0-0.053V828.971C1503.167,800.618,1526.285,777.5,1554.637,777.5L1554.637,777.5z"/>
             <circle fill="#5059C9" cx="1943.75" cy="440.583" r="233.25"/>
@@ -798,7 +798,7 @@
               <div class="skel skel-line" style="width:85%"></div>
             </div>
           </div>
-          <a class="snap-link" style="display:inline-block;margin-top:auto;padding-top:12px" onclick="switchTab('fms', document.querySelector('[data-tab=fms]'))">View Full Report →</a>
+          <a class="snap-link" style="display:inline-block;margin-top:auto;padding-top:12px" onclick="showFullReportModal()">View Full Report →</a>
         </div>
     <div class="ud-panel">
           <div class="ud-panel-title" style="display:flex;justify-content:space-between;align-items:center">
@@ -3102,6 +3102,27 @@ function renderUsersDashboardPanels(data) {
   document.getElementById('usersLoading').innerHTML = skeletonUsersHTML(9);
   document.getElementById('fmsCardsContainer').innerHTML = skeletonTableHTML(6);
   initGoogleAuth();
+    function showFullReportModal(){
+  var rows = (globalRawData && globalRawData.scoresData) || [];
+  var filtered = rows.filter(function(r){ return String(r.employee||'').trim() && !isScoreRowAllZero(r); });
+  var sorted = filtered.slice().sort(function(a,b){
+    var pa = parseFloat(String(a.performance||'0').replace('%',''))||0;
+    var pb = parseFloat(String(b.performance||'0').replace('%',''))||0;
+    return pb - pa;
+  });
+  document.getElementById('fullReportBody').innerHTML = sorted.map(function(r,i){
+    return '<tr>'+
+      '<td style="text-align:center">'+(i+1)+'</td>'+
+      '<td><div class="dc"><div class="av av'+(i%16)+'">'+ini(r.employee)+'</div><strong>'+r.employee+'</strong></div></td>'+
+      '<td style="text-align:center">'+nbB(r.totalPlan)+'</td>'+
+      '<td style="text-align:center">'+nbG(r.totalCompleted)+'</td>'+
+      '<td style="text-align:center">'+nbG(r.onTimeCompleted)+'</td>'+
+      '<td style="text-align:center">'+pctCell(r.workNotDoneOnTimePct)+'</td>'+
+      '<td style="text-align:center">'+workNotDoneCell(r.workNotDonePct)+'</td></tr>';
+  }).join('') || '<tr><td colspan="7" style="text-align:center;color:#bbb;padding:30px">No score data</td></tr>';
+  document.getElementById('fullReportModal').style.display='flex';
+}
+function closeFullReportModal(){ document.getElementById('fullReportModal').style.display='none'; }
   </script>
   
   <!-- PENDING TASKS MODAL -->
@@ -3278,6 +3299,31 @@ function renderUsersDashboardPanels(data) {
       <div class="udm-body" id="leaveBalBody"></div>
     </div>
   </div>
+    <div id="fullReportModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center" onclick="if(event.target===this)closeFullReportModal()">
+  <div style="background:#fff;border-radius:14px;width:94%;max-width:1000px;max-height:84vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e8eaed">
+      <div style="font-size:15px;font-weight:700;color:#1a1a1a">Employee Score Board — Full Report</div>
+      <button onclick="closeFullReportModal()" style="background:#f3f4f6;border:none;border-radius:8px;width:30px;height:30px;font-size:16px;cursor:pointer;color:#555">✕</button>
+    </div>
+    <div style="overflow-y:auto">
+      <table style="width:100%;border-collapse:collapse">
+        <thead>
+          <tr>
+            <th style="text-align:center">#</th><th>Employee</th>
+            <th style="text-align:center">Total Plan</th><th style="text-align:center">Total Completed</th>
+            <th style="text-align:center">On Time Completed</th>
+            <th style="text-align:center">Work Not Done On Time %</th>
+            <th style="text-align:center">Work Not Done %</th>
+          </tr>
+        </thead>
+        <tbody id="fullReportBody"></tbody>
+      </table>
+    </div>
+    <div style="padding:12px 20px;border-top:1px solid #e8eaed;text-align:right">
+      <button onclick="closeFullReportModal()" style="background:#1d4ed8;color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:13px;font-weight:600;cursor:pointer">Close</button>
+    </div>
+  </div>
+</div>
     <!-- ATTENDANCE TABLE MODAL -->
 <div id="attTableModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center" onclick="if(event.target===this)closeAttendanceTableModal()">
     <div style="background:#fff;border-radius:14px;width:94%;max-width:1020px;max-height:84vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
