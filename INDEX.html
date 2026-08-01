@@ -22,24 +22,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 /* ===== APP SHELL / SIDEBAR ===== */
 .app-shell{display:flex;min-height:100vh}
-.sidebar{width:230px;flex-shrink:0;background:#fff;border-right:1px solid #e8eaed;display:flex;flex-direction:column;padding:22px 14px;position:sticky;top:0;height:100vh}
-.sb-brand{display:flex;align-items:center;gap:10px;padding:0 8px 20px;border-bottom:1px solid #f0f0f0;margin-bottom:16px}
+.sidebar{width:230px;flex-shrink:0;background:#101a2e;border-right:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;padding:22px 14px;position:sticky;top:0;height:100vh}
+.sb-brand{display:flex;align-items:center;gap:10px;padding:0 8px 20px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:16px}
 .sb-brand-badge{width:42px;height:42px;border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
 .sb-brand-badge img{width:100%;height:100%;object-fit:contain}
 .sb-brand-text{line-height:1.25;min-width:0}
-.sb-brand-title{font-size:12.5px;font-weight:700;color:#1a1a1a;white-space:normal;overflow:hidden;text-overflow:ellipsis;letter-spacing:.01em}
-.sb-brand-sub{font-size:10.5px;color:#9aa0ac;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-brand-title{font-size:12.5px;font-weight:700;color:#ffffff;white-space:normal;overflow:hidden;text-overflow:ellipsis;letter-spacing:.01em}
+.sb-brand-sub{font-size:10.5px;color:#7b8bb0;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sb-nav{flex:1;display:flex;flex-direction:column;gap:3px;overflow-y:auto}
-.sb-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:9px;border:none;background:transparent;font-size:13px;font-weight:600;color:#666;cursor:pointer;text-align:left;width:100%;transition:all .15s}
+.sb-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:9px;border:none;background:transparent;font-size:13px;font-weight:600;color:#a8b3c7;cursor:pointer;text-align:left;width:100%;transition:all .15s}
 .sb-item svg{flex-shrink:0;width:17px;height:17px}
 .sb-item span.lbl{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sb-item.active{background:#2563eb;color:#fff;box-shadow:0 2px 6px rgba(37,99,235,.25)}
-.sb-item:hover:not(.active){background:#f3f4f6;color:#1a1a1a}
+.sb-item:hover:not(.active){background:rgba(255,255,255,.07);color:#ffffff}
 .sb-badge{background:#dc2626;color:#fff;font-size:10px;font-weight:700;border-radius:20px;padding:2px 7px;min-width:18px;text-align:center;line-height:1.4}
 .sb-badge.zero{display:none}
 .sb-item.active .sb-badge{background:rgba(255,255,255,.28)}
-.sb-logout{margin-top:10px;background:#f3f4f6;border:1px solid #e8eaed;border-radius:9px;padding:10px 12px;font-size:12px;font-weight:700;cursor:pointer;color:#555;display:flex;align-items:center;gap:9px}
-.sb-logout:hover{background:#ececec}
+.sb-logout{margin-top:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:10px 12px;font-size:12px;font-weight:700;cursor:pointer;color:#cbd5e1;display:flex;align-items:center;gap:9px}
+.sb-logout:hover{background:rgba(255,255,255,.12)}
 
 .main-area{flex:1;min-width:0;display:flex;flex-direction:column}
 
