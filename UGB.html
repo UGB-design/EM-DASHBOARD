@@ -359,9 +359,9 @@
   }
   
   /* ── AUTH / DATE RANGE / USER CHIP ───────────────────────────── */
-.auth-screen{position:fixed;inset:0;background:linear-gradient(135deg,rgba(11,20,55,.42) 0%,rgba(11,20,55,.22) 50%,rgba(11,20,55,.42) 100%),url('https://lh3.googleusercontent.com/d/1EtIeK1_FbUaPZc9fjsmdOzYjAFME2JtO=w1920') center/cover no-repeat;display:flex;align-items:center;justify-content:center;z-index:9999}
+.auth-screen{position:fixed;inset:0;background:linear-gradient(135deg,rgba(11,20,55,.55) 0%,rgba(11,20,55,.35) 50%,rgba(11,20,55,.55) 100%),url('https://lh3.googleusercontent.com/d/1EtIeK1_FbUaPZc9fjsmdOzYjAFME2JtO=w1920') center/cover no-repeat;display:flex;align-items:center;justify-content:center;z-index:9999}
 .denied-screen{position:fixed;inset:0;background:linear-gradient(135deg,#eef2f9 0%,#eef4f6 28%,#eef1ea 58%,#e6ecf3 100%);display:flex;align-items:center;justify-content:center;z-index:9999}
-  .auth-box,.denied-box{background:#fff;border-radius:18px;padding:40px 44px;box-shadow:0 20px 60px rgba(0,0,0,.35);text-align:center;max-width:380px}
+  .auth-box,.denied-box{background:#fff;border-radius:22px;padding:44px 48px;box-shadow:0 25px 70px rgba(0,0,0,.4);text-align:center;max-width:400px}
 .auth-box{background:rgba(255,255,255,.97);backdrop-filter:blur(6px)}
   .auth-title{font-size:20px;font-weight:700;margin-bottom:6px;color:#1a1a1a}
   .auth-sub{font-size:13px;color:#8a8478;margin-bottom:24px}
@@ -577,7 +577,9 @@
   <!-- SIGN-IN GATE -->
   <div class="auth-screen" id="authScreen">
     <div class="auth-box">
+      <img src="https://lh3.googleusercontent.com/d/158_HBHOHewJ0wG2BY3ZiBdT_uD7eoDQX=w200" style="width:56px;height:56px;object-fit:contain;margin-bottom:14px" alt="CA Logo">
       <div class="auth-title">UMESH BOLMAL & ASSOCIATES</div>
+      <div style="font-size:11px;font-weight:700;color:#2563eb;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px">Chartered Accountants</div>
       <div class="auth-sub">Sign in with your company Google account to continue</div>
       <div class="auth-btn-wrap" id="googleSignInBtn"></div>
       <div class="auth-loading" id="authLoadingTxt">Verifying access…</div>
