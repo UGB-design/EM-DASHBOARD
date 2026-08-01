@@ -54,7 +54,7 @@
   .ov-bar-val{font-size:11px;font-weight:700;color:#374151}
  .ov-bar{width:100%;max-width:48px;border-radius:6px 6px 3px 3px;transition:height .6s ease}
   .ov-bar-name{font-size:10px;color:#8a8478;font-weight:600;text-align:center;line-height:1.3;max-width:76px;white-space:normal;word-break:break-word}
-  .ov-donut-wrap{display:flex;align-items:center;gap:22px}
+  .ov-donut-wrap{display:flex;align-items:center;gap:22px;flex:1}
   .ov-donut{width:160px;height:160px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;position:relative}
    #udTaskDonut .ov-donut{width:120px;height:120px}
 #udTaskDonut .ov-donut-num{font-size:16px}
@@ -466,9 +466,9 @@
   .ucc-ring{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:400}
   .ucc-viewprofile{display:block;text-align:center;margin-top:12px;font-size:11.5px;font-weight:700;color:#2563eb;cursor:pointer}
   .ucc-viewprofile:hover{text-decoration:underline}
-  .ud-bottom-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:22px;align-items:start}
+  .ud-bottom-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:22px;align-items:stretch}
   @media(max-width:1100px){.ud-bottom-grid{grid-template-columns:repeat(2,1fr)}}
- .ud-panel{background:#fff;border-radius:16px;border:1px solid #e2e8f0;box-shadow:0 2px 10px rgba(30,41,59,.05);padding:18px 20px 16px;display:flex;flex-direction:column}
+ .ud-panel{background:#fff;border-radius:16px;border:1px solid #e2e8f0;box-shadow:0 2px 10px rgba(30,41,59,.05);padding:18px 20px 16px;height:100%;display:flex;flex-direction:column;overflow:hidden}
 #udAttendanceChart{max-height:100px;overflow:hidden}
  #udLeaveSummary{max-height:180px;overflow-y:auto}
  #upcomingHolidayNotice{max-height:78px}
@@ -762,7 +762,7 @@
       </div>
     </div>
       <div class="ud-bottom-grid">
-        <div class="ud-panel">
+       <div class="ud-panel">
           <div class="ud-panel-title">Task Summary</div>
           <div class="ov-donut-wrap" id="udTaskDonut">
             <div class="skel" style="width:120px;height:120px;border-radius:50%;flex-shrink:0"></div>
@@ -772,6 +772,7 @@
               <div class="skel skel-line" style="width:85%"></div>
             </div>
           </div>
+          <a class="snap-link" style="display:inline-block;margin-top:auto;padding-top:12px" onclick="switchTab('fms', document.querySelector('[data-tab=fms]'))">View Full Report →</a>
         </div>
     <div class="ud-panel">
           <div class="ud-panel-title" style="display:flex;justify-content:space-between;align-items:center">
@@ -779,6 +780,7 @@
             <select id="attPeriodSel" class="users-filter-sel" style="font-size:11px;padding:5px 10px" onchange="changeAttendancePeriod(this.value)">
     <option value="week">This Week</option>
     <option value="month" selected>This Month</option>
+    <option value="lastmonth">Last Month</option>
     <option value="year">This Year</option>
   </select>
           </div>
