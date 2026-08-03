@@ -712,6 +712,9 @@
         </div>
       </div>
       <div class="tb-right" id="headerControls">
+        <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleDarkMode()" title="Toggle dark mode">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+</button>
         <button class="teams-btn" onclick="window.open('https://teams.microsoft.com', '_blank')"title="Open Microsoft Teams">
           <svg width="20" height="20" viewBox="0 0 2228.833 2073.333" xmlns="http://www.w3.org/2000/svg">
             <path fill="#5059C9" d="M1554.637,777.5h575.713c54.391,0,98.483,44.092,98.483,98.483v524.398c0,199.901-162.051,361.952-361.952,361.952h-1.711c-199.901,0.028-361.976-161.999-362.004-361.9c0-0.018,0-0.035,0-0.053V828.971C1503.167,800.618,1526.285,777.5,1554.637,777.5L1554.637,777.5z"/>
@@ -724,11 +727,12 @@
         <button class="add-delegation-btn" onclick="openAddDelegation()" title="Add a new delegation task">
           <span class="adb-plus">+</span> Delegation
         </button>
-        <span class="wk-label">From</span>
-        <input type="date" class="wk-sel dt-input" id="dtFrom">
-        <span class="wk-label">To</span>
-        <input type="date" class="wk-sel dt-input" id="dtTo">
-        <button class="apply-btn" id="applyBtn" onclick="applyDateRange()">Apply</button>
+        <div class="daterange-combo">
+  <input type="date" class="dr-input" id="dtFrom">
+  <span class="dr-sep">→</span>
+  <input type="date" class="dr-input" id="dtTo">
+  <button class="dr-apply" id="applyBtn" onclick="applyDateRange()">Apply</button>
+</div>
         <span class="saving" id="savingTxt"> Please Wait...</span>
       <button class="refresh-btn" id="refreshBtn" onclick="refreshDashboard()" title="Refresh data">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
@@ -764,7 +768,7 @@
       </div>
     </div>
  <div class="my-snapshot" style="margin-top:16px;margin-bottom:16px;align-items:stretch">
-      <div class="snap-item" style="border:1px solid #fecaca;flex:0.8 1 0;min-width:180px">
+      <div class="snap-item" id="pendingApprovalCard" style="border:1px solid #fecaca;flex:0.8 1 0;min-width:180px;position:relative">
         <div class="snap-icon" style="background:#fef2f2;color:#dc2626">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
         </div>
@@ -1615,6 +1619,17 @@ function loadUserCache(email) {
   function computeDelegationStatus(r) {
     return normalizeStatus(r.status) === 'completed' ? 'Completed' : 'Pending';
   }
+    function trendHTML(current, prevKey) {
+  var prev = Number(localStorage.getItem(prevKey)) || 0;
+  localStorage.setItem(prevKey, current);
+  if (prev === 0) return '';
+  var diff = current - prev;
+  var pct = Math.round((diff / prev) * 100);
+  if (diff === 0) return '<span class="snap-trend flat">— 0%</span>';
+  var arrow = diff > 0 ? '↑' : '↓';
+  var cls = diff > 0 ? 'up' : 'down';
+  return '<span class="snap-trend ' + cls + '">' + arrow + ' ' + Math.abs(pct) + '%</span>';
+}
   function renderTodayStatBadges(data) {
     try {
       var ts = (data && data.todayStats) ? data.todayStats : { tasks: 0, fms: 0, checklist: 0, delegation: 0 };
@@ -1627,6 +1642,10 @@ function loadUserCache(email) {
         if (el) el.textContent = val;
       };
       setTxt('badgeTodayTasks', ts.tasks || 0);
+      document.getElementById('badgeTodayTasks').insertAdjacentHTML('afterend', trendHTML(ts.tasks||0,'prev_tasks'));
+      document.getElementById('badgeTodayFms').insertAdjacentHTML('afterend', trendHTML(ts.fms||0,'prev_fms'));
+      document.getElementById('badgeTodayChecklist').insertAdjacentHTML('afterend', trendHTML(ts.checklist||0,'prev_checklist'));
+      document.getElementById('badgeTodayDelegation').insertAdjacentHTML('afterend', trendHTML(ts.delegation||0,'prev_delegation'));
       setTxt('badgeTodayFms', ts.fms || 0);
       setTxt('badgeTodayChecklist', ts.checklist || 0);
     setTxt('badgeTodayDelegation', ts.delegation || 0);
@@ -1869,9 +1888,31 @@ function renderUsersDashboardPanels(data) {
         '<div class="ud-att-item"><div class="ud-att-val" style="color:#f59e0b">' + att.latePct + '%</div><div class="ud-att-lbl">Late</div></div>' +
         '<div class="ud-att-item"><div class="ud-att-val" style="color:#dc2626">' + att.absentPct + '%</div><div class="ud-att-lbl">Absent</div></div>';
     }
-    var chartEl = document.getElementById('udAttendanceChart');
-    if (chartEl) {
-      var trend = att.trend || [];
+  var chartEl = document.getElementById('udAttendanceChart');
+if (chartEl) {
+  var trend = att.trend || [];
+  if (!trend.length) {
+    chartEl.innerHTML = '';
+  } else {
+    var w = 280, h = 100, pad = 6;
+    var stepX = trend.length > 1 ? (w - pad*2) / (trend.length - 1) : 0;
+    var pts = trend.map(function(pt, i) {
+      var x = pad + i * stepX;
+      var y = h - pad - ((pt.pct/100) * (h - pad*2));
+      return x + ',' + y;
+    }).join(' ');
+    var areaPts = pad + ',' + (h-pad) + ' ' + pts + ' ' + (w-pad) + ',' + (h-pad);
+    var labelsHTML = '<div style="display:flex;justify-content:space-between;margin-top:2px">' +
+      trend.map(function(pt) {
+        return '<span style="font-size:9px;color:#9aa0ac;font-weight:600">' + (pt.label || pt.date || '') + '</span>';
+      }).join('') + '</div>';
+    chartEl.innerHTML =
+      '<svg viewBox="0 0 ' + w + ' ' + h + '" style="width:100%;height:70px">' +
+        '<polygon points="' + areaPts + '" fill="#3b82f622"></polygon>' +
+        '<polyline points="' + pts + '" fill="none" stroke="#3b82f6" stroke-width="2"></polyline>' +
+      '</svg>' + labelsHTML;
+  }
+}
       if (!trend.length) {
         chartEl.innerHTML = '';
       } else {
@@ -1933,11 +1974,14 @@ function renderUsersDashboardPanels(data) {
       }
     }
   }
-   function renderPendingApprovalsAndHolidays(data) {
-    var pa = data.pendingApprovals || { count: 0, rows: [] };
-    var badge = document.getElementById('badgePendingApprovals');
-    if (badge) badge.textContent = pa.count || 0;
-    window._pendingApprovalsRows = pa.rows || [];
+  function renderPendingApprovalsAndHolidays(data) {
+  var pa = data.pendingApprovals || { count: 0, rows: [] };
+  var badge = document.getElementById('badgePendingApprovals');
+  if (badge) badge.textContent = pa.count || 0;
+  var card = document.getElementById('pendingApprovalCard');
+  if (card) card.classList.toggle('has-pending', (pa.count || 0) > 0);
+  window._pendingApprovalsRows = pa.rows || [];
+  // ... baaki code same rahega
 
     var uh = data.upcomingHolidays || { label: '', rows: [] };
     var lblEl = document.getElementById('upcomingHolidayLbl');
@@ -3082,6 +3126,16 @@ function initialLoad(savedFrom, savedTo) {
     var names = Array.from(new Set(rows.map(function(r){ return r.name; }))).sort();
     sel.innerHTML = '<option value="All">All Employees</option>' + names.map(function(n){ return '<option value="' + n + '">' + n + '</option>'; }).join('');
   }
+    function toggleDarkMode() {
+  document.body.classList.toggle('dark-mode');
+  try { localStorage.setItem('emdash_darkmode', document.body.classList.contains('dark-mode') ? '1' : '0'); } catch(e) {}
+}
+(function initDarkMode() {
+  try {
+    if (localStorage.getItem('emdash_darkmode') === '1') document.body.classList.add('dark-mode');
+  } catch(e) {}
+})();
+    
   function populateAttendanceMonthFilter(rows) {
     var sel = document.getElementById('attTableMonthFilter');
     var months = Array.from(new Set(rows.map(function(r){ return r.month; }).filter(Boolean)));
@@ -3301,7 +3355,7 @@ function closeFullReportModal(){ document.getElementById('fullReportModal').styl
     }).join('');
     var modal = document.getElementById('pendingModal');
     modal.style.display = 'flex';
-  }
+  }  
   function closePendingModal() {
     document.getElementById('pendingModal').style.display = 'none';
   }
