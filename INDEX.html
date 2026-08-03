@@ -703,6 +703,7 @@ function applyCustomDateRange(){
 
 /* ── NEW: Dashboard tab panels (Task Summary donut / Attendance / Leave / Holidays) ── */
 function renderDashboardPanels(data){
+  currentAttendanceDetail = data.attendanceDetail || [];
   var em = data.emDashboard || {};
   var t = em.totals || {};
   var ts = data.todayStats || { tasks:0, fms:0, checklist:0, delegation:0 };
@@ -830,8 +831,8 @@ function renderAll(data){
     }).join('');
   }
 
- renderUsersDashboardPanels(data);
-  loadAttendancePeriod();
+renderUsersDashboardPanels(data);
+  renderDashboardPanels(data);
   renderFmsByProcess(data.fmsByProcess||[]);
   renderClByDoer(data.checklistByDoer||[]);
   renderMyScore(data.myScore,data.debugEmail,data.debugDoerName);
@@ -1363,7 +1364,7 @@ function openLeaveModal(){
   var panel = document.getElementById('udAttendanceRow');
   if (sel) sel.disabled = true;
   if (panel) panel.style.opacity = '0.4';
-  fetch(API + '?action=getAttendance&attPeriod=' + period + sessionParams() + '&cb=' + Date.now())
+ fetch(API + '?action=getAttendance&period=' + period + sessionParams() + '&cb=' + Date.now())
     .then(function(r){return r.json();})
     .then(function(data){
       if (!globalRawData) globalRawData = {};
