@@ -379,31 +379,36 @@ tr:hover td{background:#fafbfc}
         </div>
         
       <div class="ud-bottom-grid">
-          <div class="ud-panel">
-            <div class="ud-panel-title">Task Summary</div>
-            <div class="ov-donut-wrap" id="udTaskDonut"><div class="ov-empty">Loading…</div></div>
-            <a class="snap-link" style="margin-top:10px;display:inline-block" onclick="openTaskSummaryModal()">View Full Report →</a>
-          </div>
-          <div class="ud-panel">
-            <div class="ud-panel-title" style="display:flex;justify-content:space-between;align-items:center">
-              <span>Attendance Overview</span>
-              <select id="attPeriodSel" onchange="loadAttendancePeriod()" style="font-size:11px;border:1px solid #d1d5db;border-radius:6px;padding:4px 8px;color:#374151">
-                <option value="thisMonth">This Month</option>
-                <option value="lastMonth">Last Month</option>
-                <option value="thisYear">This Year</option>
-                <option value="lastYear">Last Year</option>
-              </select>
-            </div>
-            <div class="ud-att-row" id="udAttendanceRow"></div>
-            <div id="udAttendanceChart" style="margin-top:14px"></div>
-            <a class="snap-link" style="margin-top:10px;display:inline-block" onclick="openAttendanceModal()">View Attendance →</a>
-          </div>
-          <div class="ud-panel">
-            <div class="ud-panel-title">Leave Summary</div>
-            <div id="udLeaveSummary"><div style="font-size:11.5px;color:#c7c2b8">Loading…</div></div>
-            <a class="snap-link" style="margin-top:10px;display:inline-block" onclick="openLeaveModal()">View Leave Details →</a>
-          </div>
-        </div>
+  <div class="ud-panel">
+    <div class="ud-panel-title">Task Summary</div>
+    <div class="ov-donut-wrap" id="udTaskDonut"><div class="ov-empty">Loading…</div></div>
+    <a class="snap-link" style="margin-top:auto;padding-top:12px;display:inline-block" onclick="showFullReportModal()">View Full Report →</a>
+  </div>
+  <div class="ud-panel">
+    <div class="ud-panel-title" style="display:flex;justify-content:space-between;align-items:center">
+      <span>Attendance Overview</span>
+      <select id="attPeriodSel" class="users-filter-sel" style="font-size:11px;padding:5px 10px" onchange="changeAttendancePeriod(this.value)">
+        <option value="week">This Week</option>
+        <option value="month" selected>This Month</option>
+        <option value="lastmonth">Last Month</option>
+        <option value="year">This Year</option>
+      </select>
+    </div>
+    <div class="ud-att-row" id="udAttendanceRow"></div>
+    <div id="udAttendanceChart" style="margin-top:14px"></div>
+    <a class="snap-link" style="margin-top:auto;padding-top:12px;display:inline-block" onclick="showAttendanceTableModal()">View Attendance →</a>
+  </div>
+  <div class="ud-panel">
+    <div class="ud-panel-title" style="display:flex;justify-content:space-between;align-items:center">
+      <span>Leave Summary</span>
+      <select id="leaveYearSel" class="users-filter-sel" style="font-size:11px;padding:5px 10px" onchange="changeLeaveYear(this.value)">
+        <option value="2026-27">2026-27</option>
+        <option value="2027-28">2027-28</option>
+      </select>
+    </div>
+    <div id="udLeaveSummary"></div>
+  </div>
+</div>
       </div>
 
      <div class="tab-content" id="tab-summary">
@@ -825,7 +830,7 @@ function renderAll(data){
     }).join('');
   }
 
- renderDashboardPanels(data);
+ renderUsersDashboardPanels(data);
   loadAttendancePeriod();
   renderFmsByProcess(data.fmsByProcess||[]);
   renderClByDoer(data.checklistByDoer||[]);
@@ -1351,6 +1356,119 @@ function openLeaveModal(){
         '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6">'+f.value+'</td></tr>';
     }).join('');
   }
+  document.getElementById('pendingModal').style.display='flex';
+}
+  function changeAttendancePeriod(period) {
+  var sel = document.getElementById('attPeriodSel');
+  var panel = document.getElementById('udAttendanceRow');
+  if (sel) sel.disabled = true;
+  if (panel) panel.style.opacity = '0.4';
+  fetch(API + '?action=getAttendance&attPeriod=' + period + sessionParams() + '&cb=' + Date.now())
+    .then(function(r){return r.json();})
+    .then(function(data){
+      if (!globalRawData) globalRawData = {};
+      globalRawData.attendanceOverview = data.attendanceOverview;
+      renderUsersDashboardPanels(globalRawData);
+      if (sel) sel.disabled = false;
+      if (panel) panel.style.opacity = '1';
+    })
+    .catch(function(){ if (sel) sel.disabled = false; if (panel) panel.style.opacity = '1'; });
+}
+
+function changeLeaveYear(year) {
+  var sel = document.getElementById('leaveYearSel');
+  var panel = document.getElementById('udLeaveSummary');
+  if (sel) sel.disabled = true;
+  if (panel) panel.style.opacity = '0.4';
+  fetch(API + '?action=getLeave&leaveYear=' + year + sessionParams() + '&cb=' + Date.now())
+    .then(function(r){return r.json();})
+    .then(function(data){
+      if (!globalRawData) globalRawData = {};
+      globalRawData.leaveSummary = data.leaveSummary;
+      renderUsersDashboardPanels(globalRawData);
+      if (sel) sel.disabled = false;
+      if (panel) panel.style.opacity = '1';
+    })
+    .catch(function(){ if (sel) sel.disabled = false; if (panel) panel.style.opacity = '1'; });
+}
+
+function renderUsersDashboardPanels(data) {
+  var att = data.attendanceOverview || { presentPct:0, latePct:0, absentPct:0, trend:[] };
+  var attEl = document.getElementById('udAttendanceRow');
+  if (attEl) {
+    attEl.innerHTML =
+      '<div class="ud-att-item"><div class="ud-att-val" style="color:#16a34a">'+att.presentPct+'%</div><div class="ud-att-lbl">Present</div></div>'+
+      '<div class="ud-att-item"><div class="ud-att-val" style="color:#f59e0b">'+att.latePct+'%</div><div class="ud-att-lbl">Late</div></div>'+
+      '<div class="ud-att-item"><div class="ud-att-val" style="color:#dc2626">'+att.absentPct+'%</div><div class="ud-att-lbl">Absent</div></div>';
+  }
+  var chartEl = document.getElementById('udAttendanceChart');
+  if (chartEl) {
+    var trend = att.trend || [];
+    if (!trend.length) {
+      chartEl.innerHTML = '<div style="font-size:11px;color:#c7c2b8;text-align:center;padding:10px">No attendance data for this period</div>';
+    } else {
+      var w=280,h=100,pad=6,stepX=trend.length>1?(w-pad*2)/(trend.length-1):0;
+      var pts=trend.map(function(pt,i){var x=pad+i*stepX;var y=h-pad-((pt.pct/100)*(h-pad*2));return x+','+y;}).join(' ');
+      var areaPts = pad+','+(h-pad)+' '+pts+' '+(w-pad)+','+(h-pad);
+      chartEl.innerHTML = '<svg viewBox="0 0 '+w+' '+h+'" style="width:100%;height:70px">'+
+        '<polygon points="'+areaPts+'" fill="#3b82f622"></polygon>'+
+        '<polyline points="'+pts+'" fill="none" stroke="#3b82f6" stroke-width="2"></polyline></svg>';
+    }
+  }
+  var lv = data.leaveSummary || { totalEntitlement:0, used:0, balance:0, usedPct:0 };
+  var lvEl = document.getElementById('udLeaveSummary');
+  if (lvEl) {
+    lvEl.innerHTML =
+      '<div style="display:flex;gap:16px;align-items:center">'+
+        '<div style="flex:1">'+
+          '<div class="ud-leave-row"><span>Total Entitlement</span><b>'+lv.totalEntitlement+'</b></div>'+
+          '<div class="ud-leave-row"><span>Leave Used</span><b>'+lv.used+'</b></div>'+
+          '<div class="ud-leave-row"><span>Balance</span><b>'+lv.balance+'</b></div></div>'+
+        '<div class="ov-donut" style="width:88px;height:88px;flex-shrink:0;background:conic-gradient(#7c3aed '+((lv.usedPct||0)*3.6)+'deg,#eef1f6 0deg)">'+
+          '<div class="ov-donut-center"><div class="ov-donut-num" style="font-size:15px">'+(lv.usedPct||0)+'%</div><div class="ov-donut-lbl" style="font-size:8px">Used</div></div></div></div>'+
+      '<a class="snap-link" style="display:inline-block;margin-top:10px" onclick="showLeaveTableModal()">View Leave Details →</a>';
+  }
+}
+
+function showAttendanceTableModal() {
+  var rows = (globalRawData && globalRawData.attendanceOverview && globalRawData.attendanceOverview.rows) || [];
+  document.getElementById('modalTitle').textContent = 'My Attendance';
+  document.getElementById('modalSubtitle').textContent = rows.length + ' records';
+  document.getElementById('modalTheadRow').innerHTML =
+    '<th style="padding:10px 16px;border-bottom:1px solid #e8eaed;background:#fafafa;font-size:11px;color:#9aa0ac;text-transform:uppercase">Date</th>'+
+    '<th style="padding:10px 16px;border-bottom:1px solid #e8eaed;background:#fafafa;font-size:11px;color:#9aa0ac;text-transform:uppercase">In1</th>'+
+    '<th style="padding:10px 16px;border-bottom:1px solid #e8eaed;background:#fafafa;font-size:11px;color:#9aa0ac;text-transform:uppercase">Out2</th>'+
+    '<th style="padding:10px 16px;border-bottom:1px solid #e8eaed;background:#fafafa;font-size:11px;color:#9aa0ac;text-transform:uppercase">Working Hrs</th>'+
+    '<th style="padding:10px 16px;border-bottom:1px solid #e8eaed;background:#fafafa;font-size:11px;color:#9aa0ac;text-transform:uppercase">Status</th>';
+  document.getElementById('modalBody').innerHTML = rows.length ? rows.map(function(r,i){
+    return '<tr><td style="padding:11px 16px;border-bottom:1px solid #f3f4f6">'+r.date+'</td>'+
+      '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6">'+r.in1+'</td>'+
+      '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6">'+r.out2+'</td>'+
+      '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6">'+r.workHrs+'</td>'+
+      '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6">'+r.finalStatus+'</td></tr>';
+  }).join('') : '<tr><td colspan="5" style="text-align:center;padding:30px;color:#bbb">No records for this period</td></tr>';
+  document.getElementById('pendingModal').style.display='flex';
+}
+
+function showLeaveTableModal() {
+  var rows = (globalRawData && globalRawData.leaveSummary && globalRawData.leaveSummary.rows) || [];
+  document.getElementById('modalTitle').textContent = 'My Leave Details';
+  document.getElementById('modalSubtitle').textContent = rows.length + ' records';
+  document.getElementById('modalTheadRow').innerHTML =
+    '<th style="padding:10px 16px;border-bottom:1px solid #e8eaed;background:#fafafa;font-size:11px;color:#9aa0ac;text-transform:uppercase">Year</th>'+
+    '<th style="padding:10px 16px;border-bottom:1px solid #e8eaed;background:#fafafa;font-size:11px;color:#9aa0ac;text-transform:uppercase">Total Paid Leave</th>'+
+    '<th style="padding:10px 16px;border-bottom:1px solid #e8eaed;background:#fafafa;font-size:11px;color:#9aa0ac;text-transform:uppercase">Used</th>'+
+    '<th style="padding:10px 16px;border-bottom:1px solid #e8eaed;background:#fafafa;font-size:11px;color:#9aa0ac;text-transform:uppercase">Balance</th>'+
+    '<th style="padding:10px 16px;border-bottom:1px solid #e8eaed;background:#fafafa;font-size:11px;color:#9aa0ac;text-transform:uppercase">Half Day</th>'+
+    '<th style="padding:10px 16px;border-bottom:1px solid #e8eaed;background:#fafafa;font-size:11px;color:#9aa0ac;text-transform:uppercase">Unpaid</th>';
+  document.getElementById('modalBody').innerHTML = rows.length ? rows.map(function(r){
+    return '<tr><td style="padding:11px 16px;border-bottom:1px solid #f3f4f6">'+r.year+'</td>'+
+      '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6">'+r.totalPaidLeave+'</td>'+
+      '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6">'+r.usedLeave+'</td>'+
+      '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6">'+r.balance+'</td>'+
+      '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6">'+r.halfDayCount+'</td>'+
+      '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6">'+r.unpaidLeave+'</td></tr>';
+  }).join('') : '<tr><td colspan="6" style="text-align:center;padding:30px;color:#bbb">No leave records</td></tr>';
   document.getElementById('pendingModal').style.display='flex';
 }
 function closePendingModal(){document.getElementById('pendingModal').style.display='none';}
