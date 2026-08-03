@@ -1441,10 +1441,9 @@ function refreshDashboard() {
     fetch(API + '?action=setDates&from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to) + '&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now(), { redirect: 'follow' })
       .then(function(r) { return r.json(); })
       .then(function(data) {
-        document.getElementById('savingTxt').classList.remove('show');
+      document.getElementById('savingTxt').classList.remove('show');
         document.getElementById('applyBtn').disabled = false;
         if (data.authorized === false) { showDenied(currentUserEmail); return; }
-        renderAll(data);
         renderAll(data);
         saveUserCache(currentUserEmail, data);
       })
@@ -1508,15 +1507,30 @@ function refreshDashboard() {
    google.accounts.id.renderButton(document.getElementById('googleSignInBtn'), { theme: 'filled_black', size: 'large', width: 280, shape: 'pill' });
     }
   }
-  
-  function showDenied(email) {
+function showDenied(email) {
     document.getElementById('authScreen').style.display = 'none';
     document.getElementById('appRoot').style.display = 'none';
     document.getElementById('deniedScreen').style.display = 'flex';
     document.getElementById('deniedEmail').textContent = email || '';
   }
-  
-  renderInternalSheets();
+
+  function enterApp(name, email) {
+    document.getElementById('authScreen').style.display = 'none';
+    document.getElementById('deniedScreen').style.display = 'none';
+    document.getElementById('appRoot').style.display = 'block';
+    document.getElementById('userChip').style.display = 'flex';
+    document.getElementById('logoutBtn').style.display = 'flex';
+    document.getElementById('userNameLabel').textContent = name;
+    document.getElementById('userAvatar').textContent = ini(name);
+    var topAv = document.getElementById('topbarAvatar');
+    if (topAv) { topAv.textContent = ini(name); topAv.title = name; topAv.style.display = 'flex'; }
+    var emailSub = document.getElementById('userEmailSub');
+    if (emailSub) emailSub.textContent = email || 'ugbolmalassociates.com';
+    var fullName = String(name || '').trim() || name;
+    updateGreeting(fullName);
+    if (window._greetTimer) clearInterval(window._greetTimer);
+    window._greetTimer = setInterval(function() { updateGreeting(fullName); }, 60000);
+    renderInternalSheets();
 
     // Turant cached data dikhao (agar available hai) — instant open
     var cached = loadUserCache(email);
