@@ -1445,6 +1445,8 @@ function refreshDashboard() {
         document.getElementById('applyBtn').disabled = false;
         if (data.authorized === false) { showDenied(currentUserEmail); return; }
         renderAll(data);
+        renderAll(data);
+        saveUserCache(currentUserEmail, data);
       })
       .catch(function() {
         document.getElementById('savingTxt').classList.remove('show');
@@ -1514,25 +1516,43 @@ function refreshDashboard() {
     document.getElementById('deniedEmail').textContent = email || '';
   }
   
-  function enterApp(name, email) {
-    document.getElementById('authScreen').style.display = 'none';
-    document.getElementById('deniedScreen').style.display = 'none';
-    document.getElementById('appRoot').style.display = 'block';
-    document.getElementById('userChip').style.display = 'flex';
-    document.getElementById('logoutBtn').style.display = 'flex';
-    document.getElementById('userNameLabel').textContent = name;
-    document.getElementById('userAvatar').textContent = ini(name);
-    var topAv = document.getElementById('topbarAvatar');
-    if (topAv) { topAv.textContent = ini(name); topAv.title = name; topAv.style.display = 'flex'; }
-    var emailSub = document.getElementById('userEmailSub');
-    if (emailSub) emailSub.textContent = email || 'ugbolmalassociates.com';
-      var fullName = String(name || '').trim() || name;
-    updateGreeting(fullName);
-    if (window._greetTimer) clearInterval(window._greetTimer);
-    window._greetTimer = setInterval(function() { updateGreeting(fullName); }, 60000);
-    renderInternalSheets();
-    initialLoad();
+  renderInternalSheets();
+
+    // Turant cached data dikhao (agar available hai) — instant open
+    var cached = loadUserCache(email);
+    if (cached && cached.data) {
+      if (cached.from) document.getElementById('dtFrom').value = cached.from;
+      if (cached.to) document.getElementById('dtTo').value = cached.to;
+      document.getElementById('ldiv').style.display = 'none';
+      document.getElementById('mdiv').style.display = 'block';
+      renderAll(cached.data);
+    }
+
+    // Fir background mein fresh data laao (chahe cache mila ho ya nahi)
+    initialLoad(cached && cached.from, cached && cached.to);
   }
+    // ── Per-user cache (data + last date range) ──────────────────────────────────
+function cacheKeyFor(email) { return 'emdash_cache_' + String(email || '').toLowerCase().trim(); }
+
+function saveUserCache(email, data) {
+  try {
+    var payload = {
+      data: data,
+      from: document.getElementById('dtFrom').value,
+      to: document.getElementById('dtTo').value,
+      ts: Date.now()
+    };
+    localStorage.setItem(cacheKeyFor(email), JSON.stringify(payload));
+  } catch (e) {}
+}
+
+function loadUserCache(email) {
+  try {
+    var raw = localStorage.getItem(cacheKeyFor(email));
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (e) { return null; }
+}
   
   function doLogout() {
     try { localStorage.removeItem('emdash_idtoken'); } catch (e) {}
@@ -3010,19 +3030,29 @@ function renderUsersDashboardPanels(data) {
     }
   }
   // ── Initial load (after sign-in is verified) ────────────────────────────────────
-  function initialLoad() {
-    document.getElementById('ldiv').style.display = 'block';
-    document.getElementById('mdiv').style.display = 'none';
-    fetch(API + '?action=getData&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now(), { redirect: 'follow' })
+function initialLoad(savedFrom, savedTo) {
+    var haveCache = document.getElementById('mdiv').style.display === 'block';
+    if (!haveCache) {
+      document.getElementById('ldiv').style.display = 'block';
+      document.getElementById('mdiv').style.display = 'none';
+    }
+    var url = API + '?action=getData&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now();
+    if (savedFrom && savedTo) {
+      url += '&from=' + encodeURIComponent(savedFrom) + '&to=' + encodeURIComponent(savedTo);
+    }
+    fetch(url, { redirect: 'follow' })
       .then(function(r) { return r.json(); })
       .then(function(data) {
         if (data.authorized === false) { showDenied(currentUserEmail); return; }
         document.getElementById('ldiv').style.display = 'none';
         document.getElementById('mdiv').style.display = 'block';
         renderAll(data);
+        saveUserCache(currentUserEmail, data);
       })
       .catch(function(err) {
-        document.getElementById('ldiv').innerHTML = '<div class="ebox">Error loading data. Please refresh.<br><small>' + err + '</small></div>';
+        if (!haveCache) {
+          document.getElementById('ldiv').innerHTML = '<div class="ebox">Error loading data. Please refresh.<br><small>' + err + '</small></div>';
+        }
       });
   }
     // ── Attendance Table Modal ────────────────────────────────────────────────
