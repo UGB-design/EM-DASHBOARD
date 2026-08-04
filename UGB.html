@@ -1450,7 +1450,29 @@ function refreshDashboard() {
         if (btn) btn.classList.remove('spinning');
       });
   }
-  
+  // ── Live-ish polling: silently refreshes ONLY the Today's Tasks/FMS/
+  // Checklist/Delegation counters (and their "View details" modal data)
+  // every 25 seconds, without touching any other tab/filter/scroll state.
+  function pollTodayStats() {
+    if (!currentIdToken) return;
+    fetch(API + '?action=getData&forceRefresh=1&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now(), { redirect: 'follow' })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (!data || data.authorized === false) return;
+        if (globalRawData) {
+          globalRawData.todayTaskList = data.todayTaskList;
+          globalRawData.emDashboard = data.emDashboard;
+        }
+        renderTodayStatBadges(data);
+        renderDashPendingApprovals(data);
+        renderDashRecentActivities(data);
+      })
+      .catch(function(err) { console.warn('pollTodayStats failed:', err); });
+  }
+  function startTodayStatsPolling() {
+    if (window._todayStatsPollTimer) clearInterval(window._todayStatsPollTimer);
+    window._todayStatsPollTimer = setInterval(pollTodayStats, 25000);
+  }
   // ── Date helpers ─────────────────────────────────────────────────────────────
   function toISO(ddmmyyyy) {
     if (!ddmmyyyy) return '';
@@ -1581,6 +1603,7 @@ function showDenied(email) {
     updateGreeting(fullName);
     if (window._greetTimer) clearInterval(window._greetTimer);
     window._greetTimer = setInterval(function() { updateGreeting(fullName); }, 60000);
+    startTodayStatsPolling();
     renderInternalSheets();
 
     // Turant cached data dikhao (agar available hai) — instant open
@@ -1621,8 +1644,9 @@ function loadUserCache(email) {
   } catch (e) { return null; }
 }
   
-  function doLogout() {
+ function doLogout() {
     try { localStorage.removeItem('emdash_idtoken'); } catch (e) {}
+    if (window._todayStatsPollTimer) { clearInterval(window._todayStatsPollTimer); window._todayStatsPollTimer = null; }
     currentIdToken = null; currentUserEmail = null;
     if (window.google && google.accounts && google.accounts.id) {
       google.accounts.id.disableAutoSelect();
