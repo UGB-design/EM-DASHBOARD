@@ -895,13 +895,6 @@
             <div class="cs-detail" id="cDPdetail"></div>
           </div>
         </div>
-        <div class="c1">
-          <div class="card">
-            <div class="cl">Overall Score</div>
-            <div class="cv green" id="cOV">—</div>
-            <div class="cs">Work Completion % </div>
-          </div>
-        </div>
         <div class="tc">
           <div class="tc-top">
             <div class="tc-title">Employee Summary</div>
@@ -935,8 +928,8 @@
               <div class="sp-title">Checklist Performance by Employee</div>
               <div class="sp-count" id="clByDoerCount"></div>
             </div>
-           <table>
-                <thead><tr><th>#</th><th>Doer</th><th>Dept</th><th>Plan</th><th>Actual</th><th>Progress</th></tr></thead>
+          <table>
+                <thead><tr><th>#</th><th>Doer</th><th>Dept</th><th>Plan</th><th>Actual</th><th>Miss</th><th>Progress</th></tr></thead>
                 <tbody id="clByDoerBody"></tbody>
               </table>
           </div>
@@ -1078,10 +1071,12 @@
         <iframe id="leaveIframe" src="https://ugb-design.github.io/EM-DASHBOARD/UGB.html.html" title="Leave &amp; Attendance"></iframe>
       </div>
     </div>
-  
     <!-- INTERNAL SHEETS TAB -->
-    <!-- INTERNAL SHEETS TAB -->
-    <div class="tab-content" id="tab-internalsheets">
+  <div class="tab-content" id="tab-internalsheets">
+      <div class="users-search-wrap" style="margin-bottom:14px;max-width:340px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input type="text" id="isheetsSearchInput" placeholder="Search sheets..." oninput="filterInternalSheets()">
+      </div>
       <div class="meta-info-badge">
         <span class="m-badge b-blue" id="isheetsCountBadge">0 sheets</span>
       </div>
@@ -1273,7 +1268,21 @@ function openAddDelegation() {
       '</a>';
     }).join('');
   }
-  
+  function filterInternalSheets() {
+    var box = document.getElementById('isheetsSearchInput');
+    var term = box ? box.value.trim().toLowerCase() : '';
+    var grid = document.getElementById('internalSheetsGrid');
+    if (!grid) return;
+    var visibleCount = 0;
+    grid.querySelectorAll('.isheet-card').forEach(function(card) {
+      var text = card.textContent.toLowerCase();
+      var match = !term || text.indexOf(term) !== -1;
+      card.style.display = match ? '' : 'none';
+      if (match) visibleCount++;
+    });
+    var badge = document.getElementById('isheetsCountBadge');
+    if (badge) badge.textContent = visibleCount + ' sheets';
+  }
   // ── Leave & Attendance pending-approvals badge ───────────────────────────────
   // Primary method: the Leave & Attendance page is hosted on the same origin
   // (ugb-design.github.io), so we can reach directly into its iframe DOM and
@@ -2223,20 +2232,21 @@ function renderUsersDashboardPanels(data) {
   }
   
   // ── Checklist by Doer panel ───────────────────────────────────────────────────
-  function renderClByDoer(rows) {
+function renderClByDoer(rows) {
     document.getElementById('clByDoerCount').textContent = rows.length + ' doers';
     document.getElementById('clByDoerBody').innerHTML = rows.map(function(r, i) {
+      var missed = Math.max(0, (Number(r.plan)||0) - (Number(r.actual)||0));
       return '<tr>' +
         '<td>' + (i + 1) + '</td>' +
         '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(r.doer) + '</div>' + r.doer + '</div></td>' +
         '<td><span class="dept-pill">' + r.dept + '</span></td>' +
         '<td>' + nb(r.plan) + '</td>' +
         '<td>' + nb(r.actual) + '</td>' +
+        '<td>' + (missed === 0 ? '<span class="mb-ok">OK</span>' : '<span class="mb-num">' + missed + '</span>') + '</td>' +
         '<td>' + pg(r.progress) + '</td>' +
         '</tr>';
-    }).join('') || '<tr><td colspan="6" style="text-align:center;color:#bbb;padding:20px">No checklist data for this week</td></tr>';
+    }).join('') || '<tr><td colspan="7" style="text-align:center;color:#bbb;padding:20px">No checklist data for this week</td></tr>';
   }
-  
   // ── FMS Steps Tab ─────────────────────────────────────────────────────────────
   function populateFmsFilters(opts) {
     var typesSel = document.getElementById('fmsFilterType');
