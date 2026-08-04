@@ -57,9 +57,9 @@
   .ov-bar-name{font-size:10px;color:#8a8478;font-weight:600;text-align:center;line-height:1.3;max-width:76px;white-space:normal;word-break:break-word}
   .ov-donut-wrap{display:flex;align-items:center;gap:22px;flex:1}
   .ov-donut{width:160px;height:160px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;position:relative}
-   #udTaskDonut .ov-donut{width:120px;height:120px}
-#udTaskDonut .ov-donut-num{font-size:16px}
-#udTaskDonut .ov-donut-lbl{font-size:8px}
+ #udTaskDonut .ov-donut{width:96px;height:96px}
+#udTaskDonut .ov-donut-num{font-size:14px}
+#udTaskDonut .ov-donut-lbl{font-size:7px}
 #ovDonutWrap .ov-donut{width:120px;height:120px}
 #ovDonutWrap .ov-donut-num{font-size:16px}
 #ovDonutWrap .ov-donut-lbl{font-size:8px}
@@ -471,7 +471,7 @@
   .ucc-viewprofile:hover{text-decoration:underline}
   .ud-bottom-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:22px;align-items:stretch}
   @media(max-width:1100px){.ud-bottom-grid{grid-template-columns:repeat(2,1fr)}}
- .ud-panel{background:#fff;border-radius:16px;border:1px solid #e2e8f0;box-shadow:0 2px 10px rgba(30,41,59,.05);padding:18px 20px 16px;height:100%;display:flex;flex-direction:column;overflow:hidden}
+ .ud-panel{background:#fff;border-radius:16px;border:1px solid #e2e8f0;box-shadow:0 2px 10px rgba(30,41,59,.05);padding:14px 18px 12px;height:100%;display:flex;flex-direction:column;overflow:hidden}
 #udAttendanceChart{max-height:100px;overflow:hidden}
  #udLeaveSummary{max-height:180px;overflow-y:auto}
  #upcomingHolidayNotice{max-height:78px}
@@ -493,17 +493,17 @@
   .snap-perf-ring{width:90px;height:90px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
   .snap-perf-ring span{background:#fff;width:74px;height:74px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#1a1a1a;line-height:1.1}
   .snap-perf-ring span small{font-size:9px;font-weight:700;color:#9aa0ac;text-transform:uppercase;letter-spacing:.03em;margin-top:2px}
-    .dash-lists-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:22px}
+   .dash-lists-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px}
 @media(max-width:900px){.dash-lists-grid{grid-template-columns:1fr}}
-.dl-list-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f1f5f9}
+.dl-list-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #f1f5f9}
 .dl-list-row:last-child{border-bottom:none}
 .dl-avatar-sm{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0}
 .dl-list-txt{flex:1;min-width:0}
 .dl-list-name{font-size:13px;font-weight:700;color:#1a1a1a;overflow:hidden;text-overflow:ellipsis}
 .dl-list-sub{font-size:11.5px;color:#9aa0ac;margin-top:2px}
-.dl-list-right{text-align:right;flex-shrink:0}
+.dl-list-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
 .dl-list-date{font-size:11px;color:#9aa0ac;font-weight:600;white-space:nowrap}
-.dl-badge-pending{background:#fef2f2;color:#dc2626;font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;margin-top:4px}
+.dl-badge-pending{background:#fef2f2;color:#dc2626;font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;white-space:nowrap}
 .dl-ra-icon{width:34px;height:34px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px}
 .dl-empty-note{color:#c7c2b8;font-size:12px;text-align:center;padding:20px 0}
     /* ── COMPACT TEAM DIRECTORY CARDS ─────────────────────────────── */
@@ -870,7 +870,7 @@
             <div class="skel skel-line" style="width:100%;height:40px;margin-bottom:8px"></div>
             <div class="skel skel-line" style="width:100%;height:40px"></div>
           </div>
-          <a class="snap-link" style="display:inline-block;margin-top:auto;padding-top:12px" onclick="openTodayTasksModal()">View All Activities →</a>
+          <a class="snap-link" style="display:inline-block;margin-top:auto;padding-top:12px" onclick="showRecentActivitiesModal()">View All Activities →</a>
         </div>
       </div>
     </div>
@@ -2004,20 +2004,42 @@ function renderUsersDashboardPanels(data) {
       '</div>';
     }).join('');
   }
-
-  function renderDashRecentActivities(data) {
+ function renderDashRecentActivities(data) {
     var tasks = (data.todayTaskList || []).filter(function(t) { return t.status === 'Completed'; });
+    tasks = tasks.slice().reverse();
+    window._dashActivityFull = tasks;
     var el = document.getElementById('dashRecentActivitiesList');
     if (!el) return;
     if (!tasks.length) { el.innerHTML = '<div class="dl-empty-note">No activity recorded today</div>'; return; }
-    el.innerHTML = tasks.slice(0, 4).map(function(t) {
+    el.innerHTML = tasks.slice(0, 2).map(function(t) {
       var icon = t.type === 'FMS' ? '📋' : t.type === 'Checklist' ? '✅' : '👥';
       return '<div class="dl-list-row">' +
         '<div class="dl-ra-icon" style="' + typeTagStyle(t.type) + '">' + icon + '</div>' +
-        '<div class="dl-list-txt"><div class="dl-list-name">' + t.type + ' "' + t.task + '" completed by ' + t.doer + '</div>' +
-        '<div class="dl-list-sub">' + t.plannedDate + '</div></div>' +
+        '<div class="dl-list-txt"><div class="dl-list-name">' + t.type + ' "' + t.task + '" completed by ' + t.doer + '</div></div>' +
+        '<div class="dl-list-right"><div class="dl-list-date">' + t.plannedDate + '</div></div>' +
       '</div>';
     }).join('');
+  }
+    function showRecentActivitiesModal() {
+    var tasks = window._dashActivityFull || [];
+    document.getElementById('modalTitle').textContent = 'Recent Activities';
+    document.getElementById('modalSubtitle').textContent = tasks.length + ' completed today';
+    document.getElementById('modalTheadRow').innerHTML =
+      '<th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#fafafa">#</th>' +
+      '<th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#fafafa">Type</th>' +
+      '<th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#fafafa">Task</th>' +
+      '<th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#fafafa">Doer</th>' +
+      '<th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#fafafa">Date</th>';
+    document.getElementById('modalBody').innerHTML = tasks.map(function(t, i) {
+      return '<tr>' +
+        '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#555">' + (i+1) + '</td>' +
+        '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6"><span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;' + typeTagStyle(t.type) + '">' + t.type + '</span></td>' +
+        '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151">' + t.task + '</td>' +
+        '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151">' + t.doer + '</td>' +
+        '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151;white-space:nowrap">' + t.plannedDate + '</td>' +
+        '</tr>';
+    }).join('') || '<tr><td colspan="5" style="text-align:center;color:#bbb;padding:30px">No completed activities today</td></tr>';
+    document.getElementById('pendingModal').style.display = 'flex';
   }
    function renderPendingApprovalsAndHolidays(data) {
     var pa = data.pendingApprovals || { count: 0, rows: [] };
