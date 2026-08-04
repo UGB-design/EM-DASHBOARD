@@ -493,6 +493,19 @@
   .snap-perf-ring{width:90px;height:90px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
   .snap-perf-ring span{background:#fff;width:74px;height:74px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#1a1a1a;line-height:1.1}
   .snap-perf-ring span small{font-size:9px;font-weight:700;color:#9aa0ac;text-transform:uppercase;letter-spacing:.03em;margin-top:2px}
+    .dash-lists-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:22px}
+@media(max-width:900px){.dash-lists-grid{grid-template-columns:1fr}}
+.dl-list-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f1f5f9}
+.dl-list-row:last-child{border-bottom:none}
+.dl-avatar-sm{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0}
+.dl-list-txt{flex:1;min-width:0}
+.dl-list-name{font-size:13px;font-weight:700;color:#1a1a1a;overflow:hidden;text-overflow:ellipsis}
+.dl-list-sub{font-size:11.5px;color:#9aa0ac;margin-top:2px}
+.dl-list-right{text-align:right;flex-shrink:0}
+.dl-list-date{font-size:11px;color:#9aa0ac;font-weight:600;white-space:nowrap}
+.dl-badge-pending{background:#fef2f2;color:#dc2626;font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;margin-top:4px}
+.dl-ra-icon{width:34px;height:34px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px}
+.dl-empty-note{color:#c7c2b8;font-size:12px;text-align:center;padding:20px 0}
     /* ── COMPACT TEAM DIRECTORY CARDS ─────────────────────────────── */
   .users-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
   @media(max-width:1200px){.users-grid{grid-template-columns:repeat(3,1fr)}}
@@ -840,6 +853,24 @@
               <div class="skel" style="width:88px;height:88px;border-radius:50%;flex-shrink:0"></div>
             </div>
           </div>
+        </div>
+      </div>
+      <div class="dash-lists-grid">
+        <div class="ud-panel">
+          <div class="ud-panel-title">Pending Approvals</div>
+          <div id="dashPendingApprovalsList">
+            <div class="skel skel-line" style="width:100%;height:40px;margin-bottom:8px"></div>
+            <div class="skel skel-line" style="width:100%;height:40px"></div>
+          </div>
+          <a class="snap-link" style="display:inline-block;margin-top:auto;padding-top:12px" onclick="showPendingApprovalsModal()">View All →</a>
+        </div>
+        <div class="ud-panel">
+          <div class="ud-panel-title">Recent Activities</div>
+          <div id="dashRecentActivitiesList">
+            <div class="skel skel-line" style="width:100%;height:40px;margin-bottom:8px"></div>
+            <div class="skel skel-line" style="width:100%;height:40px"></div>
+          </div>
+          <a class="snap-link" style="display:inline-block;margin-top:auto;padding-top:12px" onclick="openTodayTasksModal()">View All Activities →</a>
         </div>
       </div>
     </div>
@@ -1720,6 +1751,8 @@ function loadUserCache(email) {
     renderInternalSheets(data.internalSheets);
     renderUsersDashboardPanels(data);
     renderPendingApprovalsAndHolidays(data);
+    renderDashPendingApprovals(data);
+    renderDashRecentActivities(data);
     renderOverviewWidgets(data);
     renderFmsByProcess(data.fmsByProcess || []);
     renderClByDoer(data.checklistByDoer || []);
@@ -1956,6 +1989,35 @@ function renderUsersDashboardPanels(data) {
         }).join('') + '</div>';
       }
     }
+  }
+        function renderDashPendingApprovals(data) {
+    var rows = (data.pendingApprovals && data.pendingApprovals.rows) || [];
+    var el = document.getElementById('dashPendingApprovalsList');
+    if (!el) return;
+    if (!rows.length) { el.innerHTML = '<div class="dl-empty-note">No pending approvals 🎉</div>'; return; }
+    el.innerHTML = rows.slice(0, 4).map(function(r) {
+      return '<div class="dl-list-row">' +
+        '<div class="dl-avatar-sm">' + ini(r.name) + '</div>' +
+        '<div class="dl-list-txt"><div class="dl-list-name">' + r.name + '</div>' +
+        '<div class="dl-list-sub">' + r.leaveType + ' · ' + r.totalDays + ' Day' + (r.totalDays == 1 ? '' : 's') + '</div></div>' +
+        '<div class="dl-list-right"><div class="dl-list-date">' + r.fromDate + '</div><span class="dl-badge-pending">Pending</span></div>' +
+      '</div>';
+    }).join('');
+  }
+
+  function renderDashRecentActivities(data) {
+    var tasks = (data.todayTaskList || []).filter(function(t) { return t.status === 'Completed'; });
+    var el = document.getElementById('dashRecentActivitiesList');
+    if (!el) return;
+    if (!tasks.length) { el.innerHTML = '<div class="dl-empty-note">No activity recorded today</div>'; return; }
+    el.innerHTML = tasks.slice(0, 4).map(function(t) {
+      var icon = t.type === 'FMS' ? '📋' : t.type === 'Checklist' ? '✅' : '👥';
+      return '<div class="dl-list-row">' +
+        '<div class="dl-ra-icon" style="' + typeTagStyle(t.type) + '">' + icon + '</div>' +
+        '<div class="dl-list-txt"><div class="dl-list-name">' + t.type + ' "' + t.task + '" completed by ' + t.doer + '</div>' +
+        '<div class="dl-list-sub">' + t.plannedDate + '</div></div>' +
+      '</div>';
+    }).join('');
   }
    function renderPendingApprovalsAndHolidays(data) {
     var pa = data.pendingApprovals || { count: 0, rows: [] };
