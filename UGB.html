@@ -622,7 +622,7 @@
         </div>
       </div>
     </div>
-    <div style="position:absolute;bottom:24px;left:0;right:0;text-align:center;font-size:11.5px;color:#8a92ab">© 2026 Umesh Bolmal & Associates. All rights reserved.</div>
+    <div style="position:absolute;bottom:24px;left:0;right:0;text-align:center;font-size:11.5px;color:#fff;font-weight:600;text-shadow:0 1px 4px rgba(0,0,0,.6)">© 2026 Umesh Bolmal & Associates. All rights reserved.</div>
   </div>
   
   <!-- ACCESS DENIED -->
@@ -1576,8 +1576,7 @@ function refreshDashboard() {
     document.getElementById('deniedScreen').style.display = 'none';
     document.getElementById('appRoot').style.display = 'none';
     if (window.google && google.accounts && google.accounts.id) {
-   google.accounts.id.renderButton(document.getElementById('googleSignInBtn'), { theme: 'filled_black', size: 'large', width: 280, shape: 'pill' });
-    }
+   google.accounts.id.renderButton(document.getElementById('googleSignInBtn'), { theme: 'outline', size: 'large', width: 280, shape: 'pill' });
   }
 function showDenied(email) {
     document.getElementById('authScreen').style.display = 'none';
