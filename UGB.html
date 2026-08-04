@@ -1680,12 +1680,14 @@ function loadUserCache(email) {
     document.getElementById('cCP').textContent = t.checklistPlan || 0;
     document.getElementById('cDP').textContent = t.delegationPlan || 0;
   
-    var ovNum = (typeof t.overallNum === 'number') ? t.overallNum : (Number(t.totalPlan) > 0 ? (Number(t.totalActual) / Number(t.totalPlan) * 100) : 0);
+   var ovNum = (typeof t.overallNum === 'number') ? t.overallNum : (Number(t.totalPlan) > 0 ? (Number(t.totalActual) / Number(t.totalPlan) * 100) : 0);
     var ovRounded = Math.round(ovNum) + '%';
     document.getElementById('cTAs').textContent = ovRounded + ' complete';
     var ovEl = document.getElementById('cOV');
-    ovEl.textContent = ovRounded;
-    ovEl.className = 'cv ' + ovCls(ovNum);
+    if (ovEl) {
+      ovEl.textContent = ovRounded;
+      ovEl.className = 'cv ' + ovCls(ovNum);
+    }
   
     document.getElementById('cFPdetail').innerHTML =
       '<span class="cs-done">' + bd.fmsDone + ' done</span>' +
