@@ -1571,12 +1571,13 @@ function refreshDashboard() {
       }
     });
 }
-  function showSignIn() {
+ function showSignIn() {
     document.getElementById('authScreen').style.display = 'flex';
     document.getElementById('deniedScreen').style.display = 'none';
     document.getElementById('appRoot').style.display = 'none';
     if (window.google && google.accounts && google.accounts.id) {
    google.accounts.id.renderButton(document.getElementById('googleSignInBtn'), { theme: 'outline', size: 'large', width: 280, type: 'standard', shape: 'pill', logo_alignment: 'left' });
+    }
   }
 function showDenied(email) {
     document.getElementById('authScreen').style.display = 'none';
