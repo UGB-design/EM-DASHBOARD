@@ -1483,35 +1483,42 @@ function refreshDashboard() {
     } catch (e) {}
     verifyAndEnter();
   }
-  
-  function verifyAndEnter() {
-    if (!currentIdToken) return showSignIn();
-    var payload = decodeJwtPayload(currentIdToken);
-    if (!payload || !payload.exp || payload.exp * 1000 < Date.now()) {
-      try { localStorage.removeItem('emdash_idtoken'); } catch (e) {}
-      return showSignIn();
-    }
-    document.getElementById('authScreen').style.display = 'flex';
-    document.getElementById('deniedScreen').style.display = 'none';
-    document.getElementById('appRoot').style.display = 'none';
-    document.getElementById('authLoadingTxt').style.display = 'block';
-    fetch(API + '?action=auth&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now(), { redirect: 'follow' })
-      .then(function(r) { return r.json(); })
-      .then(function(res) {
-        document.getElementById('authLoadingTxt').style.display = 'none';
-        if (res.authorized) {
-          currentUserEmail = res.email || payload.email;
-          enterApp(res.name || payload.name || currentUserEmail, currentUserEmail);
-        } else {
-          showDenied(res.email || payload.email);
-        }
-      })
-      .catch(function() {
-        document.getElementById('authLoadingTxt').style.display = 'none';
-        showDenied(payload.email);
-      });
+  function verifyAndEnter(retryCount) {
+  retryCount = retryCount || 0;
+  if (!currentIdToken) return showSignIn();
+  var payload = decodeJwtPayload(currentIdToken);
+  if (!payload || !payload.exp || payload.exp * 1000 < Date.now()) {
+    try { localStorage.removeItem('emdash_idtoken'); } catch (e) {}
+    return showSignIn();
   }
-  
+  document.getElementById('authScreen').style.display = 'flex';
+  document.getElementById('deniedScreen').style.display = 'none';
+  document.getElementById('appRoot').style.display = 'none';
+  document.getElementById('authLoadingTxt').style.display = 'block';
+  document.getElementById('authLoadingTxt').textContent = 'Verifying access…';
+
+  var url = API + '?action=getData&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now();
+  fetch(url, { redirect: 'follow' })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      document.getElementById('authLoadingTxt').style.display = 'none';
+      if (data.authorized === false) { showDenied(payload.email); return; }
+      currentUserEmail = payload.email;
+      enterApp(payload.name || currentUserEmail, currentUserEmail, true);
+      document.getElementById('ldiv').style.display = 'none';
+      document.getElementById('mdiv').style.display = 'block';
+      renderAll(data);
+      saveUserCache(currentUserEmail, data);
+    })
+    .catch(function() {
+      if (retryCount < 2) {
+        setTimeout(function() { verifyAndEnter(retryCount + 1); }, 1200);
+      } else {
+        document.getElementById('authLoadingTxt').textContent = 'Connection slow, retrying…';
+        setTimeout(function() { verifyAndEnter(0); }, 3000);
+      }
+    });
+}
   function showSignIn() {
     document.getElementById('authScreen').style.display = 'flex';
     document.getElementById('deniedScreen').style.display = 'none';
@@ -1527,7 +1534,7 @@ function showDenied(email) {
     document.getElementById('deniedEmail').textContent = email || '';
   }
 
-  function enterApp(name, email) {
+ function enterApp(name, email, skipInitialLoad) {
     document.getElementById('authScreen').style.display = 'none';
     document.getElementById('deniedScreen').style.display = 'none';
     document.getElementById('appRoot').style.display = 'block';
@@ -1556,7 +1563,9 @@ function showDenied(email) {
     }
 
     // Fir background mein fresh data laao (chahe cache mila ho ya nahi)
-    initialLoad(cached && cached.from, cached && cached.to);
+    if (!skipInitialLoad) {
+      initialLoad(cached && cached.from, cached && cached.to);
+    }
   }
     // ── Per-user cache (data + last date range) ──────────────────────────────────
 function cacheKeyFor(email) { return 'emdash_cache_' + String(email || '').toLowerCase().trim(); }
