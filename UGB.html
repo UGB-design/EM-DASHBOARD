@@ -1438,7 +1438,7 @@ function refreshDashboard() {
     var btn = document.getElementById('refreshBtn');
     if (!currentIdToken) return;
     if (btn) btn.classList.add('spinning');
-    fetch(API + '?action=getData&forceRefresh=1&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now(), { redirect: 'follow' })
+    fetch(API + '?action=getData&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now(), { redirect: 'follow' })
       .then(function(r) { return r.json(); })
       .then(function(data) {
         if (btn) btn.classList.remove('spinning');
@@ -1470,7 +1470,7 @@ function refreshDashboard() {
   }
   function startTodayStatsPolling() {
     if (window._todayStatsPollTimer) clearInterval(window._todayStatsPollTimer);
-    window._todayStatsPollTimer = setInterval(pollTodayStats, 25000);
+   window._todayStatsPollTimer = setInterval(pollTodayStats, 60000);
   }
   // ── Date helpers ─────────────────────────────────────────────────────────────
   function toISO(ddmmyyyy) {
