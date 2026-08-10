@@ -286,12 +286,14 @@ tr:hover td{background:#fafbfc}
 <div class="app-shell">
 
   <aside class="sidebar">
-    <div class="sb-brand">
-     <div class="sb-brand-badge" id="sbBrandBadge"><img src="https://lh3.googleusercontent.com/d/158_HBHOHewJ0wG2BY3ZiBdT_uD7eoDQX=w200" alt="CA Logo" style="width:100%;height:100%;object-fit:contain"></div>
-      <div class="sb-brand-text">
-        <div class="sb-brand-title">UMESH BOLMAL &amp; ASSOCIATES</div>
-        <div class="sb-brand-sub">CHARTERED ACCOUNTANTS</div>
+    <div class="sb-brand" style="flex-direction:column;align-items:flex-start">
+      <div style="display:flex;align-items:center;gap:10px;width:100%">
+        <div class="sb-brand-badge" id="sbBrandBadge"><img src="https://lh3.googleusercontent.com/d/158_HBHOHewJ0wG2BY3ZiBdT_uD7eoDQX=w200" alt="CA Logo" style="width:100%;height:100%;object-fit:contain"></div>
+        <div class="sb-brand-text">
+          <div class="sb-brand-title">UMESH BOLMAL &amp; ASSOCIATES</div>
+        </div>
       </div>
+      <div class="sb-brand-sub" style="width:100%;text-align:center;color:#d4af37;margin-top:8px">CHARTERED ACCOUNTANTS</div>
     </div>
     <nav class="sb-nav">
      <button class="sb-item active" onclick="switchTab('dashboard',this)">
@@ -353,7 +355,7 @@ tr:hover td{background:#fafbfc}
   <span class="wk-label">To</span>
   <input type="date" class="wk-sel-inner" id="dateTo">
 </div>
-          <button id="applyDateBtn" onclick="applyCustomDateRange()" style="background:#1a1a1a;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:12px;font-weight:600;cursor:pointer">Apply</button>
+         <button id="applyDateBtn" onclick="applyCustomDateRange()" style="background:#0a2472;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:12px;font-weight:600;cursor:pointer">Apply</button>
           <span class="saving" id="savingTxt"> Please Wait...</span>
           <div class="user-chip" id="userChip" style="display:none">
             <img id="userAvatar" src="" alt="">
@@ -1034,26 +1036,14 @@ function renderMyScore(ms,debugEmail,debugDoerName){
 
     var snapScoreEl=document.getElementById('snapScore');
     if(snapScoreEl){ snapScoreEl.textContent=perfValue.toFixed(0)+'%'; }
-
-    html+='<div class="card" style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:18px">'+
-      '<div>'+
-        '<div class="cl" style="margin-bottom:6px">My Performance &mdash; '+ms.employee+'</div>'+
-        '<div class="cv '+perfColor+'" style="font-size:38px;margin-bottom:0">'+perfValue.toFixed(2)+'%</div>'+
-      '</div>'+
-      '<div style="flex:1;min-width:220px;max-width:340px">'+
-        '<div class="cl" style="margin-bottom:8px">Plan vs Completed</div>'+
-        pg(planVsCompletedPct)+
-        '<div class="cs" style="margin-top:8px">'+tC+' of '+tP+' total tasks completed</div>'+
-      '</div></div>';
-
-   html+='<div style="display:flex;gap:10px;margin-bottom:10px">'+
-      '<button onclick="exportMyScoreCSV()" style="background:#1a1a1a;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer">Export CSV</button>'+
-      '<button onclick="window.print()" style="background:#f3f4f6;color:#333;border:1px solid #d1d5db;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer">Print</button>'+
+html+='<div style="display:flex;gap:10px;margin-bottom:10px">'+
+      '<button onclick="exportMyScoreCSV()" style="background:#0a2472;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer">Export CSV</button>'+
+      '<button onclick="printMyScore()" style="background:#f3f4f6;color:#333;border:1px solid #d1d5db;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer">Print</button>'+
       '</div>';
     html+='<div class="tc"><div style="overflow-x:auto"><table id="myScoreTable">'+
-      '<thead><tr><th>Plan</th><th>Completed</th><th>On Time Completed</th><th>Work Not Done %</th><th>Work Not Done On Time %</th></tr></thead>'+
+      '<thead><tr><th>Name</th><th>Plan</th><th>Completed</th><th>On Time Completed</th><th>Work Not Done %</th><th>Work Not Done On Time %</th></tr></thead>'+
       '<tbody><tr>'+
-        '<td>'+tP+'</td><td>'+tC+'</td><td>'+onT+'</td>'+
+        '<td>'+ms.employee+'</td><td>'+tP+'</td><td>'+tC+'</td><td>'+onT+'</td>'+
         '<td style="color:'+(wnd===0?'#16a34a':'#dc2626')+';font-weight:700">'+(wnd===0?'0.00%':'-'+wnd.toFixed(2)+'%')+'</td>'+
         '<td style="color:'+(wndot===0?'#16a34a':'#dc2626')+';font-weight:700">'+(wndot===0?'0.00%':'-'+wndot.toFixed(2)+'%')+'</td>'+
       '</tr></tbody></table></div></div>';
@@ -1068,7 +1058,7 @@ function renderMyScore(ms,debugEmail,debugDoerName){
   }
   c.innerHTML=html;
 }
-  function exportMyScoreCSV(){
+ function exportMyScoreCSV(){
   var t=document.getElementById('myScoreTable');
   if(!t)return;
   var rows=[],trs=t.querySelectorAll('tr');
@@ -1086,6 +1076,20 @@ function renderMyScore(ms,debugEmail,debugDoerName){
   a.click();
 }
 
+function printMyScore(){
+  var t=document.getElementById('myScoreTable');
+  if(!t)return;
+  var period=(document.getElementById('dateFrom')?document.getElementById('dateFrom').value:'')+' to '+(document.getElementById('dateTo')?document.getElementById('dateTo').value:'');
+  var w=window.open('','_blank');
+  w.document.write('<html><head><title>My Score</title><style>body{font-family:sans-serif;padding:30px}h2{text-align:center;margin-bottom:4px}p{text-align:center;color:#555;margin-top:0}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border:1px solid #ccc;padding:8px 12px;text-align:left;font-size:13px}th{background:#f3f4f6}</style></head><body>'+
+    '<h2>UMESH BOLMAL &amp; ASSOCIATES</h2>'+
+    '<p>Period: '+period+'</p>'+
+    t.outerHTML+
+    '</body></html>');
+  w.document.close();
+  w.focus();
+  setTimeout(function(){w.print();w.close();},300);
+}
 function populateFmsFilters(opts){
   var ts=document.getElementById('fmsFilterType');
   var pt=ts.value;
@@ -1252,7 +1256,11 @@ function switchTab(name,el){
   el.classList.add('active');
   document.getElementById('tab-'+name).classList.add('active');
   var tb=document.querySelector('.topbar');
-  if(tb) tb.style.display=(name==='mytask'||name==='mychecklisttask')?'none':'flex';
+  var isEmbedTab=(name==='mytask'||name==='mychecklisttask');
+  if(tb) tb.style.display=isEmbedTab?'none':'flex';
+  document.querySelectorAll('.mytask-wrap').forEach(function(w){
+    w.style.height=isEmbedTab?'calc(100vh - 40px)':'calc(100vh - 150px)';
+  });
 }
 
 /* ── Boot / session restore ─────────────────────────────────────── */
