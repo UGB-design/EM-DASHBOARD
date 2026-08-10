@@ -641,11 +641,27 @@ function goTab(name){
 function loadDashboard() {
   document.getElementById('authOverlay').style.display='none';
   document.getElementById('dashboardWrap').style.display='block';
-  document.getElementById('ldiv').style.display='block';
-  document.getElementById('mdiv').style.display='none';
   setInitialFormDefaults();
-  showAllTabSkeletons();
-  fetch(API+'?cb='+Date.now()+sessionParams(),{redirect:'follow'})
+
+  var cachedData = null;
+  try {
+    var cachedStr = sessionStorage.getItem('em_lastData');
+    if (cachedStr) cachedData = JSON.parse(cachedStr);
+  } catch(e){}
+
+  if (cachedData) {
+    // Purana data turant dikhao — koi skeleton/loading nahi
+    document.getElementById('ldiv').style.display='none';
+    document.getElementById('mdiv').style.display='block';
+    if(cachedData.doerName){SESSION.doerName=cachedData.doerName;}
+    renderAll(cachedData);
+    setupDefaultFilters();
+  } else {
+    document.getElementById('ldiv').style.display='block';
+    document.getElementById('mdiv').style.display='none';
+    showAllTabSkeletons();
+  }
+
   fetch(API+'?cb='+Date.now()+sessionParams(),{redirect:'follow'})
     .then(function(r){return r.json();})
     .then(function(data){
@@ -654,9 +670,12 @@ function loadDashboard() {
       document.getElementById('mdiv').style.display='block';
       renderAll(data);
       setupDefaultFilters();
+      try { sessionStorage.setItem('em_lastData', JSON.stringify(data)); } catch(e){}
     })
     .catch(function(err){
-      document.getElementById('ldiv').innerHTML='<div class="ebox">Error loading data. Please refresh.<br><small>'+err+'</small></div>';
+      if (!cachedData) {
+        document.getElementById('ldiv').innerHTML='<div class="ebox">Error loading data. Please refresh.<br><small>'+err+'</small></div>';
+      }
     });
 }
 function ini(n) {
@@ -730,6 +749,7 @@ function applyCustomDateRange(){
       document.getElementById('ldiv').style.display='none';
       document.getElementById('mdiv').style.display='block';
       renderAll(data);
+      try { sessionStorage.setItem('em_lastData', JSON.stringify(data)); } catch(e){}
     });
 }
   function showDashboardSkeletons(){
@@ -1780,9 +1800,12 @@ document.getElementById('pendingModal').addEventListener('click',function(e){if(
 
 function getAvatarUrl(genderVal){
   var g=String(genderVal||'').trim().toLowerCase();
-  return g==='female'
-    ? 'https://cdn-icons-png.flaticon.com/512/236/236832.png'
-    : 'https://cdn-icons-png.flaticon.com/512/236/236831.png';
+  var isFemale = g==='female';
+  var bg = isFemale ? '%23F472B6' : '%233B82F6'; // pink for female, blue for male
+  var svg = isFemale
+    ? '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="'+bg+'"/><circle cx="50" cy="40" r="18" fill="%23fff"/><path d="M20 90 Q20 62 50 62 Q80 62 80 90 Z" fill="%23fff"/></svg>'
+    : '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="'+bg+'"/><circle cx="50" cy="38" r="16" fill="%23fff"/><path d="M22 92 Q22 66 50 66 Q78 66 78 92 Z" fill="%23fff"/></svg>';
+  return 'data:image/svg+xml,'+svg;
 }
 function openMyProfileModal(){
   document.getElementById('profileModal').style.display='flex';
