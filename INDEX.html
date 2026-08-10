@@ -1305,25 +1305,37 @@ function openTaskSummaryModal(){
   var d = globalRawData && globalRawData.taskSummaryDetail;
   document.getElementById('modalTitle').textContent = 'My Score — Full Report';
   document.getElementById('modalSubtitle').textContent = d ? d.employee : '';
+  var thStyle = 'padding:10px 16px;border-bottom:1px solid #e8eaed;background:#fafafa;font-size:11px;color:#9aa0ac;text-transform:uppercase;white-space:nowrap';
   document.getElementById('modalTheadRow').innerHTML =
-    '<th style="padding:10px 16px;border-bottom:1px solid #e8eaed;background:#fafafa;font-size:11px;color:#9aa0ac;text-transform:uppercase">Metric</th>'+
-    '<th style="padding:10px 16px;border-bottom:1px solid #e8eaed;background:#fafafa;font-size:11px;color:#9aa0ac;text-transform:uppercase">Value</th>';
+    '<th style="'+thStyle+'">Total Plan</th>'+
+    '<th style="'+thStyle+'">Total Completed</th>'+
+    '<th style="'+thStyle+'">On Time Completed</th>'+
+    '<th style="'+thStyle+'">Work Not Done On Time %</th>'+
+    '<th style="'+thStyle+'">Work Not Done %</th>';
   if(!d){
-    document.getElementById('modalBody').innerHTML = '<tr><td colspan="2" style="text-align:center;padding:30px;color:#bbb">No score data found</td></tr>';
+    document.getElementById('modalBody').innerHTML = '<tr><td colspan="5" style="text-align:center;padding:30px;color:#bbb">No score data found</td></tr>';
   } else {
-    var rows = [
-      ['Total Plan', d.totalPlan], ['Total Completed', d.totalCompleted],
-      ['On Time Completed', d.onTimeCompleted],
-      ['Work Not Done %', d.workNotDonePct.toFixed(2)+'%'],
-      ['Work Not Done On Time %', d.workNotDoneOnTimePct.toFixed(2)+'%'],
-      ['FMS Plan / Actual', d.fmsPlan+' / '+d.fmsActual],
-      ['Checklist Plan / Actual', d.clPlan+' / '+d.clActual],
-      ['Delegation Plan / Actual', d.dlPlan+' / '+d.dlActual]
-    ];
-    document.getElementById('modalBody').innerHTML = rows.map(function(r){
-      return '<tr><td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-weight:600">'+r[0]+'</td>'+
-        '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6">'+r[1]+'</td></tr>';
-    }).join('');
+    var td = 'padding:14px 16px;border-bottom:1px solid #f3f4f6';
+    function planBadge(v){
+      return '<span style="background:#eff6ff;color:#1d4ed8;font-weight:700;font-size:13px;padding:4px 12px;border-radius:8px;display:inline-block">'+v+'</span>';
+    }
+    function doneBadge(v){
+      return '<span style="background:#f0fdf4;color:#16a34a;font-weight:700;font-size:13px;padding:4px 12px;border-radius:8px;display:inline-block">'+v+'</span>';
+    }
+    function pctCell(v){
+      var n = Math.abs(parseFloat(v)||0);
+      var color = n===0 ? '#16a34a' : '#dc2626';
+      var txt = n===0 ? '0.00%' : '-'+n.toFixed(2)+'%';
+      return '<td style="'+td+';color:'+color+';font-weight:700">'+txt+'</td>';
+    }
+    document.getElementById('modalBody').innerHTML =
+      '<tr>'+
+        '<td style="'+td+'">'+planBadge(d.totalPlan)+'</td>'+
+        '<td style="'+td+'">'+doneBadge(d.totalCompleted)+'</td>'+
+        '<td style="'+td+'">'+doneBadge(d.onTimeCompleted)+'</td>'+
+        pctCell(d.workNotDoneOnTimePct)+
+        pctCell(d.workNotDonePct)+
+      '</tr>';
   }
   document.getElementById('pendingModal').style.display='flex';
 }
@@ -1516,7 +1528,9 @@ function showAttendanceTableModal() {
 }
 
 function showLeaveTableModal() {
-  var rows = (globalRawData && globalRawData.leaveSummary && globalRawData.leaveSummary.rows) || [];
+  var selectedYear = document.getElementById('leaveYearSel') ? document.getElementById('leaveYearSel').value : '';
+  var allRows = (globalRawData && globalRawData.leaveSummary && globalRawData.leaveSummary.rows) || [];
+  var rows = selectedYear ? allRows.filter(function(r){ return r.year === selectedYear; }) : allRows;
   document.getElementById('modalTitle').textContent = 'My Leave Details';
   document.getElementById('modalSubtitle').textContent = rows.length + ' records';
   document.getElementById('modalTheadRow').innerHTML =
