@@ -388,7 +388,7 @@ tr:hover td{background:#fafbfc}
   <div class="ud-panel">
     <div class="ud-panel-title" style="display:flex;justify-content:space-between;align-items:center">
       <span>Attendance Overview</span>
-      <input type="month" id="attMonthPicker" class="users-filter-sel" style="font-size:11px;padding:5px 10px" onchange="changeAttendanceMonth(this.value)">
+    <input type="month" id="attMonthPicker" class="users-filter-sel" style="font-size:11px;padding:5px 10px" onchange="changeAttendanceMonth(this.value)">
     </div>
     <div class="ud-att-row" id="udAttendanceRow"></div>
     <div id="udAttendanceChart" style="margin-top:14px"></div>
@@ -617,6 +617,11 @@ function loadDashboard() {
       document.getElementById('ldiv').style.display='none';
       document.getElementById('mdiv').style.display='block';
       renderAll(data);
+      .then(function(data){
+  ...
+  renderAll(data);
+  setupDefaultFilters();   // ← ye line add karo
+})
     })
     .catch(function(err){
       document.getElementById('ldiv').innerHTML='<div class="ebox">Error loading data. Please refresh.<br><small>'+err+'</small></div>';
@@ -1199,28 +1204,40 @@ function showPendingModal(step,doer,encoded){
   }).join('');
   document.getElementById('pendingModal').style.display='flex';
 }
- function openTaskSummaryModal(){
+function openTaskSummaryModal(){
   var d = globalRawData && globalRawData.taskSummaryDetail;
   document.getElementById('modalTitle').textContent = 'My Score — Full Report';
   document.getElementById('modalSubtitle').textContent = d ? d.employee : '';
   var thStyle = 'padding:10px 16px;border-bottom:1px solid #e8eaed;background:#fafafa;font-size:11px;color:#9aa0ac;text-transform:uppercase;white-space:nowrap';
   document.getElementById('modalTheadRow').innerHTML =
-    '<th style="'+thStyle+'">Plan</th>'+
-    '<th style="'+thStyle+'">Completed</th>'+
+    '<th style="'+thStyle+'">Total Plan</th>'+
+    '<th style="'+thStyle+'">Total Completed</th>'+
     '<th style="'+thStyle+'">On Time Completed</th>'+
-    '<th style="'+thStyle+'">Work Not Done %</th>'+
-    '<th style="'+thStyle+'">Work Not Done On Time %</th>';
+    '<th style="'+thStyle+'">Work Not Done On Time %</th>'+
+    '<th style="'+thStyle+'">Work Not Done %</th>';
   if(!d){
     document.getElementById('modalBody').innerHTML = '<tr><td colspan="5" style="text-align:center;padding:30px;color:#bbb">No score data found</td></tr>';
   } else {
-    var td = 'padding:11px 16px;border-bottom:1px solid #f3f4f6;font-weight:600';
+    var td = 'padding:14px 16px;border-bottom:1px solid #f3f4f6';
+    function planBadge(v){
+      return '<span style="background:#eff6ff;color:#1d4ed8;font-weight:700;font-size:13px;padding:4px 12px;border-radius:8px;display:inline-block">'+v+'</span>';
+    }
+    function doneBadge(v){
+      return '<span style="background:#f0fdf4;color:#16a34a;font-weight:700;font-size:13px;padding:4px 12px;border-radius:8px;display:inline-block">'+v+'</span>';
+    }
+    function pctCell(v){
+      var n = Math.abs(parseFloat(v)||0);
+      var color = n===0 ? '#16a34a' : '#dc2626';
+      var txt = n===0 ? '0.00%' : '-'+n.toFixed(2)+'%';
+      return '<td style="'+td+';color:'+color+';font-weight:700">'+txt+'</td>';
+    }
     document.getElementById('modalBody').innerHTML =
       '<tr>'+
-        '<td style="'+td+'">'+d.totalPlan+'</td>'+
-        '<td style="'+td+'">'+d.totalCompleted+'</td>'+
-        '<td style="'+td+'">'+d.onTimeCompleted+'</td>'+
-        '<td style="'+td+'">'+d.workNotDonePct.toFixed(2)+'%</td>'+
-        '<td style="'+td+'">'+d.workNotDoneOnTimePct.toFixed(2)+'%</td>'+
+        '<td style="'+td+'">'+planBadge(d.totalPlan)+'</td>'+
+        '<td style="'+td+'">'+doneBadge(d.totalCompleted)+'</td>'+
+        '<td style="'+td+'">'+doneBadge(d.onTimeCompleted)+'</td>'+
+        pctCell(d.workNotDoneOnTimePct)+
+        pctCell(d.workNotDonePct)+
       '</tr>';
   }
   document.getElementById('pendingModal').style.display='flex';
@@ -1367,6 +1384,43 @@ function openLeaveModal(){
       if (panel) panel.style.opacity = '1';
     })
     .catch(function(){ if (panel) panel.style.opacity = '1'; });
+}
+  var filtersInitialized = false;
+
+function setupDefaultFilters(){
+  if (filtersInitialized) return;
+  filtersInitialized = true;
+
+  var mp = document.getElementById('attMonthPicker');
+  if (mp) {
+    var now = new Date();
+    var mm = String(now.getMonth()+1).padStart(2,'0');
+    mp.value = now.getFullYear()+'-'+mm;
+    changeAttendanceMonth(mp.value);
+  }
+
+  populateLeaveYearOptions();
+  var sel = document.getElementById('leaveYearSel');
+  if (sel) changeLeaveYear(sel.value);
+}
+
+function currentFYLabel(){
+  var now = new Date();
+  var y = now.getMonth()>=3 ? now.getFullYear() : now.getFullYear()-1; // April se naya FY
+  return y+'-'+String(y+1).slice(-2);
+}
+
+function populateLeaveYearOptions(){
+  var sel = document.getElementById('leaveYearSel');
+  if (!sel) return;
+  var now = new Date();
+  var y = now.getMonth()>=3 ? now.getFullYear() : now.getFullYear()-1;
+  var years = [y-1, y, y+1];
+  sel.innerHTML = years.map(function(yy){
+    var label = yy+'-'+String(yy+1).slice(-2);
+    return '<option value="'+label+'">'+label+'</option>';
+  }).join('');
+  sel.value = currentFYLabel();
 }
   function changeAttendancePeriod(period) {
   var sel = document.getElementById('attPeriodSel');
