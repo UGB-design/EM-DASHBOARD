@@ -1801,10 +1801,10 @@ document.getElementById('pendingModal').addEventListener('click',function(e){if(
 function getAvatarUrl(genderVal){
   var g=String(genderVal||'').trim().toLowerCase();
   var isFemale = g==='female';
-  var bg = isFemale ? '%23F472B6' : '%233B82F6'; // pink for female, blue for male
+ var bg = isFemale ? '#F472B6' : '#3B82F6';// pink for female, blue for male
   var svg = isFemale
-    ? '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="'+bg+'"/><circle cx="50" cy="40" r="18" fill="%23fff"/><path d="M20 90 Q20 62 50 62 Q80 62 80 90 Z" fill="%23fff"/></svg>'
-    : '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="'+bg+'"/><circle cx="50" cy="38" r="16" fill="%23fff"/><path d="M22 92 Q22 66 50 66 Q78 66 78 92 Z" fill="%23fff"/></svg>';
+    ? '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="'+bg+'"/><circle cx="50" cy="40" r="18" fill="#fff"/><path d="M20 90 Q20 62 50 62 Q80 62 80 90 Z" fill="#fff"/></svg>'
+    : '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="'+bg+'"/><circle cx="50" cy="38" r="16" fill="#fff"/><path d="M22 92 Q22 66 50 66 Q78 66 78 92 Z" fill="#fff"/></svg>';
   return 'data:image/svg+xml,'+encodeURIComponent(svg);
 }
 function openMyProfileModal(){
