@@ -65,7 +65,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tab-content.active{display:block}
 
 .c5{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:14px}
-.c6{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:22px;align-items:stretch}
+.c6{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:22px;align-items:stretch}
 .c6 .card{padding:14px 16px;display:flex;flex-direction:column;justify-content:space-between;min-height:112px}
 .c6 .cl{font-size:9px;margin-bottom:6px}
 .c6 .cv{font-size:21px;margin-bottom:3px}
@@ -343,7 +343,7 @@ tr:hover td{background:#fafbfc}
   <main class="main-area">
     <div class="topbar">
       <div class="tb-row1">
-        <div class="tb-greet" id="tbGreet"><span id="tbGreetText">Hello..!</span></div>
+       <div class="tb-greet" id="tbGreet"><span id="tbGreetText">Hello..!</span><span class="em" id="tbDateTime"></span></div>
         <div class="tb-right">
           <a class="apply-leave-btn" href="https://www.appsheet.com/start/e593f206-628c-4174-a375-4012a703c619#view=Apply%20Leave" target="_blank" rel="noopener">Apply Leave</a>
         <div class="date-range-combo">
@@ -438,7 +438,6 @@ tr:hover td{background:#fafbfc}
             <div class="card"><div class="cl">FMS Plan</div><div class="cv blue" id="cFP">&mdash;</div><div class="cs-detail" id="cFPdetail"></div></div>
             <div class="card"><div class="cl">Checklist Plan</div><div class="cv blue" id="cCP">&mdash;</div><div class="cs-detail" id="cCPdetail"></div></div>
             <div class="card"><div class="cl">Delegation Plan</div><div class="cv blue" id="cDP">&mdash;</div><div class="cs-detail" id="cDPdetail"></div></div>
-            <div class="card"><div class="cl">Overall Score</div><div class="cv green" id="cOV">&mdash;</div><div class="cs">monthly rate</div></div>
           </div>
           <div class="tc" style="margin-bottom:16px">
             <div class="tc-top"><div class="tc-title">My Summary</div></div>
@@ -475,9 +474,13 @@ tr:hover td{background:#fafbfc}
       </div>
 
       <div class="tab-content" id="tab-fms">
-        <div class="filter-bar">
+       <div class="filter-bar">
           <label>FMS Type:</label>
           <select id="fmsFilterType" onchange="applyFmsFilters()"><option value="All">All Types</option></select>
+          <label>Status:</label>
+          <select id="fmsFilterStatus" onchange="applyFmsFilters()">
+            <option value="All">All Status</option><option value="Done">Done</option><option value="Pending">Pending</option>
+          </select>
         </div>
         <div class="meta-info-badge" id="fmsMetaBadges"></div>
         <div class="stat-grid" id="fmsStatsGrid"></div>
@@ -962,10 +965,6 @@ function renderAll(data){
   document.getElementById('cCPdetail').innerHTML='<span class="cs-done">'+(bd.clDone||0)+' done</span><span class="cs-pend">'+(bd.clPending||0)+' pending</span>';
   document.getElementById('cDPdetail').innerHTML='<span class="cs-done">'+dlDoneAdj+' done</span><span class="cs-pend">'+dlPendingAdj+' pending</span>';
 
-  var ovEl=document.getElementById('cOV');
-  ovEl.textContent=ovNum.toFixed(1)+'%';
-  ovEl.className='cv '+(ovNum>=90?'green':ovNum>=50?'orange':'red');
-
   if(em.doers){
     document.getElementById('mySummaryBody').innerHTML=em.doers.map(function(d,i){
       var key=String(d.name||'').trim().toLowerCase();
@@ -1047,13 +1046,17 @@ function renderMyScore(ms,debugEmail,debugDoerName){
         '<div class="cs" style="margin-top:8px">'+tC+' of '+tP+' total tasks completed</div>'+
       '</div></div>';
 
-    html+='<div class="c5">'+
-      statCard('Total Plan', tP, 'blue')+
-      statCard('Total Completed', tC, 'green')+
-      statCard('On Time Completed', onT, 'blue')+
-      negScoreCard('Work Not Done %', wnd)+
-      negScoreCard('Work Not Done On Time %', wndot)+
+   html+='<div style="display:flex;gap:10px;margin-bottom:10px">'+
+      '<button onclick="exportMyScoreCSV()" style="background:#1a1a1a;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer">Export CSV</button>'+
+      '<button onclick="window.print()" style="background:#f3f4f6;color:#333;border:1px solid #d1d5db;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer">Print</button>'+
       '</div>';
+    html+='<div class="tc"><div style="overflow-x:auto"><table id="myScoreTable">'+
+      '<thead><tr><th>Plan</th><th>Completed</th><th>On Time Completed</th><th>Work Not Done %</th><th>Work Not Done On Time %</th></tr></thead>'+
+      '<tbody><tr>'+
+        '<td>'+tP+'</td><td>'+tC+'</td><td>'+onT+'</td>'+
+        '<td style="color:'+(wnd===0?'#16a34a':'#dc2626')+';font-weight:700">'+(wnd===0?'0.00%':'-'+wnd.toFixed(2)+'%')+'</td>'+
+        '<td style="color:'+(wndot===0?'#16a34a':'#dc2626')+';font-weight:700">'+(wndot===0?'0.00%':'-'+wndot.toFixed(2)+'%')+'</td>'+
+      '</tr></tbody></table></div></div>';
   } else {
     html+='<div style="text-align:center;padding:50px 20px;color:#bbb">'+
       '<div style="margin-bottom:14px;font-size:14px">No score record found for your account.</div>'+
@@ -1064,6 +1067,23 @@ function renderMyScore(ms,debugEmail,debugDoerName){
       '</div></div>';
   }
   c.innerHTML=html;
+}
+  function exportMyScoreCSV(){
+  var t=document.getElementById('myScoreTable');
+  if(!t)return;
+  var rows=[],trs=t.querySelectorAll('tr');
+  trs.forEach(function(tr){
+    var cells=tr.querySelectorAll('th,td');
+    var line=[];
+    cells.forEach(function(c){line.push('"'+c.textContent.trim()+'"');});
+    rows.push(line.join(','));
+  });
+  var csv=rows.join('\n');
+  var blob=new Blob([csv],{type:'text/csv'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='my_score.csv';
+  a.click();
 }
 
 function populateFmsFilters(opts){
@@ -1083,12 +1103,15 @@ function setSbBadge(id,val){
 
 function applyFmsFilters(){
   var tf=document.getElementById('fmsFilterType').value;
+  var sf=document.getElementById('fmsFilterStatus')?document.getElementById('fmsFilterStatus').value:'All';
   var groups=globalRawData?(globalRawData.fmsGroups||[]):[];
   var tPlan=0,tActual=0,tOnTime=0,gCount=0;
 
   var html=groups.map(function(g){
     if(tf!=='All'&&g.groupName!==tf)return '';
     var steps=g.steps.filter(function(s){return s.plan>0;});
+    if(sf==='Done')steps=steps.filter(function(s){return s.missed===0;});
+    if(sf==='Pending')steps=steps.filter(function(s){return s.missed>0;});
     if(!steps.length)return '';
     var gP=steps.reduce(function(a,r){return a+r.plan;},0);
     var gA=steps.reduce(function(a,r){return a+r.actual;},0);
@@ -1228,6 +1251,8 @@ function switchTab(name,el){
   document.querySelectorAll('.tab-content').forEach(function(t){t.classList.remove('active');});
   el.classList.add('active');
   document.getElementById('tab-'+name).classList.add('active');
+  var tb=document.querySelector('.topbar');
+  if(tb) tb.style.display=(name==='mytask'||name==='mychecklisttask')?'none':'flex';
 }
 
 /* ── Boot / session restore ─────────────────────────────────────── */
@@ -1247,6 +1272,20 @@ function switchTab(name,el){
 </script>
 
 <script>
+  function updateLiveDateTime(){
+  var el=document.getElementById('tbDateTime');
+  if(!el)return;
+  var d=new Date();
+  var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var dd=String(d.getDate()).padStart(2,'0');
+  var mm=String(d.getMonth()+1).padStart(2,'0');
+  var hh=String(d.getHours()).padStart(2,'0');
+  var mi=String(d.getMinutes()).padStart(2,'0');
+  var ss=String(d.getSeconds()).padStart(2,'0');
+  el.textContent=days[d.getDay()]+', '+dd+'/'+mm+'/'+d.getFullYear()+' — '+hh+':'+mi+':'+ss;
+}
+setInterval(updateLiveDateTime,1000);
+updateLiveDateTime();
 /* Faster fallback: 2s instead of 6s, so manual sign-in shows up quickly
    when Chrome silently blocks the auto One Tap prompt (FedCM / 3rd-party
    cookie restrictions). */
