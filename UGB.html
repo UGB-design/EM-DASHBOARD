@@ -1472,9 +1472,9 @@ function refreshDashboard() {
       })
       .catch(function(err) { console.warn('pollTodayStats failed:', err); });
   }
-  function startTodayStatsPolling() {
+ function startTodayStatsPolling() {
     if (window._todayStatsPollTimer) clearInterval(window._todayStatsPollTimer);
-   window._todayStatsPollTimer = setInterval(pollTodayStats, 60000);
+   window._todayStatsPollTimer = setInterval(pollTodayStats, 6000);
   }
   // ── Date helpers ─────────────────────────────────────────────────────────────
   function toISO(ddmmyyyy) {
@@ -1695,21 +1695,26 @@ function loadUserCache(email) {
   function computeDelegationStatus(r) {
     return normalizeStatus(r.status) === 'completed' ? 'Completed' : 'Pending';
   }
-  function renderTodayStatBadges(data) {
+ function renderTodayStatBadges(data) {
     try {
-      var ts = (data && data.todayStats) ? data.todayStats : { tasks: 0, fms: 0, checklist: 0, delegation: 0 };
       var em = (data && data.emDashboard) ? data.emDashboard : {};
       var t  = em.totals || {};
       var myScore = (typeof t.overallNum === 'number') ? t.overallNum : 0;
-  
+
+      var allToday = (data && data.todayTaskList) || [];
+      var pendToday = allToday.filter(function(x){ return x.status !== 'Completed'; });
+      var pendFms = pendToday.filter(function(x){ return x.type === 'FMS'; }).length;
+      var pendCl  = pendToday.filter(function(x){ return x.type === 'Checklist'; }).length;
+      var pendDl  = pendToday.filter(function(x){ return x.type === 'Delegation'; }).length;
+
       var setTxt = function(id, val) {
         var el = document.getElementById(id);
         if (el) el.textContent = val;
       };
-      setTxt('badgeTodayTasks', ts.tasks || 0);
-      setTxt('badgeTodayFms', ts.fms || 0);
-      setTxt('badgeTodayChecklist', ts.checklist || 0);
-    setTxt('badgeTodayDelegation', ts.delegation || 0);
+      setTxt('badgeTodayTasks', pendToday.length);
+      setTxt('badgeTodayFms', pendFms);
+      setTxt('badgeTodayChecklist', pendCl);
+      setTxt('badgeTodayDelegation', pendDl);
       setTxt('badgeMyScore', Math.round(myScore) + '%');
     var perfPct = Math.round(myScore);
       var pctEl = document.getElementById('snapPerfPct');
@@ -2057,25 +2062,23 @@ function renderUsersDashboardPanels(data) {
       '</div>';
     }).join('');
   }
-    function showRecentActivitiesModal() {
+   function showRecentActivitiesModal() {
     var tasks = window._dashActivityFull || [];
     document.getElementById('modalTitle').textContent = 'Recent Activities';
     document.getElementById('modalSubtitle').textContent = tasks.length + ' completed today';
-    document.getElementById('modalTheadRow').innerHTML =
-      '<th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#fafafa">#</th>' +
-      '<th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#fafafa">Type</th>' +
-      '<th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#fafafa">Task</th>' +
-      '<th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#fafafa">Doer</th>' +
-      '<th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#fafafa">Date</th>';
-    document.getElementById('modalBody').innerHTML = tasks.map(function(t, i) {
-      return '<tr>' +
-        '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#555">' + (i+1) + '</td>' +
-        '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6"><span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;' + typeTagStyle(t.type) + '">' + t.type + '</span></td>' +
-        '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151">' + t.task + '</td>' +
-        '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151">' + t.doer + '</td>' +
-        '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151;white-space:nowrap">' + t.plannedDate + '</td>' +
-        '</tr>';
-    }).join('') || '<tr><td colspan="5" style="text-align:center;color:#bbb;padding:30px">No completed activities today</td></tr>';
+    document.getElementById('modalTheadRow').innerHTML = '';
+    document.getElementById('modalBody').innerHTML = (tasks.length ? '<tr><td style="padding:0;border:none">' +
+      tasks.map(function(t) {
+        var icon = t.type === 'FMS' ? '📋' : t.type === 'Checklist' ? '✅' : '👥';
+        var clientPart = (t.client && t.client !== '-') ? ' for <b>' + t.client + '</b>' : '';
+        var timeVal = t.time || t.completedTime || t.plannedDate || '';
+        return '<div style="display:flex;align-items:center;gap:12px;padding:11px 16px;border-bottom:1px solid #f3f4f6">' +
+          '<div style="width:34px;height:34px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;' + typeTagStyle(t.type) + '">' + icon + '</div>' +
+          '<div style="flex:1;font-size:13px;color:#374151">"' + t.task + '" completed by <b>' + t.doer + '</b>' + clientPart + '</div>' +
+          '<div style="font-size:11px;color:#9aa0ac;font-weight:600;white-space:nowrap;flex-shrink:0">' + timeVal + '</div>' +
+        '</div>';
+      }).join('') +
+      '</td></tr>' : '<tr><td style="text-align:center;color:#bbb;padding:30px">No completed activities today</td></tr>');
     document.getElementById('pendingModal').style.display = 'flex';
   }
    function renderPendingApprovalsAndHolidays(data) {
