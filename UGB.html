@@ -1559,7 +1559,11 @@ function refreshDashboard() {
   document.getElementById('authLoadingTxt').style.display = 'block';
   document.getElementById('authLoadingTxt').textContent = 'Verifying access…';
 
+  var savedCache = loadUserCache(payload.email);
   var url = API + '?action=getData&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now();
+  if (savedCache && savedCache.from && savedCache.to) {
+    url += '&from=' + encodeURIComponent(toDDMMYYYY(savedCache.from)) + '&to=' + encodeURIComponent(toDDMMYYYY(savedCache.to));
+  }
   fetch(url, { redirect: 'follow' })
     .then(function(r) { return r.json(); })
     .then(function(data) {
@@ -1570,6 +1574,10 @@ function refreshDashboard() {
       document.getElementById('ldiv').style.display = 'none';
       document.getElementById('mdiv').style.display = 'block';
       renderAll(data);
+      // Keep this admin's own saved range on the fields (renderAll may reset
+      // it from the server's own week if the backend ignored from/to).
+      if (savedCache && savedCache.from) document.getElementById('dtFrom').value = savedCache.from;
+      if (savedCache && savedCache.to) document.getElementById('dtTo').value = savedCache.to;
       saveUserCache(currentUserEmail, data);
     })
     .catch(function() {
