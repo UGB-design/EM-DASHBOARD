@@ -3104,8 +3104,6 @@ function renderClByDoer(rows) {
       };
     });
   }
-  function openTodayTasksModal(filterType) {
-    var tasks = collectTodayTasks();
     function openTodayTasksModal(filterType) {
     var tasks = collectTodayTasks();
     tasks = tasks.filter(function(t) { return t.status !== 'Completed'; });
