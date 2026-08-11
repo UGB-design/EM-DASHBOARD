@@ -3106,6 +3106,12 @@ function renderClByDoer(rows) {
   }
   function openTodayTasksModal(filterType) {
     var tasks = collectTodayTasks();
+    function openTodayTasksModal(filterType) {
+    var tasks = collectTodayTasks();
+    tasks = tasks.filter(function(t) { return t.status !== 'Completed'; });
+    if (filterType && filterType !== 'All') {
+      tasks = tasks.filter(function(t) { return t.type === filterType; });
+    }
     if (filterType && filterType !== 'All') {
       tasks = tasks.filter(function(t) { return t.type === filterType; });
     }
@@ -3125,7 +3131,9 @@ function renderClByDoer(rows) {
       return '<tr>' +
         '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#555">' + (i+1) + '</td>' +
         '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6"><span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;' + typeTagStyle(t.type) + '">' + t.type + '</span></td>' +
-        '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151">' + t.task + '</td>' +
+      '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151">' + 
+  t.task + (t.client && t.client !== '-' ? ' <span style="color:#9aa0ac">(' + t.client + ')</span>' : '') + 
+'</td>' +
         '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151">' + t.doer + '</td>' +
         '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6"><span style="' + statusCls + ';padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600">' + t.status + '</span></td>' +
         '</tr>';
