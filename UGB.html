@@ -1612,11 +1612,14 @@ function showDenied(email) {
     // Turant cached data dikhao (agar available hai) — instant open
     var cached = loadUserCache(email);
     if (cached && cached.data) {
-      if (cached.from) document.getElementById('dtFrom').value = cached.from;
-      if (cached.to) document.getElementById('dtTo').value = cached.to;
       document.getElementById('ldiv').style.display = 'none';
       document.getElementById('mdiv').style.display = 'block';
       renderAll(cached.data);
+      // renderAll internally sets dtFrom/dtTo from the sheet's own week —
+      // override it here with THIS admin's last-selected range so each
+      // admin always sees exactly the date range they had chosen before.
+      if (cached.from) document.getElementById('dtFrom').value = cached.from;
+      if (cached.to) document.getElementById('dtTo').value = cached.to;
     }
 
     // Fir background mein fresh data laao (chahe cache mila ho ya nahi)
