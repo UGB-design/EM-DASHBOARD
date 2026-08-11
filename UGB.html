@@ -2037,7 +2037,7 @@ function renderUsersDashboardPanels(data) {
     }).join('');
   }
  function renderDashRecentActivities(data) {
-    var tasks = (data.todayTaskList || []).filter(function(t) { return t.status === 'Completed'; });
+    var tasks = (data.todayTaskList || []).filter(function(t) { return t.status === 'Completed' && t.completedToday === true; });
     tasks = tasks.slice().reverse();
     window._dashActivityFull = tasks;
     var el = document.getElementById('dashRecentActivitiesList');
