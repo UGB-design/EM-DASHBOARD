@@ -105,17 +105,14 @@
   #tab-deductions table{table-layout:fixed;}
   #tab-deductions thead th{padding:9px 6px;font-size:10px;white-space:normal;line-height:1.25;overflow:visible;text-overflow:clip;}
   #tab-deductions tbody td{padding:8px 6px;font-size:11px;}
-  #tab-deductions th:nth-child(1), #tab-deductions td:nth-child(1){width:11%;}
-  #tab-deductions th:nth-child(2), #tab-deductions td:nth-child(2){width:8%;}
-  #tab-deductions th:nth-child(3), #tab-deductions td:nth-child(3){width:6%;}
-  #tab-deductions th:nth-child(4), #tab-deductions td:nth-child(4){width:8%;}
-  #tab-deductions th:nth-child(5), #tab-deductions td:nth-child(5){width:9%;}
-  #tab-deductions th:nth-child(6), #tab-deductions td:nth-child(6){width:8%;}
-  #tab-deductions th:nth-child(7), #tab-deductions td:nth-child(7){width:9%;}
-  #tab-deductions th:nth-child(8), #tab-deductions td:nth-child(8){width:8%;}
-  #tab-deductions th:nth-child(9), #tab-deductions td:nth-child(9){width:10%;}
-  #tab-deductions th:nth-child(10), #tab-deductions td:nth-child(10){width:13%;}
-  #tab-deductions th:nth-child(11), #tab-deductions td:nth-child(11){width:10%;}
+ #tab-deductions th:nth-child(1), #tab-deductions td:nth-child(1){width:20%;}
+#tab-deductions th:nth-child(2), #tab-deductions td:nth-child(2){width:12%;}
+#tab-deductions th:nth-child(3), #tab-deductions td:nth-child(3){width:8%;}
+#tab-deductions th:nth-child(4), #tab-deductions td:nth-child(4){width:13%;}
+#tab-deductions th:nth-child(5), #tab-deductions td:nth-child(5){width:12%;}
+#tab-deductions th:nth-child(6), #tab-deductions td:nth-child(6){width:13%;}
+#tab-deductions th:nth-child(7), #tab-deductions td:nth-child(7){width:12%;}
+#tab-deductions th:nth-child(8), #tab-deductions td:nth-child(8){width:10%;}
   #tab-deductions .person{align-items:center;}
   #tab-deductions .person .avatar{width:22px;height:22px;font-size:9.5px;flex-shrink:0;}
   #tab-deductions .person .name{font-size:11px;line-height:1.2;overflow:hidden;}
@@ -256,9 +253,8 @@
       </div>
       <div class="tablewrap">
         <table>
-          <thead><tr>
-            <th>Employee</th><th>Month</th><th>Year</th><th>Planned</th>
-            <th>Completed</th><th>Pending</th><th>WND %</th><th>Ded %</th>
+         <thead><tr>
+            <th>Employee</th><th>Month</th><th>Year</th><th>WND %</th><th>Ded %</th>
             <th>Unpaid Leave</th><th>Deduction</th><th>Slip</th>
           </tr></thead>
           <tbody id="deductionsBody"></tbody>
@@ -1395,8 +1391,8 @@ function renderDeductions(filterText=""){
 
   let totalPlanned=0, totalCompleted=0, totalPending=0, totalDed=0;
 
-  if(rows.length===0){
-    body.innerHTML = `<tr><td colspan="11"><div class="empty"><b>No deduction records${monthKey?" for this month":""}</b></div></td></tr>`;
+ if(rows.length===0){
+    body.innerHTML = `<tr><td colspan="8"><div class="empty"><b>No deduction records${monthKey?" for this month":""}</b></div></td></tr>`;
   }
 
   rows.forEach((d, idx)=>{
@@ -1405,16 +1401,12 @@ function renderDeductions(filterText=""){
     totalCompleted += Number(d["COMPLETED"])||0;
     totalPending += Number(d["PENDING"])||0;
     totalDed += ded;
-
-    const tr = document.createElement("tr");
+const tr = document.createElement("tr");
     tr.innerHTML = `
       <td><div class="person"><div class="avatar" style="background:${colorFor(d["EMPLOYEE"])}">${initials(d["EMPLOYEE"])}</div>
         ${twoLineNameHtml(titleCase(d["EMPLOYEE"]))}</div></td>
       <td>${d["MONTH"]||"–"}</td>
       <td class="num-cell">${d["YEAR"]||"–"}</td>
-      <td class="num-cell">${d["PLANNED"] ?? "–"}</td>
-      <td class="num-cell">${d["COMPLETED"] ?? "–"}</td>
-      <td class="num-cell">${d["PENDING"] ?? "–"}</td>
       <td class="num-cell">${d["WORK NOT DONE%"]!==undefined && d["WORK NOT DONE%"]!==null ? pct(d["WORK NOT DONE%"]) : "–"}</td>
       <td class="num-cell">${d["DEDUCTION %"]!==undefined && d["DEDUCTION %"]!==null ? pct(d["DEDUCTION %"]) : "–"}</td>
       <td class="num-cell">${d["UNPAID LEAVE"] ?? 0}</td>
