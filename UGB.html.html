@@ -8,14 +8,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
-  :root{
-    --bg: #eef0e9;
+ :root{
+    --bg: #eef2f9;
     --card: #ffffff;
-    --border: #e3e5dc;
-    --ink: #12140f;
-    --ink-soft: #5b5f52;
-    --ink-faint: #8b8f80;
-    --blue: #2954e5;
+    --border: #e2e8f0;
+    --ink: #1a1a1a;
+    --ink-soft: #5b6578;
+    --ink-faint: #8b93a8;
+    --navy: #0b1437;
+    --navy-soft: #1c2554;
+    --blue: #2563eb;
     --blue-soft: #eaf0ff;
     --green: #17a34a;
     --green-soft: #e3f8ea;
@@ -41,18 +43,18 @@
   .brand h1{font-size:24px;font-weight:800;margin:0 0 4px;letter-spacing:-0.02em;}
   .brand p{margin:0;font-size:13px;color:var(--ink-soft);}
   .brand p span{color:var(--blue);font-weight:600;}
-  .btn{background:var(--ink);color:#fff;border:none;border-radius:10px;padding:9px 18px;font-weight:600;font-size:13px;cursor:pointer;transition:opacity .15s;display:inline-block;text-decoration:none;}
+  .btn{background:var(--navy);color:#fff;border:none;border-radius:10px;padding:9px 18px;font-weight:600;font-size:13px;cursor:pointer;transition:opacity .15s;display:inline-block;text-decoration:none;}
   .btn:hover{opacity:.85;}
   .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--border);}
   .btn.sm{padding:6px 12px;font-size:11.5px;}
   .topbar{display:flex;justify-content:flex-end;margin-bottom:14px;}
-  .apply-leave{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(180deg,#0a58c2,#054a9f);color:#fff;border:none;border-radius:9px;padding:7px 13px 7px 9px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;letter-spacing:.01em;cursor:pointer;box-shadow:0 1px 2px rgba(5,74,159,.15),0 6px 16px rgba(5,74,159,.28);text-decoration:none;transition:transform .15s, box-shadow .15s, opacity .15s;}
+  .apply-leave{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#1d4ed8 0%,#0b1437 100%);color:#fff;border:none;border-radius:9px;padding:7px 13px 7px 9px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;letter-spacing:.01em;cursor:pointer;box-shadow:0 1px 2px rgba(11,20,55,.15),0 6px 16px rgba(11,20,55,.28);text-decoration:none;transition:transform .15s, box-shadow .15s, opacity .15s;}
   .apply-leave:hover{transform:translateY(-1px);box-shadow:0 2px 4px rgba(5,74,159,.2),0 10px 22px rgba(5,74,159,.32);}
   .apply-leave .plus{width:15px;height:15px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
   .apply-leave .plus svg{width:9px;height:9px;}
   .tabs{display:flex;gap:4px;background:rgba(0,0,0,0.035);padding:4px;border-radius:12px;width:fit-content;margin-bottom:22px;flex-wrap:wrap;}
   .tab{position:relative;padding:8px 16px;font-size:13px;font-weight:600;color:var(--ink-soft);border-radius:9px;cursor:pointer;border:none;background:transparent;display:flex;align-items:center;gap:7px;}
-  .tab.active{background:#fff;color:var(--ink);box-shadow:var(--shadow);}
+  .tab.active{background:#2563eb;color:#fff;box-shadow:0 4px 12px rgba(37,99,235,.35);}  
   .tab-badge{background:var(--red);color:#fff;font-size:10.5px;font-weight:800;min-width:18px;height:18px;border-radius:20px;display:flex;align-items:center;justify-content:center;padding:0 5px;line-height:1;}
   .tab-badge.blue{background:var(--blue);}
   .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px;margin-bottom:16px;}
@@ -754,14 +756,13 @@ function populateMonths(){
   const curMonthIdx = now.getMonth(); // 0 = January
   const curYear = now.getFullYear();
 
-  // Only months that have fully finished — the current, still-running month
-  // (e.g. July while July is in progress) is excluded until it's over.
+  // Include the current month too, so newly-added deduction rows for the
+  // running month show up immediately instead of waiting for it to end.
   const completedOnly = [...seen.values()].filter(({month, year})=>{
     const y = Number(year);
     const m = MONTH_ORDER.indexOf(month);
-    return (y < curYear) || (y === curYear && m < curMonthIdx);
+    return (y < curYear) || (y === curYear && m <= curMonthIdx);
   });
-
   const combos = completedOnly.sort((a,b)=>{
     if(a.year!==b.year) return Number(b.year)-Number(a.year);
     return MONTH_ORDER.indexOf(b.month) - MONTH_ORDER.indexOf(a.month);
