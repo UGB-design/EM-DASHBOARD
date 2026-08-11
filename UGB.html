@@ -1507,13 +1507,19 @@ function refreshDashboard() {
     var to = toDDMMYYYY(tISO);
     document.getElementById('savingTxt').classList.add('show');
     document.getElementById('applyBtn').disabled = true;
-    fetch(API + '?action=setDates&from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to) + '&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now(), { redirect: 'follow' })
+   fetch(API + '?action=setDates&from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to) + '&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now(), { redirect: 'follow' })
       .then(function(r) { return r.json(); })
       .then(function(data) {
       document.getElementById('savingTxt').classList.remove('show');
         document.getElementById('applyBtn').disabled = false;
         if (data.authorized === false) { showDenied(currentUserEmail); return; }
         renderAll(data);
+        // renderAll() resets dtFrom/dtTo from the server's own "week" value,
+        // which can differ from what the admin actually picked. Force the
+        // fields back to the admin's chosen range before caching it, so the
+        // exact selected range is what gets remembered for next login.
+        document.getElementById('dtFrom').value = fISO;
+        document.getElementById('dtTo').value = tISO;
         saveUserCache(currentUserEmail, data);
       })
       .catch(function() {
