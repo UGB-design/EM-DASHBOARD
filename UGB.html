@@ -736,6 +736,10 @@
             <path fill="#FFFFFF" d="M1245.417,1037.5h-190v520h-127.5v-520h-190v-105h507.5V1037.5z"/>
           </svg>
         </a>
+          <button class="refresh-btn" id="notifBellBtn" onclick="showRecentActivitiesModal()" title="Recent Activities" style="position:relative">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d4af5a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+  <span id="notifBellBadge" style="display:none;position:absolute;top:-3px;right:-3px;background:#dc2626;color:#fff;font-size:10px;font-weight:800;min-width:16px;height:16px;border-radius:50%;align-items:center;justify-content:center;padding:0 3px;box-shadow:0 1px 3px rgba(220,38,38,.4);line-height:1">0</span>
+</button>
         <button class="add-delegation-btn" onclick="openAddDelegation()" title="Add a new delegation task">
           <span class="adb-plus">+</span> Delegation
         </button>
@@ -854,7 +858,7 @@
           </div>
         </div>
       </div>
-      <div class="dash-lists-grid">
+      <div class="dash-lists-grid" style="display:none">
         <div class="ud-panel">
           <div class="ud-panel-title">Pending Approvals</div>
           <div id="dashPendingApprovalsList">
@@ -2033,6 +2037,16 @@ function renderUsersDashboardPanels(data) {
     window._dashActivityFull = tasks;
     var el = document.getElementById('dashRecentActivitiesList');
     if (!el) return;
+        
+     var bellBadge = document.getElementById('notifBellBadge');
+    if (bellBadge) {
+      if (tasks.length > 0) {
+        bellBadge.textContent = tasks.length > 99 ? '99+' : tasks.length;
+        bellBadge.style.display = 'flex';
+      } else {
+        bellBadge.style.display = 'none';
+      }
+    }
     if (!tasks.length) { el.innerHTML = '<div class="dl-empty-note">No activity recorded today</div>'; return; }
     el.innerHTML = tasks.slice(0, 2).map(function(t) {
       var icon = t.type === 'FMS' ? '📋' : t.type === 'Checklist' ? '✅' : '👥';
