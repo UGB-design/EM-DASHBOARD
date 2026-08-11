@@ -3192,7 +3192,7 @@ function renderClByDoer(rows) {
     var greetEl = document.getElementById('greetLine');
     var topbarEl = document.getElementById('mainTopbar');
   
-    if (topbarEl) topbarEl.style.display = (name === 'bcinotes') ? 'none' : 'flex';
+    if (topbarEl) topbarEl.style.display = (name === 'bcinotes' || name === 'leave') ? 'none' : 'flex';
   
     if (name === 'leave') {
       if (hc) hc.style.display = 'none';
