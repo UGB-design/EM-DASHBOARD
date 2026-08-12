@@ -1442,7 +1442,13 @@ function refreshDashboard() {
     var btn = document.getElementById('refreshBtn');
     if (!currentIdToken) return;
     if (btn) btn.classList.add('spinning');
-    fetch(API + '?action=getData&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now(), { redirect: 'follow' })
+    var fISO = document.getElementById('dtFrom').value;
+    var tISO = document.getElementById('dtTo').value;
+    var refreshUrl = API + '?action=getData&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now();
+    if (fISO && tISO) {
+      refreshUrl += '&from=' + encodeURIComponent(toDDMMYYYY(fISO)) + '&to=' + encodeURIComponent(toDDMMYYYY(tISO));
+    }
+    fetch(refreshUrl, { redirect: 'follow' })
       .then(function(r) { return r.json(); })
       .then(function(data) {
         if (btn) btn.classList.remove('spinning');
@@ -1456,9 +1462,15 @@ function refreshDashboard() {
   // ── Live-ish polling: silently refreshes ONLY the Today's Tasks/FMS/
   // Checklist/Delegation counters (and their "View details" modal data)
   // every 25 seconds, without touching any other tab/filter/scroll state.
-  function pollTodayStats() {
+ function pollTodayStats() {
     if (!currentIdToken) return;
-    fetch(API + '?action=getData&forceRefresh=1&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now(), { redirect: 'follow' })
+    var fISO = document.getElementById('dtFrom').value;
+    var tISO = document.getElementById('dtTo').value;
+    var pollUrl = API + '?action=getData&forceRefresh=1&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now();
+    if (fISO && tISO) {
+      pollUrl += '&from=' + encodeURIComponent(toDDMMYYYY(fISO)) + '&to=' + encodeURIComponent(toDDMMYYYY(tISO));
+    }
+    fetch(pollUrl, { redirect: 'follow' })
       .then(function(r) { return r.json(); })
       .then(function(data) {
         if (!data || data.authorized === false) return;
