@@ -364,12 +364,13 @@
       <div class="tablewrap">
         <table>
           <thead><tr>
-            <th>Employee</th><th>Date</th><th>IN</th><th>OUT</th>
-            <th>Working Hours</th><th>Status</th>
+            <th>#</th><th>Employee</th><th>Date</th><th>Punch In</th><th>Punch Out</th>
+            <th>Hours</th><th>Status</th>
           </tr></thead>
           <tbody id="attendanceBody"></tbody>
         </table>
       </div>
+      <div id="attendancePagination" style="display:flex;align-items:center;justify-content:flex-end;padding:10px 16px;"></div>
     </div>
   </section>
 
@@ -955,47 +956,53 @@ function renderAttendanceCards(){
     return;
   }
 
-  // All 6 scorecards are derived purely from the "Final Status" column.
   const fs = r => String(r["Final Status"]||"").trim().toUpperCase();
 
-  const weekOff = rows.filter(r => fs(r) === "WO").length;
-  const holiday = rows.filter(r => fs(r) === "HLD").length;
+  const totalEntries = rows.length;
   const present = rows.filter(r => fs(r) === "P").length;
-  const late = rows.filter(r => fs(r).includes("LT")).length;
-  const absent = rows.filter(r => fs(r) === "A").length;
   const halfDay = rows.filter(r => fs(r).includes("/2") || fs(r).includes("HALF")).length;
-  const workingDays = rows.length - weekOff - holiday;
+  const absent = rows.filter(r => fs(r) === "A").length;
+
+  const hoursArr = rows
+    .map(r => parseHM(formatTimeValue(getFieldFuzzy(r, "W.Hrs_f", "W.Hrs", "WHrs"))))
+    .filter(h => h > 0);
+  const avgHours = hoursArr.length ? (hoursArr.reduce((a,b)=>a+b,0) / hoursArr.length) : 0;
 
   wrap.innerHTML = `
-    <div class="card"><div class="eyebrow">Working Days</div><div class="num blue">${workingDays}</div><div class="sub">excl. week-off & holiday</div></div>
+    <div class="card"><div class="eyebrow">Total Entries</div><div class="num blue">${totalEntries}</div></div>
     <div class="card"><div class="eyebrow">Present</div><div class="num green">${present}</div></div>
-    <div class="card"><div class="eyebrow">Absent</div><div class="num red">${absent}</div></div>
-    <div class="card"><div class="eyebrow">Late Present</div><div class="num amber">${late}</div></div>
     <div class="card"><div class="eyebrow">Half Day</div><div class="num amber">${halfDay}</div></div>
-    <div class="card"><div class="eyebrow">Week Off</div><div class="num blue">${weekOff}</div></div>
+    <div class="card"><div class="eyebrow">Absent</div><div class="num red">${absent}</div></div>
+    <div class="card"><div class="eyebrow">Avg Work Hours</div><div class="num blue">${avgHours.toFixed(2)}</div></div>
   `;
 }
 
 function renderAttendanceTable(){
   const body = document.getElementById("attendanceBody");
   body.innerHTML = "";
-  const rows = getFilteredAttendance();
+  const allRows = getFilteredAttendance();
 
-  if(rows.length===0){
-    body.innerHTML = `<tr><td colspan="6"><div class="empty"><b>No attendance records found</b>Try clearing a filter above.</div></td></tr>`;
+  if(allRows.length===0){
+    body.innerHTML = `<tr><td colspan="7"><div class="empty"><b>No attendance records found</b>Try clearing a filter above.</div></td></tr>`;
+    renderAttendancePagination(0);
     return;
   }
 
-  // Most recent date first (e.g. 30/06/2026 down to 01/06/2026)
-  rows.sort((a,b)=>{
+  allRows.sort((a,b)=>{
     const da = parseDMY(a["Date_f"]||a["Date"]);
     const db = parseDMY(b["Date_f"]||b["Date"]);
     return (db?db.getTime():0) - (da?da.getTime():0);
   });
 
-  rows.forEach(r=>{
+  const totalPages = Math.max(1, Math.ceil(allRows.length / ATTENDANCE_PAGE_SIZE));
+  if(attendancePage > totalPages) attendancePage = totalPages;
+  const start = (attendancePage - 1) * ATTENDANCE_PAGE_SIZE;
+  const pageRows = allRows.slice(start, start + ATTENDANCE_PAGE_SIZE);
+
+  pageRows.forEach((r, i)=>{
     const tr = document.createElement("tr");
     tr.innerHTML = `
+      <td class="num-cell">${start + i + 1}</td>
       <td><div class="person"><div class="avatar" style="background:${colorFor(r["Emp Name"])}">${initials(r["Emp Name"])}</div>
         <div class="name">${r["Emp Name"]||""}</div></div></td>
       <td>${r["Date_f"]||r["Date"]||"–"}</td>
@@ -1006,25 +1013,44 @@ function renderAttendanceTable(){
     `;
     body.appendChild(tr);
   });
+
+  renderAttendancePagination(totalPages);
 }
 
-/* ============================================================
-   Leave Balance scorecards
-   ============================================================
-   Layout lives in FIXED columns M:O, right beside the header row
-   of the main Leave_Balance table:
-
-     M1: ACTIVE STAFF            N1: PENDING REQUEST   O1: TOTAL PAID BALANCE
-     M2: 12                      N2: 0                 O2: 88
-     M3: TOTAL PAID LEAVE USED   N3: HALF DAY           O3: UNPAID_LEAVE
-     M4: 92                      N4: 0                  O4: 0
-
-   That static block is a firm-wide, all-years total. When the person
-   picks a specific Leave Year in the "Leave Balance" filter, the cards
-   are recomputed on the fly from the (already year-filtered)
-   Leave_Balance rows + matching Leave_Requests, instead of the static
-   sheet block, so the numbers actually change with the dropdown.
-   ============================================================ */
+function renderAttendancePagination(totalPages){
+  const wrap = document.getElementById("attendancePagination");
+  if(!wrap) return;
+  if(totalPages <= 0){ wrap.innerHTML = ""; return; }
+  wrap.innerHTML = `
+    <button class="btn ghost sm" id="attPrevBtn" ${attendancePage<=1?"disabled":""}>Previous</button>
+    <span style="font-size:12px;color:var(--ink-soft);margin:0 10px;">Page ${attendancePage} of ${totalPages}</span>
+    <button class="btn ghost sm" id="attNextBtn" ${attendancePage>=totalPages?"disabled":""}>Next</button>
+  `;
+  document.getElementById("attPrevBtn").addEventListener("click", ()=>{
+    if(attendancePage>1){ attendancePage--; renderAttendanceTable(); }
+  });
+  document.getElementById("attNextBtn").addEventListener("click", ()=>{
+    if(attendancePage<totalPages){ attendancePage++; renderAttendanceTable(); }
+  });
+}
+ let attendancePage = 1;
+const ATTENDANCE_PAGE_SIZE = 5;
+function renderAttendancePagination(totalPages){
+  const wrap = document.getElementById("attendancePagination");
+  if(!wrap) return;
+  if(totalPages <= 0){ wrap.innerHTML = ""; return; }
+  wrap.innerHTML = `
+    <button class="btn ghost sm" id="attPrevBtn" ${attendancePage<=1?"disabled":""}>Previous</button>
+    <span style="font-size:12px;color:var(--ink-soft);margin:0 10px;">Page ${attendancePage} of ${totalPages}</span>
+    <button class="btn ghost sm" id="attNextBtn" ${attendancePage>=totalPages?"disabled":""}>Next</button>
+  `;
+  document.getElementById("attPrevBtn").addEventListener("click", ()=>{
+    if(attendancePage>1){ attendancePage--; renderAttendanceTable(); }
+  });
+  document.getElementById("attNextBtn").addEventListener("click", ()=>{
+    if(attendancePage<totalPages){ attendancePage++; renderAttendanceTable(); }
+  });
+}
 function normalizeLabel(s){
   return (s||"").toString().trim().toUpperCase().replace(/[_\s]+/g, " ");
 }
@@ -1717,10 +1743,10 @@ document.getElementById("historyEmployeeFilter").addEventListener("change", ()=>
 document.getElementById("historyYearFilter").addEventListener("change", ()=>renderHistory(document.getElementById("searchHistory").value));
 document.getElementById("historyTypeFilter").addEventListener("change", ()=>renderHistory(document.getElementById("searchHistory").value));
 document.getElementById("searchHolidays").addEventListener("input", e=>renderHolidays(e.target.value));
-document.getElementById("attendanceEmployeeFilter").addEventListener("change", ()=>{ renderAttendanceCards(); renderAttendanceTable(); });
-document.getElementById("attendanceStatusFilter").addEventListener("change", ()=>{ renderAttendanceCards(); renderAttendanceTable(); });
-document.getElementById("attendanceMonthSel").addEventListener("change", ()=>{ renderAttendanceCards(); renderAttendanceTable(); });
-document.getElementById("searchAttendance").addEventListener("input", ()=>{ renderAttendanceCards(); renderAttendanceTable(); });
+document.getElementById("attendanceEmployeeFilter").addEventListener("change", ()=>{ attendancePage=1; renderAttendanceCards(); renderAttendanceTable(); });
+document.getElementById("attendanceStatusFilter").addEventListener("change", ()=>{ attendancePage=1; renderAttendanceCards(); renderAttendanceTable(); });
+document.getElementById("attendanceMonthSel").addEventListener("change", ()=>{ attendancePage=1; renderAttendanceCards(); renderAttendanceTable(); });
+document.getElementById("searchAttendance").addEventListener("input", ()=>{ attendancePage=1; renderAttendanceCards(); renderAttendanceTable(); });
 document.querySelectorAll(".tabRefreshBtn").forEach(btn=>{
   btn.addEventListener("click", ()=>loadAll(false));
 });
