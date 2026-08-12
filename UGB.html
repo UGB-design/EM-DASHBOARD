@@ -1143,7 +1143,7 @@
   </div><!-- /.app-shell -->
   
   <script>
-  var API = "https://script.google.com/a/macros/ugbolmalassociates.com/s/AKfycbzQMXbT-15e7TvOHFEgNEQ4YwM0lk85WvJ-su4eelClrLN5eB4QLWLXDQRs-LzAR_1X/exec";
+ var API = "https://script.google.com/macros/s/AKfycbzQMXbT-15e7TvOHFEgNEQ4YwM0lk85WvJ-su4eelClrLN5eB4QLWLXDQRs-LzAR_1X/exec";
   var DELEGATION_ADD_URL = "https://script.google.com/a/macros/ugbolmalassociates.com/s/AKfycbzTLcL0bNC5n3eHwDW33ZXKa_O27KZ2Y9_hN2SjI__Lagf4mwagpNjMs9YBjx0f2weu9Q/exec";
   
   // Sheets shown on the "Internal Sheets" tab (source: Staff_info → GOOGLE_SHEETS tab)
@@ -1391,7 +1391,7 @@ function openAddDelegation() {
     var panel = document.getElementById('udAttendanceRow');
     if (sel) sel.disabled = true;
     if (panel) panel.style.opacity = '0.4';
-   fetch(API + '?action=getAttendance&idToken=' + encodeURIComponent(currentIdToken) + '&attPeriod=' + period + '&cb=' + Date.now(), { credentials: 'include' })
+   fetch(API + '?action=getAttendance&idToken=' + encodeURIComponent(currentIdToken) + '&attPeriod=' + period + '&cb=' + Date.now())
       .then(function(r){return r.json();})
       .then(function(data){
         console.log('ATT DEBUG →', 'error:', data.debugAttendanceError, 'rows:', data.debugAttendanceRowCount);
@@ -1412,8 +1412,7 @@ function openAddDelegation() {
     var panel = document.getElementById('udLeaveSummary');
     if (sel) sel.disabled = true;
     if (panel) panel.style.opacity = '0.4';
-    fetch(API + '?action=getLeave&idToken=' + encodeURIComponent(currentIdToken) + '&leaveYear=' + year + '&cb=' + Date.now(), { credentials: 'include' })
-      .then(function(r){return r.json();})
+    fetch(API + '?action=getLeave&idToken=' + encodeURIComponent(currentIdToken) + '&leaveYear=' + year + '&cb=' + Date.now())
       .then(function(data){
         console.log('LEAVE DEBUG →', 'error:', data.debugLeaveError, 'rows:', data.debugLeaveRowCount);
         if (!globalRawData) globalRawData = {};
@@ -1448,7 +1447,7 @@ function refreshDashboard() {
     if (fISO && tISO) {
       refreshUrl += '&from=' + encodeURIComponent(toDDMMYYYY(fISO)) + '&to=' + encodeURIComponent(toDDMMYYYY(tISO));
     }
-   fetch(refreshUrl, { redirect: 'follow', credentials: 'include' })
+   fetch(refreshUrl, { redirect: 'follow' })
       .then(function(r) { return r.json(); })
       .then(function(data) {
         if (btn) btn.classList.remove('spinning');
@@ -1470,7 +1469,7 @@ function refreshDashboard() {
     if (fISO && tISO) {
       pollUrl += '&from=' + encodeURIComponent(toDDMMYYYY(fISO)) + '&to=' + encodeURIComponent(toDDMMYYYY(tISO));
     }
-    fetch(pollUrl, { redirect: 'follow', credentials: 'include' })
+    fetch(pollUrl, { redirect: 'follow' })
       .then(function(r) { return r.json(); })
       .then(function(data) {
         if (!data || data.authorized === false) return;
@@ -1519,7 +1518,7 @@ function refreshDashboard() {
     var to = toDDMMYYYY(tISO);
     document.getElementById('savingTxt').classList.add('show');
     document.getElementById('applyBtn').disabled = true;
-   fetch(API + '?action=setDates&from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to) + '&idToken='  + encodeURIComponent(currentIdToken) + '&cb=' + Date.now(), { redirect: 'follow', credentials: 'include' })
+   fetch(API + '?action=setDates&from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to) + '&idToken='  + encodeURIComponent(currentIdToken) + '&cb=' + Date.now(), { redirect: 'follow' })
       .then(function(r) { return r.json(); })
       .then(function(data) {
       document.getElementById('savingTxt').classList.remove('show');
@@ -1576,7 +1575,7 @@ function refreshDashboard() {
   if (savedCache && savedCache.from && savedCache.to) {
     url += '&from=' + encodeURIComponent(toDDMMYYYY(savedCache.from)) + '&to=' + encodeURIComponent(toDDMMYYYY(savedCache.to));
   }
-  fetch(url, { redirect: 'follow', credentials: 'include' })
+ fetch(url, { redirect: 'follow' })
     .then(function(r) { return r.json(); })
     .then(function(data) {
       document.getElementById('authLoadingTxt').style.display = 'none';
