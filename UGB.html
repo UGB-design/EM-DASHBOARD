@@ -1100,7 +1100,7 @@
     <!-- LEAVE MANAGEMENT TAB (embedded) -->
     <div class="tab-content" id="tab-leave">
       <div class="leave-iframe-wrap">
-        <iframe id="leaveIframe" src="https://ugb-design.github.io/EM-DASHBOARD/UGB.html.html" title="Leave &amp; Attendance"></iframe>
+        <iframe id="leaveIframe" data-src="https://ugb-design.github.io/EM-DASHBOARD/UGB.html.html" title="Leave &amp; Attendance"></iframe>
       </div>
     </div>
     <!-- INTERNAL SHEETS TAB -->
@@ -3206,9 +3206,11 @@ function renderClByDoer(rows) {
   
     if (topbarEl) topbarEl.style.display = (name === 'bcinotes' || name === 'leave') ? 'none' : 'flex';
   
-    if (name === 'leave') {
+   if (name === 'leave') {
       if (hc) hc.style.display = 'none';
       if (contentEl) contentEl.classList.add('leave-mode');
+      var lIfr = document.getElementById('leaveIframe');
+      if (lIfr && !lIfr.src) { lIfr.src = lIfr.getAttribute('data-src'); }
     } else {
       if (hc) hc.style.display = 'flex';
       if (contentEl) contentEl.classList.remove('leave-mode');
