@@ -1485,7 +1485,7 @@ function refreshDashboard() {
   }
  function startTodayStatsPolling() {
     if (window._todayStatsPollTimer) clearInterval(window._todayStatsPollTimer);
-  window._todayStatsPollTimer = setInterval(pollTodayStats, 30000);
+  window._todayStatsPollTimer = setInterval(pollTodayStats, 90000);
   }
   // ── Date helpers ─────────────────────────────────────────────────────────────
   function toISO(ddmmyyyy) {
