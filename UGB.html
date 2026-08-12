@@ -1391,7 +1391,7 @@ function openAddDelegation() {
     var panel = document.getElementById('udAttendanceRow');
     if (sel) sel.disabled = true;
     if (panel) panel.style.opacity = '0.4';
-    fetch(API + '?action=getAttendance&idToken=' + encodeURIComponent(currentIdToken) + '&attPeriod=' + period + '&cb=' + Date.now())
+   fetch(API + '?action=getAttendance&idToken=' + encodeURIComponent(currentIdToken) + '&attPeriod=' + period + '&cb=' + Date.now(), { credentials: 'include' })
       .then(function(r){return r.json();})
       .then(function(data){
         console.log('ATT DEBUG →', 'error:', data.debugAttendanceError, 'rows:', data.debugAttendanceRowCount);
@@ -1412,7 +1412,7 @@ function openAddDelegation() {
     var panel = document.getElementById('udLeaveSummary');
     if (sel) sel.disabled = true;
     if (panel) panel.style.opacity = '0.4';
-    fetch(API + '?action=getLeave&idToken=' + encodeURIComponent(currentIdToken) + '&leaveYear=' + year + '&cb=' + Date.now())
+    fetch(API + '?action=getLeave&idToken=' + encodeURIComponent(currentIdToken) + '&leaveYear=' + year + '&cb=' + Date.now(), { credentials: 'include' })
       .then(function(r){return r.json();})
       .then(function(data){
         console.log('LEAVE DEBUG →', 'error:', data.debugLeaveError, 'rows:', data.debugLeaveRowCount);
@@ -1448,7 +1448,7 @@ function refreshDashboard() {
     if (fISO && tISO) {
       refreshUrl += '&from=' + encodeURIComponent(toDDMMYYYY(fISO)) + '&to=' + encodeURIComponent(toDDMMYYYY(tISO));
     }
-    fetch(refreshUrl, { redirect: 'follow' })
+   fetch(refreshUrl, { redirect: 'follow', credentials: 'include' })
       .then(function(r) { return r.json(); })
       .then(function(data) {
         if (btn) btn.classList.remove('spinning');
@@ -1470,7 +1470,7 @@ function refreshDashboard() {
     if (fISO && tISO) {
       pollUrl += '&from=' + encodeURIComponent(toDDMMYYYY(fISO)) + '&to=' + encodeURIComponent(toDDMMYYYY(tISO));
     }
-    fetch(pollUrl, { redirect: 'follow' })
+    fetch(pollUrl, { redirect: 'follow', credentials: 'include' })
       .then(function(r) { return r.json(); })
       .then(function(data) {
         if (!data || data.authorized === false) return;
@@ -1519,7 +1519,7 @@ function refreshDashboard() {
     var to = toDDMMYYYY(tISO);
     document.getElementById('savingTxt').classList.add('show');
     document.getElementById('applyBtn').disabled = true;
-   fetch(API + '?action=setDates&from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to) + '&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now(), { redirect: 'follow' })
+   fetch(API + '?action=setDates&from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to) + '&idToken='  + encodeURIComponent(currentIdToken) + '&cb=' + Date.now(), { redirect: 'follow', credentials: 'include' })
       .then(function(r) { return r.json(); })
       .then(function(data) {
       document.getElementById('savingTxt').classList.remove('show');
@@ -1576,7 +1576,7 @@ function refreshDashboard() {
   if (savedCache && savedCache.from && savedCache.to) {
     url += '&from=' + encodeURIComponent(toDDMMYYYY(savedCache.from)) + '&to=' + encodeURIComponent(toDDMMYYYY(savedCache.to));
   }
-  fetch(url, { redirect: 'follow' })
+  fetch(url, { redirect: 'follow', credentials: 'include' })
     .then(function(r) { return r.json(); })
     .then(function(data) {
       document.getElementById('authLoadingTxt').style.display = 'none';
@@ -3260,7 +3260,7 @@ function initialLoad(savedFrom, savedTo) {
     if (savedFrom && savedTo) {
       url += '&from=' + encodeURIComponent(savedFrom) + '&to=' + encodeURIComponent(savedTo);
     }
-    fetch(url, { redirect: 'follow' })
+    fetch(url, { redirect: 'follow', credentials: 'include' })
       .then(function(r) { return r.json(); })
       .then(function(data) {
         if (data.authorized === false) { showDenied(currentUserEmail); return; }
