@@ -153,13 +153,16 @@
 
   <div id="warnBanner" class="warn-banner"></div>
 
-  <div class="tabs" id="tabs">
-    <button class="tab active" data-tab="requests">Pending Approvals <span class="tab-badge" id="pendingBadge" style="display:none;">0</span></button>
-    <button class="tab" data-tab="balance">Leave Balance</button>
-    <button class="tab" data-tab="deductions">Deduction & Salary Slip</button>
-    <button class="tab" data-tab="history">All Leave Requests</button>
-    <button class="tab" data-tab="holidays">Upcoming Holidays <span class="tab-badge blue" id="holidaysBadge" style="display:none;">0</span></button>
-    <button class="tab" data-tab="attendance">Attendance</button>
+ <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:22px;">
+    <div class="tabs" id="tabs" style="margin-bottom:0;">
+      <button class="tab active" data-tab="requests">Pending Approvals <span class="tab-badge" id="pendingBadge" style="display:none;">0</span></button>
+      <button class="tab" data-tab="balance">Leave Balance</button>
+      <button class="tab" data-tab="deductions">Deduction & Salary Slip</button>
+      <button class="tab" data-tab="history">All Leave Requests</button>
+      <button class="tab" data-tab="holidays">Upcoming Holidays <span class="tab-badge blue" id="holidaysBadge" style="display:none;">0</span></button>
+      <button class="tab" data-tab="attendance">Attendance</button>
+    </div>
+    <button class="btn ghost sm tabRefreshBtn" title="Reload live data">⟳ Refresh</button>
   </div>
 
   <section id="tab-requests">
@@ -178,10 +181,6 @@
           <div class="mini-field">
             <label>&nbsp;</label>
             <input class="search" id="searchRequests" placeholder="Search employee...">
-          </div>
-          <div class="mini-field">
-            <label>&nbsp;</label>
-            <button class="btn ghost sm tabRefreshBtn" title="Reload live data">Refresh</button>
           </div>
         </div>
       </div>
@@ -213,10 +212,6 @@
             <label>&nbsp;</label>
             <input class="search" id="searchBalance" placeholder="Search employee...">
           </div>
-          <div class="mini-field">
-            <label>&nbsp;</label>
-            <button class="btn ghost sm tabRefreshBtn" title="Reload live data">Refresh</button>
-          </div>
         </div>
       </div>
       <div class="tablewrap">
@@ -244,10 +239,6 @@
           <div class="mini-field">
             <label>&nbsp;</label>
             <input class="search" id="searchDeductions" placeholder="Search employee...">
-          </div>
-          <div class="mini-field">
-            <label>&nbsp;</label>
-            <button class="btn ghost sm tabRefreshBtn" title="Reload live data">Refresh</button>
           </div>
         </div>
       </div>
@@ -290,10 +281,6 @@
             <label>&nbsp;</label>
             <input class="search" id="searchHistory" placeholder="Search employee...">
           </div>
-          <div class="mini-field">
-            <label>&nbsp;</label>
-            <button class="btn ghost sm tabRefreshBtn" title="Reload live data">Refresh</button>
-          </div>
         </div>
       </div>
       <div class="tablewrap">
@@ -316,10 +303,6 @@
           <div class="mini-field">
             <label>&nbsp;</label>
             <input class="search" id="searchHolidays" placeholder="Search occasion...">
-          </div>
-          <div class="mini-field">
-            <label>&nbsp;</label>
-            <button class="btn ghost sm tabRefreshBtn" title="Reload live data">Refresh</button>
           </div>
         </div>
       </div>
@@ -355,10 +338,6 @@
           <div class="mini-field">
             <label>&nbsp;</label>
             <input class="search" id="searchAttendance" placeholder="Search employee...">
-          </div>
-          <div class="mini-field">
-            <label>&nbsp;</label>
-            <button class="btn ghost sm tabRefreshBtn" title="Reload live data">Refresh</button>
           </div>
         </div>
       </div>
