@@ -54,9 +54,9 @@
   .apply-leave:hover{transform:translateY(-1px);box-shadow:0 2px 4px rgba(5,74,159,.2),0 10px 22px rgba(5,74,159,.32);}
   .apply-leave .plus{width:15px;height:15px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
   .apply-leave .plus svg{width:9px;height:9px;}
-  .tabs{display:flex;gap:4px;background:rgba(0,0,0,0.035);padding:4px;border-radius:12px;width:fit-content;margin-bottom:22px;flex-wrap:wrap;}
-  .tab{position:relative;padding:8px 16px;font-size:13px;font-weight:600;color:var(--ink-soft);border-radius:9px;cursor:pointer;border:none;background:transparent;display:flex;align-items:center;gap:7px;}
-  .tab.active{background:#2563eb;color:#fff;box-shadow:0 4px 12px rgba(37,99,235,.35);}  
+ .tabs{display:flex;gap:4px;background:#ffffff;padding:4px;border-radius:12px;width:fit-content;margin-bottom:22px;flex-wrap:wrap;border:1px solid var(--border);box-shadow:var(--shadow);}
+.tab{position:relative;padding:9px 16px;font-size:13px;font-weight:600;color:var(--blue);border-radius:9px;cursor:pointer;border:none;background:transparent;display:flex;align-items:center;gap:7px;}
+.tab.active{background:var(--blue-soft);color:var(--blue);box-shadow:none;font-weight:800;border-bottom:2px solid var(--blue);}  
   .tab-badge{background:var(--red);color:#fff;font-size:10.5px;font-weight:800;min-width:18px;height:18px;border-radius:20px;display:flex;align-items:center;justify-content:center;padding:0 5px;line-height:1;}
   .tab-badge.blue{background:var(--blue);}
   .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px;margin-bottom:16px;}
@@ -68,6 +68,7 @@
   .card .num.green{color:var(--green);}
   .card .num.red{color:var(--red);}
   .card .num.amber{color:var(--amber);}
+  .card .num.gray{color:var(--ink-faint);}
   .card .sub{font-size:10px;color:var(--ink-faint);margin-top:5px;}
   .card .sub b{color:var(--ink-soft);}
   .panel{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:20px;}
@@ -79,7 +80,7 @@
   .mini-field input, .mini-field select{border:1px solid var(--border);background:var(--card);border-radius:9px;padding:7px 10px;font-family:inherit;font-size:12.5px;color:var(--ink);min-width:120px;}
   .search{border:1px solid var(--border);border-radius:9px;padding:7px 12px;font-size:12.5px;font-family:inherit;width:200px;}
   table{width:100%;border-collapse:collapse;font-size:13px;}
-  thead th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);font-weight:700;padding:10px 16px;border-bottom:1px solid var(--border);white-space:nowrap;position:sticky;top:0;background:var(--card);}
+  thead th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--navy);font-weight:800;padding:12px 16px;border-bottom:2px solid var(--blue);white-space:nowrap;position:sticky;top:0;background:#f4f6fb;}
   tbody td{padding:12px 16px;border-bottom:1px solid #f1f2ec;vertical-align:middle;white-space:nowrap;}
   tbody tr:last-child td{border-bottom:none;}
   tbody tr:hover{background:#fafaf6;}
@@ -958,21 +959,17 @@ function renderAttendanceCards(){
   const present = rows.filter(r => fs(r) === "P").length;
   const halfDay = rows.filter(r => fs(r).includes("/2") || fs(r).includes("HALF")).length;
   const absent = rows.filter(r => fs(r) === "A").length;
-
-  const hoursArr = rows
-    .map(r => parseHM(formatTimeValue(getFieldFuzzy(r, "W.Hrs_f", "W.Hrs", "WHrs"))))
-    .filter(h => h > 0);
-  const avgHours = hoursArr.length ? (hoursArr.reduce((a,b)=>a+b,0) / hoursArr.length) : 0;
+  const weekOff = rows.filter(r => fs(r) === "WO").length;
+  const workingDays = totalEntries - weekOff;
 
   wrap.innerHTML = `
-    <div class="card"><div class="eyebrow">Total Entries</div><div class="num blue">${totalEntries}</div></div>
+    <div class="card"><div class="eyebrow">Working Days</div><div class="num blue">${workingDays}</div></div>
     <div class="card"><div class="eyebrow">Present</div><div class="num green">${present}</div></div>
-    <div class="card"><div class="eyebrow">Half Day</div><div class="num amber">${halfDay}</div></div>
     <div class="card"><div class="eyebrow">Absent</div><div class="num red">${absent}</div></div>
-    <div class="card"><div class="eyebrow">Avg Work Hours</div><div class="num blue">${avgHours.toFixed(2)}</div></div>
+    <div class="card"><div class="eyebrow">Half Day</div><div class="num amber">${halfDay}</div></div>
+    <div class="card"><div class="eyebrow">Week Off</div><div class="num gray">${weekOff}</div></div>
   `;
 }
-
 function renderAttendanceTable(){
   const body = document.getElementById("attendanceBody");
   body.innerHTML = "";
@@ -1120,7 +1117,6 @@ function renderBalanceCards(){
       return;
     }
     wrap.innerHTML = `
-      <div class="card"><div class="eyebrow">Active Staff</div><div class="num blue">${sc.activeStaff}</div><div class="sub">on the roster</div></div>
       <div class="card"><div class="eyebrow">Pending Request</div><div class="num amber">${sc.pendingRequest}</div><div class="sub">awaiting approval</div></div>
       <div class="card"><div class="eyebrow">Total Paid Balance</div><div class="num green">${sc.totalPaidBalance}</div><div class="sub">days remaining</div></div>
       <div class="card"><div class="eyebrow">Total Paid Leave Used</div><div class="num blue">${sc.totalPaidLeaveUsed}</div><div class="sub">days used</div></div>
@@ -1140,7 +1136,6 @@ function renderBalanceCards(){
   const pendingRequest = DATA.requests.filter(r => isPendingStatus(r["Status"]) && fiscalYearOf(r["From_Date_f"]) === yearFilter).length;
 
   wrap.innerHTML = `
-    <div class="card"><div class="eyebrow">Active Staff</div><div class="num blue">${activeStaff}</div><div class="sub">with a ${yearFilter} record</div></div>
     <div class="card"><div class="eyebrow">Pending Request</div><div class="num amber">${pendingRequest}</div><div class="sub">awaiting approval · ${yearFilter}</div></div>
     <div class="card"><div class="eyebrow">Total Paid Balance</div><div class="num green">${totalPaidBalance}</div><div class="sub">days remaining · ${yearFilter}</div></div>
     <div class="card"><div class="eyebrow">Total Paid Leave Used</div><div class="num blue">${totalPaidLeaveUsed}</div><div class="sub">days used · ${yearFilter}</div></div>
