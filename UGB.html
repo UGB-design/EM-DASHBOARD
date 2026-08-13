@@ -13,11 +13,11 @@
   /* ── TOP HEADER BAR (logo/firm left, bell + profile right) ─────────────── */
   .top-header-bar{display:flex;align-items:center;justify-content:space-between;background:#fff;border-bottom:1px solid #e8eaed;padding:10px 24px;position:sticky;top:0;z-index:90;box-shadow:0 1px 3px rgba(0,0,0,.04)}
   .thb-left{display:flex;align-items:center;gap:12px}
-  .thb-logo{width:42px;height:42px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.12);overflow:hidden;flex-shrink:0}
+ .thb-logo{width:58px;height:58px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.12);overflow:hidden;flex-shrink:0}
   .thb-logo img{width:100%;height:100%;object-fit:contain}
-  .thb-firm-name{font-size:15px;font-weight:800;color:#1a1a1a;line-height:1.2;white-space:nowrap}
-  .thb-firm-sub{font-size:11.5px;color:#8a8478;font-weight:600;margin-top:1px}
-  .thb-right{display:flex;align-items:center;gap:14px}
+  .thb-firm-name{font-size:16px;font-weight:800;color:#1a1a1a;line-height:1.2;white-space:nowrap}
+  .thb-firm-sub{font-size:11px;color:#8a8478;font-weight:700;margin-top:2px;text-transform:uppercase;letter-spacing:.06em}
+  .thb-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap}    
   .thb-bell{position:relative;width:38px;height:38px;border-radius:10px;background:#fff;border:1px solid #e2e8f0;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
   .thb-bell:hover{background:#f9fafb}
   .thb-bell-badge{position:absolute;top:-3px;right:-3px;background:#dc2626;color:#fff;font-size:9px;font-weight:800;min-width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center;padding:0 3px}
@@ -686,7 +686,20 @@
         <div class="thb-firm-sub">Chartered Accountants</div>
       </div>
     </div>
-    <div class="thb-right">
+   <div class="thb-right">
+      <button class="add-delegation-btn" onclick="openAddDelegation()" title="Add a new delegation task">
+        <span class="adb-plus">+</span> Delegation
+      </button>
+      <div class="daterange-combo">
+        <input type="date" class="dr-input" id="dtFrom">
+        <span class="dr-sep">→</span>
+        <input type="date" class="dr-input" id="dtTo">
+        <button class="dr-apply" id="applyBtn" onclick="applyDateRange()">Apply</button>
+      </div>
+      <span class="saving" id="savingTxt"> Please Wait...</span>
+      <button class="refresh-btn" id="refreshBtn" onclick="refreshDashboard()" title="Refresh data">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+      </button>
       <button class="thb-bell" onclick="showRecentActivitiesModal()" title="Recent Activities">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4b4538" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
         <span id="thbBellBadge" class="thb-bell-badge" style="display:none">0</span>
@@ -711,21 +724,7 @@
   
     <!-- SIDEBAR NAVIGATION -->
     <div class="sidebar" id="sidebarNav">
-      <div class="sb-brand" style="align-items:center">
-        <div class="sb-brand-row" style="justify-content:center">
-         <div class="sb-brand-mark">
-            <img src="https://lh3.googleusercontent.com/d/158_HBHOHewJ0wG2BY3ZiBdT_uD7eoDQX=w200" style="width:100%;height:100%;object-fit:contain;border-radius:8px" alt="CA Logo">
-          </div>
-          <div class="sb-brand-title">Umesh Bolmal<br>&amp; Associates</div>
-        </div>
-        <div class="sb-brand-caption">Chartered Accountants</div>
-      </div>
-      <div class="sb-user-chip" id="userChip" style="display:none">
-        <span class="user-avatar" id="userAvatar"></span>
-        <div class="sb-user-txt">
-          <div class="sb-user-name" id="userNameLabel"></div>
-        </div>
-      </div>
+     
       <div class="sb-nav">
         <button class="sb-item active" data-tab="dashboard" onclick="switchTab('dashboard',this)">
           <span class="sb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"></rect><rect x="14" y="3" width="7" height="5" rx="1"></rect><rect x="14" y="12" width="7" height="9" rx="1"></rect><rect x="3" y="16" width="7" height="5" rx="1"></rect></svg></span>
@@ -772,13 +771,6 @@
           <span class="sb-label">BCI Notes</span>
         </button>
       </div>
-      <div class="sb-foot" style="display:flex;align-items:center;gap:10px">
-        <div class="topbar-avatar" id="topbarAvatar" title="" style="display:none;flex-shrink:0"></div>
-        <button class="logout-btn-side" id="logoutBtn" style="display:none;flex:1" onclick="doLogout()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-          Logout
-        </button>
-      </div>
     </div>
   
     <div class="main-wrap">
@@ -810,22 +802,9 @@
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d4af5a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
   <span id="notifBellBadge" style="display:none;position:absolute;top:-3px;right:-3px;background:#dc2626;color:#fff;font-size:10px;font-weight:800;min-width:16px;height:16px;border-radius:50%;align-items:center;justify-content:center;padding:0 3px;box-shadow:0 1px 3px rgba(220,38,38,.4);line-height:1">0</span>
 </button>
-        <button class="add-delegation-btn" onclick="openAddDelegation()" title="Add a new delegation task">
-          <span class="adb-plus">+</span> Delegation
-        </button>
-       <div class="daterange-combo">
-          <input type="date" class="dr-input" id="dtFrom">
-          <span class="dr-sep">→</span>
-          <input type="date" class="dr-input" id="dtTo">
-          <button class="dr-apply" id="applyBtn" onclick="applyDateRange()">Apply</button>
-        </div>
-        <span class="saving" id="savingTxt"> Please Wait...</span>
-      <button class="refresh-btn" id="refreshBtn" onclick="refreshDashboard()" title="Refresh data">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
-        </button>
        </div>
     </div>
-  </div>
+  </div>  
     <!-- USERS TAB -->
    <!-- USERS TAB -->
   <!-- USERS TAB -->
@@ -1691,10 +1670,14 @@ function showDenied(email) {
     document.getElementById('authScreen').style.display = 'none';
     document.getElementById('deniedScreen').style.display = 'none';
     document.getElementById('appRoot').style.display = 'block';
-    document.getElementById('userChip').style.display = 'flex';
-    document.getElementById('logoutBtn').style.display = 'flex';
-  document.getElementById('userNameLabel').textContent = name;
-    document.getElementById('userAvatar').textContent = ini(name);
+   var userChipEl = document.getElementById('userChip');
+    if (userChipEl) userChipEl.style.display = 'flex';
+    var logoutBtnEl = document.getElementById('logoutBtn');
+    if (logoutBtnEl) logoutBtnEl.style.display = 'flex';
+    var userNameLabelEl = document.getElementById('userNameLabel');
+    if (userNameLabelEl) userNameLabelEl.textContent = name;
+    var userAvatarEl = document.getElementById('userAvatar');
+    if (userAvatarEl) userAvatarEl.textContent = ini(name);
     var thbName = document.getElementById('thbProfileName');
     var thbAv = document.getElementById('thbAvatar');
     if (thbName) thbName.textContent = name;
@@ -1758,8 +1741,10 @@ function loadUserCache(email) {
     if (window.google && google.accounts && google.accounts.id) {
       google.accounts.id.disableAutoSelect();
     }
-    document.getElementById('userChip').style.display = 'none';
-    document.getElementById('logoutBtn').style.display = 'none';
+   var userChipEl2 = document.getElementById('userChip');
+    if (userChipEl2) userChipEl2.style.display = 'none';
+    var logoutBtnEl2 = document.getElementById('logoutBtn');
+    if (logoutBtnEl2) logoutBtnEl2.style.display = 'none';
     showSignIn();
   }
   
