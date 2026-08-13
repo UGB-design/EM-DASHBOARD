@@ -12,13 +12,13 @@
  .app-shell{display:flex;min-height:100vh}
   /* ── TOP HEADER BAR (logo/firm left, bell + profile right) ─────────────── */
 .top-header-bar{display:flex;align-items:stretch;background:#fff;border-bottom:1px solid #e8eaed;padding:0;position:sticky;top:0;z-index:90;box-shadow:0 1px 3px rgba(0,0,0,.04);height:76px}
-  .thb-left{display:flex;align-items:center;gap:12px;background:#0b1437;width:270px;flex-shrink:0;padding:0 20px}
-  .thb-menu-btn{display:none;align-items:center;justify-content:center;width:34px;height:34px;background:transparent;border:1px solid #2a3568;border-radius:8px;cursor:pointer;flex-shrink:0}
-  .thb-logo{width:64px;height:64px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.18);overflow:hidden;flex-shrink:0;padding:6px}
+  .thb-left{display:flex;align-items:center;gap:12px;background:#fff;width:270px;flex-shrink:0;padding:0 20px;border-right:1px solid #f0f0f0}
+  .thb-menu-btn{display:none;align-items:center;justify-content:center;width:34px;height:34px;background:transparent;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;flex-shrink:0}
+  .thb-logo{width:60px;height:60px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.12);overflow:hidden;flex-shrink:0;padding:4px}
   .thb-logo img{width:100%;height:100%;object-fit:contain}
-  .thb-firm-name{font-family:Arial,Helvetica,sans-serif;font-size:15.5px;font-weight:700;color:#fff;line-height:1.25;white-space:nowrap}
-  .thb-firm-sub{font-family:Arial,Helvetica,sans-serif;font-size:10.5px;color:#d4af5a;font-weight:600;margin-top:3px;text-transform:uppercase;letter-spacing:.05em}
-  .thb-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap;flex:1;background:#fff;padding:10px 24px;justify-content:flex-end}  
+  .thb-firm-name{font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:700;color:#1a1a1a;line-height:1.25;white-space:nowrap}
+  .thb-firm-sub{font-family:Arial,Helvetica,sans-serif;font-size:10.5px;color:#b8933f;font-weight:700;margin-top:3px;text-transform:uppercase;letter-spacing:.05em}
+  .thb-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap;flex:1;background:#fff;padding:10px 24px;justify-content:flex-end} 
  .thb-bell{position:relative;width:38px;height:38px;border-radius:10px;background:#fffaf0;border:1px solid #f3e0b0;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
   .thb-bell:hover{background:#fdf3dd}
   .thb-bell-badge{position:absolute;top:-3px;right:-3px;background:#dc2626;color:#fff;font-size:9px;font-weight:800;min-width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center;padding:0 3px}
@@ -685,8 +685,8 @@
 <div id="appRoot">
   <div class="top-header-bar" id="topHeaderBar">
    <div class="thb-left">
-      <button class="thb-menu-btn sb-toggle-btn" id="sbToggleBtn" onclick="toggleSidebar()" title="Menu">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>
+     <button class="thb-menu-btn sb-toggle-btn" id="sbToggleBtn" onclick="toggleSidebar()" title="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>
       </button>
       <div class="thb-logo">
         <img src="https://lh3.googleusercontent.com/d/158_HBHOHewJ0wG2BY3ZiBdT_uD7eoDQX=w200" alt="CA Logo">
@@ -792,40 +792,6 @@
     </div>
   
     <div class="main-wrap">
-  <div class="topbar" id="mainTopbar">
-    <div class="tb-row1">
-      <button class="refresh-btn sb-toggle-btn" id="sbToggleBtn" onclick="toggleSidebar()" title="Menu" style="display:none">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#4b4538" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>
-      </button>
-     <div>
-        <div class="h-greet" id="greetLine" style="border:none;box-shadow:none;padding:0">
-          <span id="greetText">Good Morning</span>, <span class="hg-name" id="greetName">there</span>..!
-        </div>
-        <div id="todayDateBadge" style="display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:6px 14px;font-size:12.5px;font-weight:600;color:#4b4538;margin-top:8px">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-          <span>Today : <span id="todayDateText"></span></span>
-        </div>
-      </div>
-      <div class="tb-right" id="headerControls">
-        <button class="teams-btn" onclick="window.open('https://teams.microsoft.com', '_blank')"title="Open Microsoft Teams">
-          <svg width="20" height="20" viewBox="0 0 2228.833 2073.333" xmlns="http://www.w3.org/2000/svg">
-            <path fill="#5059C9" d="M1554.637,777.5h575.713c54.391,0,98.483,44.092,98.483,98.483v524.398c0,199.901-162.051,361.952-361.952,361.952h-1.711c-199.901,0.028-361.976-161.999-362.004-361.9c0-0.018,0-0.035,0-0.053V828.971C1503.167,800.618,1526.285,777.5,1554.637,777.5L1554.637,777.5z"/>
-            <circle fill="#5059C9" cx="1943.75" cy="440.583" r="233.25"/>
-            <circle fill="#7B83EB" cx="1218.083" cy="336.917" r="336.917"/>
-            <path fill="#7B83EB" d="M1667.323,777.5H717.01c-53.743,1.33-96.257,45.931-95.01,99.676v598.105c-7.505,322.519,247.657,590.16,570.167,598.053c322.51-7.893,577.671-275.534,570.167-598.053V877.176C1763.579,823.431,1721.066,778.83,1667.323,777.5z"/>
-            <path fill="#FFFFFF" d="M1245.417,1037.5h-190v520h-127.5v-520h-190v-105h507.5V1037.5z"/>
-          </svg>
-        </a>
-          <button class="refresh-btn" id="notifBellBtn" onclick="showRecentActivitiesModal()" title="Recent Activities" style="position:relative">
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d4af5a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-  <span id="notifBellBadge" style="display:none;position:absolute;top:-3px;right:-3px;background:#dc2626;color:#fff;font-size:10px;font-weight:800;min-width:16px;height:16px;border-radius:50%;align-items:center;justify-content:center;padding:0 3px;box-shadow:0 1px 3px rgba(220,38,38,.4);line-height:1">0</span>
-</button>
-       </div>
-    </div>
-  </div>  
-    <!-- USERS TAB -->
-   <!-- USERS TAB -->
-  <!-- USERS TAB -->
     <!-- DASHBOARD TAB -->
     <div class="tab-content active" id="tab-dashboard">
       <div id="usersUpcomingBanner"></div>
