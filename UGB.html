@@ -11,15 +11,16 @@
   /* APP SHELL (sidebar + main) */
  .app-shell{display:flex;min-height:100vh}
   /* ── TOP HEADER BAR (logo/firm left, bell + profile right) ─────────────── */
-  .top-header-bar{display:flex;align-items:center;justify-content:space-between;background:#fff;border-bottom:1px solid #e8eaed;padding:10px 24px;position:sticky;top:0;z-index:90;box-shadow:0 1px 3px rgba(0,0,0,.04)}
-  .thb-left{display:flex;align-items:center;gap:12px}
- .thb-logo{width:58px;height:58px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.12);overflow:hidden;flex-shrink:0}
+.top-header-bar{display:flex;align-items:stretch;background:#fff;border-bottom:1px solid #e8eaed;padding:0;position:sticky;top:0;z-index:90;box-shadow:0 1px 3px rgba(0,0,0,.04);height:76px}
+  .thb-left{display:flex;align-items:center;gap:12px;background:#0b1437;width:270px;flex-shrink:0;padding:0 20px}
+  .thb-menu-btn{display:none;align-items:center;justify-content:center;width:34px;height:34px;background:transparent;border:1px solid #2a3568;border-radius:8px;cursor:pointer;flex-shrink:0}
+  .thb-logo{width:64px;height:64px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.18);overflow:hidden;flex-shrink:0;padding:6px}
   .thb-logo img{width:100%;height:100%;object-fit:contain}
-  .thb-firm-name{font-size:16px;font-weight:800;color:#1a1a1a;line-height:1.2;white-space:nowrap}
-  .thb-firm-sub{font-size:11px;color:#8a8478;font-weight:700;margin-top:2px;text-transform:uppercase;letter-spacing:.06em}
-  .thb-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap}    
-  .thb-bell{position:relative;width:38px;height:38px;border-radius:10px;background:#fff;border:1px solid #e2e8f0;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
-  .thb-bell:hover{background:#f9fafb}
+  .thb-firm-name{font-family:Arial,Helvetica,sans-serif;font-size:15.5px;font-weight:700;color:#fff;line-height:1.25;white-space:nowrap}
+  .thb-firm-sub{font-family:Arial,Helvetica,sans-serif;font-size:10.5px;color:#d4af5a;font-weight:600;margin-top:3px;text-transform:uppercase;letter-spacing:.05em}
+  .thb-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap;flex:1;background:#fff;padding:10px 24px;justify-content:flex-end}  
+ .thb-bell{position:relative;width:38px;height:38px;border-radius:10px;background:#fffaf0;border:1px solid #f3e0b0;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+  .thb-bell:hover{background:#fdf3dd}
   .thb-bell-badge{position:absolute;top:-3px;right:-3px;background:#dc2626;color:#fff;font-size:9px;font-weight:800;min-width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center;padding:0 3px}
   .thb-profile{position:relative;display:flex;align-items:center;gap:10px;cursor:pointer;padding:5px 10px 5px 5px;border-radius:12px;transition:background .15s}
   .thb-profile:hover{background:#f8fafc}
@@ -34,8 +35,9 @@
   .thb-dropdown button{width:100%;display:flex;align-items:center;gap:8px;background:transparent;border:none;padding:9px 10px;border-radius:8px;font-size:13px;font-weight:600;color:#dc2626;cursor:pointer;text-align:left}
   .thb-dropdown button:hover{background:#fef2f2}
   .thb-dropdown button svg{width:15px;height:15px}
-  @media(max-width:600px){.thb-firm-name{font-size:13px}.thb-profile-txt{display:none}.top-header-bar{padding:8px 14px}}
-  .sidebar{width:270px;flex-shrink:0;background:#0b1437;border-right:1px solid #1c2554;display:flex;flex-direction:column;padding:22px 14px;position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto;z-index:70;scrollbar-width:none;-ms-overflow-style:none}
+ @media(max-width:900px){.thb-left{width:auto;padding:0 14px}}
+  @media(max-width:600px){.thb-firm-name{font-size:12.5px}.thb-firm-sub{display:none}.thb-profile-txt{display:none}.thb-right{padding:8px 14px}}
+  .sidebar{width:270px;flex-shrink:0;background:#0b1437;border-right:1px solid #1c2554;display:flex;flex-direction:column;padding:0 14px 22px;position:sticky;top:76px;height:calc(100vh - 76px);overflow-y:auto;z-index:70;scrollbar-width:none;-ms-overflow-style:none}
 .sidebar::-webkit-scrollbar{display:none}
 .sb-brand{display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 10px 8px;background:transparent;border-radius:12px;border-bottom:2px solid #3a4680;margin-bottom:8px}
 .sb-brand-row{display:flex;align-items:center;gap:10px}
@@ -43,7 +45,12 @@
  .sb-brand-title{font-size:13px;font-weight:800;color:#ffffff;letter-spacing:.01em;line-height:1.3;white-space:nowrap;text-align:left;text-transform:uppercase}
  .sb-brand-caption{font-size:11.5px;font-weight:800;color:#e8d9ae;text-align:center;letter-spacing:.1em;text-transform:uppercase;margin-top:7px;width:100%;text-shadow:0 1px 2px rgba(0,0,0,.25)} 
   .sb-brand-sub{font-size:10.5px;color:#7b85b8;font-weight:600;letter-spacing:.04em;margin-top:2px}
-  .sb-nav{display:flex;flex-direction:column;gap:3px;flex:1;margin-top:14px}
+ .sb-greet{padding:18px 26px 16px;border-bottom:1px solid #1c2554;margin:0 -14px 10px}
+  .sb-greet-line{font-size:13.5px;font-weight:700;color:#e7ecff;line-height:1.4}
+  .sb-greet-line .hg-name{color:#5eead4;font-weight:800}
+  .sb-greet-datebadge{display:inline-flex;align-items:center;gap:6px;background:#131c47;border:1px solid #26305e;border-radius:8px;padding:6px 11px;font-size:10.5px;font-weight:600;color:#aab2d5;margin-top:10px}
+  .sb-greet-datebadge svg{width:12px;height:12px;flex-shrink:0}
+  .sb-nav{display:flex;flex-direction:column;gap:3px;flex:1;margin-top:6px}
   .sb-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;color:#aab2d5;font-size:13px;font-weight:600;cursor:pointer;border:none;background:transparent;text-align:left;width:100%;transition:all .15s;position:relative}
   .sb-item:hover:not(.active){background:#1c2554;color:#ffffff}
   .sb-item.active{background:#0f766e;color:#fff;box-shadow:0 4px 12px rgba(37,99,235,.35)}
@@ -65,7 +72,7 @@
   .main-wrap:has(.content.bci-mode){padding:0;margin:0}
   .main-wrap:has(.content.leave-mode){padding:0;margin:0}
  @media(max-width:900px){
-  .sidebar{position:fixed;left:0;top:0;transform:translateX(-100%);transition:transform .25s ease;box-shadow:0 0 24px rgba(0,0,0,.4)}
+  .sidebar{position:fixed;left:0;top:76px;height:calc(100vh - 76px);transform:translateX(-100%);transition:transform .25s ease;box-shadow:0 0 24px rgba(0,0,0,.4)}
   .sidebar.open{transform:translateX(0)}
   .sb-toggle-btn{display:inline-flex !important}
   .main-wrap{padding:0 4px}
@@ -677,7 +684,10 @@
   
 <div id="appRoot">
   <div class="top-header-bar" id="topHeaderBar">
-    <div class="thb-left">
+   <div class="thb-left">
+      <button class="thb-menu-btn sb-toggle-btn" id="sbToggleBtn" onclick="toggleSidebar()" title="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>
+      </button>
       <div class="thb-logo">
         <img src="https://lh3.googleusercontent.com/d/158_HBHOHewJ0wG2BY3ZiBdT_uD7eoDQX=w200" alt="CA Logo">
       </div>
@@ -701,7 +711,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
       </button>
       <button class="thb-bell" onclick="showRecentActivitiesModal()" title="Recent Activities">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4b4538" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d4af5a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
         <span id="thbBellBadge" class="thb-bell-badge" style="display:none">0</span>
       </button>
       <div class="thb-profile" id="thbProfile" onclick="toggleProfileMenu(event)">
@@ -723,8 +733,16 @@
   <div class="app-shell">
   
     <!-- SIDEBAR NAVIGATION -->
-    <div class="sidebar" id="sidebarNav">
-     
+   <div class="sidebar" id="sidebarNav">
+      <div class="sb-greet">
+        <div class="sb-greet-line" id="greetLine">
+          <span id="greetText">Good Morning</span>, <span class="hg-name" id="greetName">there</span>..!
+        </div>
+        <div class="sb-greet-datebadge" id="todayDateBadge">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          <span>Today : <span id="todayDateText"></span></span>
+        </div>
+      </div>
       <div class="sb-nav">
         <button class="sb-item active" data-tab="dashboard" onclick="switchTab('dashboard',this)">
           <span class="sb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"></rect><rect x="14" y="3" width="7" height="5" rx="1"></rect><rect x="14" y="12" width="7" height="9" rx="1"></rect><rect x="3" y="16" width="7" height="5" rx="1"></rect></svg></span>
