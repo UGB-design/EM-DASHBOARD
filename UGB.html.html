@@ -611,11 +611,11 @@ function loadCacheData(){
     return parsed;
   }catch(e){ return null; }
 }
-async function fetchAllSheetsCombined(){
+async function fetchAllSheetsCombinedOnce(){
   const controller = new AbortController();
-  const timeoutId = setTimeout(()=>controller.abort(), 45000);
+  const timeoutId = setTimeout(()=>controller.abort(), 70000);
   try{
-    const res = await fetch(`${APPS_SCRIPT_URL}?sheets=all`, { signal: controller.signal });
+    const res = await fetch(`${APPS_SCRIPT_URL}?sheets=all&cb=${Date.now()}`, { signal: controller.signal });
     const data = await res.json();
     if (data && data.error) throw new Error(data.error);
     return data;
@@ -624,6 +624,15 @@ async function fetchAllSheetsCombined(){
   }
 }
 
+async function fetchAllSheetsCombined(){
+  try{
+    return await fetchAllSheetsCombinedOnce();
+  }catch(firstErr){
+    console.warn("First attempt failed, retrying once...", firstErr);
+    await new Promise(r=>setTimeout(r, 1500));
+    return await fetchAllSheetsCombinedOnce();
+  }
+}
 function withFCopy(rows){
   return (rows||[]).map(r=>{
     const obj = {...r};
@@ -639,11 +648,17 @@ async function loadAll(background=false){
   try{
     combined = await fetchAllSheetsCombined();
   }catch(e){
-    console.error("Failed to load dashboard data", e);
-    failed.push("Staff_Info","Leave_Requests","Leave_Balance","PERFORMANCE_DEDUCTION","UPCOMING_HOLIDAY","Attendance");
-    combined = {};
+    console.warn("All attempts failed once, trying one final retry after delay...", e);
+    try{
+      await new Promise(r=>setTimeout(r, 2500));
+      combined = await fetchAllSheetsCombinedOnce();
+    }catch(e2){
+      console.error("Failed to load dashboard data", e2);
+      failed.push("Staff_Info","Leave_Requests","Leave_Balance","PERFORMANCE_DEDUCTION","UPCOMING_HOLIDAY","Attendance");
+      combined = {};
+      window.__lastLoadError = (e2 && e2.message) ? e2.message : String(e2);
+    }
   }
-
   DATA.staff = withFCopy(combined["Staff_Info"]).filter(r=>r["Name"]);
   DATA.requests = withFCopy(combined["Leave_Requests"]).filter(r=>r["Staff_Name"] || r["Email"]);
   const balanceRaw = withFCopy(combined["Leave_Balance"]);
