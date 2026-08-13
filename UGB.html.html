@@ -225,12 +225,12 @@
             <th>Employee</th><th>Total Paid Leave</th><th>Used</th><th>Balance</th>
             <th>Half Day</th><th>Unpaid</th><th>Leave Year</th>
           </tr></thead>
-          <tbody id="balanceBody"></tbody>
+         <tbody id="balanceBody"></tbody>
         </table>
       </div>
+      <div id="balancePagination" style="display:flex;align-items:center;justify-content:flex-end;padding:10px 16px;"></div>
     </div>
   </section>
-
   <section id="tab-deductions" style="display:none;">
     <div class="cards" id="deductionCards"></div>
     <div class="panel">
@@ -257,9 +257,10 @@
             <th>Employee</th><th>Month</th><th>Year</th><th>WND %</th><th>Ded %</th>
             <th>Unpaid Leave</th><th>Deduction</th><th>Slip</th>
           </tr></thead>
-          <tbody id="deductionsBody"></tbody>
+      <tbody id="deductionsBody"></tbody>
         </table>
       </div>
+      <div id="deductionsPagination" style="display:flex;align-items:center;justify-content:flex-end;padding:10px 16px;"></div>
     </div>
   </section>
 
@@ -1033,8 +1034,12 @@ function renderAttendancePagination(totalPages){
     if(attendancePage<totalPages){ attendancePage++; renderAttendanceTable(); }
   });
 }
- let attendancePage = 1;
+let attendancePage = 1;
 const ATTENDANCE_PAGE_SIZE = 5;
+let balancePage = 1;
+const BALANCE_PAGE_SIZE = 8;
+let deductionsPage = 1;
+const DEDUCTIONS_PAGE_SIZE = 8;
 function renderAttendancePagination(totalPages){
   const wrap = document.getElementById("attendancePagination");
   if(!wrap) return;
@@ -1370,10 +1375,16 @@ function renderBalance(filterText=""){
 
   if(rows.length===0){
     body.innerHTML = `<tr><td colspan="7"><div class="empty"><b>No leave balance data</b></div></td></tr>`;
+    renderBalancePagination(0);
     return;
   }
 
-  rows.forEach(r=>{
+  const totalPages = Math.max(1, Math.ceil(rows.length / BALANCE_PAGE_SIZE));
+  if(balancePage > totalPages) balancePage = totalPages;
+  const start = (balancePage - 1) * BALANCE_PAGE_SIZE;
+  const pageRows = rows.slice(start, start + BALANCE_PAGE_SIZE);
+
+  pageRows.forEach(r=>{
     const staff = staffByEmail(r["Email"]);
     const displayName = staff ? staff["Name"] : (r["Email"]||"").split("@")[0];
     const tr = document.createElement("tr");
@@ -1389,8 +1400,26 @@ function renderBalance(filterText=""){
     `;
     body.appendChild(tr);
   });
+
+  renderBalancePagination(totalPages);
 }
 
+function renderBalancePagination(totalPages){
+  const wrap = document.getElementById("balancePagination");
+  if(!wrap) return;
+  if(totalPages <= 0){ wrap.innerHTML = ""; return; }
+  wrap.innerHTML = `
+    <button class="btn ghost sm" id="balPrevBtn" ${balancePage<=1?"disabled":""}>Previous</button>
+    <span style="font-size:12px;color:var(--ink-soft);margin:0 10px;">Page ${balancePage} of ${totalPages}</span>
+    <button class="btn ghost sm" id="balNextBtn" ${balancePage>=totalPages?"disabled":""}>Next</button>
+  `;
+  document.getElementById("balPrevBtn").addEventListener("click", ()=>{
+    if(balancePage>1){ balancePage--; renderBalance(document.getElementById("searchBalance").value); }
+  });
+  document.getElementById("balNextBtn").addEventListener("click", ()=>{
+    if(balancePage<totalPages){ balancePage++; renderBalance(document.getElementById("searchBalance").value); }
+  });
+}
 let currentDeductionRows = [];
 
 function renderDeductions(filterText=""){
@@ -1404,8 +1433,6 @@ function renderDeductions(filterText=""){
     const [mName, yStr] = monthKey.split("|");
     rows = rows.filter(d => d["MONTH"]===mName && String(Math.round(Number(d["YEAR"])))===yStr);
   } else {
-    // "All months" = all of the latest 3 completed months shown in the dropdown,
-    // not the entire history (older months like March shouldn't leak in here).
     rows = rows.filter(d => {
       const yStr = String(Math.round(Number(d["YEAR"])||0));
       return ALLOWED_MONTH_KEYS.has(`${d["MONTH"]}|${yStr}`);
@@ -1416,31 +1443,42 @@ function renderDeductions(filterText=""){
   currentDeductionRows = rows;
 
   let totalPlanned=0, totalCompleted=0, totalPending=0, totalDed=0;
-
- if(rows.length===0){
-    body.innerHTML = `<tr><td colspan="8"><div class="empty"><b>No deduction records${monthKey?" for this month":""}</b></div></td></tr>`;
-  }
-
-  rows.forEach((d, idx)=>{
-    const ded = Number(d["DEDUCTION AMOUNT"])||0;
+  rows.forEach(d=>{
     totalPlanned += Number(d["PLANNED"])||0;
     totalCompleted += Number(d["COMPLETED"])||0;
     totalPending += Number(d["PENDING"])||0;
-    totalDed += ded;
-const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td><div class="person"><div class="avatar" style="background:${colorFor(d["EMPLOYEE"])}">${initials(d["EMPLOYEE"])}</div>
-        ${twoLineNameHtml(titleCase(d["EMPLOYEE"]))}</div></td>
-      <td>${d["MONTH"]||"–"}</td>
-      <td class="num-cell">${d["YEAR"]||"–"}</td>
-      <td class="num-cell">${d["WORK NOT DONE%"]!==undefined && d["WORK NOT DONE%"]!==null ? pct(d["WORK NOT DONE%"]) : "–"}</td>
-      <td class="num-cell">${d["DEDUCTION %"]!==undefined && d["DEDUCTION %"]!==null ? pct(d["DEDUCTION %"]) : "–"}</td>
-      <td class="num-cell">${d["UNPAID LEAVE"] ?? 0}</td>
-      <td class="num-cell ${ded?'neg':''}" style="font-weight:700;">${money(ded)}</td>
-      <td><button class="btn sm slip-btn" data-idx="${idx}" title="Download salary slip">⬇</button></td>
-    `;
-    body.appendChild(tr);
+    totalDed += Number(d["DEDUCTION AMOUNT"])||0;
   });
+
+  if(rows.length===0){
+    body.innerHTML = `<tr><td colspan="8"><div class="empty"><b>No deduction records${monthKey?" for this month":""}</b></div></td></tr>`;
+    renderDeductionsPagination(0);
+  } else {
+    const totalPages = Math.max(1, Math.ceil(rows.length / DEDUCTIONS_PAGE_SIZE));
+    if(deductionsPage > totalPages) deductionsPage = totalPages;
+    const start = (deductionsPage - 1) * DEDUCTIONS_PAGE_SIZE;
+    const pageRows = rows.slice(start, start + DEDUCTIONS_PAGE_SIZE);
+
+    pageRows.forEach((d, i)=>{
+      const idx = start + i;
+      const ded = Number(d["DEDUCTION AMOUNT"])||0;
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td><div class="person"><div class="avatar" style="background:${colorFor(d["EMPLOYEE"])}">${initials(d["EMPLOYEE"])}</div>
+          ${twoLineNameHtml(titleCase(d["EMPLOYEE"]))}</div></td>
+        <td>${d["MONTH"]||"–"}</td>
+        <td class="num-cell">${d["YEAR"]||"–"}</td>
+        <td class="num-cell">${d["WORK NOT DONE%"]!==undefined && d["WORK NOT DONE%"]!==null ? pct(d["WORK NOT DONE%"]) : "–"}</td>
+        <td class="num-cell">${d["DEDUCTION %"]!==undefined && d["DEDUCTION %"]!==null ? pct(d["DEDUCTION %"]) : "–"}</td>
+        <td class="num-cell">${d["UNPAID LEAVE"] ?? 0}</td>
+        <td class="num-cell ${ded?'neg':''}" style="font-weight:700;">${money(ded)}</td>
+        <td><button class="btn sm slip-btn" data-idx="${idx}" title="Download salary slip">⬇</button></td>
+      `;
+      body.appendChild(tr);
+    });
+
+    renderDeductionsPagination(totalPages);
+  }
 
   document.querySelectorAll(".slip-btn").forEach(btn=>{
     btn.addEventListener("click", ()=>{
@@ -1456,6 +1494,23 @@ const tr = document.createElement("tr");
     <div class="card"><div class="eyebrow">Pending</div><div class="num amber">${totalPending}</div><div class="sub">tasks pending</div></div>
     <div class="card"><div class="eyebrow">Total Deduction</div><div class="num red">${money(totalDed)}</div><div class="sub">performance deduction</div></div>
   `;
+}
+
+function renderDeductionsPagination(totalPages){
+  const wrap = document.getElementById("deductionsPagination");
+  if(!wrap) return;
+  if(totalPages <= 0){ wrap.innerHTML = ""; return; }
+  wrap.innerHTML = `
+    <button class="btn ghost sm" id="dedPrevBtn" ${deductionsPage<=1?"disabled":""}>Previous</button>
+    <span style="font-size:12px;color:var(--ink-soft);margin:0 10px;">Page ${deductionsPage} of ${totalPages}</span>
+    <button class="btn ghost sm" id="dedNextBtn" ${deductionsPage>=totalPages?"disabled":""}>Next</button>
+  `;
+  document.getElementById("dedPrevBtn").addEventListener("click", ()=>{
+    if(deductionsPage>1){ deductionsPage--; renderDeductions(document.getElementById("searchDeductions").value); }
+  });
+  document.getElementById("dedNextBtn").addEventListener("click", ()=>{
+    if(deductionsPage<totalPages){ deductionsPage++; renderDeductions(document.getElementById("searchDeductions").value); }
+  });
 }
 
 function daysInMonth(monthName, year){
@@ -1731,13 +1786,14 @@ document.querySelectorAll(".tab").forEach(btn=>{
 document.getElementById("searchRequests").addEventListener("input", e=>renderRequests(e.target.value));
 document.getElementById("fromDate").addEventListener("change", ()=>renderRequests(document.getElementById("searchRequests").value));
 document.getElementById("toDate").addEventListener("change", ()=>renderRequests(document.getElementById("searchRequests").value));
-document.getElementById("searchBalance").addEventListener("input", e=>renderBalance(e.target.value));
+document.getElementById("searchBalance").addEventListener("input", e=>{ balancePage=1; renderBalance(e.target.value); });
 document.getElementById("yearFilterBalance").addEventListener("change", ()=>{
-  renderBalance(document.getElementById("searchBalance").value);
-  renderBalanceCards();
+balancePage=1;
+renderBalance(document.getElementById("searchBalance").value);
+renderBalanceCards();
 });
-document.getElementById("searchDeductions").addEventListener("input", e=>renderDeductions(e.target.value));
-document.getElementById("monthSel").addEventListener("change", ()=>renderDeductions(document.getElementById("searchDeductions").value));
+document.getElementById("searchDeductions").addEventListener("input", e=>{ deductionsPage=1; renderDeductions(e.target.value); });
+document.getElementById("monthSel").addEventListener("change", ()=>{ deductionsPage=1; renderDeductions(document.getElementById("searchDeductions").value); });
 document.getElementById("searchHistory").addEventListener("input", e=>renderHistory(e.target.value));
 document.getElementById("historyEmployeeFilter").addEventListener("change", ()=>renderHistory(document.getElementById("searchHistory").value));
 document.getElementById("historyYearFilter").addEventListener("change", ()=>renderHistory(document.getElementById("searchHistory").value));
