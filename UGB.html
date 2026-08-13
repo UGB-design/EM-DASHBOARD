@@ -595,6 +595,13 @@
     .h-greet{font-size:12px}
   }
   </style>
+ <script>
+  window.addEventListener('error', function(e) {
+    if (e.message && e.message.indexOf('DOCS_timing') !== -1) {
+      e.preventDefault();
+    }
+  }, true);
+  </script>
   </head>
   <body>
   
@@ -1108,16 +1115,8 @@
       </div>
       <div id="internalSheetsGrid" class="isheets-grid"></div>
     </div>
-  
-    <!-- BCI NOTES TAB (embedded Google Doc) -->
-    <div class="tab-content" id="tab-bcinotes">
-      <button id="bciBackBtn" onclick="switchTab('users', document.querySelector('[data-tab=users]'))" style="display:none;position:fixed;top:14px;left:14px;z-index:10000;background:#1a1a1a;color:#fff;border:none;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25);align-items:center;gap:6px">
-    ← Back to Dashboard
-  </button>
-      <div class="leave-iframe-wrap">
-        <iframe src="https://docs.google.com/document/d/e/2PACX-1vRIYZEhKRY2YSLAspROjngCdWEufAkemtj9n7qOW4A_Wm4IW8zTQMCViqdu4Ndu9sbxEc34pyvrXBQg/pub?embedded=true" title="BCI Notes"></iframe>
-      </div>
-    </div>
+  <!-- BCI NOTES TAB — actual iframe ab sirf bciFullscreenOverlay mein hai (duplicate hata diya) -->
+    <div class="tab-content" id="tab-bcinotes"></div>
       <!-- BCI NOTES — INDEPENDENT FULLSCREEN OVERLAY (bypasses all parent layout issues) -->
       <div id="delegationFullscreenOverlay" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:#fff;z-index:99999;">
     <button onclick="closeDelegationOverlay()" style="position:absolute;top:14px;left:14px;z-index:100000;background:#1a1a1a;color:#fff;border:none;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25);display:inline-flex;align-items:center;gap:6px">
@@ -1129,7 +1128,7 @@
     <button onclick="switchTab('users', document.querySelector('[data-tab=users]'))" style="position:absolute;top:14px;left:14px;z-index:100000;background:#1a1a1a;color:#fff;border:none;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25);display:inline-flex;align-items:center;gap:6px">
       ← Back to Dashboard
     </button>
-    <iframe src="https://docs.google.com/document/d/e/2PACX-1vRIYZEhKRY2YSLAspROjngCdWEufAkemtj9n7qOW4A_Wm4IW8zTQMCViqdu4Ndu9sbxEc34pyvrXBQg/pub?embedded=true" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;display:block" title="BCI Notes"></iframe>
+    <iframe src="https://docs.google.com/document/d/e/2PACX-1vRIYZEhKRY2YSLAspROjngCdWEufAkemtj9n7qOW4A_Wm4IW8zTQMCViqdu4Ndu9sbxEc34pyvrXBQg/pub?embedded=true" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;display:block" title="BCI Notes" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
   </div>
     <div id="ediv" style="display:none"></div>
       </div><!-- /.content -->
