@@ -9,8 +9,33 @@
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:linear-gradient(135deg,#eef2f9 0%,#eef4f6 28%,#eef1ea 58%,#e6ecf3 100%);background-attachment:fixed;color:#1a1a1a;min-height:100vh}
   /* APP SHELL (sidebar + main) */
-  .app-shell{display:flex;min-height:100vh}
-  .sidebar{width:270px;flex-shrink:0;background:#0b1437;border-right:1px solid #1c2554;display:flex;flex-direction:column;padding:22px 14px;position:sticky;top:0;height:100vh;overflow-y:auto;z-index:70;scrollbar-width:none;-ms-overflow-style:none}
+ .app-shell{display:flex;min-height:100vh}
+  /* ── TOP HEADER BAR (logo/firm left, bell + profile right) ─────────────── */
+  .top-header-bar{display:flex;align-items:center;justify-content:space-between;background:#fff;border-bottom:1px solid #e8eaed;padding:10px 24px;position:sticky;top:0;z-index:90;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+  .thb-left{display:flex;align-items:center;gap:12px}
+  .thb-logo{width:42px;height:42px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.12);overflow:hidden;flex-shrink:0}
+  .thb-logo img{width:100%;height:100%;object-fit:contain}
+  .thb-firm-name{font-size:15px;font-weight:800;color:#1a1a1a;line-height:1.2;white-space:nowrap}
+  .thb-firm-sub{font-size:11.5px;color:#8a8478;font-weight:600;margin-top:1px}
+  .thb-right{display:flex;align-items:center;gap:14px}
+  .thb-bell{position:relative;width:38px;height:38px;border-radius:10px;background:#fff;border:1px solid #e2e8f0;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+  .thb-bell:hover{background:#f9fafb}
+  .thb-bell-badge{position:absolute;top:-3px;right:-3px;background:#dc2626;color:#fff;font-size:9px;font-weight:800;min-width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center;padding:0 3px}
+  .thb-profile{position:relative;display:flex;align-items:center;gap:10px;cursor:pointer;padding:5px 10px 5px 5px;border-radius:12px;transition:background .15s}
+  .thb-profile:hover{background:#f8fafc}
+  .thb-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#115e59 0%,#14b8a6 100%);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
+  .thb-profile-txt{line-height:1.25}
+  .thb-profile-name{font-size:13px;font-weight:700;color:#1a1a1a;white-space:nowrap}
+  .thb-profile-role{font-size:10.5px;color:#9aa0ac;font-weight:600}
+  .thb-chevron{width:14px;height:14px;color:#9aa0ac;transition:transform .15s;flex-shrink:0}
+  .thb-profile.open .thb-chevron{transform:rotate(180deg)}
+  .thb-dropdown{position:absolute;top:calc(100% + 10px);right:0;background:#fff;border:1px solid #e8eaed;border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.15);min-width:170px;padding:8px;display:none;z-index:200}
+  .thb-dropdown.show{display:block}
+  .thb-dropdown button{width:100%;display:flex;align-items:center;gap:8px;background:transparent;border:none;padding:9px 10px;border-radius:8px;font-size:13px;font-weight:600;color:#dc2626;cursor:pointer;text-align:left}
+  .thb-dropdown button:hover{background:#fef2f2}
+  .thb-dropdown button svg{width:15px;height:15px}
+  @media(max-width:600px){.thb-firm-name{font-size:13px}.thb-profile-txt{display:none}.top-header-bar{padding:8px 14px}}
+  .sidebar{width:270px;flex-shrink:0;background:#0b1437;border-right:1px solid #1c2554;display:flex;flex-direction:column;padding:22px 14px;position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto;z-index:70;scrollbar-width:none;-ms-overflow-style:none}
 .sidebar::-webkit-scrollbar{display:none}
 .sb-brand{display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 10px 8px;background:transparent;border-radius:12px;border-bottom:2px solid #3a4680;margin-bottom:8px}
 .sb-brand-row{display:flex;align-items:center;gap:10px}
@@ -650,7 +675,38 @@
     </div>
   </div>
   
-  <div id="appRoot">
+<div id="appRoot">
+  <div class="top-header-bar" id="topHeaderBar">
+    <div class="thb-left">
+      <div class="thb-logo">
+        <img src="https://lh3.googleusercontent.com/d/158_HBHOHewJ0wG2BY3ZiBdT_uD7eoDQX=w200" alt="CA Logo">
+      </div>
+      <div>
+        <div class="thb-firm-name">UMESH BOLMAL &amp; ASSOCIATES</div>
+        <div class="thb-firm-sub">Chartered Accountants</div>
+      </div>
+    </div>
+    <div class="thb-right">
+      <button class="thb-bell" onclick="showRecentActivitiesModal()" title="Recent Activities">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4b4538" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+        <span id="thbBellBadge" class="thb-bell-badge" style="display:none">0</span>
+      </button>
+      <div class="thb-profile" id="thbProfile" onclick="toggleProfileMenu(event)">
+        <div class="thb-avatar" id="thbAvatar"></div>
+        <div class="thb-profile-txt">
+          <div class="thb-profile-name" id="thbProfileName"></div>
+          <div class="thb-profile-role">Admin</div>
+        </div>
+        <svg class="thb-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        <div class="thb-dropdown" id="thbDropdown">
+          <button onclick="doLogout()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="app-shell">
   
     <!-- SIDEBAR NAVIGATION -->
@@ -1362,6 +1418,21 @@ function openAddDelegation() {
     window._leavePollTimer = setInterval(pollLeaveBadge, 20000);
   })();
   
+// ── Formats the currently selected date range (dtFrom/dtTo) as "1 Aug - 12 Aug"
+  function formatPeriodLabel() {
+    var fISO = document.getElementById('dtFrom') ? document.getElementById('dtFrom').value : '';
+    var tISO = document.getElementById('dtTo') ? document.getElementById('dtTo').value : '';
+    if (!fISO || !tISO) return 'This Period';
+    function fmt(iso) {
+      var p = iso.split('-');
+      if (p.length !== 3) return iso;
+      var d = new Date(parseInt(p[0],10), parseInt(p[1],10) - 1, parseInt(p[2],10));
+      var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      return d.getDate() + ' ' + months[d.getMonth()];
+    }
+    return fmt(fISO) + ' - ' + fmt(tISO);
+  }
+
   // ── Greeting helper (time-of-day based) ───────────────────────────────────────
  function updateGreeting(name) {
     var hr = new Date().getHours();
@@ -1622,8 +1693,12 @@ function showDenied(email) {
     document.getElementById('appRoot').style.display = 'block';
     document.getElementById('userChip').style.display = 'flex';
     document.getElementById('logoutBtn').style.display = 'flex';
-    document.getElementById('userNameLabel').textContent = name;
+  document.getElementById('userNameLabel').textContent = name;
     document.getElementById('userAvatar').textContent = ini(name);
+    var thbName = document.getElementById('thbProfileName');
+    var thbAv = document.getElementById('thbAvatar');
+    if (thbName) thbName.textContent = name;
+    if (thbAv) thbAv.textContent = ini(name);
     var topAv = document.getElementById('topbarAvatar');
     if (topAv) { topAv.textContent = ini(name); topAv.title = name; topAv.style.display = 'flex'; }
     var emailSub = document.getElementById('userEmailSub');
@@ -1748,7 +1823,7 @@ function loadUserCache(email) {
     var perfPct = Math.round(myScore);
       var pctEl = document.getElementById('snapPerfPct');
       var ringEl = document.getElementById('snapPerfRing');
-      if (pctEl) pctEl.innerHTML = perfPct + '%<small>This Period</small>';
+      if (pctEl) pctEl.innerHTML = perfPct + '%<small>' + formatPeriodLabel() + '</small>';
       if (ringEl) ringEl.style.background = 'conic-gradient(#16a34a ' + (perfPct*3.6) + 'deg,#eef1f6 0deg)';
    } catch (ex) {
       console.warn('renderTodayStatBadges failed:', ex);
@@ -2071,15 +2146,17 @@ function renderUsersDashboardPanels(data) {
     var el = document.getElementById('dashRecentActivitiesList');
     if (!el) return;
         
-     var bellBadge = document.getElementById('notifBellBadge');
-    if (bellBadge) {
+   var bellBadge = document.getElementById('notifBellBadge');
+    var thbBellBadge = document.getElementById('thbBellBadge');
+    [bellBadge, thbBellBadge].forEach(function(b) {
+      if (!b) return;
       if (tasks.length > 0) {
-        bellBadge.textContent = tasks.length > 99 ? '99+' : tasks.length;
-        bellBadge.style.display = 'flex';
+        b.textContent = tasks.length > 99 ? '99+' : tasks.length;
+        b.style.display = 'flex';
       } else {
-        bellBadge.style.display = 'none';
+        b.style.display = 'none';
       }
-    }
+    });
     if (!tasks.length) { el.innerHTML = '<div class="dl-empty-note">No activity recorded today</div>'; return; }
     el.innerHTML = tasks.slice(0, 2).map(function(t) {
       var icon = t.type === 'FMS' ? '📋' : t.type === 'Checklist' ? '✅' : '👥';
@@ -3184,10 +3261,27 @@ function renderClByDoer(rows) {
     var box = document.getElementById('globalSearchBox');
     if (box) box.value = '';
   }
-  function toggleSidebar() {
+function toggleSidebar() {
     var sb = document.getElementById('sidebarNav');
     if (sb) sb.classList.toggle('open');
   }
+  // ── Top header: profile dropdown ─────────────────────────────────────────
+  function toggleProfileMenu(e) {
+    e.stopPropagation();
+    var dd = document.getElementById('thbDropdown');
+    var wrap = document.getElementById('thbProfile');
+    if (!dd || !wrap) return;
+    var open = dd.classList.toggle('show');
+    wrap.classList.toggle('open', open);
+  }
+  document.addEventListener('click', function(e) {
+    var dd = document.getElementById('thbDropdown');
+    var wrap = document.getElementById('thbProfile');
+    if (dd && dd.classList.contains('show') && wrap && !wrap.contains(e.target)) {
+      dd.classList.remove('show');
+      wrap.classList.remove('open');
+    }
+  });  
   // ── Tab switch ────────────────────────────────────────────────────────────────
   function switchTab(name, el) {
     clearGlobalSearch();
