@@ -102,9 +102,9 @@
   .slip-btn:hover{opacity:.8;}
   tr.holiday-soon td{background:var(--green-soft);}
   tr.holiday-soon:hover td{background:#d8f3e2;}
-  #tab-deductions table{table-layout:fixed;}
-  #tab-deductions thead th{padding:9px 6px;font-size:10px;white-space:normal;line-height:1.25;overflow:visible;text-overflow:clip;}
-  #tab-deductions tbody td{padding:8px 6px;font-size:11px;}
+ #tab-deductions table{table-layout:fixed;}
+#tab-deductions thead th{padding:11px 8px;font-size:12px;white-space:normal;line-height:1.3;overflow:visible;text-overflow:clip;}
+#tab-deductions tbody td{padding:11px 8px;font-size:13.5px;}
  #tab-deductions th:nth-child(1), #tab-deductions td:nth-child(1){width:20%;}
 #tab-deductions th:nth-child(2), #tab-deductions td:nth-child(2){width:12%;}
 #tab-deductions th:nth-child(3), #tab-deductions td:nth-child(3){width:8%;}
@@ -113,13 +113,13 @@
 #tab-deductions th:nth-child(6), #tab-deductions td:nth-child(6){width:13%;}
 #tab-deductions th:nth-child(7), #tab-deductions td:nth-child(7){width:12%;}
 #tab-deductions th:nth-child(8), #tab-deductions td:nth-child(8){width:10%;}
-  #tab-deductions .person{align-items:center;}
-  #tab-deductions .person .avatar{width:22px;height:22px;font-size:9.5px;flex-shrink:0;}
-  #tab-deductions .person .name{font-size:11px;line-height:1.2;overflow:hidden;}
+#tab-deductions .person{align-items:center;}
+  #tab-deductions .person .avatar{width:28px;height:28px;font-size:11px;flex-shrink:0;}
+  #tab-deductions .person .name{font-size:13.5px;line-height:1.25;overflow:hidden;}
   #tab-deductions .person .name span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  #tab-deductions .person .name .last{font-weight:600;color:var(--ink-soft);font-size:9.5px;}
+  #tab-deductions .person .name .last{font-weight:600;color:var(--ink-soft);font-size:11.5px;}
   #tab-deductions td:not(:first-child), #tab-deductions th:not(:first-child){white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  #tab-deductions .slip-btn{padding:5px 9px;font-size:11px;}
+  #tab-deductions .slip-btn{padding:6px 11px;font-size:13px;}
   #tab-holidays table{table-layout:fixed;}
   #tab-holidays th:nth-child(1), #tab-holidays td:nth-child(1){width:130px;}
   #tab-holidays th:nth-child(2), #tab-holidays td:nth-child(2){width:120px;}
@@ -159,7 +159,6 @@
       <button class="tab" data-tab="balance">Leave Balance</button>
       <button class="tab" data-tab="deductions">Deduction & Salary Slip</button>
       <button class="tab" data-tab="history">All Leave Requests</button>
-      <button class="tab" data-tab="holidays">Upcoming Holidays <span class="tab-badge blue" id="holidaysBadge" style="display:none;">0</span></button>
       <button class="tab" data-tab="attendance">Attendance</button>
     </div>
     <button class="btn ghost sm tabRefreshBtn" title="Reload live data">⟳ Refresh</button>
@@ -1269,6 +1268,7 @@ function nearestHolidayMonthCount(rows, startMonthIdx){
 
 function updateHolidaysBadge(count){
   const badge = document.getElementById("holidaysBadge");
+  if(!badge) return;
   if(count>0){
     badge.style.display = "flex";
     badge.textContent = count;
@@ -1808,6 +1808,7 @@ function startApp(email){
   CURRENT_USER_EMAIL = email.trim().toLowerCase();
   IS_ADMIN = isAdminEmail(CURRENT_USER_EMAIL);
   document.getElementById("loginGate").style.display = "none";
+  applyAdminVisibility();
 
   const cached = loadCacheData();
   if(cached){
@@ -1828,7 +1829,24 @@ function startApp(email){
     loadAll(false);
   }
 }
-
+function applyAdminVisibility(){
+  const reqBtn = document.querySelector('.tab[data-tab="requests"]');
+  if(!reqBtn) return;
+  if(IS_ADMIN){
+    reqBtn.style.display = "";
+    return;
+  }
+  reqBtn.style.display = "none";
+  if(reqBtn.classList.contains("active")){
+    reqBtn.classList.remove("active");
+    const balBtn = document.querySelector('.tab[data-tab="balance"]');
+    if(balBtn){
+      balBtn.classList.add("active");
+      document.querySelectorAll("section[id^='tab-']").forEach(s=>s.style.display="none");
+      document.getElementById("tab-balance").style.display="block";
+    }
+  }
+}
 function tryLogin(){
   const input = document.getElementById("loginEmail");
   const email = input.value.trim();
