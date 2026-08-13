@@ -43,9 +43,11 @@
   .brand h1{font-size:24px;font-weight:800;margin:0 0 4px;letter-spacing:-0.02em;}
   .brand p{margin:0;font-size:13px;color:var(--ink-soft);}
   .brand p span{color:var(--blue);font-weight:600;}
-  .btn{background:var(--navy);color:#fff;border:none;border-radius:10px;padding:9px 18px;font-weight:600;font-size:13px;cursor:pointer;transition:opacity .15s;display:inline-block;text-decoration:none;}
-  .btn:hover{opacity:.85;}
-  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--border);}
+ .btn{background:var(--blue);color:#fff;border:none;border-radius:10px;padding:9px 18px;font-weight:600;font-size:13px;cursor:pointer;transition:opacity .15s, box-shadow .15s;display:inline-block;text-decoration:none;box-shadow:0 1px 2px rgba(37,99,235,.15),0 4px 12px rgba(37,99,235,.22);}
+  .btn:hover{opacity:.9;}
+  .btn.ghost{background:var(--blue);color:#fff;border:1px solid var(--blue);}
+  .btn.ghost:hover{opacity:.9;}
+  .btn:disabled{background:#93b4f3;box-shadow:none;cursor:not-allowed;opacity:1;}
   .btn.sm{padding:6px 12px;font-size:11.5px;}
   .topbar{display:flex;justify-content:flex-end;margin-bottom:14px;}
   .apply-leave{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#1d4ed8 0%,#0b1437 100%);color:#fff;border:none;border-radius:9px;padding:7px 13px 7px 9px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;letter-spacing:.01em;cursor:pointer;box-shadow:0 1px 2px rgba(11,20,55,.15),0 6px 16px rgba(11,20,55,.28);text-decoration:none;transition:transform .15s, box-shadow .15s, opacity .15s;}
