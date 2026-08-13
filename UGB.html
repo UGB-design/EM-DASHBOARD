@@ -1089,19 +1089,6 @@
             <tbody id="scTableBody"><tr><td colspan="7"><div class="skel skel-line" style="width:100%;height:16px;margin:8px 0"></div><div class="skel skel-line" style="width:90%;height:16px;margin:8px 0"></div><div class="skel skel-line" style="width:95%;height:16px;margin:8px 0"></div><div class="skel skel-line" style="width:85%;height:16px;margin:8px 0"></div></td></tr></tbody>
           </table>
       </div>
- <div style="display:grid;grid-template-columns:0.75fr 1.6fr;gap:16px;margin-top:16px">
-    <div class="ov-card">
-      <div class="ov-card-top">
-        <div class="ov-card-title">Task Chart</div>
-        <div class="ov-card-sub" id="ovDonutSub">this period</div>
-      </div>
-      <div class="ov-donut-wrap" id="ovDonutWrap"></div>
-    </div>
-    <div class="ov-card">
-      <div class="ov-card-top"><div class="ov-card-title">Employee Wise Score</div></div>
-      <div id="scEmpScoreBars"></div>
-    </div>
-  </div>
     </div>
   
     <!-- LEAVE MANAGEMENT TAB (embedded) -->
@@ -1822,13 +1809,12 @@ function loadUserCache(email) {
           '<td>' + pg(d.progress) + '</td></tr>';
       }).join('');
     }
-   renderUsers(data.staffData || []);
+  renderUsers(data.staffData || []);
     renderInternalSheets(data.internalSheets);
     renderUsersDashboardPanels(data);
     renderPendingApprovalsAndHolidays(data);
     renderDashPendingApprovals(data);
     renderDashRecentActivities(data);
-    renderOverviewWidgets(data);
     renderFmsByProcess(data.fmsByProcess || []);
     renderClByDoer(data.checklistByDoer || []);
     populateFmsFilters(data.fmsFilterOptions || {});
