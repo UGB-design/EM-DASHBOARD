@@ -18,17 +18,17 @@
   .thb-logo img{width:100%;height:100%;object-fit:contain}
  .thb-firm-name{font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:800;color:#ffffff;line-height:1.3;white-space:nowrap;letter-spacing:.02em}
 .thb-firm-sub{font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#d4af5a;font-weight:800;margin-top:4px;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
-.thb-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap;flex:1;background:linear-gradient(90deg,#0b1437 0%,#1c2a5e 10%,#334a85 25%,#5872ab 40%,#93a8d4 60%,#d3ddf3 80%,#f7f9fc 100%);padding:10px 24px;justify-content:flex-end}
+.thb-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap;flex:1;background:#0b1437;padding:10px 24px;justify-content:flex-end}
 .thb-bell{position:relative;width:38px;height:38px;border-radius:10px;background:#fff;border:1px solid #fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
 .thb-bell:hover{background:#f3f4f6}
   .thb-bell-badge{position:absolute;top:-3px;right:-3px;background:#dc2626;color:#fff;font-size:9px;font-weight:800;min-width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center;padding:0 3px}
   .thb-profile{position:relative;display:flex;align-items:center;gap:10px;cursor:pointer;padding:5px 10px 5px 5px;border-radius:12px;transition:background .15s}
- .thb-profile:hover{background:#f8fafc}
+.thb-profile:hover{background:rgba(255,255,255,.08)}
   .thb-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#1e3a6d 0%,#0b1437 100%);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
   .thb-profile-txt{line-height:1.25}
- .thb-profile-name{font-size:13px;font-weight:700;color:#1a1a1a;white-space:nowrap}
-.thb-profile-role{font-size:10.5px;color:#9aa0ac;font-weight:600}
- .thb-chevron{width:14px;height:14px;color:#9aa0ac;transition:transform .15s;flex-shrink:0}
+.thb-profile-name{font-size:13px;font-weight:700;color:#ffffff;white-space:nowrap}
+.thb-profile-role{font-size:10.5px;color:#aab2d5;font-weight:600}
+ .thb-chevron{width:14px;height:14px;color:#aab2d5;transition:transform .15s;flex-shrink:0}
   .thb-profile.open .thb-chevron{transform:rotate(180deg)}
   .thb-dropdown{position:absolute;top:calc(100% + 10px);right:0;background:#fff;border:1px solid #e8eaed;border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.15);min-width:170px;padding:8px;display:none;z-index:200}
   .thb-dropdown.show{display:block}
@@ -173,7 +173,7 @@
   .tb-right .wk-label{white-space:nowrap;margin-left:4px}
   .dt-input{min-width:150px}
   .wk-sel{background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;padding:7px 14px;font-size:13px;color:#333;font-weight:500;cursor:pointer;outline:none;box-shadow:0 2px 8px rgba(30,41,59,.08);max-width:260px}
-  .saving{font-size:11px;color:#888;display:none}
+ .saving{font-size:11px;color:#d4af5a;display:none}
   .saving.show{display:inline}
   .global-search-row{display:flex;justify-content:flex-end;margin-top:10px}
   .global-search-box{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;padding:8px 14px;box-shadow:0 2px 8px rgba(30,41,59,.06);min-width:260px}
@@ -187,7 +187,7 @@
   .leave-link-btn .llb-icon{font-size:15px;line-height:1}
   .leave-link-btn::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(120deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.55) 50%,rgba(255,255,255,0) 100%);transform:skewX(-20deg);animation:llbShine 2.6s ease-in-out infinite}
   @keyframes llbShine{0%{left:-60%}55%{left:130%}100%{left:130%}}
-   .add-delegation-btn{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#e0a94a 0%,#d4af5a 100%);color:#1a1a1a;text-decoration:none;font-size:13px;font-weight:800;padding:9px 18px;border-radius:10px;box-shadow:0 3px 10px rgba(212,175,90,.35);transition:transform .15s,box-shadow .15s;border:none;cursor:pointer} 
+   .add-delegation-btn{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#3b5bdb 0%,#2544a8 100%);color:#ffffff;text-decoration:none;font-size:13px;font-weight:800;padding:9px 18px;border-radius:10px;box-shadow:0 3px 10px rgba(37,68,168,.4);transition:transform .15s,box-shadow .15s;border:none;cursor:pointer} 
   .add-delegation-btn:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(22,163,74,.32)}
   .add-delegation-btn .adb-plus{font-size:15px;font-weight:800;line-height:1}
   .teams-btn{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;cursor:pointer;box-shadow:0 2px 8px rgba(30,41,59,.08);transition:background .15s;text-decoration:none}
@@ -819,7 +819,6 @@
               <div class="dash-greet-sub">Here's what's happening in your workspace today.</div>
             </div>
           </div>
-          <div class="dash-greet-quote">"Excellence is not an act, it is a habit."<br>— Aristotle</div>
         </div>
         <div id="usersUpcomingBanner"></div>
       </div>
