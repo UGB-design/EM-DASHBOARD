@@ -51,7 +51,7 @@
   .sb-greet-datebadge{display:flex;align-items:center;justify-content:center;gap:7px;background:#131c47;border:1px solid #3a4680;border-radius:9px;padding:8px 11px;font-size:11px;font-weight:700;color:#ffffff;margin-top:12px}
   .sb-greet-datebadge svg{width:13px;height:13px;flex-shrink:0;color:#5eead4}
   .sb-greet-time{display:block;font-size:15px;font-weight:800;color:#5eead4;text-align:center;margin-top:8px;letter-spacing:.03em;font-variant-numeric:tabular-nums}
-  .sb-nav{display:flex;flex-direction:column;gap:3px;flex:1;margin-top:6px}
+ .sb-nav{display:flex;flex-direction:column;gap:8px;flex:1;margin-top:12px}
   .sb-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;color:#aab2d5;font-size:13px;font-weight:600;cursor:pointer;border:none;background:transparent;text-align:left;width:100%;transition:all .15s;position:relative}
   .sb-item:hover:not(.active){background:#1c2554;color:#ffffff}
   .sb-item.active{background:#0f766e;color:#fff;box-shadow:0 4px 12px rgba(37,99,235,.35)}
@@ -515,9 +515,9 @@
   .ucc-viewprofile:hover{text-decoration:underline}
   .ud-bottom-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:22px;align-items:stretch}
   @media(max-width:1100px){.ud-bottom-grid{grid-template-columns:repeat(2,1fr)}}
- .ud-panel{background:#fff;border-radius:16px;border:1px solid #e2e8f0;box-shadow:0 2px 10px rgba(30,41,59,.05);padding:14px 18px 12px;height:100%;display:flex;flex-direction:column;overflow:hidden}
+ .ud-panel{background:#fff;border-radius:16px;border:1px solid #e2e8f0;box-shadow:0 2px 10px rgba(30,41,59,.05);padding:14px 18px 12px;display:flex;flex-direction:column;overflow:visible}
 #udAttendanceChart{max-height:100px;overflow:hidden}
- #udLeaveSummary{max-height:180px;overflow-y:auto}
+ #udLeaveSummary{overflow-y:visible}
  #upcomingHolidayNotice{max-height:78px}
   #udLeaveSummary{display:flex;flex-direction:column;flex:1}
   .ud-panel-title{font-size:13px;font-weight:800;color:#1a1a1a;margin-bottom:14px}
@@ -534,9 +534,9 @@
   .ud-empbar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#14b8a6,#0f766e)}
   .ud-empbar-pct{font-size:11px;font-weight:800;color:#1a1a1a;width:32px;text-align:right}
   .snap-perf{justify-content:center;padding:14px 20px !important;min-width:150px !important;flex:1 1 0}
-  .snap-perf-ring{width:90px;height:90px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-  .snap-perf-ring span{background:#fff;width:74px;height:74px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#1a1a1a;line-height:1.1}
-  .snap-perf-ring span small{font-size:9px;font-weight:700;color:#9aa0ac;text-transform:uppercase;letter-spacing:.03em;margin-top:2px}
+  .snap-perf-ring{width:100px;height:100px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .snap-perf-ring span{background:#fff;width:84px;height:84px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#1a1a1a;line-height:1.1;text-align:center;padding:0 6px}
+  .snap-perf-ring span small{font-size:7.5px;font-weight:700;color:#9aa0ac;text-transform:uppercase;letter-spacing:.02em;margin-top:2px;white-space:nowrap}
    .dash-lists-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px}
 @media(max-width:900px){.dash-lists-grid{grid-template-columns:1fr}}
 .dl-list-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #f1f5f9}
@@ -1125,12 +1125,12 @@
     </div>
     <!-- INTERNAL SHEETS TAB -->
   <div class="tab-content" id="tab-internalsheets">
-      <div class="users-search-wrap" style="margin-bottom:14px;max-width:340px">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        <input type="text" id="isheetsSearchInput" placeholder="Search sheets..." oninput="filterInternalSheets()">
-      </div>
-      <div class="meta-info-badge">
-        <span class="m-badge b-blue" id="isheetsCountBadge">0 sheets</span>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:14px;flex-wrap:wrap">
+        <div class="users-search-wrap" style="margin-bottom:0;max-width:340px;flex:1;min-width:220px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" id="isheetsSearchInput" placeholder="Search sheets..." oninput="filterInternalSheets()">
+        </div>
+        <span class="m-badge b-blue" id="isheetsCountBadge" style="flex-shrink:0">0 sheets</span>
       </div>
       <div id="internalSheetsGrid" class="isheets-grid"></div>
     </div>
@@ -3281,7 +3281,7 @@ function toggleSidebar() {
   
     if (topbarEl) topbarEl.style.display = (name === 'bcinotes' || name === 'leave') ? 'none' : 'flex';
   
-   if (name === 'leave') {
+  if (name === 'leave') {
       if (hc) hc.style.display = 'none';
       if (contentEl) contentEl.classList.add('leave-mode');
       var lIfr = document.getElementById('leaveIframe');
@@ -3292,7 +3292,7 @@ function toggleSidebar() {
     }
   
    var sidebarEl = document.getElementById('sidebarNav');
-    if (name === 'bcinotes') {
+    if (name === 'bcinotes' || name === 'leave') {
       if (greetEl) greetEl.style.display = 'none';
       var headerEl = document.querySelector('.header');
       if (headerEl) headerEl.style.display = 'none';
@@ -3301,7 +3301,7 @@ function toggleSidebar() {
       document.body.style.overflow = 'hidden';
       var bciBackBtn = document.getElementById('bciBackBtn');
       var bciOverlay = document.getElementById('bciFullscreenOverlay');
-        if (bciOverlay) bciOverlay.style.display = 'block';
+        if (name === 'bcinotes' && bciOverlay) bciOverlay.style.display = 'block';
         if (bciBackBtn) bciBackBtn.style.display = 'inline-flex';
     } else {
       if (greetEl) greetEl.style.display = 'flex';
@@ -3314,7 +3314,7 @@ function toggleSidebar() {
       var bciOverlay2 = document.getElementById('bciFullscreenOverlay');
         if (bciOverlay2) bciOverlay2.style.display = 'none';
         if (bciBackBtn2) bciBackBtn2.style.display = 'none';
-    }  
+    }
   
     if (name === 'scores') {
       document.getElementById('scFilterPerf').value = 'All';
