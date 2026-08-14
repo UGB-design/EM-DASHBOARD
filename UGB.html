@@ -244,7 +244,7 @@
   .fms-badge.a-green{background:#f0fdf4;color:#166534}
   /* TABLES */
   table{width:100%;border-collapse:collapse}
- th{font-size:11px;color:#1e3a6d;font-weight:800;padding:10px 14px;text-align:left;border-bottom:2px solid #d4af5a;text-transform:uppercase;letter-spacing:.06em;background:#fdfbf7;white-space:nowrap}
+ th{font-size:11px;color:#ffffff;font-weight:800;padding:10px 14px;text-align:left;border-bottom:2px solid #d4af5a;text-transform:uppercase;letter-spacing:.06em;background:#1e3a6d;white-space:nowrap}
  table thead th{position:sticky;top:76px;z-index:40;background:#fdfbf7}  
   .table-scroll-wrap table thead th{position:sticky;top:0;z-index:20;background:#fdfbf7}
   .content table thead th{top:76px}
@@ -3487,7 +3487,7 @@ function closeFullReportModal(){ document.getElementById('fullReportModal').styl
         </div>
         <button onclick="closePendingModal()" style="background:#f3f4f6;border:none;border-radius:8px;width:30px;height:30px;font-size:16px;cursor:pointer;color:#555;display:flex;align-items:center;justify-content:center">✕</button>
       </div>
-      <div style="overflow-y:auto;padding:0">
+     <div style="overflow-y:auto;padding:0;max-height:calc(80vh - 140px)">
        <table style="width:100%;border-collapse:collapse">
           <thead style="position:sticky;top:0;z-index:5">
             <tr id="modalTheadRow">
@@ -3660,9 +3660,9 @@ function closeFullReportModal(){ document.getElementById('fullReportModal').styl
         <select id="attTableEmpFilter" class="users-filter-sel" onchange="filterAttendanceTable()"><option value="All">All Employees</option></select>
         <select id="attTableMonthFilter" class="users-filter-sel" onchange="filterAttendanceTable()"><option value="All">All Months</option></select>
       </div>
-      <div style="overflow-y:auto;padding:0">
+    <div style="overflow-y:auto;padding:0;max-height:calc(80vh - 140px)">
         <table style="width:100%;border-collapse:collapse">
-          <thead>
+          <thead style="position:sticky;top:0;z-index:5">
             <tr>
               <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#fafafa">#</th>
               <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#fafafa">Name</th>
