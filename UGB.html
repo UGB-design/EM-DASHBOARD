@@ -17,7 +17,7 @@
   .thb-logo{width:54px;height:54px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.12);overflow:hidden;flex-shrink:0;padding:4px}
   .thb-logo img{width:100%;height:100%;object-fit:contain}
  .thb-firm-name{font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:800;color:#ffffff;line-height:1.3;white-space:nowrap;letter-spacing:.02em}
-.thb-firm-sub{font-family:Arial,Helvetica,sans-serif;font-size:10px;color:#d4af5a;font-weight:700;margin-top:3px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.thb-firm-sub{font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#d4af5a;font-weight:800;margin-top:4px;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
 .thb-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap;flex:1;background:linear-gradient(90deg,#0b1437 0%,#1c2a5e 10%,#334a85 25%,#5872ab 40%,#93a8d4 60%,#d3ddf3 80%,#f7f9fc 100%);padding:10px 24px;justify-content:flex-end}
 .thb-bell{position:relative;width:38px;height:38px;border-radius:10px;background:#fff;border:1px solid #fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
 .thb-bell:hover{background:#f3f4f6}
@@ -3304,6 +3304,17 @@ function toggleSidebar() {
       var bciOverlay = document.getElementById('bciFullscreenOverlay');
         if (name === 'bcinotes' && bciOverlay) bciOverlay.style.display = 'block';
         if (bciBackBtn) bciBackBtn.style.display = 'inline-flex';
+    } else if (name === 'scores') {
+      if (greetEl) greetEl.style.display = 'none';
+      var headerElSc = document.querySelector('.header');
+      if (headerElSc) headerElSc.style.display = 'none';
+      if (contentEl) contentEl.classList.remove('bci-mode');
+      if (sidebarEl) sidebarEl.style.display = 'none';
+      document.body.style.overflow = '';
+      var bciBackBtnSc = document.getElementById('bciBackBtn');
+      var bciOverlaySc = document.getElementById('bciFullscreenOverlay');
+        if (bciOverlaySc) bciOverlaySc.style.display = 'none';
+        if (bciBackBtnSc) bciBackBtnSc.style.display = 'inline-flex';
     } else {
       if (greetEl) greetEl.style.display = 'flex';
       var headerEl2 = document.querySelector('.header');
@@ -3316,7 +3327,6 @@ function toggleSidebar() {
         if (bciOverlay2) bciOverlay2.style.display = 'none';
         if (bciBackBtn2) bciBackBtn2.style.display = 'none';
     }
-  
     if (name === 'scores') {
       document.getElementById('scFilterPerf').value = 'All';
       applyScoreFilters();
