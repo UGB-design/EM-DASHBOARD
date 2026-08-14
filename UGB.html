@@ -54,7 +54,7 @@
  .sb-nav{display:flex;flex-direction:column;gap:8px;flex:1;margin-top:12px}
   .sb-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;color:#aab2d5;font-size:13px;font-weight:600;cursor:pointer;border:none;background:transparent;text-align:left;width:100%;transition:all .15s;position:relative}
   .sb-item:hover:not(.active){background:#1c2554;color:#ffffff}
- .sb-item.active{background:linear-gradient(135deg,#e0a94a 0%,#d4af5a 100%);color:#1a1a1a;font-weight:800;box-shadow:0 4px 12px rgba(212,175,90,.35)}
+ .sb-item.active{background:linear-gradient(135deg,#3b5bdb 0%,#2544a8 100%);color:#ffffff;font-weight:800;box-shadow:0 4px 12px rgba(37,68,168,.4)}
   .sb-item .sb-ic{width:18px;height:18px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
   .sb-item .sb-ic svg{width:17px;height:17px;stroke-width:2}
   .sb-item .sb-label{flex:1}
@@ -129,7 +129,18 @@
   .topbar{background:#fff;padding:20px 24px 16px;border-bottom:1px solid #e8eaed;display:flex;flex-direction:column;gap:14px;box-shadow:0 1px 3px rgba(0,0,0,.04);border-radius:16px;margin-bottom:18px}
   .tb-row1{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
  .my-snapshot{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
-#usersUpcomingBanner:not(:empty){margin:18px 0 22px}
+#usersUpcomingBanner:not(:empty){margin:0}
+.dash-top-row{display:flex;gap:16px;align-items:stretch;margin-top:20px;margin-bottom:16px}
+.dash-greet-card{flex:1;background:#fff;border:1px solid #e8eaed;border-radius:16px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;box-shadow:0 2px 8px rgba(30,41,59,.06);min-width:0}
+.dash-greet-left{display:flex;align-items:center;gap:14px;min-width:0}
+.dash-greet-emoji{font-size:26px;flex-shrink:0}
+.dash-greet-title{font-size:18px;font-weight:800;color:#1a1a1a;white-space:nowrap}
+.dash-greet-title .hg-name{color:#1e3a6d}
+.dash-greet-sub{font-size:12.5px;color:#8a8478;margin-top:2px}
+.dash-greet-quote{font-size:11.5px;color:#6b7280;font-style:italic;text-align:right;max-width:220px;flex-shrink:0;line-height:1.4}
+#usersUpcomingBanner{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center}
+#usersUpcomingBanner:empty{display:none}
+@media(max-width:900px){.dash-top-row{flex-direction:column}.dash-greet-quote{display:none}}
   .snap-item{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid #e8eaed;border-radius:16px;padding:24px 26px;box-shadow:0 2px 8px rgba(0,0,0,.07);min-width:150px;min-height:110px;flex:1 1 0}
   .snap-icon svg{width:18px;height:18px}
   .snap-text{line-height:1.15}
@@ -797,8 +808,21 @@
   
     <div class="main-wrap">
     <!-- DASHBOARD TAB -->
+   <!-- DASHBOARD TAB -->
     <div class="tab-content active" id="tab-dashboard">
-      <div id="usersUpcomingBanner"></div>
+      <div class="dash-top-row">
+        <div class="dash-greet-card">
+          <div class="dash-greet-left">
+            <span class="dash-greet-emoji">👋</span>
+            <div>
+              <div class="dash-greet-title">Good <span id="dashGreetText">Morning</span>, <span class="hg-name" id="dashGreetName">there</span>!</div>
+              <div class="dash-greet-sub">Here's what's happening in your workspace today.</div>
+            </div>
+          </div>
+          <div class="dash-greet-quote">"Excellence is not an act, it is a habit."<br>— Aristotle</div>
+        </div>
+        <div id="usersUpcomingBanner"></div>
+      </div>
     <div class="my-snapshot" style="margin-top:20px">
       <div class="snap-item snap-today">
         <div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M8 2v4M16 2v4M3 10h18"></path></svg></div>
@@ -1398,7 +1422,7 @@ function openAddDelegation() {
   }
 
   // ── Greeting helper (time-of-day based) ───────────────────────────────────────
- function updateGreeting(name) {
+function updateGreeting(name) {
     var hr = new Date().getHours();
     var text = 'Good Morning';
     if (hr >= 12 && hr < 17) { text = 'Good Afternoon'; }
@@ -1408,6 +1432,10 @@ function openAddDelegation() {
     var greetNameEl = document.getElementById('greetName');
     if (greetTextEl) greetTextEl.textContent = text;
     if (greetNameEl) greetNameEl.textContent = name || 'there';
+    var dashTextEl = document.getElementById('dashGreetText');
+    var dashNameEl = document.getElementById('dashGreetName');
+    if (dashTextEl) dashTextEl.textContent = text.replace('Good ', '');
+    if (dashNameEl) dashNameEl.textContent = name || 'there';
     var todayEl = document.getElementById('todayDateText');
     if (todayEl) {
       var d = new Date();
