@@ -18,7 +18,7 @@
   .thb-logo img{width:100%;height:100%;object-fit:contain}
  .thb-firm-name{font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:800;color:#ffffff;line-height:1.3;white-space:nowrap;letter-spacing:.02em}
 .thb-firm-sub{font-family:Arial,Helvetica,sans-serif;font-size:10px;color:#d4af5a;font-weight:700;margin-top:3px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
-.thb-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap;flex:1;background:linear-gradient(90deg,#c9d9f5 0%,#dde8f8 35%,#eef2f9 70%,#f7f9fc 100%);padding:10px 24px;justify-content:flex-end}
+.thb-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap;flex:1;background:linear-gradient(90deg,#0b1437 0%,#1c2a5e 10%,#334a85 25%,#5872ab 40%,#93a8d4 60%,#d3ddf3 80%,#f7f9fc 100%);padding:10px 24px;justify-content:flex-end}
 .thb-bell{position:relative;width:38px;height:38px;border-radius:10px;background:#fff;border:1px solid #fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
 .thb-bell:hover{background:#f3f4f6}
   .thb-bell-badge{position:absolute;top:-3px;right:-3px;background:#dc2626;color:#fff;font-size:9px;font-weight:800;min-width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center;padding:0 3px}
@@ -212,10 +212,12 @@
   .c5 .card:nth-child(5){animation-delay:.18s}
   .c1 .card{animation-delay:.22s}
   .cs{font-size:11px;color:#bbb;line-height:1.5}
- .cs-detail{font-size:11px;margin-top:9px;display:flex;gap:10px;flex-wrap:wrap}
-  .cs-done{color:#16a34a;font-weight:600;background:#f0fdf4;padding:2px 8px;border-radius:20px;font-size:11px}
-  .cs-pend{color:#dc2626;font-weight:600;background:#fef2f2;padding:2px 8px;border-radius:20px;font-size:11px}
-  /* FILTER BAR */
+ .cs-detail{font-size:11px;margin-top:9px;display:flex;gap:6px;flex-wrap:nowrap;white-space:nowrap;overflow-x:auto;scrollbar-width:none}
+.cs-detail::-webkit-scrollbar{display:none}
+ .cs-done{color:#16a34a;font-weight:600;background:#f0fdf4;padding:2px 7px;border-radius:20px;font-size:10.5px;white-space:nowrap;flex-shrink:0}
+.cs-pend{color:#dc2626;font-weight:600;background:#fef2f2;padding:2px 7px;border-radius:20px;font-size:10.5px;white-space:nowrap;flex-shrink:0}
+ .c5 .card{padding:18px 16px}
+    /* FILTER BAR */
   .filter-bar{display:flex;align-items:center;gap:16px;margin-bottom:16px;background:#fff;padding:12px 20px;border-radius:10px;border:1px solid #e8eaed;flex-wrap:wrap;font-size:12px}
   .filter-bar label{font-weight:600;color:#555}
   .filter-bar select,.filter-bar input{padding:6px 12px;border:1px solid #d1d5db;border-radius:6px;outline:none;font-size:12px;color:#333;background:#fff}
