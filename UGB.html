@@ -19,8 +19,8 @@
  .thb-firm-name{font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:800;color:#ffffff;line-height:1.3;white-space:nowrap;letter-spacing:.02em}
 .thb-firm-sub{font-family:Arial,Helvetica,sans-serif;font-size:10px;color:#ffffff;font-weight:700;margin-top:2px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
 .thb-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap;flex:1;background:#0b1437;padding:10px 24px;justify-content:flex-end}
-.thb-bell{position:relative;width:34px;height:34px;border-radius:10px;background:#1e3a6d;border:1px solid #2a4a85;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
-.thb-bell:hover{background:#243f7a}
+.thb-bell{position:relative;width:34px;height:34px;border-radius:10px;background:transparent;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.thb-bell:hover{background:rgba(255,255,255,.1)}
  .thb-bell-badge{position:absolute;top:-3px;right:-3px;background:#dc2626;color:#ffffff;font-size:9px;font-weight:800;min-width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center;padding:0 3px;border:1.5px solid #0b1437}
   .thb-profile{position:relative;display:flex;align-items:center;gap:10px;cursor:pointer;padding:5px 10px 5px 5px;border-radius:12px;transition:background .15s}
 .thb-profile:hover{background:rgba(255,255,255,.08)}
@@ -2387,17 +2387,19 @@ function renderUsersDashboardPanels(data) {
   // Gender-aware small avatar for birthday/anniversary chips.
   // Uses r.gender field if the staff sheet provides one ('M'/'Male' or
   // 'F'/'Female'); otherwise falls back to a neutral person icon.
-  function genderAvatarSvg(gender) {
+function genderAvatarSvg(gender) {
     var g = String(gender || '').trim().toLowerCase();
     if (g === 'f' || g === 'female') {
-      return '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#db2777" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"></circle><path d="M12 13v8M9 18h6"></path></svg>';
+      return '<span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#fce7f3;flex-shrink:0">' +
+        '<svg width="12" height="12" viewBox="0 0 24 24" fill="#db2777"><circle cx="12" cy="7" r="4"/><path d="M12 12c-4.4 0-8 2.7-8 6v2h16v-2c0-3.3-3.6-6-8-6z"/></svg></span>';
     }
     if (g === 'm' || g === 'male') {
-      return '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"></circle><path d="M12 13v8M9 18h6"></path></svg>';
+      return '<span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#dbeafe;flex-shrink:0">' +
+        '<svg width="12" height="12" viewBox="0 0 24 24" fill="#2563eb"><circle cx="12" cy="7" r="4"/><path d="M12 12c-4.4 0-8 2.7-8 6v2h16v-2c0-3.3-3.6-6-8-6z"/></svg></span>';
     }
-    return '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"></circle><path d="M12 13v8M9 18h6"></path></svg>';
+    return '<span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#f1f5f9;flex-shrink:0">' +
+      '<svg width="12" height="12" viewBox="0 0 24 24" fill="#6b7280"><circle cx="12" cy="7" r="4"/><path d="M12 12c-4.4 0-8 2.7-8 6v2h16v-2c0-3.3-3.6-6-8-6z"/></svg></span>';
   }
-
   function daysUntilNext(dm) {
     var today = new Date(); today.setHours(0,0,0,0);
     var year = today.getFullYear();
