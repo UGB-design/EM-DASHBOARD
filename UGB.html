@@ -24,7 +24,7 @@
   .thb-bell-badge{position:absolute;top:-3px;right:-3px;background:#dc2626;color:#fff;font-size:9px;font-weight:800;min-width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center;padding:0 3px}
   .thb-profile{position:relative;display:flex;align-items:center;gap:10px;cursor:pointer;padding:5px 10px 5px 5px;border-radius:12px;transition:background .15s}
  .thb-profile:hover{background:#f8fafc}
-  .thb-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#115e59 0%,#14b8a6 100%);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
+  .thb-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#1e3a6d 0%,#0b1437 100%);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
   .thb-profile-txt{line-height:1.25}
  .thb-profile-name{font-size:13px;font-weight:700;color:#1a1a1a;white-space:nowrap}
 .thb-profile-role{font-size:10.5px;color:#9aa0ac;font-weight:600}
@@ -630,11 +630,12 @@
     .snap-val{font-size:16px}
     .h-greet{font-size:12px}
   }
-    #tab-summary table thead th{position:sticky;top:76px;z-index:40}
+  #tab-summary table thead th{position:sticky;top:76px;z-index:40}
 #tab-fms table thead th,
 #tab-checklist table thead th,
 #tab-delegation table thead th,
 #tab-scores table thead th{position:sticky;top:76px;z-index:40}
+.tc table thead th,.fms-card table thead th,.sp-card table thead th,.table-scroll-wrap table thead th,.sp-card table th{background:#1e3a6d !important;color:#fff !important}
   </style>
  <script>
   window.addEventListener('error', function(e) {
@@ -3202,12 +3203,12 @@ function renderClByDoer(rows) {
     document.getElementById('modalTitle').textContent = titleMap[filterType] || "Today's Tasks";
     document.getElementById('modalSubtitle').textContent = getTodayDDMMYYYY() + '  ·  ' + tasks.length + ' tasks';
   
-    document.getElementById('modalTheadRow').innerHTML =
-      '<th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa">#</th>' +
-      '<th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa">Type</th>' +
-      '<th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa">Client / Task</th>' +
-      '<th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa">Doer</th>' +
-      '<th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa">Status</th>';
+   document.getElementById('modalTheadRow').innerHTML =
+      '<th style="font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#1e3a6d;position:sticky;top:0;z-index:5">#</th>' +
+      '<th style="font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#1e3a6d;position:sticky;top:0;z-index:5">Planned Date</th>' +
+      '<th style="font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#1e3a6d;position:sticky;top:0;z-index:5">Client Name</th>' +
+      '<th style="font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#1e3a6d;position:sticky;top:0;z-index:5">Final Doer</th>' +
+      '<th style="font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#1e3a6d;position:sticky;top:0;z-index:5">Status</th>';
   
     document.getElementById('modalBody').innerHTML = tasks.map(function(t, i) {
       var statusCls = t.status === 'Completed' ? 'background:#f0fdf4;color:#16a34a' : 'background:#fef2f2;color:#dc2626';
@@ -3487,15 +3488,15 @@ function closeFullReportModal(){ document.getElementById('fullReportModal').styl
         </div>
         <button onclick="closePendingModal()" style="background:#f3f4f6;border:none;border-radius:8px;width:30px;height:30px;font-size:16px;cursor:pointer;color:#555;display:flex;align-items:center;justify-content:center">✕</button>
       </div>
-     <div style="overflow-y:auto;padding:0;max-height:calc(80vh - 140px)">
+    <div style="overflow-y:auto;padding:0;max-height:calc(80vh - 140px)">
        <table style="width:100%;border-collapse:collapse">
-          <thead style="position:sticky;top:0;z-index:5">
+          <thead>
             <tr id="modalTheadRow">
-              <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa">#</th>
-              <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa">Planned Date</th>
-              <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa">Client Name</th>
-              <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa">Final Doer</th>
-              <th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa">Status</th>
+              <th style="font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#1e3a6d;position:sticky;top:0;z-index:5">#</th>
+              <th style="font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#1e3a6d;position:sticky;top:0;z-index:5">Planned Date</th>
+              <th style="font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#1e3a6d;position:sticky;top:0;z-index:5">Client Name</th>
+              <th style="font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#1e3a6d;position:sticky;top:0;z-index:5">Final Doer</th>
+              <th style="font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#1e3a6d;position:sticky;top:0;z-index:5">Status</th>
             </tr>
           </thead>
           <tbody id="modalBody"></tbody>
@@ -3562,11 +3563,11 @@ function closeFullReportModal(){ document.getElementById('fullReportModal').styl
   function showPendingModal(step, doer, encoded) {
     var tasks = JSON.parse(decodeURIComponent(encoded));
     document.getElementById('modalTheadRow').innerHTML =
-      '<th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa">#</th>' +
-      '<th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa">Planned Date</th>' +
-      '<th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa">Client Name</th>' +
-      '<th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa">Final Doer</th>' +
-      '<th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fafafa">Status</th>';
+      '<th style="font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#1e3a6d;position:sticky;top:0;z-index:5">#</th>' +
+      '<th style="font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#1e3a6d;position:sticky;top:0;z-index:5">Type</th>' +
+      '<th style="font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#1e3a6d;position:sticky;top:0;z-index:5">Client / Task</th>' +
+      '<th style="font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#1e3a6d;position:sticky;top:0;z-index:5">Doer</th>' +
+      '<th style="font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#1e3a6d;position:sticky;top:0;z-index:5">Status</th>';
     document.getElementById('modalTitle').textContent = step + '  —  Pending Tasks';
     document.getElementById('modalSubtitle').textContent = 'Doer: ' + doer + '  ·  ' + tasks.length + ' pending';
     document.getElementById('modalBody').innerHTML = tasks.map(function(t, i) {
