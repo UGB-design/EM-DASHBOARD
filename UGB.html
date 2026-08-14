@@ -558,7 +558,7 @@
   .ucc-card{background:#fff;border-radius:20px;border:1px solid #eef1f6;box-shadow:0 3px 14px rgba(30,41,59,.06);padding:24px 24px 22px;text-align:left;cursor:pointer;transition:all .2s ease;position:relative;min-height:260px;display:flex;flex-direction:column;justify-content:space-between}
   .ucc-card:hover{box-shadow:0 14px 32px rgba(29,78,216,.16);transform:translateY(-4px);border-color:#bfdbfe}
   .ucc-top-row{display:flex;align-items:center;gap:12px;margin-bottom:14px;min-height:74px}
-  .ucc-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#115e59 0%,#14b8a6 100%);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;flex-shrink:0;box-shadow:0 3px 8px rgba(29,78,216,.16)}
+ .ucc-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#1e3a6d 0%,#0b1437 100%);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;flex-shrink:0;box-shadow:0 3px 8px rgba(11,20,55,.25)}
   .ucc-name{font-size:14.5px;font-weight:600;color:#1a1a1a;line-height:1.3}
   .ucc-role{font-size:10.5px;color:#0f766e;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-top:3px}
   .ucc-exp{font-size:11.5px;color:#64748b;margin-top:2px;font-weight:600}
@@ -3631,15 +3631,15 @@ function closeFullReportModal(){ document.getElementById('fullReportModal').styl
       <div style="font-size:15px;font-weight:700;color:#1a1a1a">Employee Score Board — Full Report</div>
       <button onclick="closeFullReportModal()" style="background:#f3f4f6;border:none;border-radius:8px;width:30px;height:30px;font-size:16px;cursor:pointer;color:#555">✕</button>
     </div>
-    <div style="overflow-y:auto">
+    <div style="overflow-y:auto;max-height:calc(84vh - 130px)">
       <table style="width:100%;border-collapse:collapse">
         <thead>
           <tr>
-            <th style="text-align:center">#</th><th>Employee</th>
-            <th style="text-align:center">Total Plan</th><th style="text-align:center">Total Completed</th>
-            <th style="text-align:center">On Time Completed</th>
-            <th style="text-align:center">Work Not Done On Time %</th>
-            <th style="text-align:center">Work Not Done %</th>
+            <th style="text-align:center;position:sticky;top:0;z-index:5;background:#1e3a6d;color:#fff">#</th><th style="position:sticky;top:0;z-index:5;background:#1e3a6d;color:#fff">Employee</th>
+            <th style="text-align:center;position:sticky;top:0;z-index:5;background:#1e3a6d;color:#fff">Total Plan</th><th style="text-align:center;position:sticky;top:0;z-index:5;background:#1e3a6d;color:#fff">Total Completed</th>
+            <th style="text-align:center;position:sticky;top:0;z-index:5;background:#1e3a6d;color:#fff">On Time Completed</th>
+            <th style="text-align:center;position:sticky;top:0;z-index:5;background:#1e3a6d;color:#fff">Work Not Done On Time %</th>
+            <th style="text-align:center;position:sticky;top:0;z-index:5;background:#1e3a6d;color:#fff">Work Not Done %</th>
           </tr>
         </thead>
         <tbody id="fullReportBody"></tbody>
