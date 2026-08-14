@@ -132,9 +132,9 @@
 #usersUpcomingBanner:not(:empty){margin:0}
 .dash-top-row{display:flex;gap:16px;align-items:stretch;margin-top:20px;margin-bottom:16px}
 .dash-greet-card{flex:1;background:linear-gradient(135deg,#dbe7fb 0%,#eef4fd 100%);border:1px solid #c7dcf7;border-radius:16px;padding:20px 26px;display:flex;align-items:center;justify-content:space-between;gap:16px;box-shadow:0 4px 14px rgba(59,91,219,.12);min-width:0;min-height:88px;box-sizing:border-box;position:relative;overflow:hidden}
-.dash-greet-card::before{content:'';position:absolute;top:0;right:0;width:140px;height:140px;background:radial-gradient(circle,rgba(59,91,219,.12) 0%,transparent 70%);pointer-events:none}
+.dash-greet-card::before{content:'';position:absolute;top:-20px;right:-10px;width:160px;height:160px;background-image:radial-gradient(circle,#3b5bdb 1.5px,transparent 1.5px);background-size:14px 14px;opacity:.15;pointer-events:none}
 .dash-greet-left{display:flex;align-items:center;gap:14px;min-width:0}
-.dash-greet-emoji{font-size:26px;flex-shrink:0}
+.dash-greet-emoji{font-size:22px;flex-shrink:0;width:48px;height:48px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(59,91,219,.15)}
 .dash-greet-title{font-size:18px;font-weight:800;color:#1a1a1a;white-space:nowrap}
 .dash-greet-title .hg-name{color:#2544a8}
 .dash-greet-sub{font-size:12.5px;color:#5b6b8c;margin-top:2px}
@@ -2384,7 +2384,21 @@ function renderUsersDashboardPanels(data) {
     }
     return days + ' day' + (days === 1 ? '' : 's');
   }
-  function daysUntilNext(dm) {  
+  // Gender-aware small avatar for birthday/anniversary chips.
+  // Uses r.gender field if the staff sheet provides one ('M'/'Male' or
+  // 'F'/'Female'); otherwise falls back to a neutral person icon.
+  function genderAvatarSvg(gender) {
+    var g = String(gender || '').trim().toLowerCase();
+    if (g === 'f' || g === 'female') {
+      return '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#db2777" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"></circle><path d="M12 13v8M9 18h6"></path></svg>';
+    }
+    if (g === 'm' || g === 'male') {
+      return '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"></circle><path d="M12 13v8M9 18h6"></path></svg>';
+    }
+    return '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"></circle><path d="M12 13v8M9 18h6"></path></svg>';
+  }
+
+  function daysUntilNext(dm) {
     var today = new Date(); today.setHours(0,0,0,0);
     var year = today.getFullYear();
     var candidate = new Date(year, dm.month - 1, dm.day);
@@ -2397,18 +2411,18 @@ function renderUsersDashboardPanels(data) {
     if (!host) return;
     var WINDOW_DAYS = 1, todayItems = [], upcomingItems = [], thisYear = new Date().getFullYear();
   
-    rows.forEach(function(r) {
+  rows.forEach(function(r) {
       var dob = parseFullDate(r.dob);
       if (dob) {
         var d = daysUntilNext(dob);
-        if (d === 0) todayItems.push({ type:'birthday', name:r.name, years: dob.year ? (thisYear - dob.year) : null });
-        else if (d <= WINDOW_DAYS) upcomingItems.push({ type:'birthday', name:r.name, days:d });
+        if (d === 0) todayItems.push({ type:'birthday', name:r.name, gender:r.gender, years: dob.year ? (thisYear - dob.year) : null });
+        else if (d <= WINDOW_DAYS) upcomingItems.push({ type:'birthday', name:r.name, gender:r.gender, days:d });
       }
       var doj = parseFullDate(r.joiningDate);
       if (doj) {
         var d2 = daysUntilNext(doj);
-        if (d2 === 0) todayItems.push({ type:'anniversary', name:r.name, years: doj.year ? (thisYear - doj.year) : null });
-        else if (d2 <= WINDOW_DAYS) upcomingItems.push({ type:'anniversary', name:r.name, days:d2 });
+        if (d2 === 0) todayItems.push({ type:'anniversary', name:r.name, gender:r.gender, years: doj.year ? (thisYear - doj.year) : null });
+        else if (d2 <= WINDOW_DAYS) upcomingItems.push({ type:'anniversary', name:r.name, gender:r.gender, days:d2 });
       }
     });
   
@@ -2418,9 +2432,9 @@ function renderUsersDashboardPanels(data) {
       var annivItems = todayItems.filter(function(it){ return it.type === 'anniversary'; });
   
       if (bdayItems.length) {
-        var bChips = bdayItems.map(function(it) {
+       var bChips = bdayItems.map(function(it) {
           var t = it.years ? (' — turns ' + it.years) : '';
-          return '<span style="display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid #fde8c8;border-radius:20px;padding:6px 14px;font-size:11px;font-weight:600;color:#92400e;margin:3px 6px 3px 0;flex-shrink:0;white-space:nowrap">🎂 <strong>' + it.name + '</strong>' + t + '</span>';
+          return '<span style="display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid #fde8c8;border-radius:20px;padding:6px 14px;font-size:11px;font-weight:600;color:#92400e;margin:3px 6px 3px 0;flex-shrink:0;white-space:nowrap">' + genderAvatarSvg(it.gender) + ' <strong>' + it.name + '</strong>' + t + '</span>';
         }).join('');
         html += '<div style="background:linear-gradient(135deg,#fffbeb 0%,#fff7e6 100%);border:1px solid #fbe7b8;border-radius:14px;padding:5px 12px;margin-bottom:8px;display:flex;align-items:center;gap:12px"><div style="font-size:9.5px;font-weight:700;color:#92400e;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;flex-shrink:0">🎂 Birthday</div><div style="display:flex;gap:6px;overflow-x:auto;padding:2px 0;flex:1;min-width:0">' + bChips + '</div></div>';
       }
@@ -2435,8 +2449,8 @@ function renderUsersDashboardPanels(data) {
     }
     if (upcomingItems.length) {
       upcomingItems.sort(function(a,b){ return a.days - b.days; });
-      var chips2 = upcomingItems.map(function(it) {
-        var icon = it.type === 'birthday' ? '🎂' : '';
+     var chips2 = upcomingItems.map(function(it) {
+        var icon = it.type === 'birthday' ? genderAvatarSvg(it.gender) : '';
         var label = it.type === 'birthday' ? 'Birthday' : 'Work Anniversary';
         var when = it.days === 1 ? 'Tomorrow' : 'in ' + it.days + ' days';
         return '<span style="display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid #fde8c8;border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;color:#92400e;margin:3px 6px 3px 0;flex-shrink:0;white-space:nowrap">' + icon + ' <strong>' + it.name + '</strong> — ' + label + ' ' + when + '</span>';
