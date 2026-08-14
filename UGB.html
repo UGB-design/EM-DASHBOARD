@@ -218,7 +218,7 @@
 .cs-pend{color:#dc2626;font-weight:600;background:#fef2f2;padding:2px 7px;border-radius:20px;font-size:10.5px;white-space:nowrap;flex-shrink:0}
  .c5 .card{padding:18px 16px}
     /* FILTER BAR */
-  .filter-bar{display:flex;align-items:center;gap:16px;margin-bottom:16px;background:#fff;padding:12px 20px;border-radius:10px;border:1px solid #e8eaed;flex-wrap:wrap;font-size:12px}
+  .filter-bar{display:flex;align-items:center;gap:16px;margin:16px 0;background:#fff;padding:12px 20px;border-radius:10px;border:1px solid #e8eaed;flex-wrap:wrap;font-size:12px}
   .filter-bar label{font-weight:600;color:#555}
   .filter-bar select,.filter-bar input{padding:6px 12px;border:1px solid #d1d5db;border-radius:6px;outline:none;font-size:12px;color:#333;background:#fff}
   .meta-info-badge{display:flex;gap:8px;margin-bottom:14px}
@@ -576,7 +576,7 @@
   .udm-header{background:linear-gradient(135deg,#eff6ff 0%,#f8fafc 100%);padding:26px 24px 22px;border-bottom:1px solid #eef1f6;position:relative;display:flex;align-items:center;gap:14px}
   .udm-close{position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:10px;background:#fff;border:1px solid #e2e8f0;cursor:pointer;font-size:16px;color:#555;display:flex;align-items:center;justify-content:center}
   .udm-close:hover{background:#f8fafc}
-  .udm-avatar{width:58px;height:58px;border-radius:16px;background:linear-gradient(135deg,#115e59 0%,#14b8a6 100%);color:#fff;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;flex-shrink:0;box-shadow:0 6px 14px rgba(29,78,216,.28)}
+  .udm-avatar{width:58px;height:58px;border-radius:16px;background:linear-gradient(135deg,#1e3a6d 0%,#0b1437 100%);color:#fff;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;flex-shrink:0;box-shadow:0 6px 14px rgba(11,20,55,.28)}
   .udm-name{font-size:17px;font-weight:800;color:#1a1a1a}
   .udm-role{font-size:11px;color:#0f766e;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-top:3px}
   .udm-body{padding:18px 24px 26px}
@@ -742,7 +742,7 @@
       </div>
     </div>
   </div>
-<button id="bciBackBtn" onclick="switchTab('dashboard', document.querySelector('[data-tab=dashboard]'))" style="display:none;position:fixed;top:90px;left:14px;z-index:100000;background:#1a1a1a;color:#fff;border:none;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25);align-items:center;gap:6px">← Back to Dashboard</button>
+<button id="bciBackBtn" onclick="switchTab('dashboard', document.querySelector('[data-tab=dashboard]'))" style="display:none;position:fixed;top:90px;left:14px;z-index:100000;background:#1e3a6d;color:#fff;border:none;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(11,20,55,.35);align-items:center;gap:6px">← Back to Dashboard</button>
   <div class="app-shell">
   
     <!-- SIDEBAR NAVIGATION -->
@@ -1097,7 +1097,7 @@
         <div class="tc-top">
           <div class="tc-title">Employee Score Board</div>
           <div style="display:flex;align-items:center;gap:12px">
-            <button onclick="printScoreTable()" style="display:inline-flex;align-items:center;gap:6px;background:#115e59;color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer">
+            <button onclick="printScoreTable()" style="display:inline-flex;align-items:center;gap:6px;background:#1e3a6d;color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"></path><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
               Export / Print
             </button>
@@ -3667,13 +3667,13 @@ function closeFullReportModal(){ document.getElementById('fullReportModal').styl
         <table style="width:100%;border-collapse:collapse">
           <thead>
             <tr>
-              <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#fafafa">#</th>
-              <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#fafafa">Name</th>
-              <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#fafafa">Date</th>
-              <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#fafafa">In1</th>
-              <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#fafafa">Out2</th>
-              <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#fafafa">Working Hours</th>
-              <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#fafafa">Final Status</th>
+              <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#1e3a6d">#</th>
+              <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#1e3a6d">Name</th>
+              <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#1e3a6d">Date</th>
+              <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#1e3a6d">In1</th>
+              <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#1e3a6d">Out2</th>
+              <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#1e3a6d">Working Hours</th>
+              <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#1e3a6d">Final Status</th>
             </tr>
           </thead>
           <tbody id="attTableBody"></tbody>
@@ -3700,13 +3700,13 @@ function closeFullReportModal(){ document.getElementById('fullReportModal').styl
         <table style="width:100%;border-collapse:collapse">
          <thead>
             <tr>
-              <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#fafafa">#</th>
-              <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#fafafa">Name</th>
-              <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:center;border-bottom:1px solid #e8eaed;background:#fafafa">Total Paid Leave</th>
-              <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:center;border-bottom:1px solid #e8eaed;background:#fafafa">Used Leave</th>
-              <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:center;border-bottom:1px solid #e8eaed;background:#fafafa">Balance</th>
-              <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:center;border-bottom:1px solid #e8eaed;background:#fafafa">Half Day Count</th>
-              <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;text-align:center;border-bottom:1px solid #e8eaed;background:#fafafa">Unpaid Leave</th>
+              <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#1e3a6d">#</th>
+              <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#1e3a6d">Name</th>
+              <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:center;border-bottom:1px solid #e8eaed;background:#1e3a6d">Total Paid Leave</th>
+              <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:center;border-bottom:1px solid #e8eaed;background:#1e3a6d">Used Leave</th>
+              <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:center;border-bottom:1px solid #e8eaed;background:#1e3a6d">Balance</th>
+              <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:center;border-bottom:1px solid #e8eaed;background:#1e3a6d">Half Day Count</th>
+              <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:center;border-bottom:1px solid #e8eaed;background:#1e3a6d">Unpaid Leave</th>
             </tr>
           </thead>
           <tbody id="leaveTableBody"></tbody>
