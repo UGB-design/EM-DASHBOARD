@@ -3470,7 +3470,7 @@ function showAttendanceTableModal() {
   function closeAttendanceTableModal(){ document.getElementById('attTableModal').style.display = 'none'; }
   
   // ── Leave Table Modal ────────────────────────────────────────────────────
-  ffunction showLeaveTableModal() {
+  function showLeaveTableModal() {
     var rows = (globalRawData && globalRawData.leaveSummary && globalRawData.leaveSummary.rows) || [];
     populateLeaveEmpFilter(rows);
     populateLeaveYearFilter(rows);
