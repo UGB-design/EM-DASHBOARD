@@ -131,14 +131,15 @@
  .my-snapshot{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
 #usersUpcomingBanner:not(:empty){margin:0}
 .dash-top-row{display:flex;gap:16px;align-items:stretch;margin-top:10px;margin-bottom:10px}
-.dash-greet-card{flex:1;background:linear-gradient(135deg,#dbe7fb 0%,#eef4fd 100%);border:1px solid #c7dcf7;border-radius:16px;padding:12px 26px;display:flex;align-items:center;justify-content:space-between;gap:16px;box-shadow:0 4px 14px rgba(59,91,219,.12);min-width:0;min-height:56px;box-sizing:border-box;position:relative;overflow:hidden}
-.dash-greet-card::before{content:'';position:absolute;top:-20px;right:-10px;width:160px;height:160px;background-image:radial-gradient(circle,#3b5bdb 1.5px,transparent 1.5px);background-size:14px 14px;opacity:.15;pointer-events:none}
+.dash-greet-card{flex:1;background:linear-gradient(120deg,rgba(219,231,251,.75) 0%,rgba(238,244,253,.65) 45%,rgba(224,235,252,.75) 100%);background-size:200% 200%;animation:greetGradientShift 10s ease infinite;backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);border:1px solid rgba(255,255,255,.5);border-radius:18px;padding:14px 28px;display:flex;align-items:center;justify-content:space-between;gap:16px;box-shadow:0 8px 28px rgba(59,91,219,.16),0 0 0 1px rgba(255,255,255,.3) inset;min-width:0;min-height:64px;box-sizing:border-box;position:relative;overflow:hidden}
+@keyframes greetGradientShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
 .dash-greet-left{display:flex;align-items:center;gap:14px;min-width:0}
-.dash-greet-emoji{font-size:22px;flex-shrink:0;width:48px;height:48px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(59,91,219,.15)}
 .dash-greet-title{font-size:18px;font-weight:800;color:#1a1a1a;white-space:nowrap}
 .dash-greet-title .hg-name{color:#2544a8}
 .dash-greet-sub{font-size:12.5px;color:#5b6b8c;margin-top:2px}
-.dash-greet-quote{font-size:11.5px;color:#2544a8;font-style:italic;text-align:right;max-width:220px;flex-shrink:0;line-height:1.4;position:relative;z-index:1}
+.dash-greet-datetime{display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0;position:relative;z-index:1}
+.dgd-date{font-size:11.5px;font-weight:700;color:#5b6b8c;letter-spacing:.03em;white-space:nowrap}
+.dgd-time{font-size:22px;font-weight:800;color:#2544a8;letter-spacing:.02em;margin-top:2px;font-variant-numeric:tabular-nums;white-space:nowrap}
 #usersUpcomingBanner{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;min-height:88px;box-sizing:border-box}
 #usersUpcomingBanner:not(:empty) > div{margin-bottom:0 !important;height:100%;box-sizing:border-box;display:flex;align-items:center}
 #usersUpcomingBanner:empty{display:none}
@@ -820,6 +821,10 @@
               <div class="dash-greet-sub">Here's what's happening in your workspace today.</div>
             </div>
           </div>
+          <div class="dash-greet-datetime">
+            <div class="dgd-date" id="dashGreetDate"></div>
+            <div class="dgd-time" id="dashGreetTime"></div>
+          </div>
         </div>
         <div id="usersUpcomingBanner"></div>
       </div>
@@ -1434,21 +1439,26 @@ function updateGreeting(name) {
     var dashNameEl = document.getElementById('dashGreetName');
     if (dashTextEl) dashTextEl.textContent = text.replace('Good ', '');
     if (dashNameEl) dashNameEl.textContent = name || 'there';
+    var dgDateEl = document.getElementById('dashGreetDate');
+    if (dgDateEl) {
+      dgDateEl.textContent = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', weekday: 'short' });
+    }
     var todayEl = document.getElementById('todayDateText');
     if (todayEl) {
       var d = new Date();
       todayEl.textContent = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', weekday: 'long' });
     }
   }
-  function updateLiveClock() {
-    var el = document.getElementById('sbLiveClock');
-    if (!el) return;
+ function updateLiveClock() {
     var d = new Date();
     var h = d.getHours(), m = d.getMinutes(), s = d.getSeconds();
     var ap = h >= 12 ? 'PM' : 'AM';
     var h12 = h % 12; if (h12 === 0) h12 = 12;
     function pad(n){ return n < 10 ? '0'+n : n; }
-    el.textContent = pad(h12) + ':' + pad(m) + ':' + pad(s) + ' ' + ap;
+    var el = document.getElementById('sbLiveClock');
+    if (el) el.textContent = pad(h12) + ':' + pad(m) + ':' + pad(s) + ' ' + ap;
+    var dgTimeEl = document.getElementById('dashGreetTime');
+    if (dgTimeEl) dgTimeEl.textContent = pad(h12) + ':' + pad(m) + ' ' + ap;
   }
     function showLoginToast(name, email) {
   document.getElementById('loginToastName').textContent = 'Logged in as ' + name;
