@@ -160,6 +160,42 @@
   .signed-in-as .avatar{width:18px;height:18px;font-size:8.5px;}
   .signed-in-as button{background:none;border:none;color:var(--blue);font-size:10.5px;font-weight:700;cursor:pointer;padding:0;margin-left:2px;}
   ::selection{background:var(--blue-soft);}
+ .date-badge{
+  position:fixed;top:20px;right:32px;background:#fff;border:1px solid var(--border);
+  border-radius:100px;padding:8px 16px;font-size:12.5px;font-weight:600;
+  color:var(--ink-soft);display:flex;align-items:center;gap:8px;
+  box-shadow:var(--shadow);z-index:150;
+}
+.summary-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:22px;}
+.summary-card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:20px;
+  display:flex;align-items:center;gap:16px;box-shadow:var(--shadow);}
+.summary-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;
+  justify-content:center;flex-shrink:0;font-size:22px;}
+.summary-icon.blue{background:var(--blue-soft);color:var(--blue);}
+.summary-icon.green{background:var(--green-soft);color:var(--green);}
+.summary-icon.purple{background:var(--purple-soft);color:var(--purple);}
+.summary-icon.amber{background:var(--amber-soft);color:var(--amber);}
+.summary-num{font-size:26px;font-weight:800;line-height:1;}
+.summary-label{font-size:13px;font-weight:700;color:var(--ink);margin-top:4px;}
+.summary-sub{font-size:11px;color:var(--ink-faint);margin-top:2px;}
+
+.tabs{background:#fff;border:1px solid var(--border);border-radius:16px;padding:8px;gap:6px;box-shadow:var(--shadow);}
+.tab{padding:12px 18px;border-radius:12px;font-weight:700;color:var(--ink-soft);}
+.tab.active{background:var(--navy)!important;color:#fff!important;}
+.tab.active::before,.tab.active::after{content:none;}
+.tab.active .tab-badge{background:#fff;color:var(--red);}
+
+.pager{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;}
+.pager-info{font-size:12.5px;color:var(--ink-faint);}
+.pager-btns{display:flex;align-items:center;gap:6px;}
+.pager-btn{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);
+  background:#fff;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:var(--ink-soft);font-size:12.5px;font-weight:700;}
+.pager-btn.active{background:var(--blue-soft);color:var(--blue);border-color:var(--blue);}
+.pager-btn:disabled{opacity:.4;cursor:not-allowed;}
+
+.footer-status{display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;color:var(--ink-soft);margin-top:24px;}
+.footer-dot{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;}
 </style>
 </head>
 <body>
@@ -173,16 +209,19 @@
   </div>
 </div>
 
+<div class="date-badge" id="dateBadge">📅 Loading...</div>
+
 <div class="wrap">
 
   <div id="warnBanner" class="warn-banner"></div>
+  <div class="summary-cards" id="summaryCards"></div>
 <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:22px;">
     <div class="tabs" id="tabs" style="margin-bottom:0;">
-      <button class="tab active" data-tab="requests">Pending Approvals <span class="tab-badge" id="pendingBadge" style="display:none;">0</span></button>
-      <button class="tab" data-tab="balance">Leave Balance</button>
-      <button class="tab" data-tab="deductions">Deduction & Salary Slip</button>
-      <button class="tab" data-tab="history">All Leave Requests</button>
-      <button class="tab" data-tab="attendance">Attendance</button>
+      <button class="tab active" data-tab="requests">📋 Pending Approvals <span class="tab-badge" id="pendingBadge" style="display:none;">0</span></button>
+      <button class="tab" data-tab="balance">📅 Leave Balance</button>
+      <button class="tab" data-tab="deductions">📄 Deduction & Salary Slip</button>
+      <button class="tab" data-tab="history">🗓️ All Leave Requests</button>
+      <button class="tab" data-tab="attendance">⏱️ Attendance</button>
     </div>
     <button class="btn ghost sm tabRefreshBtn" title="Reload live data">⟳ Refresh</button>
   </div>
@@ -376,7 +415,7 @@
     </div>
   </section>
 
-  <p class="foot-note" id="lastUpdated"></p>
+<div class="footer-status"><span class="footer-dot"></span><span id="lastUpdated"></span></div>
 </div>
 
 <script>
@@ -721,7 +760,7 @@ async function loadAll(background=false){
   populateHistoryFilters();
   populateAttendanceFilters();
   renderAll();
-  document.getElementById("lastUpdated").textContent = "🟢 Live Sync · refreshed " + new Date().toLocaleTimeString("en-IN");
+document.getElementById("lastUpdated").textContent = "Live Sync · refreshed " + new Date().toLocaleTimeString("en-IN");
   setLoading(false);
   saveCacheData();
 }
@@ -1773,7 +1812,34 @@ function downloadSalarySlip(d){
   doc.save(`Salary_Slip_${safeName}_${month}_${year}.pdf`);
 }
 
+function updateDateBadge(){
+  const d = new Date();
+  const opts = { day:"numeric", month:"long", year:"numeric", weekday:"long" };
+  document.getElementById("dateBadge").textContent = "📅 " + d.toLocaleDateString("en-IN", opts);
+}
+
+function renderSummaryCards(){
+  const wrap = document.getElementById("summaryCards");
+  const pendingCount = DATA.requests.filter(r => isPendingStatus(r["Status"])).length;
+  const totalAvailable = DATA.balance.reduce((t,r)=> t + (Number(r["Balance_Leaves"])||0), 0);
+  const now = new Date();
+  const curMonth = MONTH_ORDER[now.getMonth()], curYear = String(now.getFullYear());
+  const dedThisMonth = DATA.deduction.filter(d => d["MONTH"]===curMonth && String(Math.round(Number(d["YEAR"])))===curYear).length;
+  const totalEmployees = DATA.staff.length;
+  wrap.innerHTML = `
+    <div class="summary-card"><div class="summary-icon blue">📄</div>
+      <div><div class="summary-num">${pendingCount}</div><div class="summary-label">Pending Approvals</div><div class="summary-sub">Awaiting your action</div></div></div>
+    <div class="summary-card"><div class="summary-icon green">📅</div>
+      <div><div class="summary-num">${totalAvailable}</div><div class="summary-label">Leave Balance</div><div class="summary-sub">Total Available</div></div></div>
+    <div class="summary-card"><div class="summary-icon purple">₹</div>
+      <div><div class="summary-num">${dedThisMonth}</div><div class="summary-label">Deduction Entries</div><div class="summary-sub">This Month</div></div></div>
+    <div class="summary-card"><div class="summary-icon amber">👥</div>
+      <div><div class="summary-num">${totalEmployees}</div><div class="summary-label">Total Employees</div><div class="summary-sub">Active</div></div></div>
+  `;
+}
+
 function renderAll(){
+  renderSummaryCards();
   updatePendingBadge();
   renderRequests(document.getElementById("searchRequests").value);
   renderBalance(document.getElementById("searchBalance").value);
@@ -1911,6 +1977,7 @@ document.getElementById("loginEmail").addEventListener("keydown", e=>{ if(e.key=
     startApp(saved);
   }
 })();
+updateDateBadge();
 </script>
 </body>
 </html>
