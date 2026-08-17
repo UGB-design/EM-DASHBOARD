@@ -209,7 +209,6 @@ thead th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacin
   </div>
 </div>
 
-<div class="date-badge" id="dateBadge"> Loading...</div>
 
 <div class="wrap">
 
@@ -1039,10 +1038,10 @@ function renderAttendanceTable(){
     return;
   }
 
-  allRows.sort((a,b)=>{
+allRows.sort((a,b)=>{
     const da = parseDMY(a["Date_f"]||a["Date"]);
     const db = parseDMY(b["Date_f"]||b["Date"]);
-    return (db?db.getTime():0) - (da?da.getTime():0);
+    return (da?da.getTime():0) - (db?db.getTime():0);
   });
 
   const totalPages = Math.max(1, Math.ceil(allRows.length / ATTENDANCE_PAGE_SIZE));
@@ -1975,7 +1974,7 @@ document.getElementById("loginEmail").addEventListener("keydown", e=>{ if(e.key=
     startApp(saved);
   }
 })();
-updateDateBadge();
+
 </script>
 </body>
 </html>
