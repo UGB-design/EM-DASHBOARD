@@ -131,7 +131,7 @@
  .my-snapshot{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
 #usersUpcomingBanner:not(:empty){margin:0}
 .dash-top-row{display:flex;gap:16px;align-items:stretch;margin-top:10px;margin-bottom:10px}
-.dash-greet-card{flex:1;background-image:linear-gradient(120deg,rgba(255,255,255,.6) 0%,rgba(255,255,255,.4) 100%),url("https://lh3.googleusercontent.com/d/1n6N14R0kQGEPmrTh7_UUVYYLW_QB_ifq=w1920");background-size:cover;background-position:center;border:1px solid rgba(255,255,255,.5);border-radius:18px;padding:14px 28px;display:flex;align-items:center;justify-content:space-between;gap:16px;box-shadow:0 8px 28px rgba(59,91,219,.16),0 0 0 1px rgba(255,255,255,.3) inset;min-width:0;min-height:64px;box-sizing:border-box;position:relative;overflow:hidden}
+.dash-greet-card{flex:1;background-image:linear-gradient(90deg,rgba(255,255,255,.92) 0%,rgba(255,255,255,.7) 35%,rgba(255,255,255,.25) 75%,rgba(255,255,255,.15) 100%),url("https://lh3.googleusercontent.com/d/1n6N14R0kQGEPmrTh7_UUVYYLW_QB_ifq=w1920");background-size:cover;background-position:right center;border:1px solid rgba(255,255,255,.5);border-radius:18px;padding:14px 28px;display:flex;align-items:center;justify-content:space-between;gap:16px;box-shadow:0 8px 28px rgba(59,91,219,.16),0 0 0 1px rgba(255,255,255,.3) inset;min-width:0;min-height:64px;box-sizing:border-box;position:relative;overflow:hidden}
 .dash-greet-left{display:flex;align-items:center;gap:14px;min-width:0}
 .dash-greet-title{font-size:18px;font-weight:800;color:#1a1a1a;white-space:nowrap}
 .dash-greet-title .hg-name{color:#2544a8}
@@ -148,7 +148,8 @@
   .snap-text{line-height:1.15}
  .snap-val{font-size:18px;font-weight:800;color:#1a1a1a;line-height:1.1}
   .snap-lbl{font-size:11px;color:#9aa0ac;font-weight:700;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
-    .snap-link{display:inline-block;margin-top:2px;font-size:11.5px;font-weight:700;color:#1e3a6d;text-decoration:none;cursor:pointer}
+   .snap-link{display:inline-block;margin-top:2px;font-size:11.5px;font-weight:700;color:#1e3a6d;text-decoration:none;cursor:pointer}
+  .snap-completed{font-size:10.5px;font-weight:700;color:#16a34a;margin-top:3px}
   .snap-link:hover{text-decoration:underline}
   .snap-today .snap-icon{background:#eff6ff;color:#0f766e}
   .snap-fms .snap-icon{background:#f0fdf4;color:#16a34a}
@@ -830,26 +831,26 @@
       <div class="my-snapshot" style="margin-top:10px">
       <div class="snap-item snap-today">
         <div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M8 2v4M16 2v4M3 10h18"></path></svg></div>
-        <div class="snap-text"><div class="snap-val val-loading" id="badgeTodayTasks">0</div><div class="snap-lbl">Today's Tasks</div><a class="snap-link" onclick="openTodayTasksModal()">View all tasks →</a></div>
+        <div class="snap-text"><div class="snap-val val-loading" id="badgeTodayTasks">0</div><div class="snap-lbl">Today's Tasks</div><a class="snap-link" onclick="openTodayTasksModal()">View all tasks →</a><div class="snap-completed" id="completedTodayTasks">Completed: 0</div></div>
       </div>
       <div class="snap-item snap-fms">
         <div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></div>
-        <div class="snap-text"><div class="snap-val val-loading" id="badgeTodayFms">0</div><div class="snap-lbl">FMS</div><a class="snap-link" onclick="openTodayTasksModal('FMS')">View details →</a></div>
+        <div class="snap-text"><div class="snap-val val-loading" id="badgeTodayFms">0</div><div class="snap-lbl">FMS</div><a class="snap-link" onclick="openTodayTasksModal('FMS')">View details →</a><div class="snap-completed" id="completedTodayFms">Completed: 0</div></div>
       </div>
       <div class="snap-item snap-cl">
         <div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 12l2 2 4-4"></path></svg></div>
-        <div class="snap-text"><div class="snap-val val-loading" id="badgeTodayChecklist">0</div><div class="snap-lbl">Checklist</div><a class="snap-link" onclick="openTodayTasksModal('Checklist')">View details →</a></div>
+        <div class="snap-text"><div class="snap-val val-loading" id="badgeTodayChecklist">0</div><div class="snap-lbl">Checklist</div><a class="snap-link" onclick="openTodayTasksModal('Checklist')">View details →</a><div class="snap-completed" id="completedTodayChecklist">Completed: 0</div></div>
       </div>
       <div class="snap-item snap-dl">
         <div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
-        <div class="snap-text"><div class="snap-val val-loading" id="badgeTodayDelegation">0</div><div class="snap-lbl">Delegation</div><a class="snap-link" onclick="openTodayTasksModal('Delegation')">View details →</a></div>
+        <div class="snap-text"><div class="snap-val val-loading" id="badgeTodayDelegation">0</div><div class="snap-lbl">Delegation</div><a class="snap-link" onclick="openTodayTasksModal('Delegation')">View details →</a><div class="snap-completed" id="completedTodayDelegation">Completed: 0</div></div>
       </div>
      <div class="snap-item snap-perf" id="snapPerfCard">
         <div class="snap-perf-ring" id="snapPerfRing"><span id="snapPerfPct" class="val-loading">0%</span></div>
       </div>
     </div>
  <div class="my-snapshot" style="margin-top:16px;margin-bottom:16px;align-items:stretch">
-     <div class="snap-item" style="border:1px solid #fecaca;flex:0.8 1 0;min-width:180px;min-height:48px">
+     <div class="snap-item" style="border:1px solid #fecaca;box-shadow:0 4px 16px rgba(220,38,38,.18);flex:0.8 1 0;min-width:180px;min-height:48px">
         <div class="snap-icon" style="background:#fef2f2;color:#dc2626">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
         </div>
@@ -1844,11 +1845,16 @@ function loadUserCache(email) {
       var t  = em.totals || {};
       var myScore = (typeof t.overallNum === 'number') ? t.overallNum : 0;
 
-      var allToday = (data && data.todayTaskList) || [];
+    var allToday = (data && data.todayTaskList) || [];
       var pendToday = allToday.filter(function(x){ return x.status !== 'Completed'; });
       var pendFms = pendToday.filter(function(x){ return x.type === 'FMS'; }).length;
       var pendCl  = pendToday.filter(function(x){ return x.type === 'Checklist'; }).length;
       var pendDl  = pendToday.filter(function(x){ return x.type === 'Delegation'; }).length;
+
+      var doneToday = allToday.filter(function(x){ return x.status === 'Completed'; });
+      var doneFms = doneToday.filter(function(x){ return x.type === 'FMS'; }).length;
+      var doneCl  = doneToday.filter(function(x){ return x.type === 'Checklist'; }).length;
+      var doneDl  = doneToday.filter(function(x){ return x.type === 'Delegation'; }).length;
 
       var setTxt = function(id, val) {
         var el = document.getElementById(id);
@@ -1858,6 +1864,10 @@ function loadUserCache(email) {
       setTxt('badgeTodayFms', pendFms);
       setTxt('badgeTodayChecklist', pendCl);
       setTxt('badgeTodayDelegation', pendDl);
+      setTxt('completedTodayTasks', 'Completed: ' + doneToday.length);
+      setTxt('completedTodayFms', 'Completed: ' + doneFms);
+      setTxt('completedTodayChecklist', 'Completed: ' + doneCl);
+      setTxt('completedTodayDelegation', 'Completed: ' + doneDl);
       setTxt('badgeMyScore', Math.round(myScore) + '%');
     var perfPct = Math.round(myScore);
       var pctEl = document.getElementById('snapPerfPct');
