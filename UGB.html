@@ -2290,15 +2290,7 @@ function renderUsersDashboardPanels(data) {
     var rows = window._pendingApprovalsRows || [];
     var r = rows[i];
     if (!r) return;
-    if (!confirm('Approve leave for ' + r.name + ' (' + r.fromDate + ' - ' + r.toDate + ')?')) return;
-    // TODO: yahan apna backend approve API call karo, jaise:
-    // fetch(API + '?action=approveLeave&idToken=' + encodeURIComponent(currentIdToken) + '&rowId=' + r.rowId)
-    //   .then(function(res){ return res.json(); })
-    //   .then(function(resp){
-    //     if (resp.success) { rows.splice(i,1); showPendingApprovalsModal(); refreshDashboard(); }
-    //     else alert('Approve failed: ' + (resp.error||''));
-    //   });
-    alert('Backend "approveLeave" API abhi connect nahi hai — is function ko apne Apps Script endpoint ke hisaab se update karo.');
+    window.open('https://www.appsheet.com/start/e593f206-628c-4174-a375-4012a703c619#view=Leave%20Approval', '_blank');
   }
   function closePendingApprovalsModal() {
     document.getElementById('pendingApprovalsModal').style.display = 'none';
