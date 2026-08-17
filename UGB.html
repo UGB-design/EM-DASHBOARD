@@ -11,14 +11,14 @@
   /* APP SHELL (sidebar + main) */
  .app-shell{display:flex;min-height:100vh}
   /* ── TOP HEADER BAR (logo/firm left, bell + profile right) ─────────────── */
-.top-header-bar{display:flex;align-items:stretch;background:#0b1437;border-bottom:1px solid #e9d9ae;padding:0;position:sticky;top:0;z-index:90;box-shadow:0 1px 3px rgba(0,0,0,.04);height:76px;overflow:visible}
-.thb-left{display:flex;align-items:center;gap:12px;background:#0b1437;width:420px;flex-shrink:0;padding:0 22px;border:none;border-radius:0 0 44px 0;box-shadow:4px 6px 16px rgba(11,20,55,.25);position:relative;z-index:2}
+.top-header-bar{display:flex;align-items:stretch;background:rgba(11,20,55,.72);backdrop-filter:blur(22px) saturate(180%);-webkit-backdrop-filter:blur(22px) saturate(180%);border-bottom:1px solid rgba(233,217,174,.35);padding:0;position:sticky;top:0;z-index:90;box-shadow:0 4px 24px rgba(11,20,55,.18);height:76px;overflow:visible}
+.thb-left{display:flex;align-items:center;gap:12px;background:rgba(11,20,55,.55);backdrop-filter:blur(22px) saturate(180%);-webkit-backdrop-filter:blur(22px) saturate(180%);width:420px;flex-shrink:0;padding:0 22px;border:none;border-right:1px solid rgba(255,255,255,.08);border-radius:0 0 44px 0;box-shadow:4px 6px 20px rgba(11,20,55,.2);position:relative;z-index:2}
   .thb-menu-btn{display:none;align-items:center;justify-content:center;width:34px;height:34px;background:transparent;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;flex-shrink:0}
   .thb-logo{width:54px;height:54px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.12);overflow:hidden;flex-shrink:0;padding:4px}
   .thb-logo img{width:100%;height:100%;object-fit:contain}
  .thb-firm-name{font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:800;color:#ffffff;line-height:1.3;white-space:nowrap;letter-spacing:.02em}
 .thb-firm-sub{font-family:Arial,Helvetica,sans-serif;font-size:10px;color:#ffffff;font-weight:700;margin-top:2px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
-.thb-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap;flex:1;background:#0b1437;padding:10px 24px;justify-content:flex-end}
+.thb-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap;flex:1;background:transparent;padding:10px 24px;justify-content:flex-end}
 .thb-bell{position:relative;width:44px;height:44px;border-radius:10px;background:transparent;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
 .thb-bell:hover{background:rgba(255,255,255,.1)}
 .thb-bell-badge{position:absolute;top:-1px;right:-1px;background:#dc2626;color:#ffffff;font-size:11px;font-weight:800;min-width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;padding:0 4px;border:2px solid #0b1437}
@@ -37,7 +37,7 @@
   .thb-dropdown button svg{width:15px;height:15px}
  @media(max-width:900px){.thb-left{width:auto;padding:0 14px}}
   @media(max-width:600px){.thb-firm-name{font-size:12.5px}.thb-firm-sub{display:none}.thb-profile-txt{display:none}.thb-right{padding:8px 14px}}
-  .sidebar{width:270px;flex-shrink:0;background:#0b1437;border-right:1px solid #1c2554;display:flex;flex-direction:column;padding:0 14px 22px;position:sticky;top:76px;height:calc(100vh - 76px);overflow-y:auto;z-index:70;scrollbar-width:none;-ms-overflow-style:none}
+  .sidebar{width:270px;flex-shrink:0;background:rgba(11,20,55,.65);backdrop-filter:blur(22px) saturate(180%);-webkit-backdrop-filter:blur(22px) saturate(180%);border-right:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;padding:0 14px 22px;position:sticky;top:76px;height:calc(100vh - 76px);overflow-y:auto;z-index:70;scrollbar-width:none;-ms-overflow-style:none}
 .sidebar::-webkit-scrollbar{display:none}
 .sb-brand{display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 10px 8px;background:transparent;border-radius:12px;border-bottom:2px solid #3a4680;margin-bottom:8px}
 .sb-brand-row{display:flex;align-items:center;gap:10px}
@@ -53,7 +53,7 @@
   .sb-greet-time{display:block;font-size:15px;font-weight:800;color:#5eead4;text-align:center;margin-top:8px;letter-spacing:.03em;font-variant-numeric:tabular-nums}
  .sb-nav{display:flex;flex-direction:column;gap:8px;flex:1;margin-top:12px}
   .sb-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;color:#aab2d5;font-size:13px;font-weight:600;cursor:pointer;border:none;background:transparent;text-align:left;width:100%;transition:all .15s;position:relative}
-  .sb-item:hover:not(.active){background:#1c2554;color:#ffffff}
+  .sb-item:hover:not(.active){background:rgba(255,255,255,.08);backdrop-filter:blur(8px);color:#ffffff}
  .sb-item.active{background:linear-gradient(135deg,#3b5bdb 0%,#2544a8 100%);color:#ffffff;font-weight:800;box-shadow:0 4px 12px rgba(37,68,168,.4)}
   .sb-item .sb-ic{width:18px;height:18px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
   .sb-item .sb-ic svg{width:17px;height:17px;stroke-width:2}
@@ -437,9 +437,9 @@
   .logout-btn{background:#fff;border:1.5px solid #e3ddd2;border-radius:10px;padding:7px 14px;font-size:12px;font-weight:600;color:#555;cursor:pointer}
   .logout-btn:hover{background:#f9fafb}
   #appRoot{display:none}
-    .login-toast{position:fixed;top:20px;right:20px;background:#fff;border:1px solid #dcfce7;border-radius:14px;padding:14px 20px;box-shadow:0 10px 30px rgba(0,0,0,.15);z-index:99999;display:flex;align-items:center;gap:12px;transform:translateX(120%);transition:transform .35s ease}
+  .login-toast{position:fixed;top:96px;right:20px;background:rgba(255,255,255,.55);backdrop-filter:blur(18px) saturate(180%);-webkit-backdrop-filter:blur(18px) saturate(180%);border:1px solid rgba(220,252,231,.6);border-radius:14px;padding:14px 20px;box-shadow:0 10px 30px rgba(0,0,0,.12);z-index:99999;display:flex;align-items:center;gap:12px;transform:translateX(120%);transition:transform .35s ease}
 .login-toast.show{transform:translateX(0)}
-.login-toast-ic{width:36px;height:36px;border-radius:50%;background:#dcfce7;color:#16a34a;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800}
+.login-toast-ic{width:36px;height:36px;border-radius:50%;background:rgba(220,252,231,.7);backdrop-filter:blur(8px);color:#16a34a;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800}
 .login-toast-name{font-size:13.5px;font-weight:800;color:#1a1a1a}
 .login-toast-email{font-size:11.5px;color:#8a8478;margin-top:1px}
   @media(max-width:600px){
