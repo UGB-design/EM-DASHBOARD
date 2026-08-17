@@ -902,10 +902,7 @@
         <div class="ud-panel">
           <div class="ud-panel-title" style="display:flex;justify-content:space-between;align-items:center">
             <span>Leave Summary</span>
-            <select id="leaveYearSel" class="users-filter-sel" style="font-size:11px;padding:5px 10px" onchange="changeLeaveYear(this.value)">
-    <option value="2026-27">2026-27</option>
-    <option value="2027-28">2027-28</option>
-  </select>
+           <select id="leaveYearSel" class="users-filter-sel" style="font-size:11px;padding:5px 10px" onchange="changeLeaveYear(this.value)"></select>
           </div>
          <div id="udLeaveSummary">
             <div style="display:flex;gap:16px;align-items:center">
@@ -951,6 +948,7 @@
           <option value="exp">Sort: Experience</option>
           <option value="progress">Sort: Profile %</option>
         </select>
+        <span id="activeEmpBadge" class="m-badge b-green" style="display:inline-flex;align-items:center;gap:6px;white-space:nowrap"><span style="width:7px;height:7px;border-radius:50%;background:#16a34a;display:inline-block"></span>0 Active Employees</span>
       </div>
       <div id="usersGrid" class="users-grid">
         <div id="usersLoading"></div>
@@ -1012,7 +1010,7 @@
               <div class="sp-count" id="fmsByProcessCount"></div>
             </div>
          <table>
-                <thead><tr><th>#</th><th>FMS</th><th>Plan</th><th>Actual</th><th>Miss</th><th>Progress</th></tr></thead>
+              <thead><tr><th>#</th><th>FMS</th><th>Plan</th><th>Actual</th><th>Pending</th><th>Progress</th></tr></thead>
                 <tbody id="fmsByProcessBody"></tbody>
               </table>
           </div>
@@ -1022,7 +1020,7 @@
               <div class="sp-count" id="clByDoerCount"></div>
             </div>
           <table>
-                <thead><tr><th>#</th><th>Doer</th><th>Dept</th><th>Plan</th><th>Actual</th><th>Miss</th><th>Progress</th></tr></thead>
+                <thead><tr><th>#</th><th>Doer</th><th>Dept</th><th>Plan</th><th>Actual</th><th>Pending</th><th>Progress</th></tr></thead>
                 <tbody id="clByDoerBody"></tbody>
               </table>
           </div>
@@ -1480,6 +1478,27 @@ function updateGreeting(name) {
         if (panel) panel.style.opacity = '1';
       });
   }
+    function currentFinancialYearStr() {
+  var d = new Date();
+  var y = d.getFullYear();
+  var startY = d.getMonth() >= 3 ? y : y - 1; // April(3)=Apr, before April = prev FY
+  return startY + '-' + String(startY + 1).slice(-2);
+}
+function populateLeaveYearSelector() {
+  var sel = document.getElementById('leaveYearSel');
+  if (!sel) return;
+  var cur = currentFinancialYearStr();
+  var startY = parseInt(cur.split('-')[0], 10);
+  var opts = [];
+  for (var i = -1; i <= 1; i++) {
+    var y = startY + i;
+    opts.push(y + '-' + String(y + 1).slice(-2));
+  }
+  sel.innerHTML = opts.map(function(o) {
+    return '<option value="' + o + '"' + (o === cur ? ' selected' : '') + '>' + o + '</option>';
+  }).join('');
+  return cur;
+}
   function changeLeaveYear(year) {
     var sel = document.getElementById('leaveYearSel');
     var panel = document.getElementById('udLeaveSummary');
@@ -1716,9 +1735,9 @@ function showDenied(email) {
     if (window._clockTimer) clearInterval(window._clockTimer);
     updateLiveClock();
     window._clockTimer = setInterval(updateLiveClock, 1000);
-    startTodayStatsPolling();
+   startTodayStatsPolling();
     renderInternalSheets();
-
+    populateLeaveYearSelector();
     // Turant cached data dikhao (agar available hai) — instant open
     var cached = loadUserCache(email);
     if (cached && cached.data) {
@@ -1954,12 +1973,17 @@ function loadUserCache(email) {
     var term = box ? box.value.trim().toLowerCase() : '';
     var desigSel = document.getElementById('usersDesigFilter');
     var desig = desigSel ? desigSel.value : 'All';
+    var visibleCount = 0;
     document.querySelectorAll('#usersGrid .ucc-card').forEach(function(card) {
       var text = card.textContent.toLowerCase();
       var matchesSearch = !term || text.indexOf(term) !== -1;
       var matchesDesig = desig === 'All' || card.getAttribute('data-desig') === desig;
-      card.style.display = (matchesSearch && matchesDesig) ? '' : 'none';
+      var show = matchesSearch && matchesDesig;
+      card.style.display = show ? '' : 'none';
+      if (show) visibleCount++;
     });
+    var badge = document.getElementById('activeEmpBadge');
+    if (badge) badge.innerHTML = '<span style="width:7px;height:7px;border-radius:50%;background:#16a34a;display:inline-block"></span>' + visibleCount + ' Active Employee' + (visibleCount === 1 ? '' : 's');
     var sortSel = document.getElementById('usersSortSel');
     if (sortSel) sortUsersCards(sortSel.value);
   }
@@ -2020,8 +2044,9 @@ function loadUserCache(email) {
         '</div>' +
         '<div class="ucc-viewprofile">View Profile →</div>' +
       '</div>';
-   }).join('');
+  }).join('');
     populateUsersDesigFilter();
+    filterUsersSearch();
   }
 function renderUsersDashboardPanels(data) {
     // Task Summary donut — computed directly from the same raw arrays used
@@ -2632,7 +2657,7 @@ function renderClByDoer(rows) {
             '<div style="width:120px">' + pg(gProg) + '</div>' +
           '</div>' +
         '</div>' +
-        '<table><thead><tr><th>#</th><th>Step</th><th>Doer</th><th>Plan</th><th>Actual</th><th>Missed</th><th>Progress</th></tr></thead>' +
+       '<table><thead><tr><th>#</th><th>Step</th><th>Doer</th><th>Plan</th><th>Actual</th><th>Pending</th><th>Progress</th></tr></thead>' +
         '<tbody>' + rows + '</tbody></table>' +
         '</div>';
     }).join('');
@@ -3406,11 +3431,11 @@ function initialLoad(savedFrom, savedTo) {
       });
   }
     // ── Attendance Table Modal ────────────────────────────────────────────────
-  function showAttendanceTableModal() {
+function showAttendanceTableModal() {
     var rows = (globalRawData && globalRawData.attendanceOverview && globalRawData.attendanceOverview.rows) || [];
     populateAttendanceEmpFilter(rows);
     populateAttendanceMonthFilter(rows);
-    renderAttendanceTable(rows);
+    filterAttendanceTable();
     document.getElementById('attTableModal').style.display = 'flex';
   }
   function populateAttendanceEmpFilter(rows) {
@@ -3418,10 +3443,16 @@ function initialLoad(savedFrom, savedTo) {
     var names = Array.from(new Set(rows.map(function(r){ return r.name; }))).sort();
     sel.innerHTML = '<option value="All">All Employees</option>' + names.map(function(n){ return '<option value="' + n + '">' + n + '</option>'; }).join('');
   }
-  function populateAttendanceMonthFilter(rows) {
+ function populateAttendanceMonthFilter(rows) {
     var sel = document.getElementById('attTableMonthFilter');
     var months = Array.from(new Set(rows.map(function(r){ return r.month; }).filter(Boolean)));
     sel.innerHTML = '<option value="All">All Months</option>' + months.map(function(m){ return '<option value="' + m + '">' + m + '</option>'; }).join('');
+    var monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    var d = new Date();
+    var candidates = [monthNames[d.getMonth()] + ' ' + d.getFullYear(), monthNames[d.getMonth()].slice(0,3) + ' ' + d.getFullYear(), (d.getMonth()+1) + '/' + d.getFullYear()];
+    for (var i = 0; i < candidates.length; i++) {
+      if (months.indexOf(candidates[i]) !== -1) { sel.value = candidates[i]; break; }
+    }
   }
   function filterAttendanceTable() {
     var emp = document.getElementById('attTableEmpFilter').value;
@@ -3439,11 +3470,11 @@ function initialLoad(savedFrom, savedTo) {
   function closeAttendanceTableModal(){ document.getElementById('attTableModal').style.display = 'none'; }
   
   // ── Leave Table Modal ────────────────────────────────────────────────────
-  function showLeaveTableModal() {
+  ffunction showLeaveTableModal() {
     var rows = (globalRawData && globalRawData.leaveSummary && globalRawData.leaveSummary.rows) || [];
     populateLeaveEmpFilter(rows);
     populateLeaveYearFilter(rows);
-    renderLeaveTable(rows);
+    filterLeaveTable();
     document.getElementById('leaveTableModal').style.display = 'flex';
   }
   function leaveDisplayName_(r) {
@@ -3456,10 +3487,12 @@ function initialLoad(savedFrom, savedTo) {
     var names = Array.from(new Set(rows.map(leaveDisplayName_))).sort();
     sel.innerHTML = '<option value="All">All Employees</option>' + names.map(function(n){ return '<option value="' + n + '">' + n + '</option>'; }).join('');
   }
-  function populateLeaveYearFilter(rows) {
+ function populateLeaveYearFilter(rows) {
     var sel = document.getElementById('leaveTableYearFilter');
     var years = Array.from(new Set(rows.map(function(r){ return r.year; }).filter(Boolean))).sort();
     sel.innerHTML = '<option value="All">All Years</option>' + years.map(function(y){ return '<option value="' + y + '">' + y + '</option>'; }).join('');
+    var cur = currentFinancialYearStr();
+    if (years.indexOf(cur) !== -1) sel.value = cur;
   }
   function filterLeaveTable() {
     var emp = document.getElementById('leaveTableEmpFilter').value;
