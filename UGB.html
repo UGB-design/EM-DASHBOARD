@@ -2278,9 +2278,27 @@ function renderUsersDashboardPanels(data) {
         '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px">' + r.toDate + '</td>' +
         '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;text-align:center">' + r.totalDays + '</td>' +
         '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px">' + r.reason + '</td>' +
+        '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;text-align:center">' +
+          '<button onclick="approveLeaveRow(' + i + ')" style="background:#16a34a;color:#fff;border:none;border-radius:8px;padding:6px 16px;font-size:12px;font-weight:700;cursor:pointer">Approve</button>' +
+        '</td>' +
         '</tr>';
-    }).join('') || '<tr><td colspan="7" style="text-align:center;color:#bbb;padding:30px">No pending approvals 🎉</td></tr>';
+    }).join('') || '<tr><td colspan="8" style="text-align:center;color:#bbb;padding:30px">No pending approvals 🎉</td></tr>';
     document.getElementById('pendingApprovalsModal').style.display = 'flex';
+  }
+
+  function approveLeaveRow(i) {
+    var rows = window._pendingApprovalsRows || [];
+    var r = rows[i];
+    if (!r) return;
+    if (!confirm('Approve leave for ' + r.name + ' (' + r.fromDate + ' - ' + r.toDate + ')?')) return;
+    // TODO: yahan apna backend approve API call karo, jaise:
+    // fetch(API + '?action=approveLeave&idToken=' + encodeURIComponent(currentIdToken) + '&rowId=' + r.rowId)
+    //   .then(function(res){ return res.json(); })
+    //   .then(function(resp){
+    //     if (resp.success) { rows.splice(i,1); showPendingApprovalsModal(); refreshDashboard(); }
+    //     else alert('Approve failed: ' + (resp.error||''));
+    //   });
+    alert('Backend "approveLeave" API abhi connect nahi hai — is function ko apne Apps Script endpoint ke hisaab se update karo.');
   }
   function closePendingApprovalsModal() {
     document.getElementById('pendingApprovalsModal').style.display = 'none';
@@ -3545,8 +3563,8 @@ function closeFullReportModal(){ document.getElementById('fullReportModal').styl
   <!-- PENDING TASKS MODAL -->
     <!-- UPCOMING HOLIDAYS MODAL -->
     <!-- PENDING APPROVALS MODAL -->
-  <div id="pendingApprovalsModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center" onclick="if(event.target===this)closePendingApprovalsModal()">
-    <div style="background:#fff;border-radius:14px;width:92%;max-width:700px;max-height:82vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
+ <div id="pendingApprovalsModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center" onclick="if(event.target===this)closePendingApprovalsModal()">
+    <div style="background:#fff;border-radius:14px;width:92%;max-width:950px;max-height:82vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
       <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e8eaed">
         <div style="font-size:15px;font-weight:700;color:#1a1a1a">Pending Leave Approvals</div>
         <button onclick="closePendingApprovalsModal()" style="background:#f3f4f6;border:none;border-radius:8px;width:30px;height:30px;font-size:16px;cursor:pointer;color:#555">✕</button>
@@ -3560,8 +3578,9 @@ function closeFullReportModal(){ document.getElementById('fullReportModal').styl
               <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#1e3a6d">Leave Type</th>
               <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#1e3a6d">From</th>
               <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#1e3a6d">To</th>
-              <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:center;border-bottom:1px solid #e8eaed;background:#1e3a6d">Days</th>
+             <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:center;border-bottom:1px solid #e8eaed;background:#1e3a6d">Days</th>
               <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#1e3a6d">Reason</th>
+              <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:center;border-bottom:1px solid #e8eaed;background:#1e3a6d">Action</th>
             </tr>
           </thead>
           <tbody id="pendingApprovalsBody"></tbody>
