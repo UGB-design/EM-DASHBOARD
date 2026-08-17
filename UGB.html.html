@@ -102,7 +102,7 @@
   .mini-field input, .mini-field select{border:1px solid var(--border);background:var(--card);border-radius:9px;padding:7px 10px;font-family:inherit;font-size:12.5px;color:var(--ink);min-width:120px;}
   .search{border:1px solid var(--border);border-radius:9px;padding:7px 12px;font-size:12.5px;font-family:inherit;width:200px;}
   table{width:100%;border-collapse:collapse;font-size:13px;}
- thead th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--navy);font-weight:800;padding:16px;border-bottom:1.5px solid var(--blue);white-space:nowrap;position:sticky;top:0;background:#eef1fa;}
+thead th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-faint);font-weight:700;padding:16px;border-bottom:1px solid var(--border);white-space:nowrap;position:sticky;top:0;background:#fff;}
   tbody td{padding:12px 16px;border-bottom:1px solid #f1f2ec;vertical-align:middle;white-space:nowrap;}
   tbody tr:last-child td{border-bottom:none;}
   tbody tr:hover{background:#fafaf6;}
@@ -181,7 +181,7 @@
 
 .tabs{background:#fff;border:1px solid var(--border);border-radius:16px;padding:8px;gap:6px;box-shadow:var(--shadow);}
 .tab{padding:12px 18px;border-radius:12px;font-weight:700;color:var(--ink-soft);}
-.tab.active{background:var(--navy)!important;color:#fff!important;}
+.tab.active{background:var(--blue)!important;color:#fff!important;}
 .tab.active::before,.tab.active::after{content:none;}
 .tab.active .tab-badge{background:#fff;color:var(--red);}
 
@@ -209,19 +209,18 @@
   </div>
 </div>
 
-<div class="date-badge" id="dateBadge">📅 Loading...</div>
+<div class="date-badge" id="dateBadge"> Loading...</div>
 
 <div class="wrap">
 
   <div id="warnBanner" class="warn-banner"></div>
-  <div class="summary-cards" id="summaryCards"></div>
 <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:22px;">
     <div class="tabs" id="tabs" style="margin-bottom:0;">
-      <button class="tab active" data-tab="requests">📋 Pending Approvals <span class="tab-badge" id="pendingBadge" style="display:none;">0</span></button>
-      <button class="tab" data-tab="balance">📅 Leave Balance</button>
-      <button class="tab" data-tab="deductions">📄 Deduction & Salary Slip</button>
-      <button class="tab" data-tab="history">🗓️ All Leave Requests</button>
-      <button class="tab" data-tab="attendance">⏱️ Attendance</button>
+      <button class="tab active" data-tab="requests"> Pending Approvals <span class="tab-badge" id="pendingBadge" style="display:none;">0</span></button>
+      <button class="tab" data-tab="balance"> Leave Balance</button>
+      <button class="tab" data-tab="deductions"> Deduction & Salary Slip</button>
+      <button class="tab" data-tab="history"> All Leave Requests</button>
+      <button class="tab" data-tab="attendance"> Attendance</button>
     </div>
     <button class="btn ghost sm tabRefreshBtn" title="Reload live data">⟳ Refresh</button>
   </div>
@@ -1839,7 +1838,6 @@ function renderSummaryCards(){
 }
 
 function renderAll(){
-  renderSummaryCards();
   updatePendingBadge();
   renderRequests(document.getElementById("searchRequests").value);
   renderBalance(document.getElementById("searchBalance").value);
