@@ -24,7 +24,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #authOverlay .retry-link{font-size:12px;color:#2563eb;font-weight:600;cursor:pointer;text-decoration:underline;background:none;border:none}
 /* ===== APP SHELL / SIDEBAR ===== */
 .app-shell{display:flex;min-height:100vh}
-.sidebar{width:230px;flex-shrink:0;background:#101a2e;border-right:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;padding:22px 14px;position:sticky;top:0;height:100vh;margin-top:0}
+.sidebar{width:230px;flex-shrink:0;background:#101a2e;border-right:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;padding:22px 14px;position:sticky;top:73px;height:calc(100vh - 73px);align-self:flex-start}
 .sb-brand{display:flex;align-items:center;gap:10px;padding:0 8px 20px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:16px}
 .sb-brand-badge{width:42px;height:42px;border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
 .sb-brand-badge img{width:100%;height:100%;object-fit:contain}
@@ -68,9 +68,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .user-chip img{width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0}
 .user-chip-text{display:flex;flex-direction:column;line-height:1.25}
   <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#9aa0ac" stroke-width="2" style="margin-left:2px"><polyline points="6 9 12 15 18 9"></polyline></svg>
-.user-chip-name{font-size:13px;font-weight:700;color:#1a1a1a;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.user-chip-sub{font-size:10px;font-weight:600;color:#2563eb;text-transform:uppercase;letter-spacing:.03em}
-
+.user-chip{background:#fff !important}
+.user-chip-name{font-size:13px;font-weight:700;color:#1a1a1a !important;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.user-chip-sub{font-size:10px;font-weight:600;color:#2563eb !important;text-transform:uppercase;letter-spacing:.03em}
 .content{padding:24px 28px}
 .tab-content{display:none}
 .tab-content.active{display:block}
@@ -263,7 +263,8 @@ tr:hover td{background:#fafbfc}
 @keyframes skel-shimmer{0%{background-position:100% 50%}100%{background-position:0 50%}}
 .sk-bar{height:14px;margin-bottom:8px}
 .sk-circle{border-radius:50%}
-.date-range-combo{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid #d1d5db;border-radius:8px;padding:6px 12px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.date-range-combo{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid #d1d5db;border-radius:8px;padding:6px 6px 6px 12px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.drc-apply-btn{background:#0a2472;color:#fff;border:none;border-radius:6px;padding:7px 16px;font-size:12px;font-weight:600;cursor:pointer;margin-left:4px}
 .date-range-combo .wk-label{font-size:12px;color:#888}
 .wk-sel-inner{border:none;outline:none;font-size:13px;color:#333;font-weight:500;padding:0;background:transparent;cursor:pointer;max-width:130px}
 .drc-sep{color:#bbb;font-size:12px}
@@ -306,14 +307,14 @@ tr:hover td{background:#fafbfc}
   </div>
   <div class="th-right">
     <a class="apply-leave-btn" href="https://www.appsheet.com/start/e593f206-628c-4174-a375-4012a703c619#view=Apply%20Leave" target="_blank" rel="noopener">Apply Leave</a>
-    <div class="date-range-combo">
-      <span class="wk-label">From</span>
-      <input type="date" class="wk-sel-inner" id="dateFrom">
-      <span class="drc-sep">→</span>
-      <span class="wk-label">To</span>
-      <input type="date" class="wk-sel-inner" id="dateTo">
-    </div>
-    <button id="applyDateBtn" onclick="applyCustomDateRange()" style="background:#fff;color:#0a2472;border:none;border-radius:8px;padding:8px 18px;font-size:12px;font-weight:700;cursor:pointer">Apply</button>
+       <div class="date-range-combo">
+  <span class="wk-label">From</span>
+  <input type="date" class="wk-sel-inner" id="dateFrom">
+  <span class="drc-sep">→</span>
+  <span class="wk-label">To</span>
+  <input type="date" class="wk-sel-inner" id="dateTo">
+  <button id="applyDateBtn" onclick="applyCustomDateRange()" class="drc-apply-btn">Apply</button>
+</div>
     <span class="saving" id="savingTxt"> Please Wait...</span>
     <div class="user-chip" id="userChip" style="display:none;cursor:pointer" onclick="openMyProfileModal()">
       <img id="userAvatar" src="" alt="">
@@ -375,12 +376,15 @@ tr:hover td{background:#fafbfc}
   </aside>
 
   <main class="main-area">
-        <div class="topbar">
-      <div class="tb-row1">
-       <div class="tb-greet" id="tbGreet"><span id="tbGreetText">Hello..!</span><span class="em" id="tbDateTime"></span></div>
+            <div class="topbar">
+      <div class="tb-row1" style="justify-content:space-between">
+        <div class="tb-greet" id="tbGreetText">Hello..!</div>
+        <div style="text-align:right">
+          <div id="tbDateOnly" style="font-size:12px;color:#9aa0ac;font-weight:600"></div>
+          <div id="tbTimeOnly" style="font-size:20px;font-weight:800;color:#2563eb"></div>
+        </div>
       </div>
     </div>
-
     <div class="content">
       <!-- ===== DASHBOARD TAB (redesigned) ===== -->
       <div class="tab-content active" id="tab-dashboard">
@@ -1323,16 +1327,20 @@ function switchTab(name,el){
 
 <script>
   function updateLiveDateTime(){
-  var el=document.getElementById('tbDateTime');
-  if(!el)return;
+  var dEl=document.getElementById('tbDateOnly');
+  var tEl=document.getElementById('tbTimeOnly');
+  if(!dEl||!tEl)return;
   var d=new Date();
   var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   var dd=String(d.getDate()).padStart(2,'0');
   var mm=String(d.getMonth()+1).padStart(2,'0');
-  var hh=String(d.getHours()).padStart(2,'0');
+  var h24=d.getHours();
+  var ampm=h24>=12?'PM':'AM';
+  var h12=h24%12; if(h12===0)h12=12;
+  var hh=String(h12).padStart(2,'0');
   var mi=String(d.getMinutes()).padStart(2,'0');
-  var ss=String(d.getSeconds()).padStart(2,'0');
-  el.textContent=days[d.getDay()]+', '+dd+'/'+mm+'/'+d.getFullYear()+' — '+hh+':'+mi+':'+ss;
+  dEl.textContent=days[d.getDay()]+', '+dd+'/'+mm+'/'+d.getFullYear();
+  tEl.textContent=hh+':'+mi+' '+ampm;
 }
 setInterval(updateLiveDateTime,1000);
 updateLiveDateTime();
