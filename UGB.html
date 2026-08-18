@@ -553,7 +553,32 @@
   .snap-perf-ring{width:100px;height:100px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
   .snap-perf-ring span{background:#fff;width:84px;height:84px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#1a1a1a;line-height:1.1;text-align:center;padding:0 6px}
   .snap-perf-ring span small{font-size:7.5px;font-weight:700;color:#9aa0ac;text-transform:uppercase;letter-spacing:.02em;margin-top:2px;white-space:nowrap}
-   .dash-lists-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px}
+   .scv2{background:#fff;border-radius:16px;border:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(30,41,59,.06);padding:16px 18px 14px;display:flex;flex-direction:column;gap:12px;flex:1 1 0;min-width:220px}
+.scv2-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.scv2-icon-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.scv2-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.scv2-icon svg{width:15px;height:15px}
+.scv2-label{font-size:10.5px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.05em}
+.scv2-num{font-size:32px;font-weight:800;color:#1a1a1a;line-height:1}
+.scv2-sublbl{font-size:12px;font-weight:700;color:#64748b;margin-top:4px}
+.scv2-ring{width:74px;height:74px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:conic-gradient(#e2e8f0 0deg,#e2e8f0 360deg)}
+.scv2-ring span{background:#fff;width:60px;height:60px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1}
+.scv2-ring-num{font-size:15px;font-weight:800;color:#1a1a1a}
+.scv2-ring-lbl{font-size:7.5px;font-weight:700;color:#9aa0ac;text-transform:uppercase;letter-spacing:.03em;margin-top:1px}
+.scv2-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid #f1f5f9}
+.scv2-completed{font-size:11px;font-weight:700;color:#16a34a}
+.scv2-link{font-size:11.5px;font-weight:700;color:#1e3a6d;cursor:pointer;text-decoration:none}
+.scv2-link:hover{text-decoration:underline}
+.scv2-today .scv2-icon{background:#eff6ff;color:#2563eb}
+.scv2-fms .scv2-icon{background:#f0fdf4;color:#16a34a}
+.scv2-cl .scv2-icon{background:#fff7ed;color:#ea580c}
+.scv2-dl .scv2-icon{background:#f5f3ff;color:#7c3aed}
+@media(max-width:600px){.scv2{flex:1 1 100%;min-width:100%}}
+.holiday-card{background-image:linear-gradient(135deg,rgba(5,10,30,.55) 0%,rgba(5,10,30,.35) 50%,rgba(5,10,30,.55) 100%),url("https://lh3.googleusercontent.com/d/1wVjYkpLVfK1SrxEIJV8r5zz1QuYspqoJ=w1200");background-size:cover;background-position:center;border:1px solid rgba(255,255,255,.25) !important;position:relative}
+.holiday-card .snap-icon{background:rgba(255,255,255,.18) !important;color:#fff !important}
+.holiday-card #upcomingHolidayLbl{color:#fff !important;font-weight:800;text-shadow:0 1px 3px rgba(0,0,0,.4)}
+.holiday-card #upcomingHolidayNotice > div{background:rgba(255,255,255,.92) !important}
+    .dash-lists-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px}
 @media(max-width:900px){.dash-lists-grid{grid-template-columns:1fr}}
 .dl-list-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #f1f5f9}
 .dl-list-row:last-child{border-bottom:none}
@@ -829,24 +854,76 @@
         <div id="usersUpcomingBanner"></div>
       </div>
       <div class="my-snapshot" style="margin-top:10px">
-      <div class="snap-item snap-today">
-        <div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M8 2v4M16 2v4M3 10h18"></path></svg></div>
-        <div class="snap-text"><div class="snap-val val-loading" id="badgeTodayTasks">0</div><div class="snap-lbl">Today's Tasks</div><a class="snap-link" onclick="openTodayTasksModal()">View all tasks →</a><div class="snap-completed" id="completedTodayTasks">Completed: 0</div></div>
+           <div class="scv2 scv2-today">
+        <div class="scv2-top">
+          <div>
+            <div class="scv2-icon-row">
+              <div class="scv2-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M8 2v4M16 2v4M3 10h18"></path></svg></div>
+              <span class="scv2-label">Today's Tasks</span>
+            </div>
+            <div class="scv2-num val-loading" id="badgeTodayTasks">0</div>
+            <div class="scv2-sublbl">Pending</div>
+          </div>
+          <div class="scv2-ring" id="ringTodayTasks"><span><span class="scv2-ring-num" id="ringTodayTasksNum">0</span><span class="scv2-ring-lbl">Total</span></span></div>
+        </div>
+        <div class="scv2-bottom">
+          <div class="scv2-completed" id="completedTodayTasks">Completed: 0</div>
+          <a class="scv2-link" onclick="openTodayTasksModal()">View all tasks →</a>
+        </div>
       </div>
-      <div class="snap-item snap-fms">
-        <div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></div>
-        <div class="snap-text"><div class="snap-val val-loading" id="badgeTodayFms">0</div><div class="snap-lbl">FMS</div><a class="snap-link" onclick="openTodayTasksModal('FMS')">View details →</a><div class="snap-completed" id="completedTodayFms">Completed: 0</div></div>
+
+      <div class="scv2 scv2-fms">
+        <div class="scv2-top">
+          <div>
+            <div class="scv2-icon-row">
+              <div class="scv2-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></div>
+              <span class="scv2-label">FMS</span>
+            </div>
+            <div class="scv2-num val-loading" id="badgeTodayFms">0</div>
+            <div class="scv2-sublbl">Pending</div>
+          </div>
+          <div class="scv2-ring" id="ringTodayFms"><span><span class="scv2-ring-num" id="ringTodayFmsNum">0</span><span class="scv2-ring-lbl">Total</span></span></div>
+        </div>
+        <div class="scv2-bottom">
+          <div class="scv2-completed" id="completedTodayFms">Completed: 0</div>
+          <a class="scv2-link" onclick="openTodayTasksModal('FMS')">View details →</a>
+        </div>
       </div>
-      <div class="snap-item snap-cl">
-        <div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 12l2 2 4-4"></path></svg></div>
-        <div class="snap-text"><div class="snap-val val-loading" id="badgeTodayChecklist">0</div><div class="snap-lbl">Checklist</div><a class="snap-link" onclick="openTodayTasksModal('Checklist')">View details →</a><div class="snap-completed" id="completedTodayChecklist">Completed: 0</div></div>
+
+      <div class="scv2 scv2-cl">
+        <div class="scv2-top">
+          <div>
+            <div class="scv2-icon-row">
+              <div class="scv2-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 12l2 2 4-4"></path></svg></div>
+              <span class="scv2-label">Checklist</span>
+            </div>
+            <div class="scv2-num val-loading" id="badgeTodayChecklist">0</div>
+            <div class="scv2-sublbl">Pending</div>
+          </div>
+          <div class="scv2-ring" id="ringTodayChecklist"><span><span class="scv2-ring-num" id="ringTodayChecklistNum">0</span><span class="scv2-ring-lbl">Total</span></span></div>
+        </div>
+        <div class="scv2-bottom">
+          <div class="scv2-completed" id="completedTodayChecklist">Completed: 0</div>
+          <a class="scv2-link" onclick="openTodayTasksModal('Checklist')">View details →</a>
+        </div>
       </div>
-      <div class="snap-item snap-dl">
-        <div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
-        <div class="snap-text"><div class="snap-val val-loading" id="badgeTodayDelegation">0</div><div class="snap-lbl">Delegation</div><a class="snap-link" onclick="openTodayTasksModal('Delegation')">View details →</a><div class="snap-completed" id="completedTodayDelegation">Completed: 0</div></div>
-      </div>
-     <div class="snap-item snap-perf" id="snapPerfCard">
-        <div class="snap-perf-ring" id="snapPerfRing"><span id="snapPerfPct" class="val-loading">0%</span></div>
+
+      <div class="scv2 scv2-dl">
+        <div class="scv2-top">
+          <div>
+            <div class="scv2-icon-row">
+              <div class="scv2-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
+              <span class="scv2-label">Delegation</span>
+            </div>
+            <div class="scv2-num val-loading" id="badgeTodayDelegation">0</div>
+            <div class="scv2-sublbl">Pending</div>
+          </div>
+          <div class="scv2-ring" id="ringTodayDelegation"><span><span class="scv2-ring-num" id="ringTodayDelegationNum">0</span><span class="scv2-ring-lbl">Total</span></span></div>
+        </div>
+        <div class="scv2-bottom">
+          <div class="scv2-completed" id="completedTodayDelegation">Completed: 0</div>
+          <a class="scv2-link" onclick="openTodayTasksModal('Delegation')">View details →</a>
+        </div>
       </div>
     </div>
  <div class="my-snapshot" style="margin-top:16px;margin-bottom:16px;align-items:stretch">
@@ -860,7 +937,7 @@
           <a class="snap-link" onclick="showPendingApprovalsModal()">View Details →</a>
         </div>
       </div>
-     <div class="snap-item" style="border:1px solid #bbf7d0;align-items:flex-start;flex:2.2 1 0;min-width:260px;min-height:48px">
+         <div class="snap-item holiday-card" style="align-items:flex-start;flex:2.2 1 0;min-width:260px;min-height:48px">
         <div class="snap-icon" style="background:#f0fdf4;color:#16a34a;margin-top:2px">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
         </div>
@@ -1867,7 +1944,20 @@ function loadUserCache(email) {
       setTxt('completedTodayTasks', 'Completed: ' + doneToday.length);
       setTxt('completedTodayFms', 'Completed: ' + doneFms);
       setTxt('completedTodayChecklist', 'Completed: ' + doneCl);
-      setTxt('completedTodayDelegation', 'Completed: ' + doneDl);
+           setTxt('completedTodayDelegation', 'Completed: ' + doneDl);
+      function setRing(ringId, numId, total, completed, color) {
+        var ring = document.getElementById(ringId);
+        var numEl = document.getElementById(numId);
+        if (numEl) numEl.textContent = total;
+        if (ring) {
+          var pct = total > 0 ? (completed / total * 100) : 0;
+          ring.style.background = 'conic-gradient(' + color + ' ' + (pct * 3.6) + 'deg,#eef1f6 ' + (pct * 3.6) + 'deg)';
+        }
+      }
+      setRing('ringTodayTasks', 'ringTodayTasksNum', allToday.length, doneToday.length, '#2563eb');
+      setRing('ringTodayFms', 'ringTodayFmsNum', pendFms + doneFms, doneFms, '#16a34a');
+      setRing('ringTodayChecklist', 'ringTodayChecklistNum', pendCl + doneCl, doneCl, '#ea580c');
+      setRing('ringTodayDelegation', 'ringTodayDelegationNum', pendDl + doneDl, doneDl, '#7c3aed');
       setTxt('badgeMyScore', Math.round(myScore) + '%');
     var perfPct = Math.round(myScore);
       var pctEl = document.getElementById('snapPerfPct');
@@ -2275,7 +2365,7 @@ function renderUsersDashboardPanels(data) {
     if (noticeEl) {
       var rows = uh.rows || [];
       if (!rows.length) {
-        noticeEl.innerHTML = '<div style="font-size:11.5px;color:#c7c2b8;padding:6px 2px">No holidays found</div>';
+               noticeEl.innerHTML = '<div style="font-size:11.5px;color:#ffffff;font-weight:600;padding:6px 2px;text-shadow:0 1px 3px rgba(0,0,0,.4)">No holidays found</div>';
       } else {
        noticeEl.innerHTML = rows.map(function(h) {
           return '<div style="display:flex;align-items:center;gap:14px;font-size:13px;color:#166534;background:#f0fdf4;border:1px solid #dcfce7;border-radius:8px;padding:7px 12px">' +
