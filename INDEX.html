@@ -24,7 +24,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #authOverlay .retry-link{font-size:12px;color:#2563eb;font-weight:600;cursor:pointer;text-decoration:underline;background:none;border:none}
 /* ===== APP SHELL / SIDEBAR ===== */
 .app-shell{display:flex;min-height:100vh}
-.sidebar{width:236px;flex-shrink:0;background:#0d1526;border-right:1px solid rgba(255,255,255,.05);display:flex;flex-direction:column;padding:20px 12px;position:sticky;top:0;height:100vh}
+.sidebar{width:230px;flex-shrink:0;background:#101a2e;border-right:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;padding:22px 14px;position:sticky;top:0;height:100vh;margin-top:0}
 .sb-brand{display:flex;align-items:center;gap:10px;padding:0 8px 20px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:16px}
 .sb-brand-badge{width:42px;height:42px;border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
 .sb-brand-badge img{width:100%;height:100%;object-fit:contain}
@@ -50,7 +50,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tb-greet{font-size:17px;font-weight:800;color:#1a1a1a}
 .tb-greet .em{color:#2563eb;font-size:22px;font-weight:800;display:block;margin-top:6px;text-align:right}
 .apply-leave-btn{display:inline-block;background:#2563eb;color:#fff;font-size:12.5px;font-weight:700;padding:9px 20px;border-radius:9px;text-decoration:none;letter-spacing:.01em;box-shadow:0 2px 6px rgba(37,99,235,.25);transition:background .15s}
-.apply-leave-btn:hover{background:#1d4ed8}
+.apply-leave-btn:hover{background:#15803d}
+.top-header{background:#0a2472;color:#fff;padding:14px 28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;position:sticky;top:0;z-index:80}
+.th-left{display:flex;align-items:center;gap:12px}
+.th-badge{width:44px;height:44px;border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.th-badge img{width:100%;height:100%;object-fit:contain}
+.th-title{font-size:15px;font-weight:800;color:#fff;line-height:1.25}
+.th-sub{font-size:10.5px;font-weight:700;color:#d4af37;letter-spacing:.08em;text-transform:uppercase}
+.th-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .tb-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .wk-label{font-size:13px;color:#888;font-weight:500}
 .wk-sel{background:#fff;border:1.5px solid #d1d5db;border-radius:8px;padding:7px 14px;font-size:13px;color:#333;font-weight:500;cursor:pointer;outline:none;box-shadow:0 1px 3px rgba(0,0,0,.06);max-width:320px}
@@ -289,18 +296,37 @@ tr:hover td{background:#fafbfc}
 </div>
 
 <div id="dashboardWrap" style="display:none">
+<div class="top-header">
+  <div class="th-left">
+    <div class="th-badge"><img src="https://lh3.googleusercontent.com/d/158_HBHOHewJ0wG2BY3ZiBdT_uD7eoDQX=w200" alt="CA Logo"></div>
+    <div>
+      <div class="th-title">UMESH BOLMAL &amp; ASSOCIATES</div>
+      <div class="th-sub">CHARTERED ACCOUNTANTS</div>
+    </div>
+  </div>
+  <div class="th-right">
+    <a class="apply-leave-btn" href="https://www.appsheet.com/start/e593f206-628c-4174-a375-4012a703c619#view=Apply%20Leave" target="_blank" rel="noopener">Apply Leave</a>
+    <div class="date-range-combo">
+      <span class="wk-label">From</span>
+      <input type="date" class="wk-sel-inner" id="dateFrom">
+      <span class="drc-sep">→</span>
+      <span class="wk-label">To</span>
+      <input type="date" class="wk-sel-inner" id="dateTo">
+    </div>
+    <button id="applyDateBtn" onclick="applyCustomDateRange()" style="background:#fff;color:#0a2472;border:none;border-radius:8px;padding:8px 18px;font-size:12px;font-weight:700;cursor:pointer">Apply</button>
+    <span class="saving" id="savingTxt"> Please Wait...</span>
+    <div class="user-chip" id="userChip" style="display:none;cursor:pointer" onclick="openMyProfileModal()">
+      <img id="userAvatar" src="" alt="">
+      <div class="user-chip-text">
+        <span class="user-chip-name" id="userName">Loading...</span>
+        <span class="user-chip-sub">View Profile</span>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="app-shell">
 
   <aside class="sidebar">
-    <div class="sb-brand" style="flex-direction:column;align-items:flex-start">
-      <div style="display:flex;align-items:center;gap:10px;width:100%">
-        <div class="sb-brand-badge" id="sbBrandBadge"><img src="https://lh3.googleusercontent.com/d/158_HBHOHewJ0wG2BY3ZiBdT_uD7eoDQX=w200" alt="CA Logo" style="width:100%;height:100%;object-fit:contain"></div>
-        <div class="sb-brand-text">
-          <div class="sb-brand-title">UMESH BOLMAL &amp; ASSOCIATES</div>
-        </div>
-      </div>
-      <div class="sb-brand-sub" style="width:100%;text-align:center;color:#d4af37;margin-top:8px">CHARTERED ACCOUNTANTS</div>
-    </div>
     <nav class="sb-nav">
      <button class="sb-item active" onclick="switchTab('dashboard',this)">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
@@ -349,28 +375,9 @@ tr:hover td{background:#fafbfc}
   </aside>
 
   <main class="main-area">
-    <div class="topbar">
+        <div class="topbar">
       <div class="tb-row1">
        <div class="tb-greet" id="tbGreet"><span id="tbGreetText">Hello..!</span><span class="em" id="tbDateTime"></span></div>
-        <div class="tb-right">
-          <a class="apply-leave-btn" href="https://www.appsheet.com/start/e593f206-628c-4174-a375-4012a703c619#view=Apply%20Leave" target="_blank" rel="noopener">Apply Leave</a>
-        <div class="date-range-combo">
-  <span class="wk-label">From</span>
-  <input type="date" class="wk-sel-inner" id="dateFrom">
-  <span class="drc-sep">→</span>
-  <span class="wk-label">To</span>
-  <input type="date" class="wk-sel-inner" id="dateTo">
-</div>
-         <button id="applyDateBtn" onclick="applyCustomDateRange()" style="background:#0a2472;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:12px;font-weight:600;cursor:pointer">Apply</button>
-          <span class="saving" id="savingTxt"> Please Wait...</span>
-         <div class="user-chip" id="userChip" style="display:none;cursor:pointer" onclick="openMyProfileModal()">
-            <img id="userAvatar" src="" alt="">
-            <div class="user-chip-text">
-              <span class="user-chip-name" id="userName">Loading...</span>
-              <span class="user-chip-sub">View Profile</span>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
 
