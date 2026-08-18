@@ -2135,9 +2135,9 @@ function loadUserCache(email) {
     file: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>'
   };
     var EYE_ICON = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
-  function fileViewLink(url, label) {
+    function fileViewLink(url, label) {
     if (!url) return '<span class="ucr-missing">Not Uploaded</span>';
-    return '<span onclick="event.stopPropagation();showFileView(\'' + url + '\',\'' + label + '\')" style="display:inline-flex;align-items:center;gap:5px;color:#115e59;font-weight:700;cursor:pointer">' + EYE_ICON + ' View</span>';
+    return '<span onclick="event.stopPropagation();showFileView(\'' + url + '\',\'' + label + '\',true)" style="display:inline-flex;align-items:center;gap:5px;color:#115e59;font-weight:700;cursor:pointer">' + EYE_ICON + ' View</span>';
   }
   var _staffRows = [];
   function populateUsersDesigFilter() {
