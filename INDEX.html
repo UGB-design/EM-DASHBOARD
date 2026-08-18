@@ -24,7 +24,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #authOverlay .retry-link{font-size:12px;color:#2563eb;font-weight:600;cursor:pointer;text-decoration:underline;background:none;border:none}
 /* ===== APP SHELL / SIDEBAR ===== */
 .app-shell{display:flex;min-height:100vh}
-.sidebar{width:230px;flex-shrink:0;background:#101a2e;border-right:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;padding:22px 14px;position:sticky;top:0;height:100vh}
+.sidebar{width:236px;flex-shrink:0;background:#0d1526;border-right:1px solid rgba(255,255,255,.05);display:flex;flex-direction:column;padding:20px 12px;position:sticky;top:0;height:100vh}
 .sb-brand{display:flex;align-items:center;gap:10px;padding:0 8px 20px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:16px}
 .sb-brand-badge{width:42px;height:42px;border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
 .sb-brand-badge img{width:100%;height:100%;object-fit:contain}
@@ -32,10 +32,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .sb-brand-title{font-size:12.5px;font-weight:700;color:#ffffff;white-space:normal;overflow:hidden;text-overflow:ellipsis;letter-spacing:.01em}
 .sb-brand-sub{font-size:10.5px;color:#7b8bb0;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sb-nav{flex:1;display:flex;flex-direction:column;gap:3px;overflow-y:auto}
-.sb-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:9px;border:none;background:transparent;font-size:13px;font-weight:600;color:#a8b3c7;cursor:pointer;text-align:left;width:100%;transition:all .15s}
+.sb-item{display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:10px;border:none;background:transparent;font-size:13px;font-weight:600;color:#9aa5bd;cursor:pointer;text-align:left;width:100%;transition:all .15s}
 .sb-item svg{flex-shrink:0;width:17px;height:17px}
 .sb-item span.lbl{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sb-item.active{background:#2563eb;color:#fff;box-shadow:0 2px 6px rgba(37,99,235,.25)}
+.sb-item.active{background:#2563eb;color:#fff;box-shadow:0 3px 10px rgba(37,99,235,.35)}
 .sb-item:hover:not(.active){background:rgba(255,255,255,.07);color:#ffffff}
 .sb-badge{background:#dc2626;color:#fff;font-size:10px;font-weight:700;border-radius:20px;padding:2px 7px;min-width:18px;text-align:center;line-height:1.4}
 .sb-badge.zero{display:none}
@@ -47,10 +47,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 .topbar{background:#fff;padding:14px 28px;border-bottom:1px solid #e8eaed;display:flex;flex-direction:column;gap:10px;position:sticky;top:0;z-index:60}
 .tb-row1{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
-.tb-greet{font-size:19px;font-weight:800;color:#1a1a1a}
+.tb-greet{font-size:17px;font-weight:800;color:#1a1a1a}
 .tb-greet .em{color:#2563eb;font-size:22px;font-weight:800;display:block;margin-top:6px;text-align:right}
-.apply-leave-btn{display:inline-block;background:#16a34a;color:#fff;font-size:11px;font-weight:700;padding:6px 16px;border-radius:20px;text-decoration:none;letter-spacing:.01em;box-shadow:0 2px 6px rgba(22,163,74,.25);transition:background .15s}
-.apply-leave-btn:hover{background:#15803d}
+.apply-leave-btn{display:inline-block;background:#2563eb;color:#fff;font-size:12.5px;font-weight:700;padding:9px 20px;border-radius:9px;text-decoration:none;letter-spacing:.01em;box-shadow:0 2px 6px rgba(37,99,235,.25);transition:background .15s}
+.apply-leave-btn:hover{background:#1d4ed8}
 .tb-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .wk-label{font-size:13px;color:#888;font-weight:500}
 .wk-sel{background:#fff;border:1.5px solid #d1d5db;border-radius:8px;padding:7px 14px;font-size:13px;color:#333;font-weight:500;cursor:pointer;outline:none;box-shadow:0 1px 3px rgba(0,0,0,.06);max-width:320px}
@@ -60,6 +60,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .user-chip:hover{background:#eef1f6;box-shadow:0 2px 8px rgba(0,0,0,.08)}
 .user-chip img{width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0}
 .user-chip-text{display:flex;flex-direction:column;line-height:1.25}
+  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#9aa0ac" stroke-width="2" style="margin-left:2px"><polyline points="6 9 12 15 18 9"></polyline></svg>
 .user-chip-name{font-size:13px;font-weight:700;color:#1a1a1a;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .user-chip-sub{font-size:10px;font-weight:600;color:#2563eb;text-transform:uppercase;letter-spacing:.03em}
 
