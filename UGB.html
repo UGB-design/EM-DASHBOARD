@@ -508,6 +508,16 @@
   }
   .leave-iframe-wrap iframe{width:100%;height:100%;border:none;display:block}
   
+  /* ── TRAINING VIDEOS TAB ─────────────────────────────────────── */
+  .tv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin-top:4px}
+  .tv-card{background:#fff;border-radius:14px;border:1px solid #e2e8f0;box-shadow:0 2px 10px rgba(30,41,59,.06);overflow:hidden;cursor:pointer;transition:box-shadow .2s,transform .2s}
+  .tv-card:hover{box-shadow:0 10px 24px rgba(29,78,216,.14);transform:translateY(-3px)}
+  .tv-thumb{position:relative;width:100%;aspect-ratio:16/9;background:linear-gradient(135deg,#1e3a6d 0%,#0b1437 100%);display:flex;align-items:center;justify-content:center}
+  .tv-thumb-play{width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.94);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.3);flex-shrink:0}
+  .tv-thumb-play svg{width:18px;height:18px;color:#1e3a6d;margin-left:3px}
+  .tv-info{padding:12px 14px}
+  .tv-name{font-size:13px;font-weight:700;color:#1a1a1a;line-height:1.35;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  .tv-empty{grid-column:1/-1;text-align:center;color:#94a3b8;font-size:13px;padding:50px 20px;background:#fff;border-radius:14px;border:1px dashed #e2e8f0}
   /* ── INTERNAL SHEETS TAB ─────────────────────────────────────── */
   .isheets-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-top:4px}
   .isheet-card{display:flex;align-items:center;gap:12px;background:#fff;border-radius:10px;box-shadow:none;border:1px solid #e2e8f0;padding:14px 16px;text-decoration:none;transition:border-color .15s,background .15s}
@@ -825,9 +835,13 @@
           <span class="sb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg></span>
           <span class="sb-label">Internal Sheets</span>
         </button>
-        <button class="sb-item" data-tab="bcinotes" onclick="switchTab('bcinotes',this)">
+               <button class="sb-item" data-tab="bcinotes" onclick="switchTab('bcinotes',this)">
           <span class="sb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg></span>
           <span class="sb-label">BCI Notes</span>
+        </button>
+        <button class="sb-item" data-tab="trainingvideos" onclick="switchTab('trainingvideos',this)">
+          <span class="sb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg></span>
+          <span class="sb-label">Training Videos</span>
         </button>
       </div>
     </div>
@@ -1240,6 +1254,17 @@
       </div>
       <div id="internalSheetsGrid" class="isheets-grid"></div>
     </div>
+   <!-- TRAINING VIDEOS TAB -->
+    <div class="tab-content" id="tab-trainingvideos">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;margin:18px 0 14px;flex-wrap:wrap">
+        <div class="users-search-wrap" style="margin-bottom:0;max-width:340px;flex:1;min-width:220px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" id="tvSearchInput" placeholder="Search training videos..." oninput="filterTrainingVideos()">
+        </div>
+        <span class="m-badge b-blue" id="tvCountBadge" style="flex-shrink:0">0 videos</span>
+      </div>
+      <div id="trainingVideosGrid" class="tv-grid"></div>
+    </div>
   <!-- BCI NOTES TAB — actual iframe ab sirf bciFullscreenOverlay mein hai (duplicate hata diya) -->
     <div class="tab-content" id="tab-bcinotes"></div>
       <!-- BCI NOTES — INDEPENDENT FULLSCREEN OVERLAY (bypasses all parent layout issues) -->
@@ -1404,7 +1429,7 @@ function openAddDelegation() {
       '</svg>';
    document.getElementById('isheetsCountBadge').textContent = list.length + ' sheets';
   
-    grid.innerHTML = list.map(function(s) {
+       grid.innerHTML = list.map(function(s) {
       return '<a class="isheet-card" href="' + s.url + '" target="_blank" rel="noopener">' +
         '<span class="isheet-ic">' + sheetIconSvg + '</span>' +
         '<div class="isheet-txt">' +
@@ -1414,6 +1439,46 @@ function openAddDelegation() {
         '<span class="isheet-arrow">↗</span>' +
       '</a>';
     }).join('');
+  }
+  // ── Training Videos tab ──────────────────────────────────────────────────────
+  var PLAY_ICON_SVG = '<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg>';
+  function extractDriveFileId_(url) {
+    var m = String(url || '').match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || String(url || '').match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    return m ? m[1] : null;
+  }
+  function renderTrainingVideos(videos) {
+    var grid = document.getElementById('trainingVideosGrid');
+    if (!grid) return;
+    var list = videos || [];
+    var badge = document.getElementById('tvCountBadge');
+    if (badge) badge.textContent = list.length + ' video' + (list.length === 1 ? '' : 's');
+    if (!list.length) {
+      grid.innerHTML = '<div class="tv-empty">No training videos added yet.<div class="att-note" style="max-width:480px;margin:12px auto 0">Add rows (Name, Drive_URL) to the <code>Traning_Video</code> tab in the Staff Info sheet — they will appear here automatically.</div></div>';
+      return;
+    }
+    grid.innerHTML = list.map(function(v) {
+      var fid = extractDriveFileId_(v.url);
+      var thumbStyle = fid ? ' style="background-image:url(https://drive.google.com/thumbnail?id=' + fid + '&sz=w400);background-size:cover;background-position:center"' : '';
+      return '<div class="tv-card" onclick="showFileView(\'' + v.url.replace(/'/g, "\\'") + '\',\'' + v.name.replace(/'/g, "\\'") + '\')">' +
+        '<div class="tv-thumb"' + thumbStyle + '><div class="tv-thumb-play">' + PLAY_ICON_SVG + '</div></div>' +
+        '<div class="tv-info"><div class="tv-name">' + v.name + '</div></div>' +
+      '</div>';
+    }).join('');
+  }
+  function filterTrainingVideos() {
+    var box = document.getElementById('tvSearchInput');
+    var term = box ? box.value.trim().toLowerCase() : '';
+    var grid = document.getElementById('trainingVideosGrid');
+    if (!grid) return;
+    var visibleCount = 0;
+    grid.querySelectorAll('.tv-card').forEach(function(card) {
+      var text = card.textContent.toLowerCase();
+      var match = !term || text.indexOf(term) !== -1;
+      card.style.display = match ? '' : 'none';
+      if (match) visibleCount++;
+    });
+    var b2 = document.getElementById('tvCountBadge');
+    if (b2) b2.textContent = visibleCount + ' video' + (visibleCount === 1 ? '' : 's');
   }
   function filterInternalSheets() {
     var box = document.getElementById('isheetsSearchInput');
@@ -2026,7 +2091,8 @@ function loadUserCache(email) {
       }).join('');
     }
   renderUsers(data.staffData || []);
-    renderInternalSheets(data.internalSheets);
+       renderInternalSheets(data.internalSheets);
+    renderTrainingVideos(data.trainingVideos);
     renderUsersDashboardPanels(data);
     renderPendingApprovalsAndHolidays(data);
     renderDashPendingApprovals(data);
