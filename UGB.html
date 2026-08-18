@@ -190,7 +190,9 @@
   .leave-link-btn .llb-icon{font-size:15px;line-height:1}
   .leave-link-btn::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(120deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.55) 50%,rgba(255,255,255,0) 100%);transform:skewX(-20deg);animation:llbShine 2.6s ease-in-out infinite}
   @keyframes llbShine{0%{left:-60%}55%{left:130%}100%{left:130%}}
-   .add-delegation-btn{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#3b5bdb 0%,#2544a8 100%);color:#ffffff;text-decoration:none;font-size:13px;font-weight:800;padding:9px 18px;border-radius:10px;box-shadow:0 4px 12px rgba(71,85,105,.35);transition:transform .15s,box-shadow .15s;border:none;cursor:pointer} 
+   .add-delegation-btn{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#4b6ef5 0%,#2544a8 100%);color:#ffffff;text-decoration:none;font-size:13px;font-weight:800;padding:10px 20px;border-radius:10px;box-shadow:0 2px 0 rgba(0,0,0,.12),0 6px 14px rgba(30,41,59,.28);transition:transform .15s,box-shadow .15s;border:1px solid rgba(255,255,255,.15);cursor:pointer;position:relative;top:0}
+.add-delegation-btn:hover{transform:translateY(-1px);box-shadow:0 3px 0 rgba(0,0,0,.12),0 8px 18px rgba(30,41,59,.32)}
+.add-delegation-btn:active{transform:translateY(1px);box-shadow:0 1px 0 rgba(0,0,0,.12),0 3px 8px rgba(30,41,59,.24)} 
   .add-delegation-btn:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(22,163,74,.32)}
   .add-delegation-btn .adb-plus{font-size:15px;font-weight:800;line-height:1}
   .teams-btn{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;cursor:pointer;box-shadow:0 2px 8px rgba(30,41,59,.08);transition:background .15s;text-decoration:none}
@@ -554,7 +556,7 @@
   .snap-perf-ring span{background:#fff;width:84px;height:84px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#1a1a1a;line-height:1.1;text-align:center;padding:0 6px}
   .snap-perf-ring span small{font-size:7.5px;font-weight:700;color:#9aa0ac;text-transform:uppercase;letter-spacing:.02em;margin-top:2px;white-space:nowrap}
  .scv2{background:#fff;border-radius:14px;border:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(30,41,59,.06);padding:12px 16px 10px;display:flex;flex-direction:column;gap:8px;flex:1 1 0;min-width:220px}
-.scv2-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.scv2-top{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
 .scv2-icon-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
 .scv2-icon{width:24px;height:24px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .scv2-icon svg{width:13px;height:13px}
@@ -1941,17 +1943,18 @@ function loadUserCache(email) {
       setTxt('completedTodayFms', 'Completed: ' + doneFms);
       setTxt('completedTodayChecklist', 'Completed: ' + doneCl);
            setTxt('completedTodayDelegation', 'Completed: ' + doneDl);
-             function setRing(ringId, numId, total, completed, color) {
+           function setRing(ringId, numId, total, completed, color) {
         var ring = document.getElementById(ringId);
         if (!ring) return;
         var pct = total > 0 ? (completed / total) : 0;
         var r = 34, circumference = Math.PI * r;
         var offset = circumference * (1 - pct);
         ring.innerHTML =
-          '<svg width="72" height="44" viewBox="0 0 80 44">' +
+          '<svg width="72" height="54" viewBox="0 0 80 54">' +
             '<path d="M6,40 A34,34 0 0 1 74,40" fill="none" stroke="#eef1f6" stroke-width="8" stroke-linecap="round"/>' +
             '<path d="M6,40 A34,34 0 0 1 74,40" fill="none" stroke="' + color + '" stroke-width="8" stroke-linecap="round" stroke-dasharray="' + circumference + '" stroke-dashoffset="' + offset + '" style="transition:stroke-dashoffset .6s ease"/>' +
-            '<text x="40" y="34" text-anchor="middle" font-size="15" font-weight="800" fill="#1a1a1a">' + total + '</text>' +
+            '<text x="40" y="32" text-anchor="middle" font-size="15" font-weight="800" fill="#1a1a1a">' + total + '</text>' +
+            '<text x="40" y="45" text-anchor="middle" font-size="8" font-weight="700" fill="#9aa0ac" letter-spacing="0.5">TOTAL</text>' +
           '</svg>';
       }
     setRing('ringTodayTasks', 'ringTodayTasksNum', allToday.length, doneToday.length, '#16a34a');
