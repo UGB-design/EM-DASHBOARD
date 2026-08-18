@@ -44,7 +44,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .sb-logout:hover{background:rgba(255,255,255,.12)}
 
 .main-area{flex:1;min-width:0;display:flex;flex-direction:column}
-.topbar{background-color:#eaf1ff;border:1px solid #dbe6fb;border-radius:14px;padding:16px 26px;margin:20px 28px;display:flex;flex-direction:column;gap:8px;position:relative;overflow:hidden}
+.topbar{background-color:#eaf1ff;border:1px solid #dbe6fb;border-radius:14px;padding:12px 26px;margin:12px 28px;display:flex;flex-direction:column;gap:6px;position:relative;overflow:hidden}
 .topbar-bg-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
 .topbar-overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(120deg,rgba(234,241,255,.94) 0%,rgba(243,247,255,.85) 55%,rgba(234,241,255,.9) 100%)}
 .tb-row1{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
@@ -71,7 +71,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .user-chip{background:#fff !important}
 .user-chip-name{font-size:13px;font-weight:700;color:#1a1a1a !important;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .user-chip-sub{font-size:10px;font-weight:600;color:#2563eb !important;text-transform:uppercase;letter-spacing:.03em}
-.content{padding:0 28px 16px}
+.content{padding:0 28px 10px}
 .tab-content{display:none}
 .tab-content.active{display:block}
 
@@ -183,7 +183,7 @@ tr:hover td{background:#fafbfc}
 .score-hero .pgbg{width:100%}
 
 /* ===== NEW DASHBOARD TAB (redesigned, no Pending Approvals) ===== */
-.my-snapshot{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.my-snapshot{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px}
 .snap-item{display:flex;flex-direction:column;gap:6px;background:#fff;border:1px solid #eef0f3;border-radius:12px;padding:11px 14px;box-shadow:0 1px 4px rgba(0,0,0,.05);min-width:150px;flex:1 1 0}
 .snap-item-top{display:flex;justify-content:space-between;align-items:flex-start;width:100%}
 .snap-icon{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -207,13 +207,12 @@ tr:hover td{background:#fafbfc}
 .snap-perf-ring span{background:#fff;width:74px;height:74px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#1a1a1a;line-height:1.1}
 .snap-perf-ring span small{font-size:9px;font-weight:700;color:#9aa0ac;text-transform:uppercase;letter-spacing:.03em;margin-top:2px}
 
-.ud-bottom-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:8px}
+.ud-bottom-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:0}
 @media(max-width:1000px){.ud-bottom-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:600px){.ud-bottom-grid{grid-template-columns:1fr}}
   
-.ud-panel{background:#fff;border-radius:16px;border:1px solid #e2e8f0;box-shadow:0 2px 10px rgba(30,41,59,.05);padding:14px 18px 12px;display:flex;flex-direction:column;min-height:190px}
-.ud-panel-title{font-size:13px;font-weight:800;color:#1a1a1a;margin-bottom:12px}
-
+.ud-panel{background:#fff;border-radius:16px;border:1px solid #e2e8f0;box-shadow:0 2px 10px rgba(30,41,59,.05);padding:10px 16px 8px;display:flex;flex-direction:column;min-height:150px}
+.ud-panel-title{font-size:13px;font-weight:800;color:#1a1a1a;margin-bottom:8px}
 .ov-donut-wrap{display:flex;align-items:center;gap:22px;flex:1}
 .ov-donut{width:120px;height:120px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;position:relative}
 .ov-donut::before{content:'';position:absolute;inset:14px;border-radius:50%;background:#fff}
@@ -431,8 +430,7 @@ tr:hover td{background:#fafbfc}
             <div class="snap-bottom"><span id="dashDelegationCompleted" style="color:#16a34a;font-weight:700">Completed: —</span><a class="snap-link" onclick="openTodayTasksModal('Delegation')">View details →</a></div>
           </div>
                 </div>
-
-               <div style="background:#fff;border:1px solid #bbf7d0;border-radius:12px;padding:12px 16px;margin-bottom:14px">
+         <div style="background:#fff;border:1px solid #bbf7d0;border-radius:12px;padding:8px 16px;margin-bottom:8px">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
             <div class="snap-icon" style="background:#f0fdf4;color:#16a34a;width:24px;height:24px;border-radius:6px">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
@@ -1340,8 +1338,9 @@ function switchTab(name,el){
   el.classList.add('active');
   document.getElementById('tab-'+name).classList.add('active');
   var tb=document.querySelector('.topbar');
+  var isDashboardTab=(name==='dashboard');
   var isEmbedTab=(name==='mytask'||name==='mychecklisttask');
-  if(tb) tb.style.display=isEmbedTab?'none':'flex';
+  if(tb) tb.style.display=isDashboardTab?'flex':'none';
   document.querySelectorAll('.mytask-wrap').forEach(function(w){
     w.style.height=isEmbedTab?'calc(100vh - 40px)':'calc(100vh - 150px)';
   });
