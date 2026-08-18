@@ -561,8 +561,8 @@
 .scv2-label{font-size:10px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.05em}
 .scv2-num{font-size:24px;font-weight:800;color:#1a1a1a;line-height:1}
 .scv2-sublbl{font-size:11px;font-weight:700;color:#64748b;margin-top:2px}
-.scv2-ring{width:50px;height:50px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:conic-gradient(#16a34a 0deg,#16a34a 0deg,#e5e7eb 0deg,#e5e7eb 360deg);box-shadow:0 1px 4px rgba(0,0,0,.08)}
-.scv2-ring span{background:#fff;width:38px;height:38px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1}
+.scv2-ring{width:50px;height:50px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:5px solid #16a34a;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.scv2-ring span{background:transparent;width:auto;height:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1}
 .scv2-ring-num{font-size:15px;font-weight:800;color:#1a1a1a}
 .scv2-ring-lbl{font-size:7.5px;font-weight:700;color:#9aa0ac;text-transform:uppercase;letter-spacing:.03em;margin-top:1px}
 .scv2-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:6px;border-top:1px solid #f1f5f9}
@@ -1941,15 +1941,9 @@ function loadUserCache(email) {
       setTxt('completedTodayFms', 'Completed: ' + doneFms);
       setTxt('completedTodayChecklist', 'Completed: ' + doneCl);
            setTxt('completedTodayDelegation', 'Completed: ' + doneDl);
-               function setRing(ringId, numId, total, completed, color) {
-        var ring = document.getElementById(ringId);
+                 function setRing(ringId, numId, total, completed, color) {
         var numEl = document.getElementById(numId);
         if (numEl) numEl.textContent = total;
-        if (ring) {
-          var pct = total > 0 ? (completed / total * 100) : 0;
-          var deg = pct * 3.6;
-          ring.style.background = 'conic-gradient(' + color + ' 0deg,' + color + ' ' + deg + 'deg,#e5e7eb ' + deg + 'deg,#e5e7eb 360deg)';
-        }
       }
       setRing('ringTodayTasks', 'ringTodayTasksNum', allToday.length, doneToday.length, '#16a34a');
       setRing('ringTodayFms', 'ringTodayFmsNum', pendFms + doneFms, doneFms, '#16a34a');
