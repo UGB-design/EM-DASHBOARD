@@ -2454,9 +2454,8 @@ function renderUsersDashboardPanels(data) {
       return timeToMinutes(b.completedTime) - timeToMinutes(a.completedTime);
     });
 
-    var box = document.getElementById('pendingModalBox');
-    if (box) box.style.maxWidth = '900px';
-
+       var box = document.getElementById('pendingModalBox');
+    if (box) box.style.maxWidth = '1300px';
     document.getElementById('modalTitle').textContent = 'Recent Activities';
     document.getElementById('modalSubtitle').textContent = tasks.length + ' completed today';
     document.getElementById('modalTheadRow').innerHTML = '';
@@ -2887,10 +2886,10 @@ function renderClByDoer(rows) {
         if (s.missed === 0) {
           missedCell = '<span class="mb-ok">OK</span>';
         } else {
-          var tasks = s.pendingTasks || [];
+                   var tasks = s.pendingTasks || [];
           var encoded = encodeURIComponent(JSON.stringify(tasks));
           missedCell = '<span class="mb-num" style="cursor:pointer" onclick="showPendingModal(\'' +
-            s.step.replace(/'/g, "\\'") + '\',\'' + s.doer.replace(/'/g, "\\'") + '\',\'' + encoded + '\')">' + s.missed + '</span>';
+            g.groupName.replace(/'/g, "\\'") + '\',\'' + s.step.replace(/'/g, "\\'") + '\',\'' + s.doer.replace(/'/g, "\\'") + '\',\'' + encoded + '\')">' + s.missed + '</span>';
         }
         return '<tr>' +
           '<td style="width:40px">' + (idx + 1) + '</td>' +
@@ -3829,7 +3828,7 @@ function closeFullReportModal(){ document.getElementById('fullReportModal').styl
     </div>
   </div>
   <div id="pendingModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center">
-    <div id="pendingModalBox" style="background:#fff;border-radius:14px;width:90%;max-width:620px;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
+       <div id="pendingModalBox" style="background:#fff;border-radius:14px;width:95%;max-width:1300px;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
       <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e8eaed">
         <div>
           <div id="modalTitle" style="font-size:15px;font-weight:700;color:#1a1a1a"></div>
@@ -3909,11 +3908,12 @@ function closeFullReportModal(){ document.getElementById('fullReportModal').styl
   </script>
   
   <script>
-  function showPendingModal(step, doer, encoded) {
+    function showPendingModal(fmsType, step, doer, encoded) {
     var tasks = JSON.parse(decodeURIComponent(encoded));
     document.getElementById('modalTheadRow').innerHTML =
       '<th style="font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#1e3a6d;position:sticky;top:0;z-index:5">#</th>' +
-      '<th style="font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#1e3a6d;position:sticky;top:0;z-index:5">Type</th>' +
+      '<th style="font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#1e3a6d;position:sticky;top:0;z-index:5">FMS Type</th>' +
+      '<th style="font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#1e3a6d;position:sticky;top:0;z-index:5">Planned</th>' +
       '<th style="font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#1e3a6d;position:sticky;top:0;z-index:5">Client / Task</th>' +
       '<th style="font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#1e3a6d;position:sticky;top:0;z-index:5">Doer</th>' +
       '<th style="font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#1e3a6d;position:sticky;top:0;z-index:5">Status</th>';
@@ -3922,6 +3922,7 @@ function closeFullReportModal(){ document.getElementById('fullReportModal').styl
     document.getElementById('modalBody').innerHTML = tasks.map(function(t, i) {
       return '<tr>' +
         '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#555">' + (i+1) + '</td>' +
+        '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151">' + fmsType + '</td>' +
         '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151;font-weight:600">' + t.plannedDate + '</td>' +
         '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151">' + t.client + '</td>' +
         '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151">' + t.finalDoer + '</td>' +
@@ -3931,10 +3932,10 @@ function closeFullReportModal(){ document.getElementById('fullReportModal').styl
     var modal = document.getElementById('pendingModal');
     modal.style.display = 'flex';
   }
-  function closePendingModal() {
+   function closePendingModal() {
     document.getElementById('pendingModal').style.display = 'none';
     var box = document.getElementById('pendingModalBox');
-    if (box) box.style.maxWidth = '620px';
+    if (box) box.style.maxWidth = '1300px';
   }
   document.getElementById('pendingModal').addEventListener('click', function(e) {
     if (e.target === this) closePendingModal();
