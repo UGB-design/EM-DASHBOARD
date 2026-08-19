@@ -515,12 +515,12 @@
   .tv-thumb{position:relative;width:100%;aspect-ratio:16/9;background:linear-gradient(135deg,#1e3a6d 0%,#0b1437 100%);display:flex;align-items:center;justify-content:center}
     .tv-thumb-play{width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.94);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.3);flex-shrink:0}
   .tv-thumb-play svg{width:18px;height:18px;color:#1e3a6d;margin-left:3px}
-  .tv-actions{position:absolute;top:8px;right:8px;display:flex;gap:6px;z-index:2}
-  .tv-action-btn{width:30px;height:30px;border-radius:8px;background:rgba(15,23,42,.55);backdrop-filter:blur(4px);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
-  .tv-action-btn:hover{background:rgba(15,23,42,.8)}
-  .tv-action-btn svg{width:14px;height:14px;color:#fff}
-  .tv-info{padding:12px 14px}
-  .tv-name{font-size:13px;font-weight:700;color:#1a1a1a;line-height:1.35;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+   .tv-actions{display:flex;gap:6px;z-index:2;flex-shrink:0}
+  .tv-action-btn{width:28px;height:28px;border-radius:8px;background:#f3f4f6;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
+  .tv-action-btn:hover{background:#e5e7eb}
+  .tv-action-btn svg{width:14px;height:14px;color:#4b5563}
+  .tv-info{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .tv-name{font-size:13px;font-weight:700;color:#1a1a1a;line-height:1.35;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;flex:1;min-width:0}
   .tv-empty{grid-column:1/-1;text-align:center;color:#94a3b8;font-size:13px;padding:50px 20px;background:#fff;border-radius:14px;border:1px dashed #e2e8f0}
   /* ── INTERNAL SHEETS TAB ─────────────────────────────────────── */
   .isheets-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-top:4px}
@@ -1502,23 +1502,25 @@ function openAddDelegation() {
       grid.innerHTML = '<div class="tv-empty">No training videos added yet.<div class="att-note" style="max-width:480px;margin:12px auto 0">Add rows (Name, Drive_URL) to the <code>Traning_Video</code> tab in the Staff Info sheet — they will appear here automatically.</div></div>';
       return;
     }
-        grid.innerHTML = list.map(function(v) {
+            grid.innerHTML = list.map(function(v) {
       var fid = extractDriveFileId_(v.url);
       var thumbStyle = fid ? ' style="background-image:url(https://drive.google.com/thumbnail?id=' + fid + '&sz=w400);background-size:cover;background-position:center"' : '';
       var safeUrl = v.url.replace(/'/g, "\\'");
       var safeName = v.name.replace(/'/g, "\\'");
-      return '<div class="tv-card" onclick="showFileView(\'' + safeUrl + '\',\'' + safeName + '\',true)">' +
-        '<div class="tv-thumb"' + thumbStyle + '>' +
+      return '<div class="tv-card">' +
+        '<div class="tv-thumb"' + thumbStyle + ' onclick="showFileView(\'' + safeUrl + '\',\'' + safeName + '\',true)">' +
+          '<div class="tv-thumb-play">' + PLAY_ICON_SVG + '</div>' +
+        '</div>' +
+        '<div class="tv-info">' +
+          '<div class="tv-name" onclick="showFileView(\'' + safeUrl + '\',\'' + safeName + '\',true)" style="cursor:pointer">' + v.name + '</div>' +
           '<div class="tv-actions">' +
             '<button class="tv-action-btn" title="Share" onclick="event.stopPropagation();shareTrainingVideo(\'' + safeUrl + '\',\'' + safeName + '\')">' + SHARE_ICON_SVG + '</button>' +
             '<button class="tv-action-btn" title="Download" onclick="event.stopPropagation();downloadTrainingVideo(\'' + safeUrl + '\')">' + DOWNLOAD_ICON_SVG + '</button>' +
           '</div>' +
-          '<div class="tv-thumb-play">' + PLAY_ICON_SVG + '</div>' +
         '</div>' +
-        '<div class="tv-info"><div class="tv-name">' + v.name + '</div></div>' +
       '</div>';
     }).join('');
-  }
+  }   
   function filterTrainingVideos() {
     var box = document.getElementById('tvSearchInput');
     var term = box ? box.value.trim().toLowerCase() : '';
