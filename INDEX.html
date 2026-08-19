@@ -52,6 +52,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .apply-leave-btn{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#4b6ef5 0%,#2544a8 100%);color:#ffffff;text-decoration:none;font-size:13px;font-weight:800;padding:10px 20px;border-radius:10px;box-shadow:0 2px 0 rgba(0,0,0,.12),0 6px 14px rgba(30,41,59,.28);transition:transform .15s,box-shadow .15s;border:1px solid rgba(255,255,255,.15);cursor:pointer;position:relative;top:0}
 .apply-leave-btn:hover{transform:translateY(-1px);box-shadow:0 3px 0 rgba(0,0,0,.12),0 8px 18px rgba(30,41,59,.32)}
 .apply-leave-btn:active{transform:translateY(1px);box-shadow:0 1px 0 rgba(0,0,0,.12),0 3px 8px rgba(30,41,59,.24)}
+  .apply-leave-btn:hover{background:#15803d}
+.apply-leave-btn .alb-plus{font-size:15px;font-weight:800;line-height:1}
 
 .refresh-btn-em{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;background:#fff;border:1.5px solid #d1d5db;border-radius:9px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.06);transition:background .15s;flex-shrink:0}
 .refresh-btn-em:hover{background:#f9fafb}
@@ -63,21 +65,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .th-badge{width:44px;height:44px;border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
 .th-badge img{width:100%;height:100%;object-fit:contain}
 .th-title{font-size:15px;font-weight:800;color:#fff;line-height:1.25}
-.th-sub{font-size:10.5px;font-weight:700;color:#d4af37;letter-spacing:.08em;text-transform:uppercase}
+.th-sub{font-size:10.5px;font-weight:700;color:#ffffff;letter-spacing:.08em;text-transform:uppercase}
 .th-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .tb-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .wk-label{font-size:13px;color:#888;font-weight:500}
 .wk-sel{background:#fff;border:1.5px solid #d1d5db;border-radius:8px;padding:7px 14px;font-size:13px;color:#333;font-weight:500;cursor:pointer;outline:none;box-shadow:0 1px 3px rgba(0,0,0,.06);max-width:320px}
 .saving{font-size:11px;color:#888;display:none}
 .saving.show{display:inline}
-.user-chip{display:flex;align-items:center;gap:10px;background:#f3f4f6;border:1px solid #e8eaed;border-radius:24px;padding:6px 16px 6px 6px;transition:background .15s,box-shadow .15s}
-.user-chip:hover{background:#eef1f6;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-.user-chip img{width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0}
+.user-chip{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);border-radius:24px;padding:6px 16px 6px 6px;transition:background .15s,box-shadow .15s;backdrop-filter:blur(8px)}
+.user-chip:hover{background:rgba(255,255,255,.22);box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.user-chip img{width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid rgba(255,255,255,.5)}
 .user-chip-text{display:flex;flex-direction:column;line-height:1.25}
-  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#9aa0ac" stroke-width="2" style="margin-left:2px"><polyline points="6 9 12 15 18 9"></polyline></svg>
-.user-chip{background:#fff !important}
-.user-chip-name{font-size:13px;font-weight:700;color:#1a1a1a !important;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.user-chip-sub{font-size:10px;font-weight:600;color:#2563eb !important;text-transform:uppercase;letter-spacing:.03em}
+.user-chip-name{font-size:13px;font-weight:700;color:#ffffff;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.user-chip-sub{font-size:10px;font-weight:600;color:rgba(255,255,255,.85);text-transform:uppercase;letter-spacing:.03em}
 .content{padding:0 28px 10px}
 .tab-content:not(#tab-dashboard){padding-top:18px}
 .tab-content{display:none}
@@ -324,7 +324,7 @@ body.fullscreen-embed-mode .back-to-dash-btn{display:inline-flex}
     </div>
   </div>
   <div class="th-right">
-    <a class="apply-leave-btn" href="https://www.appsheet.com/start/e593f206-628c-4174-a375-4012a703c619#view=Apply%20Leave" target="_blank" rel="noopener">Apply Leave</a>
+    <a class="apply-leave-btn" href="https://www.appsheet.com/start/e593f206-628c-4174-a375-4012a703c619#view=Apply%20Leave" target="_blank" rel="noopener"><span class="alb-plus">+</span> Apply Leave</a>
        <div class="date-range-combo">
   <span class="wk-label">From</span>
   <input type="date" class="wk-sel-inner" id="dateFrom">
@@ -631,10 +631,10 @@ function onGoogleToken(response) {
   var email=payload.email||'', name=payload.name||'', picture=payload.picture||'';
   var domain=email.split('@')[1]||'';
   if (domain !== ALLOWED_DOMAIN) { showAuthErr('Access denied. Only @'+ALLOWED_DOMAIN+' accounts.\n\nYou signed in as: '+email); return; }
-  SESSION.email=email; SESSION.name=name; SESSION.picture=picture;
-  sessionStorage.setItem('em_email',email);
-  sessionStorage.setItem('em_name',name);
-  sessionStorage.setItem('em_picture',picture);
+    SESSION.email=email; SESSION.name=name; SESSION.picture=picture;
+  localStorage.setItem('em_email',email);
+  localStorage.setItem('em_name',name);
+  localStorage.setItem('em_picture',picture);
   showUserChip(name,picture);
   loadDashboard();
 }
@@ -676,6 +676,7 @@ function csvParseLine(line) {
 }
 function doLogout() {
   SESSION={email:'',doerName:'',picture:'',name:''};
+  localStorage.clear();
   sessionStorage.clear();
   if(window.google&&google.accounts&&google.accounts.id) google.accounts.id.disableAutoSelect();
   location.reload();
@@ -706,9 +707,9 @@ function loadDashboard() {
   document.getElementById('dashboardWrap').style.display='block';
   setInitialFormDefaults();
 
-  var cachedData = null;
+   var cachedData = null;
   try {
-    var cachedStr = sessionStorage.getItem('em_lastData');
+    var cachedStr = localStorage.getItem('em_lastData');
     if (cachedStr) cachedData = JSON.parse(cachedStr);
   } catch(e){}
 
@@ -728,12 +729,12 @@ function loadDashboard() {
   fetch(API+'?cb='+Date.now()+sessionParams(),{redirect:'follow'})
     .then(function(r){return r.json();})
     .then(function(data){
-      if(data.doerName){SESSION.doerName=data.doerName;sessionStorage.setItem('em_doerName',data.doerName);}
+           if(data.doerName){SESSION.doerName=data.doerName;localStorage.setItem('em_doerName',data.doerName);}
       document.getElementById('ldiv').style.display='none';
       document.getElementById('mdiv').style.display='block';
       renderAll(data);
       setupDefaultFilters();
-      try { sessionStorage.setItem('em_lastData', JSON.stringify(data)); } catch(e){}
+      try { localStorage.setItem('em_lastData', JSON.stringify(data)); } catch(e){}
     })
     .catch(function(err){
       if (!cachedData) {
@@ -824,16 +825,13 @@ function applyCustomDateRange(){
     .then(function(data){
       document.getElementById('savingTxt').classList.remove('show');
       document.getElementById('applyDateBtn').disabled=false;
-      renderAll(data);
-      try {
-        sessionStorage.setItem('em_lastData', JSON.stringify(data));
-        sessionStorage.setItem(rangeCacheKey, JSON.stringify(data));
-      } catch(e){}
+           renderAll(data);
+      try { localStorage.setItem('em_lastData', JSON.stringify(data)); } catch(e){}
     })
     .catch(function(){
       document.getElementById('savingTxt').classList.remove('show');
       document.getElementById('applyDateBtn').disabled=false;
-      if (!rangeCached) alert('Failed to update data. Please try again.');
+      alert('Failed to update data. Please try again.');
     });
 }
   function showDashboardSkeletons(){
@@ -1398,9 +1396,9 @@ function switchTab(name,el){
 
 /* ── Boot / session restore ─────────────────────────────────────── */
 (function(){
-  var savedEmail=sessionStorage.getItem('em_email');
-  var savedName=sessionStorage.getItem('em_name');
-  var savedPicture=sessionStorage.getItem('em_picture');
+  var savedEmail=localStorage.getItem('em_email');
+  var savedName=localStorage.getItem('em_name');
+  var savedPicture=localStorage.getItem('em_picture');
   if(savedEmail&&savedEmail.split('@')[1]===ALLOWED_DOMAIN){
     SESSION.email=savedEmail;SESSION.name=savedName||'';SESSION.picture=savedPicture||'';
     showUserChip(SESSION.name,SESSION.picture);
