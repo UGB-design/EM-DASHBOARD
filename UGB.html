@@ -213,9 +213,9 @@
   /* TOP METRIC CARDS */
   .c5{display:grid;grid-template-columns:repeat(5,1fr);gap:24px;margin-bottom:16px;margin-top:6px}
   .c1{display:grid;grid-template-columns:200px 1fr;gap:14px;margin-bottom:24px}
-  .card{background:linear-gradient(160deg,#ffffff 0%,#f8fafc 100%);border-radius:16px;padding:20px 22px;box-shadow:0 4px 18px rgba(30,41,59,.07);border:1px solid rgba(255,255,255,.8);animation:cardPop .4s ease-out both}
-  .cl{font-size:10px;color:#9aa0ac;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;font-weight:700}
-  .cv{font-size:30px;font-weight:700;margin-bottom:6px;line-height:1.1}
+   .card{background:linear-gradient(160deg,#ffffff 0%,#f8fafc 100%);border-radius:14px;padding:13px 16px;box-shadow:0 4px 18px rgba(30,41,59,.07);border:1px solid rgba(255,255,255,.8);animation:cardPop .4s ease-out both}
+  .cl{font-size:9.5px;color:#9aa0ac;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;font-weight:700}
+  .cv{font-size:22px;font-weight:700;margin-bottom:3px;line-height:1.1}
   .cv.blue{color:#0f766e}.cv.green{color:#16a34a}
   @keyframes cardPop{
     0%{opacity:0;transform:translateY(8px)}
@@ -232,7 +232,7 @@
 .cs-detail::-webkit-scrollbar{display:none}
  .cs-done{color:#16a34a;font-weight:600;background:#f0fdf4;padding:2px 7px;border-radius:20px;font-size:10.5px;white-space:nowrap;flex-shrink:0}
 .cs-pend{color:#dc2626;font-weight:600;background:#fef2f2;padding:2px 7px;border-radius:20px;font-size:10.5px;white-space:nowrap;flex-shrink:0}
- .c5 .card{padding:18px 16px}
+   .c5 .card{padding:12px 14px}
     /* FILTER BAR */
   .filter-bar{display:flex;align-items:center;gap:16px;margin:16px 0;background:#fff;padding:12px 20px;border-radius:10px;border:1px solid #e8eaed;flex-wrap:wrap;font-size:12px}
   .filter-bar label{font-weight:600;color:#555}
@@ -2455,7 +2455,7 @@ function renderUsersDashboardPanels(data) {
     });
 
        var box = document.getElementById('pendingModalBox');
-    if (box) box.style.maxWidth = '1300px';
+    if (box) box.style.maxWidth = '1400px';
     document.getElementById('modalTitle').textContent = 'Recent Activities';
     document.getElementById('modalSubtitle').textContent = tasks.length + ' completed today';
     document.getElementById('modalTheadRow').innerHTML = '';
@@ -3528,10 +3528,11 @@ function renderClByDoer(rows) {
     document.getElementById('modalTitle').textContent = titleMap[filterType] || "Today's Tasks";
     document.getElementById('modalSubtitle').textContent = getTodayDDMMYYYY() + '  ·  ' + tasks.length + ' tasks';
   
-   document.getElementById('modalTheadRow').innerHTML =
+     document.getElementById('modalTheadRow').innerHTML =
       '<th style="font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#1e3a6d;position:sticky;top:0;z-index:5">#</th>' +
+      '<th style="font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#1e3a6d;position:sticky;top:0;z-index:5">Type</th>' +
       '<th style="font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#1e3a6d;position:sticky;top:0;z-index:5">Planned Date</th>' +
-      '<th style="font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#1e3a6d;position:sticky;top:0;z-index:5">Client Name</th>' +
+      '<th style="font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#1e3a6d;position:sticky;top:0;z-index:5">Client / Task</th>' +
       '<th style="font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#1e3a6d;position:sticky;top:0;z-index:5">Final Doer</th>' +
       '<th style="font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#1e3a6d;position:sticky;top:0;z-index:5">Status</th>';
   
@@ -3540,13 +3541,14 @@ function renderClByDoer(rows) {
       return '<tr>' +
         '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#555">' + (i+1) + '</td>' +
         '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6"><span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;' + typeTagStyle(t.type) + '">' + t.type + '</span></td>' +
+        '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151;font-weight:600">' + t.plannedDate + '</td>' +
       '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151">' + 
   t.task + (t.client && t.client !== '-' ? ' <span style="color:#9aa0ac">(' + t.client + ')</span>' : '') + 
 '</td>' +
         '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151">' + t.doer + '</td>' +
         '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6"><span style="' + statusCls + ';padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600">' + t.status + '</span></td>' +
         '</tr>';
-    }).join('') || '<tr><td colspan="5" style="text-align:center;color:#bbb;padding:30px">No tasks planned for today..!</td></tr>';
+    }).join('') || '<tr><td colspan="6" style="text-align:center;color:#bbb;padding:30px">No tasks planned for today..!</td></tr>';
     document.getElementById('pendingModal').style.display = 'flex';
   }
   function applyGlobalSearch() {
@@ -3589,8 +3591,9 @@ function toggleSidebar() {
     }
   });  
  // ── Tab switch ────────────────────────────────────────────────────────────────
-  function switchTab(name, el) {
+   function switchTab(name, el) {
     clearGlobalSearch();
+    window.scrollTo(0, 0);
     document.querySelectorAll('.sb-item').forEach(function(t) { t.classList.remove('active'); });
     document.querySelectorAll('.tab-content').forEach(function(t) { t.classList.remove('active'); });
     el.classList.add('active');
@@ -3828,7 +3831,7 @@ function closeFullReportModal(){ document.getElementById('fullReportModal').styl
     </div>
   </div>
   <div id="pendingModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center">
-       <div id="pendingModalBox" style="background:#fff;border-radius:14px;width:95%;max-width:1300px;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
+     <div id="pendingModalBox" style="background:#fff;border-radius:14px;width:96%;max-width:1400px;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
       <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e8eaed">
         <div>
           <div id="modalTitle" style="font-size:15px;font-weight:700;color:#1a1a1a"></div>
@@ -3836,7 +3839,7 @@ function closeFullReportModal(){ document.getElementById('fullReportModal').styl
         </div>
         <button onclick="closePendingModal()" style="background:#f3f4f6;border:none;border-radius:8px;width:30px;height:30px;font-size:16px;cursor:pointer;color:#555;display:flex;align-items:center;justify-content:center">✕</button>
       </div>
-    <div style="overflow-y:auto;padding:0;max-height:calc(80vh - 140px)">
+      <div style="overflow-y:auto;padding:0;max-height:calc(88vh - 140px)">
        <table style="width:100%;border-collapse:collapse">
           <thead>
             <tr id="modalTheadRow">
@@ -3932,10 +3935,10 @@ function closeFullReportModal(){ document.getElementById('fullReportModal').styl
     var modal = document.getElementById('pendingModal');
     modal.style.display = 'flex';
   }
-   function closePendingModal() {
+  function closePendingModal() {
     document.getElementById('pendingModal').style.display = 'none';
     var box = document.getElementById('pendingModalBox');
-    if (box) box.style.maxWidth = '1300px';
+    if (box) box.style.maxWidth = '1400px';
   }
   document.getElementById('pendingModal').addEventListener('click', function(e) {
     if (e.target === this) closePendingModal();
