@@ -49,8 +49,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .topbar-overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(120deg,rgba(234,241,255,.94) 0%,rgba(243,247,255,.85) 55%,rgba(234,241,255,.9) 100%)}
 .tb-row1{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
 .tb-greet{font-size:19px;font-weight:800;color:#1a1a1a}
-.apply-leave-btn{display:inline-block;background:#2563eb;color:#fff;font-size:12.5px;font-weight:700;padding:9px 20px;border-radius:9px;text-decoration:none;letter-spacing:.01em;box-shadow:0 2px 6px rgba(37,99,235,.25);transition:background .15s}
-.apply-leave-btn:hover{background:#15803d}
+.apply-leave-btn{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#4b6ef5 0%,#2544a8 100%);color:#ffffff;text-decoration:none;font-size:13px;font-weight:800;padding:10px 20px;border-radius:10px;box-shadow:0 2px 0 rgba(0,0,0,.12),0 6px 14px rgba(30,41,59,.28);transition:transform .15s,box-shadow .15s;border:1px solid rgba(255,255,255,.15);cursor:pointer;position:relative;top:0}
+.apply-leave-btn:hover{transform:translateY(-1px);box-shadow:0 3px 0 rgba(0,0,0,.12),0 8px 18px rgba(30,41,59,.32)}
+.apply-leave-btn:active{transform:translateY(1px);box-shadow:0 1px 0 rgba(0,0,0,.12),0 3px 8px rgba(30,41,59,.24)}
+
+.refresh-btn-em{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;background:#fff;border:1.5px solid #d1d5db;border-radius:9px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.06);transition:background .15s;flex-shrink:0}
+.refresh-btn-em:hover{background:#f9fafb}
+.refresh-btn-em svg{width:16px;height:16px;stroke:#334155;transition:transform .5s ease}
+.refresh-btn-em.spinning svg{animation:refreshSpinEm .7s linear infinite}
+@keyframes refreshSpinEm{to{transform:rotate(360deg)}}
 .top-header{background:#0a2472;color:#fff;padding:14px 28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;position:sticky;top:0;z-index:80}
 .th-left{display:flex;align-items:center;gap:12px}
 .th-badge{width:44px;height:44px;border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
@@ -181,7 +188,7 @@ body.fullscreen-embed-mode .top-header{display:none}
 body.fullscreen-embed-mode .sidebar{display:none}
 body.fullscreen-embed-mode .content{padding:0}
 body.fullscreen-embed-mode .mytask-wrap{border-radius:0;border:none;box-shadow:none}
-.back-to-dash-btn{display:none;position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:10000;background:#0a2472;color:#fff;border:none;border-radius:10px;padding:11px 24px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(10,36,114,.4);align-items:center;gap:8px}
+.back-to-dash-btn{display:none;position:fixed;bottom:18px;right:22px;z-index:10000;background:#0a2472;color:#fff;border:none;border-radius:10px;padding:11px 24px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(10,36,114,.4);align-items:center;gap:8px}
 body.fullscreen-embed-mode .back-to-dash-btn{display:inline-flex}
 
 .score-hero{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
@@ -324,8 +331,11 @@ body.fullscreen-embed-mode .back-to-dash-btn{display:inline-flex}
   <span class="drc-sep">→</span>
   <span class="wk-label">To</span>
   <input type="date" class="wk-sel-inner" id="dateTo">
-  <button id="applyDateBtn" onclick="applyCustomDateRange()" class="drc-apply-btn">Apply</button>
+   <button id="applyDateBtn" onclick="applyCustomDateRange()" class="drc-apply-btn">Apply</button>
 </div>
+    <button class="refresh-btn-em" id="refreshBtnEm" onclick="refreshEmDashboard()" title="Refresh data">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+    </button>
     <span class="saving" id="savingTxt"> Please Wait...</span>
     <div class="user-chip" id="userChip" style="display:none;cursor:pointer" onclick="openMyProfileModal()">
       <img id="userAvatar" src="" alt="">
@@ -674,6 +684,21 @@ function doLogout() {
 function goTab(name){
   var btn = document.querySelector('.sb-item[onclick*="\''+name+'\'"]');
   if(btn) switchTab(name, btn);
+}
+
+function refreshEmDashboard(){
+  var btn = document.getElementById('refreshBtnEm');
+  if(btn) btn.classList.add('spinning');
+  fetch(API+'?cb='+Date.now()+sessionParams(),{redirect:'follow'})
+    .then(function(r){return r.json();})
+    .then(function(data){
+      if(btn) btn.classList.remove('spinning');
+      renderAll(data);
+      try { sessionStorage.setItem('em_lastData', JSON.stringify(data)); } catch(e){}
+    })
+    .catch(function(){
+      if(btn) btn.classList.remove('spinning');
+    });
 }
 
 function loadDashboard() {
