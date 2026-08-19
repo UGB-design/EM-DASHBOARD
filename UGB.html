@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>UMESH BOLMAL & ASSOCIATES</title>
+    <link rel="icon" href="https://lh3.googleusercontent.com/d/158_HBHOHewJ0wG2BY3ZiBdT_uD7eoDQX=w200" type="image/png">
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
   *{box-sizing:border-box;margin:0;padding:0}
@@ -1287,8 +1288,8 @@
     </button>
     <iframe id="delegationIframe" src="" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;display:block" title="Add Delegation"></iframe>
   </div>
-  <div id="bciFullscreenOverlay" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:#fff;z-index:99999;">
-    <iframe src="https://docs.google.com/document/d/1BkjytRl0RvEuozxsgflgzNTJZsC1xx3I5fbH3wWgIoE/preview" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;display:block" title="BCI Notes" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation"></iframe>
+   <div id="bciFullscreenOverlay" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:#fff;z-index:99999;">
+    <iframe id="bciIframe" data-src="https://docs.google.com/document/d/1BkjytRl0RvEuozxsgflgzNTJZsC1xx3I5fbH3wWgIoE/preview" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;display:block" title="BCI Notes" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation"></iframe>
   </div>
     <div id="ediv" style="display:none"></div>
       </div><!-- /.content -->
@@ -3635,6 +3636,11 @@ function toggleSidebar() {
       var bciBackBtn = document.getElementById('bciBackBtn');
       var bciOverlay = document.getElementById('bciFullscreenOverlay');
         if (name === 'bcinotes' && bciOverlay) bciOverlay.style.display = 'block';
+              if (name === 'bcinotes' && bciOverlay) {
+          bciOverlay.style.display = 'block';
+          var bIfr = document.getElementById('bciIframe');
+          if (bIfr && !bIfr.src) bIfr.src = bIfr.getAttribute('data-src');
+        }
         if (bciBackBtn) bciBackBtn.style.display = 'inline-flex';
     } else if (name === 'scores') {
       if (greetEl) greetEl.style.display = 'none';
