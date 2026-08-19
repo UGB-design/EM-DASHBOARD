@@ -771,20 +771,38 @@ function applyCustomDateRange(){
   var fromStr=inputToDdmmyyyy(fEl.value);
   var toStr=inputToDdmmyyyy(tEl.value);
   if(fEl.value>tEl.value){alert('"From" date must be before "To" date.');return;}
-  document.getElementById('savingTxt').classList.add('show');
+
+  // Cache key is per date-range, so switching back to a previously-viewed
+  // range shows instantly while the fresh fetch happens in the background.
+  var rangeCacheKey = 'em_range_' + fromStr + '_' + toStr;
+  var rangeCached = null;
+  try {
+    var rc = sessionStorage.getItem(rangeCacheKey);
+    if (rc) rangeCached = JSON.parse(rc);
+  } catch(e){}
+
+  if (rangeCached) {
+    renderAll(rangeCached);
+  } else {
+    document.getElementById('savingTxt').classList.add('show');
+  }
   document.getElementById('applyDateBtn').disabled=true;
+
   fetch(API+'?action=setDates&from='+encodeURIComponent(fromStr)+'&to='+encodeURIComponent(toStr)+'&cb='+Date.now()+sessionParams(),{redirect:'follow'})
     .then(function(r){return r.json();})
     .then(function(data){
       document.getElementById('savingTxt').classList.remove('show');
       document.getElementById('applyDateBtn').disabled=false;
       renderAll(data);
-      try { sessionStorage.setItem('em_lastData', JSON.stringify(data)); } catch(e){}
+      try {
+        sessionStorage.setItem('em_lastData', JSON.stringify(data));
+        sessionStorage.setItem(rangeCacheKey, JSON.stringify(data));
+      } catch(e){}
     })
     .catch(function(){
       document.getElementById('savingTxt').classList.remove('show');
       document.getElementById('applyDateBtn').disabled=false;
-      alert('Failed to update data. Please try again.');
+      if (!rangeCached) alert('Failed to update data. Please try again.');
     });
 }
   function showDashboardSkeletons(){
