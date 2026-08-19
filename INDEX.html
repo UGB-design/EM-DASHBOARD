@@ -72,6 +72,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .user-chip-name{font-size:13px;font-weight:700;color:#1a1a1a !important;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .user-chip-sub{font-size:10px;font-weight:600;color:#2563eb !important;text-transform:uppercase;letter-spacing:.03em}
 .content{padding:0 28px 10px}
+.tab-content:not(#tab-dashboard){padding-top:18px}
 .tab-content{display:none}
 .tab-content.active{display:block}
 
@@ -175,6 +176,13 @@ tr:hover td{background:#fafbfc}
 
 .mytask-wrap{background:#fff;border-radius:12px;border:1px solid #e8eaed;box-shadow:0 1px 3px rgba(0,0,0,.08);overflow:hidden;height:calc(100vh - 150px);min-height:520px;display:flex;flex-direction:column}
 .mytask-wrap iframe{width:100%;height:100%;border:0;flex:1}
+
+body.fullscreen-embed-mode .top-header{display:none}
+body.fullscreen-embed-mode .sidebar{display:none}
+body.fullscreen-embed-mode .content{padding:0}
+body.fullscreen-embed-mode .mytask-wrap{border-radius:0;border:none;box-shadow:none}
+.back-to-dash-btn{display:none;position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:10000;background:#0a2472;color:#fff;border:none;border-radius:10px;padding:11px 24px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(10,36,114,.4);align-items:center;gap:8px}
+body.fullscreen-embed-mode .back-to-dash-btn{display:inline-flex}
 
 .score-hero{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
 .score-hero .card{display:flex;flex-direction:column;justify-content:center}
@@ -383,9 +391,8 @@ tr:hover td{background:#fafbfc}
       <img class="topbar-bg-img" src="https://lh3.googleusercontent.com/d/1n6N14R0kQGEPmrTh7_UUVYYLW_QB_ifq=w1920" referrerpolicy="no-referrer" alt="">
       <div class="topbar-overlay"></div>
            <div class="tb-row1" style="justify-content:space-between">
-        <div>
+                <div>
           <div class="tb-greet" id="tbGreetText">Hello..!</div>
-          <div style="font-size:12px;color:#64748b;margin-top:3px">Here's what's happening in your workspace today.</div>
         </div>
         <div style="text-align:right">
           <div id="tbDateOnly" style="font-size:12px;color:#9aa0ac;font-weight:600"></div>
@@ -582,14 +589,13 @@ tr:hover td{background:#fafbfc}
           <iframe src="https://ugb-design.github.io/EM-DASHBOARD/UGB.html.html" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms"></iframe>
         </div>
       </div>
-
       <div id="ediv" style="display:none"></div>
     </div>
   </main>
 
 </div>
+<button class="back-to-dash-btn" id="backToDashBtn" onclick="goTab('dashboard')">&larr; Back to Dashboard</button>
 </div>
-
 <script>
 var API = "https://script.google.com/macros/s/AKfycbxYjGOqNf_6FuGivAx3qBsBDx-nW5RzMCJlAeshC_ynIf1SdvPUg2NSKIB86bzYClAb/exec";
 var ALLOWED_DOMAIN = "ugbolmalassociates.com";
@@ -1357,10 +1363,11 @@ function switchTab(name,el){
   document.getElementById('tab-'+name).classList.add('active');
   var tb=document.querySelector('.topbar');
   var isDashboardTab=(name==='dashboard');
-  var isEmbedTab=(name==='mytask'||name==='mychecklisttask');
+  var isEmbedTab=(name==='mytask'||name==='mychecklisttask'||name==='leave');
   if(tb) tb.style.display=isDashboardTab?'flex':'none';
+  document.body.classList.toggle('fullscreen-embed-mode', isEmbedTab);
   document.querySelectorAll('.mytask-wrap').forEach(function(w){
-    w.style.height=isEmbedTab?'calc(100vh - 40px)':'calc(100vh - 150px)';
+    w.style.height=isEmbedTab?'100vh':'calc(100vh - 150px)';
   });
 }
 
