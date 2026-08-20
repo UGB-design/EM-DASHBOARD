@@ -717,8 +717,10 @@ function loadDashboard() {
     document.getElementById('ldiv').style.display='none';
     document.getElementById('mdiv').style.display='block';
     if(cachedData.doerName){SESSION.doerName=cachedData.doerName;}
-    renderAll(cachedData);
-    setupDefaultFilters();
+    setTimeout(function(){
+      renderAll(cachedData);
+      setupDefaultFilters();
+    }, 0);
   } else {
     document.getElementById('ldiv').style.display='block';
     document.getElementById('mdiv').style.display='none';
