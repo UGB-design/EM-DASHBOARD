@@ -38,7 +38,7 @@
   .thb-dropdown button svg{width:15px;height:15px}
  @media(max-width:900px){.thb-left{width:auto;padding:0 14px}}
   @media(max-width:600px){.thb-firm-name{font-size:12.5px}.thb-firm-sub{display:none}.thb-profile-txt{display:none}.thb-right{padding:8px 14px}}
-  .sidebar{width:270px;flex-shrink:0;background:rgba(11,20,55,.9);backdrop-filter:blur(22px) saturate(160%);-webkit-backdrop-filter:blur(22px) saturate(160%);border-right:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;padding:0 14px 22px;position:sticky;top:76px;height:calc(100vh - 76px);overflow-y:auto;z-index:70;scrollbar-width:none;-ms-overflow-style:none}
+ .sidebar{width:225px;flex-shrink:0;background:rgba(11,20,55,.9);backdrop-filter:blur(22px) saturate(160%);-webkit-backdrop-filter:blur(22px) saturate(160%);border-right:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;padding:0 14px 22px;position:sticky;top:76px;height:calc(100vh - 76px);overflow-y:auto;z-index:70;scrollbar-width:none;-ms-overflow-style:none}
 .sidebar::-webkit-scrollbar{display:none}
 .sb-brand{display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 10px 8px;background:transparent;border-radius:12px;border-bottom:2px solid #3a4680;margin-bottom:8px}
 .sb-brand-row{display:flex;align-items:center;gap:10px}
@@ -132,7 +132,7 @@
  .my-snapshot{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
 #usersUpcomingBanner:not(:empty){margin:0}
 .dash-top-row{display:flex;gap:16px;align-items:stretch;margin-top:10px;margin-bottom:10px}
-.dash-greet-card{flex:1;background-image:linear-gradient(90deg,rgba(255,255,255,.5) 0%,rgba(255,255,255,.3) 35%,rgba(255,255,255,.08) 75%,rgba(255,255,255,.03) 100%),url("https://lh3.googleusercontent.com/d/1n6N14R0kQGEPmrTh7_UUVYYLW_QB_ifq=w1920");background-size:cover;background-repeat:no-repeat;background-position:center center;border:1px solid rgba(255,255,255,.5);border-radius:18px;padding:14px 28px;display:flex;align-items:center;justify-content:space-between;gap:16px;box-shadow:0 8px 28px rgba(59,91,219,.16),0 0 0 1px rgba(255,255,255,.3) inset;min-width:0;min-height:64px;box-sizing:border-box;position:relative;overflow:hidden}
+.dash-greet-card{flex:1;background-image:linear-gradient(90deg,rgba(255,255,255,.45) 0%,rgba(255,255,255,.22) 35%,rgba(255,255,255,.06) 75%,rgba(255,255,255,.02) 100%),url("https://lh3.googleusercontent.com/d/1n6N14R0kQGEPmrTh7_UUVYYLW_QB_ifq=w1920");background-size:cover;background-repeat:no-repeat;background-position:center center;backdrop-filter:blur(18px) saturate(180%);-webkit-backdrop-filter:blur(18px) saturate(180%);border:1px solid rgba(255,255,255,.55);border-radius:18px;padding:14px 28px;display:flex;align-items:center;justify-content:space-between;gap:16px;box-shadow:0 8px 32px rgba(30,58,109,.14),0 0 0 1px rgba(255,255,255,.35) inset;min-width:0;min-height:64px;box-sizing:border-box;position:relative;overflow:hidden}
 .dash-greet-left{display:flex;align-items:center;gap:14px;min-width:0}
 .dash-greet-title{font-size:18px;font-weight:800;color:#1a1a1a;white-space:nowrap}
 .dash-greet-title .hg-name{color:#2544a8}
@@ -812,7 +812,7 @@
       </div>
     </div>
   </div>
-<button id="bciBackBtn" onclick="switchTab('dashboard', document.querySelector('[data-tab=dashboard]'))" style="display:none;position:fixed;top:85px;right:20px;left:auto;z-index:100000;background:#1e3a6d;color:#fff;border:none;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(11,20,55,.35);align-items:center;gap:6px">← Back to Dashboard</button>
+<button id="bciBackBtn" onclick="switchTab('dashboard', document.querySelector('[data-tab=dashboard]'))" style="display:none;position:fixed;top:85px;right:20px;left:auto;z-index:100000;background:rgba(30,58,109,.35);backdrop-filter:blur(10px) saturate(160%);-webkit-backdrop-filter:blur(10px) saturate(160%);color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25);align-items:center;gap:6px;text-shadow:0 1px 3px rgba(0,0,0,.4)">← Back to Dashboard</button>
   <div class="app-shell">
   
     <!-- SIDEBAR NAVIGATION -->
@@ -1123,7 +1123,7 @@
               <div class="sp-count" id="fmsByProcessCount"></div>
             </div>
          <table>
-              <thead><tr><th>#</th><th>FMS</th><th>Plan</th><th>Actual</th><th>Pending</th><th>Progress</th></tr></thead>
+              <thead><tr><th>#</th><th>FMS</th><th>Plan</th><th>Actual</th><th>Pending</th><th>Completion %</th></tr></thead>
                 <tbody id="fmsByProcessBody"></tbody>
               </table>
           </div>
@@ -1133,7 +1133,7 @@
               <div class="sp-count" id="clByDoerCount"></div>
             </div>
           <table>
-                <thead><tr><th>#</th><th>Doer</th><th>Dept</th><th>Plan</th><th>Actual</th><th>Pending</th><th>Progress</th></tr></thead>
+               <thead><tr><th>#</th><th>Employee</th><th>Dept</th><th>Plan</th><th>Actual</th><th>Pending</th><th>Completion %</th></tr></thead> 
                 <tbody id="clByDoerBody"></tbody>
               </table>
           </div>
@@ -1146,8 +1146,8 @@
       <div class="filter-bar">
         <label>FMS Type:</label>
         <select id="fmsFilterType" onchange="applyFmsFilters()"><option value="All">All Types</option></select>
-        <label>Doer:</label>
-        <select id="fmsFilterDoer" onchange="applyFmsFilters()"><option value="All">All Doers</option></select>
+        <label>Employee:</label>
+        <select id="fmsFilterDoer" onchange="applyFmsFilters()"><option value="All">All Employees</option></select>
         <label>Status:</label>
         <select id="fmsFilterStatus" onchange="applyFmsFilters()">
           <option value="All">All Status</option>
@@ -1165,8 +1165,8 @@
     <!-- CHECKLIST TAB -->
     <div class="tab-content" id="tab-checklist">
     <div class="filter-bar">
-        <label>Doer:</label>
-        <select id="clFilterDoer" onchange="applyChecklistFilters()"><option value="All">All Doers</option></select>
+        <label>Employee:</label>
+        <select id="clFilterDoer" onchange="applyChecklistFilters()"><option value="All">All Employees</option></select>
         <label>Dept:</label>
         <select id="clFilterDept" onchange="applyChecklistFilters()"><option value="All">All Depts</option></select>
         <label>Status:</label>
@@ -1183,7 +1183,7 @@
       <div class="tc">
           <table>
             <thead>
-              <tr><th>#</th><th>Doer</th><th>Dept</th><th>Task Details</th><th>Freq</th><th>Planned Date</th><th>Actual Date</th><th>Status</th></tr>
+              <tr><th>#</th><th>Employee</th><th>Dept</th><th>Task Details</th><th>Freq</th><th>Planned Date</th><th>Actual Date</th><th>Status</th></tr>
             </thead>
            <tbody id="clTableBody"><tr><td colspan="8"><div class="skel skel-line" style="width:100%;height:16px;margin:8px 0"></div><div class="skel skel-line" style="width:90%;height:16px;margin:8px 0"></div><div class="skel skel-line" style="width:95%;height:16px;margin:8px 0"></div><div class="skel skel-line" style="width:85%;height:16px;margin:8px 0"></div></td></tr></tbody>
           </table>
@@ -1193,8 +1193,8 @@
     <!-- DELEGATION TAB -->
     <div class="tab-content" id="tab-delegation">
       <div class="filter-bar">
-        <label>Doer:</label>
-        <select id="dlFilterDoer" onchange="applyDelegationFilters()"><option value="All">All Doers</option></select>
+        <label>Employee:</label>
+        <select id="dlFilterDoer" onchange="applyDelegationFilters()"><option value="All">All Employees</option></select>
         <label>Status:</label>
         <select id="dlFilterStatus" onchange="applyDelegationFilters()">
           <option value="All">All Status</option>
@@ -1207,7 +1207,7 @@
     <div class="tc">
           <table>
             <thead>
-              <tr><th>#</th><th>Doer</th><th>Task Description</th><th>First Date</th><th>Revision 1</th><th>Revision 2</th><th>Latest Revision</th><th>Status</th></tr>
+              <tr><th>#</th><th>Employee</th><th>Task Description</th><th>First Date</th><th>Revision 1</th><th>Revision 2</th><th>Latest Revision</th><th>Status</th></tr>
             </thead>
             <tbody id="dlTableBody"><tr><td colspan="8"><div class="skel skel-line" style="width:100%;height:16px;margin:8px 0"></div><div class="skel skel-line" style="width:90%;height:16px;margin:8px 0"></div><div class="skel skel-line" style="width:95%;height:16px;margin:8px 0"></div><div class="skel skel-line" style="width:85%;height:16px;margin:8px 0"></div></td></tr></tbody>
           </table>
@@ -2960,7 +2960,7 @@ function renderClByDoer(rows) {
             '<div style="width:120px">' + pg(gProg) + '</div>' +
           '</div>' +
         '</div>' +
-       '<table><thead><tr><th>#</th><th>Step</th><th>Doer</th><th>Plan</th><th>Actual</th><th>Pending</th><th>Progress</th></tr></thead>' +
+       '<table><thead><tr><th>#</th><th>Step</th><th>Employee</th><th>Plan</th><th>Actual</th><th>Pending</th><th>Completion %</th></tr></thead>' +
         '<tbody>' + rows + '</tbody></table>' +
         '</div>';
     }).join('');
@@ -3005,7 +3005,7 @@ function renderClByDoer(rows) {
   function updateSelectOptions(id, setObj) {
     var sel = document.getElementById(id);
     var currentVal = sel.value;
-    sel.innerHTML = '<option value="All">' + (id.includes('Doer') ? 'All Doers' : id.includes('Dept') ? 'All Depts' : 'All') + '</option>';
+    sel.innerHTML = '<option value="All">' + (id.includes('Doer') ? 'All Employees' : id.includes('Dept') ? 'All Depts' : 'All') + '</option>';
     Array.from(setObj).sort().forEach(function(v) {
       var o = document.createElement('option');
       o.value = v; o.textContent = v;
