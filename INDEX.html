@@ -281,6 +281,8 @@ body.fullscreen-embed-mode .back-to-dash-btn{display:inline-flex}
 @keyframes skel-shimmer{0%{background-position:100% 50%}100%{background-position:0 50%}}
 .sk-bar{height:14px;margin-bottom:8px}
 .sk-circle{border-radius:50%}
+#recentActivityBanner{display:none;align-items:center;gap:10px;margin:0 28px 14px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:10px 18px;font-size:13px;color:#1e3a6d;font-weight:600;line-height:1.4}
+#recentActivityBanner b{color:#0a2472}
 .date-range-combo{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid #d1d5db;border-radius:8px;padding:6px 6px 6px 12px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
 .drc-apply-btn{background:#0a2472;color:#fff;border:none;border-radius:6px;padding:7px 16px;font-size:12px;font-weight:600;cursor:pointer;margin-left:4px}
 .date-range-combo .wk-label{font-size:12px;color:#888}
@@ -406,10 +408,11 @@ body.fullscreen-embed-mode .back-to-dash-btn{display:inline-flex}
         </div>
         <div style="text-align:right">
           <div id="tbDateOnly" style="font-size:12px;color:#9aa0ac;font-weight:600"></div>
-          <div id="tbTimeOnly" style="font-size:22px;font-weight:800;color:#2563eb"></div>
+                 <div id="tbTimeOnly" style="font-size:22px;font-weight:800;color:#2563eb"></div>
         </div>
       </div>
     </div>
+    <div id="recentActivityBanner"></div>
     <div class="content">
       <!-- ===== DASHBOARD TAB (redesigned) ===== -->
       <div class="tab-content active" id="tab-dashboard">
@@ -721,7 +724,6 @@ function loadDashboard() {
     document.getElementById('mdiv').style.display='none';
     showAllTabSkeletons();
   }
-
   fetch(API+'?cb='+Date.now()+sessionParams(),{redirect:'follow'})
     .then(function(r){return r.json();})
     .then(function(data){
@@ -730,6 +732,7 @@ function loadDashboard() {
       document.getElementById('mdiv').style.display='block';
       renderAll(data);
       setupDefaultFilters();
+      startTodayActivityPolling();
       try { localStorage.setItem('em_lastData', JSON.stringify(data)); } catch(e){}
     })
     .catch(function(err){
@@ -1059,6 +1062,19 @@ function renderDashboardPanels(data){
   }
 }
 
+function renderRecentActivityBanner(data){
+  var el = document.getElementById('recentActivityBanner');
+  if(!el) return;
+  var tasks = (data.todayTaskList || []).filter(function(t){ return t.status === 'Completed'; });
+  if(!tasks.length){ el.style.display='none'; el.innerHTML=''; return; }
+  var latest = tasks[tasks.length - 1];
+  var clientPart = (latest.client && latest.client !== '-') ? ' for <b>'+latest.client+'</b>' : '';
+  el.innerHTML =
+    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>'+
+    '<span>"'+latest.task+'" completed by <b>'+latest.doer+'</b>'+clientPart+'</span>';
+  el.style.display = 'flex';
+}
+
 function renderAll(data){
   globalRawData=data;
   if(data.profile){
@@ -1120,6 +1136,7 @@ function renderAll(data){
 
 renderUsersDashboardPanels(data);
   renderDashboardPanels(data);
+  renderRecentActivityBanner(data);
   renderFmsByProcess(data.fmsByProcess||[]);
   renderClByDoer(data.checklistByDoer||[]);
   renderMyScore(data.myScore,data.debugEmail,data.debugDoerName);
@@ -1398,6 +1415,38 @@ function switchTab(name,el){
   document.querySelectorAll('.mytask-wrap').forEach(function(w){
     w.style.height=isEmbedTab?'100vh':'calc(100vh - 150px)';
   });
+}
+
+function pollTodayActivity(){
+  fetch(API+'?cb='+Date.now()+sessionParams(),{redirect:'follow'})
+    .then(function(r){return r.json();})
+    .then(function(data){
+      if(!data || !data.todayTaskList) return;
+      if(globalRawData) globalRawData.todayTaskList = data.todayTaskList;
+      renderRecentActivityBanner(data);
+      var todayList = data.todayTaskList || [];
+      function cnt(type){
+        var list = type ? todayList.filter(function(x){return x.type===type;}) : todayList;
+        return {
+          pending: list.filter(function(x){return x.status!=='Completed';}).length,
+          completed: list.filter(function(x){return x.status==='Completed';}).length
+        };
+      }
+      var all=cnt(null), fms=cnt('FMS'), cl=cnt('Checklist'), dl=cnt('Delegation');
+      var dT=document.getElementById('dashToday'); if(dT) dT.textContent = all.pending;
+      var dF=document.getElementById('dashFms'); if(dF) dF.textContent = fms.pending;
+      var dC=document.getElementById('dashChecklist'); if(dC) dC.textContent = cl.pending;
+      var dD=document.getElementById('dashDelegation'); if(dD) dD.textContent = dl.pending;
+      var cT=document.getElementById('dashTodayCompleted'); if(cT) cT.textContent = 'Completed: ' + all.completed;
+      var cF=document.getElementById('dashFmsCompleted'); if(cF) cF.textContent = 'Completed: ' + fms.completed;
+      var cC=document.getElementById('dashChecklistCompleted'); if(cC) cC.textContent = 'Completed: ' + cl.completed;
+      var cD=document.getElementById('dashDelegationCompleted'); if(cD) cD.textContent = 'Completed: ' + dl.completed;
+    })
+    .catch(function(){});
+}
+function startTodayActivityPolling(){
+  if(window._activityPollTimer) clearInterval(window._activityPollTimer);
+  window._activityPollTimer = setInterval(pollTodayActivity, 60000);
 }
 
 /* ── Boot / session restore ─────────────────────────────────────── */
