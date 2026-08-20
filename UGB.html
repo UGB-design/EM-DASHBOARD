@@ -693,7 +693,10 @@
     .snap-val{font-size:16px}
     .h-greet{font-size:12px}
   }
-  #tab-summary table thead th{position:sticky;top:76px;z-index:40}
+ #tab-summary table thead th{position:sticky;top:76px;z-index:40}
+.app-modal-overlay-full{padding:0 !important}
+.app-modal-box-full{width:100vw !important;height:100vh !important;max-width:100vw !important;max-height:100vh !important;border-radius:0 !important;margin:0 !important}
+.app-modal-box-full > div[style*="overflow-y:auto"]{max-height:calc(100vh - 130px) !important}
 #tab-fms table thead th,
 #tab-checklist table thead th,
 #tab-delegation table thead th,
@@ -2471,8 +2474,9 @@ function renderUsersDashboardPanels(data) {
           '<div style="font-size:11px;color:#9aa0ac;font-weight:600;white-space:nowrap;flex-shrink:0">' + timeVal + '</div>' +
         '</div>';
       }).join('') +
-      '</td></tr>' : '<tr><td style="text-align:center;color:#bbb;padding:30px">No completed activities today</td></tr>');
+            '</td></tr>' : '<tr><td style="text-align:center;color:#bbb;padding:30px">No completed activities today</td></tr>');
     document.getElementById('pendingModal').style.display = 'flex';
+    document.getElementById('pendingModalScrollWrap').scrollTop = 0;
   }
    function renderPendingApprovalsAndHolidays(data) {
     var pa = data.pendingApprovals || { count: 0, rows: [] };
@@ -2514,8 +2518,9 @@ function renderUsersDashboardPanels(data) {
           '<button onclick="approveLeaveRow(' + i + ')" style="background:#16a34a;color:#fff;border:none;border-radius:8px;padding:6px 16px;font-size:12px;font-weight:700;cursor:pointer">Approve</button>' +
         '</td>' +
         '</tr>';
-    }).join('') || '<tr><td colspan="8" style="text-align:center;color:#bbb;padding:30px">No pending approvals 🎉</td></tr>';
+           }).join('') || '<tr><td colspan="8" style="text-align:center;color:#bbb;padding:30px">No pending approvals 🎉</td></tr>';
     document.getElementById('pendingApprovalsModal').style.display = 'flex';
+    document.getElementById('pendingApprovalsScrollWrap').scrollTop = 0;
   }
 
   function approveLeaveRow(i) {
@@ -3549,8 +3554,9 @@ function renderClByDoer(rows) {
         '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151">' + t.doer + '</td>' +
         '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6"><span style="' + statusCls + ';padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600">' + t.status + '</span></td>' +
         '</tr>';
-    }).join('') || '<tr><td colspan="6" style="text-align:center;color:#bbb;padding:30px">No tasks planned for today..!</td></tr>';
+        }).join('') || '<tr><td colspan="6" style="text-align:center;color:#bbb;padding:30px">No tasks planned for today..!</td></tr>';
     document.getElementById('pendingModal').style.display = 'flex';
+    document.getElementById('pendingModalScrollWrap').scrollTop = 0;
   }
   function applyGlobalSearch() {
     var box = document.getElementById('globalSearchBox');
@@ -3704,6 +3710,7 @@ function showAttendanceTableModal() {
     populateAttendanceMonthFilter(rows);
     filterAttendanceTable();
     document.getElementById('attTableModal').style.display = 'flex';
+    document.getElementById('attTableScrollWrap').scrollTop = 0;
   }
   function populateAttendanceEmpFilter(rows) {
     var sel = document.getElementById('attTableEmpFilter');
@@ -3737,12 +3744,13 @@ function showAttendanceTableModal() {
   function closeAttendanceTableModal(){ document.getElementById('attTableModal').style.display = 'none'; }
   
   // ── Leave Table Modal ────────────────────────────────────────────────────
-  function showLeaveTableModal() {
+function showLeaveTableModal() {
     var rows = (globalRawData && globalRawData.leaveSummary && globalRawData.leaveSummary.rows) || [];
     populateLeaveEmpFilter(rows);
     populateLeaveYearFilter(rows);
     filterLeaveTable();
     document.getElementById('leaveTableModal').style.display = 'flex';
+    document.getElementById('leaveTableScrollWrap').scrollTop = 0;
   }
   function leaveDisplayName_(r) {
     var staff = (globalRawData && globalRawData.staffData) || [];
@@ -3808,8 +3816,8 @@ function closeFullReportModal(){ document.getElementById('fullReportModal').styl
   <!-- PENDING TASKS MODAL -->
     <!-- UPCOMING HOLIDAYS MODAL -->
     <!-- PENDING APPROVALS MODAL -->
- <div id="pendingApprovalsModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center" onclick="if(event.target===this)closePendingApprovalsModal()">
-    <div style="background:#fff;border-radius:14px;width:92%;max-width:950px;max-height:82vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
+ <div id="pendingApprovalsModal" class="app-modal-overlay-full" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center" onclick="if(event.target===this)closePendingApprovalsModal()">
+    <div class="app-modal-box-full" style="background:#fff;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
       <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e8eaed">
         <div style="font-size:15px;font-weight:700;color:#1a1a1a">Pending Leave Approvals</div>
         <button onclick="closePendingApprovalsModal()" style="background:#f3f4f6;border:none;border-radius:8px;width:30px;height:30px;font-size:16px;cursor:pointer;color:#555">✕</button>
@@ -3836,8 +3844,8 @@ function closeFullReportModal(){ document.getElementById('fullReportModal').styl
       </div>
     </div>
   </div>
-  <div id="pendingModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center">
-     <div id="pendingModalBox" style="background:#fff;border-radius:14px;width:96%;max-width:1400px;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
+   <div id="pendingModal" class="app-modal-overlay-full" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center">
+     <div id="pendingModalBox" class="app-modal-box-full" style="background:#fff;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
       <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e8eaed">
         <div>
           <div id="modalTitle" style="font-size:15px;font-weight:700;color:#1a1a1a"></div>
@@ -3845,7 +3853,7 @@ function closeFullReportModal(){ document.getElementById('fullReportModal').styl
         </div>
         <button onclick="closePendingModal()" style="background:#f3f4f6;border:none;border-radius:8px;width:30px;height:30px;font-size:16px;cursor:pointer;color:#555;display:flex;align-items:center;justify-content:center">✕</button>
       </div>
-      <div style="overflow-y:auto;padding:0;max-height:calc(88vh - 140px)">
+      <div id="pendingModalScrollWrap" style="overflow-y:auto;padding:0;max-height:calc(88vh - 140px)">
        <table style="width:100%;border-collapse:collapse">
           <thead>
             <tr id="modalTheadRow">
@@ -3866,8 +3874,8 @@ function closeFullReportModal(){ document.getElementById('fullReportModal').styl
   </div>
   
   <!-- SCORES: ALL PENDING TASKS MODAL (employee picker + drilldown) -->
-  <div id="scorePendingModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center">
-    <div style="background:#fff;border-radius:14px;width:92%;max-width:840px;max-height:82vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
+   <div id="scorePendingModal" class="app-modal-overlay-full" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center">
+    <div class="app-modal-box-full" style="background:#fff;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
       <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e8eaed">
         <div style="display:flex;align-items:center">
           <span id="scoreModalBackBtnWrap"></span>
@@ -3938,8 +3946,9 @@ function closeFullReportModal(){ document.getElementById('fullReportModal').styl
         '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6"><span style="background:#fef2f2;color:#dc2626;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600">Pending</span></td>' +
         '</tr>';
     }).join('');
-    var modal = document.getElementById('pendingModal');
+       var modal = document.getElementById('pendingModal');
     modal.style.display = 'flex';
+    document.getElementById('pendingModalScrollWrap').scrollTop = 0;
   }
   function closePendingModal() {
     document.getElementById('pendingModal').style.display = 'none';
@@ -3984,8 +3993,8 @@ function closeFullReportModal(){ document.getElementById('fullReportModal').styl
       <div class="udm-body" id="leaveBalBody"></div>
     </div>
   </div>
-    <div id="fullReportModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center" onclick="if(event.target===this)closeFullReportModal()">
-  <div style="background:#fff;border-radius:14px;width:94%;max-width:1000px;max-height:84vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
+   <div id="fullReportModal" class="app-modal-overlay-full" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center" onclick="if(event.target===this)closeFullReportModal()">
+  <div class="app-modal-box-full" style="background:#fff;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
     <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e8eaed">
       <div style="font-size:15px;font-weight:700;color:#1a1a1a">Employee Score Board — Full Report</div>
       <button onclick="closeFullReportModal()" style="background:#f3f4f6;border:none;border-radius:8px;width:30px;height:30px;font-size:16px;cursor:pointer;color:#555">✕</button>
@@ -4010,8 +4019,8 @@ function closeFullReportModal(){ document.getElementById('fullReportModal').styl
   </div>
 </div>
     <!-- ATTENDANCE TABLE MODAL -->
-<div id="attTableModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center" onclick="if(event.target===this)closeAttendanceTableModal()">
-    <div style="background:#fff;border-radius:14px;width:94%;max-width:1020px;max-height:84vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
+<div id="attTableModal" class="app-modal-overlay-full" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center" onclick="if(event.target===this)closeAttendanceTableModal()">
+    <div class="app-modal-box-full" style="background:#fff;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
       <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e8eaed">
         <div style="font-size:15px;font-weight:700;color:#1a1a1a">Attendance Details</div>
         <button onclick="closeAttendanceTableModal()" style="background:#f3f4f6;border:none;border-radius:8px;width:30px;height:30px;font-size:16px;cursor:pointer;color:#555">✕</button>
@@ -4020,7 +4029,7 @@ function closeFullReportModal(){ document.getElementById('fullReportModal').styl
         <select id="attTableEmpFilter" class="users-filter-sel" onchange="filterAttendanceTable()"><option value="All">All Employees</option></select>
         <select id="attTableMonthFilter" class="users-filter-sel" onchange="filterAttendanceTable()"><option value="All">All Months</option></select>
       </div>
-    <div style="overflow-y:auto;padding:0;max-height:calc(80vh - 140px)">
+        <div id="attTableScrollWrap" style="overflow-y:auto;padding:0;max-height:calc(80vh - 140px)">
         <table style="width:100%;border-collapse:collapse">
           <thead>
             <tr>
@@ -4043,23 +4052,22 @@ function closeFullReportModal(){ document.getElementById('fullReportModal').styl
   </div>
   
   <!-- LEAVE TABLE MODAL -->
- <div id="leaveTableModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center" onclick="if(event.target===this)closeLeaveTableModal()">
-    <div style="background:#fff;border-radius:14px;width:94%;max-width:1000px;max-height:84vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
+ <div id="leaveTableModal" class="app-modal-overlay-full" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center" onclick="if(event.target===this)closeLeaveTableModal()">
+    <div class="app-modal-box-full" style="background:#fff;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.18)">
     <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e8eaed">
         <div style="font-size:15px;font-weight:700;color:#1a1a1a">Leave Details</div>
         <button onclick="closeLeaveTableModal()" style="background:#f3f4f6;border:none;border-radius:8px;width:30px;height:30px;font-size:16px;cursor:pointer;color:#555">✕</button>
       </div>
-      <div style="padding:12px 20px;border-bottom:1px solid #f0f0f0;display:flex;gap:10px;flex-wrap:wrap">
+          <div style="padding:12px 20px;border-bottom:1px solid #f0f0f0;display:flex;gap:10px;flex-wrap:wrap">
         <select id="leaveTableEmpFilter" class="users-filter-sel" onchange="filterLeaveTable()"><option value="All">All Employees</option></select>
         <select id="leaveTableYearFilter" class="users-filter-sel" onchange="filterLeaveTable()"><option value="All">All Years</option></select>
       </div>
-      <div style="overflow-y:auto;padding:0">
-        <table style="width:100%;border-collapse:collapse">
-         <thead>
+      <div id="leaveTableScrollWrap" style="overflow-y:auto;padding:0">
+          <thead>
             <tr>
               <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#1e3a6d">#</th>
               <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#1e3a6d">Name</th>
-              <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:center;border-bottom:1px solid #e8eaed;background:#1e3a6d">Total Paid Leave</th>
+              <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:left;border-bottom:1px solid #e8eaed;background:#1e3a6d">Leave Type</th>
               <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:center;border-bottom:1px solid #e8eaed;background:#1e3a6d">Used Leave</th>
               <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:center;border-bottom:1px solid #e8eaed;background:#1e3a6d">Balance</th>
               <th style="position:sticky;top:0;z-index:5;font-size:11px;color:#fff;font-weight:700;padding:10px 16px;text-align:center;border-bottom:1px solid #e8eaed;background:#1e3a6d">Half Day Count</th>
