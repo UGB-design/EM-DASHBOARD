@@ -416,33 +416,29 @@ body.fullscreen-embed-mode .back-to-dash-btn{display:inline-flex}
               <div class="my-snapshot">
           <div class="snap-item snap-today">
             <div class="snap-item-top"><div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M8 2v4M16 2v4M3 10h18"></path></svg></div><div class="snap-lbl">Today's Tasks</div></div>
-            <div class="snap-mid">
+                        <div class="snap-mid">
               <div><div class="snap-val" id="dashToday">—</div><div class="snap-sub">Pending</div></div>
-              <div class="snap-ring" id="dashTodayRing"><span id="dashTodayRingVal">—<small>TOTAL</small></span></div>
             </div>
             <div class="snap-bottom"><span id="dashTodayCompleted" style="color:#16a34a;font-weight:700">Completed: —</span><a class="snap-link" onclick="openTodayTasksModal()">View all tasks →</a></div>
           </div>
           <div class="snap-item snap-fms">
             <div class="snap-item-top"><div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></div><div class="snap-lbl">FMS</div></div>
-            <div class="snap-mid">
+                       <div class="snap-mid">
               <div><div class="snap-val" id="dashFms">—</div><div class="snap-sub">Pending</div></div>
-              <div class="snap-ring" id="dashFmsRing"><span id="dashFmsRingVal">—<small>TOTAL</small></span></div>
             </div>
             <div class="snap-bottom"><span id="dashFmsCompleted" style="color:#16a34a;font-weight:700">Completed: —</span><a class="snap-link" onclick="openTodayTasksModal('FMS')">View details →</a></div>
           </div>
           <div class="snap-item snap-cl">
             <div class="snap-item-top"><div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 12l2 2 4-4"></path></svg></div><div class="snap-lbl">Checklist</div></div>
-            <div class="snap-mid">
+                        <div class="snap-mid">
               <div><div class="snap-val" id="dashChecklist">—</div><div class="snap-sub">Pending</div></div>
-              <div class="snap-ring" id="dashChecklistRing"><span id="dashChecklistRingVal">—<small>TOTAL</small></span></div>
             </div>
             <div class="snap-bottom"><span id="dashChecklistCompleted" style="color:#16a34a;font-weight:700">Completed: —</span><a class="snap-link" onclick="openTodayTasksModal('Checklist')">View details →</a></div>
           </div>
           <div class="snap-item snap-dl">
             <div class="snap-item-top"><div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div><div class="snap-lbl">Delegation</div></div>
-            <div class="snap-mid">
+                        <div class="snap-mid">
               <div><div class="snap-val" id="dashDelegation">—</div><div class="snap-sub">Pending</div></div>
-              <div class="snap-ring" id="dashDelegationRing"><span id="dashDelegationRingVal">—<small>TOTAL</small></span></div>
             </div>
             <div class="snap-bottom"><span id="dashDelegationCompleted" style="color:#16a34a;font-weight:700">Completed: —</span><a class="snap-link" onclick="openTodayTasksModal('Delegation')">View details →</a></div>
           </div>
@@ -980,12 +976,27 @@ function renderDashboardPanels(data){
   currentAttendanceDetail = data.attendanceDetail || [];
   var em = data.emDashboard || {};
   var t = em.totals || {};
-  var ts = data.todayStats || { tasks:0, fms:0, checklist:0, delegation:0 };
+  var todayList = data.todayTaskList || [];
+  function todayCount(type){
+    var list = type ? todayList.filter(function(x){return x.type===type;}) : todayList;
+    var pending = list.filter(function(x){return x.status!=='Completed';}).length;
+    var completed = list.filter(function(x){return x.status==='Completed';}).length;
+    return { pending: pending, completed: completed };
+  }
+  var allToday = todayCount(null);
+  var fmsToday = todayCount('FMS');
+  var clToday = todayCount('Checklist');
+  var dlToday = todayCount('Delegation');
 
-  document.getElementById('dashToday').textContent = ts.tasks || 0;
-  document.getElementById('dashFms').textContent = ts.fms || 0;
-  document.getElementById('dashChecklist').textContent = ts.checklist || 0;
-  document.getElementById('dashDelegation').textContent = ts.delegation || 0;
+  document.getElementById('dashToday').textContent = allToday.pending;
+  document.getElementById('dashFms').textContent = fmsToday.pending;
+  document.getElementById('dashChecklist').textContent = clToday.pending;
+  document.getElementById('dashDelegation').textContent = dlToday.pending;
+
+  document.getElementById('dashTodayCompleted').textContent = 'Completed: ' + allToday.completed;
+  document.getElementById('dashFmsCompleted').textContent = 'Completed: ' + fmsToday.completed;
+  document.getElementById('dashChecklistCompleted').textContent = 'Completed: ' + clToday.completed;
+  document.getElementById('dashDelegationCompleted').textContent = 'Completed: ' + dlToday.completed;
 
   // Scores tab (My Score) jaise hi numbers use karo, taaki % hamesha match ho
   var ms = data.myScore;
@@ -1090,11 +1101,6 @@ function renderAll(data){
   document.getElementById('cFPdetail').innerHTML='<span class="cs-done">'+(bd.fmsDone||0)+' done</span><span class="cs-pend">'+(bd.fmsPending||0)+' pending</span>';
   document.getElementById('cCPdetail').innerHTML='<span class="cs-done">'+(bd.clDone||0)+' done</span><span class="cs-pend">'+(bd.clPending||0)+' pending</span>';
    document.getElementById('cDPdetail').innerHTML='<span class="cs-done">'+dlDoneAdj+' done</span><span class="cs-pend">'+dlPendingAdj+' pending</span>';
-
-  setSnapRing('dashToday', totalActual, totalPlan);
-  setSnapRing('dashFms', bd.fmsDone||0, t.fmsPlan||0);
-  setSnapRing('dashChecklist', bd.clDone||0, t.checklistPlan||0);
-  setSnapRing('dashDelegation', dlDoneAdj, dlPlanAdj);
 
   if(em.doers){
     document.getElementById('mySummaryBody').innerHTML=em.doers.map(function(d,i){
@@ -1481,8 +1487,9 @@ setTimeout(function(){
 
 <script>
   
-  function collectTodayTasksList(filterType){
+ function collectTodayTasksList(filterType){
   var tasks = (globalRawData && globalRawData.todayTaskList) || [];
+  tasks = tasks.filter(function(t){ return t.status!=='Completed'; });
   if(filterType && filterType!=='All'){
     tasks = tasks.filter(function(t){ return t.type===filterType; });
   }
@@ -1500,7 +1507,7 @@ function openTodayTasksModal(filterType){
   var tasks = collectTodayTasksList(filterType);
   var titleMap = { FMS:"Today's FMS Tasks", Checklist:"Today's Checklist Tasks", Delegation:"Today's Delegation Tasks" };
   document.getElementById('modalTitle').textContent = titleMap[filterType] || "Today's Tasks";
-  document.getElementById('modalSubtitle').textContent = getTodayDDMMYYYY() + '  ·  ' + tasks.length + ' tasks';
+   document.getElementById('modalSubtitle').textContent = getTodayDDMMYYYY() + '  ·  ' + tasks.length + ' pending';
 
   document.getElementById('modalTheadRow').innerHTML =
     '<th style="font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 16px;border-bottom:1px solid #e8eaed;text-transform:uppercase;background:#fafafa">#</th>'+
