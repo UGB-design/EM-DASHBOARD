@@ -128,7 +128,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .fms-badge.a-green{background:#f0fdf4;color:#166534}
 
 table{width:100%;border-collapse:collapse}
-th{font-size:11px;color:#9aa0ac;font-weight:700;padding:10px 14px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#fff;white-space:nowrap}
+th{font-size:11px;color:#ffffff;font-weight:700;padding:10px 14px;text-align:left;border-bottom:1px solid #e8eaed;text-transform:uppercase;letter-spacing:.06em;background:#0a2472;white-space:nowrap}
 td{padding:13px 14px;border-bottom:1px solid #f3f4f6;vertical-align:middle;font-size:13px;color:#374151}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:#fafbfc}
@@ -172,7 +172,7 @@ tr:hover td{background:#fafbfc}
 .sp-head{padding:14px 20px;border-bottom:1px solid #e8eaed;display:flex;align-items:center;justify-content:space-between}
 .sp-title{font-size:14px;font-weight:700;color:#1a1a1a}
 .sp-count{font-size:11px;color:#9aa0ac;font-weight:500}
-.sp-card table th{background:#fff}
+.sp-card table th{background:#0a2472;color:#fff}
 .sp-card td{padding:11px 14px}
 
 .loading{text-align:center;padding:60px;color:#bbb}
@@ -1163,8 +1163,8 @@ function renderMyScore(ms,debugEmail,debugDoerName){
 
     var tP=Math.max(0,(ms.totalPlan||0)-wsCount), tC=ms.totalCompleted||0, onT=ms.onTimeCompleted||0;
     if(tC>tP)tC=tP;
-    var wnd=tP>0?Math.max(0,(tP-tC)/tP*100):0;
-    var wndot=tP>0?Math.max(0,(tP-onT)/tP*100):Math.abs(ms.workNotDoneOnTimePct||0);
+        var wnd=tP>0?Math.max(0,(tP-tC)/tP*100):0;
+    var wndot=tC>0?Math.max(0,(tC-onT)/tC*100):0;
     var planVsCompletedPct=tP>0?(tC/tP*100):0;
     var perfValue=planVsCompletedPct;
     var perfColor=perfValue>=70?'green':perfValue>=50?'orange':'red';
@@ -1179,8 +1179,8 @@ html+='<div style="display:flex;gap:10px;margin-bottom:10px">'+
       '<thead><tr><th>Name</th><th>Plan</th><th>Completed</th><th>On Time Completed</th><th>Work Not Done %</th><th>Work Not Done On Time %</th></tr></thead>'+
       '<tbody><tr>'+
         '<td>'+ms.employee+'</td><td>'+tP+'</td><td>'+tC+'</td><td>'+onT+'</td>'+
-        '<td style="color:'+(wnd===0?'#16a34a':'#dc2626')+';font-weight:700">'+(wnd===0?'0.00%':'-'+wnd.toFixed(2)+'%')+'</td>'+
-        '<td style="color:'+(wndot===0?'#16a34a':'#dc2626')+';font-weight:700">'+(wndot===0?'0.00%':'-'+wndot.toFixed(2)+'%')+'</td>'+
+              '<td style="color:'+(wnd<=5?'#16a34a':'#dc2626')+';font-weight:700">'+(wnd===0?'0.00%':'-'+wnd.toFixed(2)+'%')+'</td>'+
+        '<td style="color:'+(wndot<=5?'#16a34a':'#dc2626')+';font-weight:700">'+(wndot===0?'0.00%':'-'+wndot.toFixed(2)+'%')+'</td>'+
       '</tr></tbody></table></div></div>';
   } else {
     html+='<div style="text-align:center;padding:50px 20px;color:#bbb">'+
