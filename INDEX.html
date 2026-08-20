@@ -281,7 +281,7 @@ body.fullscreen-embed-mode .back-to-dash-btn{display:inline-flex}
 @keyframes skel-shimmer{0%{background-position:100% 50%}100%{background-position:0 50%}}
 .sk-bar{height:14px;margin-bottom:8px}
 .sk-circle{border-radius:50%}
-#recentActivityBanner{display:none;align-items:center;gap:10px;margin:0 28px 14px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:10px 18px;font-size:13px;color:#1e3a6d;font-weight:600;line-height:1.4}
+#recentActivityBanner{display:none;align-items:center;gap:10px;margin:0 0 14px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:10px 18px;font-size:13px;color:#1e3a6d;font-weight:600;line-height:1.4;transition:opacity .25s ease}
 #recentActivityBanner b{color:#0a2472}
 .date-range-combo{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid #d1d5db;border-radius:8px;padding:6px 6px 6px 12px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
 .drc-apply-btn{background:#0a2472;color:#fff;border:none;border-radius:6px;padding:7px 16px;font-size:12px;font-weight:600;cursor:pointer;margin-left:4px}
@@ -412,10 +412,10 @@ body.fullscreen-embed-mode .back-to-dash-btn{display:inline-flex}
         </div>
       </div>
     </div>
-    <div id="recentActivityBanner"></div>
-    <div class="content">
+       <div class="content">
       <!-- ===== DASHBOARD TAB (redesigned) ===== -->
-      <div class="tab-content active" id="tab-dashboard">
+          <div class="tab-content active" id="tab-dashboard">
+        <div id="recentActivityBanner"></div>
               <div class="my-snapshot">
           <div class="snap-item snap-today">
             <div class="snap-item-top"><div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M8 2v4M16 2v4M3 10h18"></path></svg></div><div class="snap-lbl">Today's Tasks</div></div>
@@ -1062,20 +1062,46 @@ function renderDashboardPanels(data){
   }
 }
 
-function renderRecentActivityBanner(data){
-  var el = document.getElementById('recentActivityBanner');
-  if(!el) return;
+var recentActivityMessages = [];
+var recentActivityIndex = 0;
+var recentActivityTimer = null;
+
+function buildRecentActivityMessages(data){
   var tasks = (data.todayTaskList || []).filter(function(t){ return t.status === 'Completed'; });
-  if(!tasks.length){ el.style.display='none'; el.innerHTML=''; return; }
-  var latest = tasks[tasks.length - 1];
-  var clientPart = (latest.client && latest.client !== '-') ? ' for <b>'+latest.client+'</b>' : '';
-  el.innerHTML =
-    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>'+
-    '<span>"'+latest.task+'" completed by <b>'+latest.doer+'</b>'+clientPart+'</span>';
-  el.style.display = 'flex';
+  return tasks.map(function(t){
+    var clientPart = (t.client && t.client !== '-') ? ' for <b>'+t.client+'</b>' : '';
+    return '"'+t.task+'" completed by <b>'+t.doer+'</b>'+clientPart;
+  });
 }
 
+function showRecentActivityMessage(){
+  var el = document.getElementById('recentActivityBanner');
+  if(!el) return;
+  if(!recentActivityMessages.length){ el.style.display='none'; el.innerHTML=''; return; }
+  if(recentActivityIndex >= recentActivityMessages.length) recentActivityIndex = 0;
+  el.style.opacity = '0';
+  setTimeout(function(){
+    el.innerHTML =
+      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>'+
+      '<span style="flex:1">'+recentActivityMessages[recentActivityIndex]+'</span>'+
+      (recentActivityMessages.length>1 ? '<span style="font-size:11px;color:#93a5c9;font-weight:700;flex-shrink:0">'+(recentActivityIndex+1)+' / '+recentActivityMessages.length+'</span>' : '');
+    el.style.display = 'flex';
+    el.style.opacity = '1';
+  }, 250);
+  recentActivityIndex++;
+}
+
+function renderRecentActivityBanner(data){
+  recentActivityMessages = buildRecentActivityMessages(data);
+  recentActivityIndex = 0;
+  showRecentActivityMessage();
+  if(recentActivityTimer) clearInterval(recentActivityTimer);
+  if(recentActivityMessages.length > 1){
+    recentActivityTimer = setInterval(showRecentActivityMessage, 4000);
+  }
+}
 function renderAll(data){
+ try {
   globalRawData=data;
   if(data.profile){
     var avEl=document.getElementById('userAvatar');
@@ -1145,8 +1171,10 @@ renderUsersDashboardPanels(data);
   populateChecklistDelegationFilters();
   applyChecklistFilters();
   applyDelegationFilters();
+ } catch(renderErr) {
+  console.error('renderAll failed:', renderErr);
+ }
 }
-
 function renderFmsByProcess(rows){
   var filtered=rows.filter(function(r){return r.plan>0;});
   document.getElementById('fmsByProcessCount').textContent=filtered.length+' process types';
