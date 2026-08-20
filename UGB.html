@@ -3745,33 +3745,42 @@ function showAttendanceTableModal() {
   
   // ── Leave Table Modal ────────────────────────────────────────────────────
 function showLeaveTableModal() {
-    var rows = (globalRawData && globalRawData.leaveSummary && globalRawData.leaveSummary.rows) || [];
-    populateLeaveEmpFilter(rows);
-    populateLeaveYearFilter(rows);
-    filterLeaveTable();
-    document.getElementById('leaveTableModal').style.display = 'flex';
-    document.getElementById('leaveTableScrollWrap').scrollTop = 0;
+    var modal = document.getElementById('leaveTableModal');
+    if (!modal) { console.error('leaveTableModal element missing in HTML'); return; }
+    modal.style.display = 'flex';
+    try {
+      var rows = (globalRawData && globalRawData.leaveSummary && globalRawData.leaveSummary.rows) || [];
+      populateLeaveEmpFilter(rows);
+      populateLeaveYearFilter(rows);
+      filterLeaveTable();
+    } catch (err) {
+      console.error('showLeaveTableModal failed:', err);
+    }
   }
   function leaveDisplayName_(r) {
     var staff = (globalRawData && globalRawData.staffData) || [];
     var match = staff.find(function(s) { return String(s.email||'').toLowerCase().trim() === String(r.email||'').toLowerCase().trim(); });
     return match ? match.name : r.email;
   }
-  function populateLeaveEmpFilter(rows) {
+function populateLeaveEmpFilter(rows) {
     var sel = document.getElementById('leaveTableEmpFilter');
+    if (!sel) return;
     var names = Array.from(new Set(rows.map(leaveDisplayName_))).sort();
     sel.innerHTML = '<option value="All">All Employees</option>' + names.map(function(n){ return '<option value="' + n + '">' + n + '</option>'; }).join('');
   }
  function populateLeaveYearFilter(rows) {
     var sel = document.getElementById('leaveTableYearFilter');
+    if (!sel) return;
     var years = Array.from(new Set(rows.map(function(r){ return r.year; }).filter(Boolean))).sort();
     sel.innerHTML = '<option value="All">All Years</option>' + years.map(function(y){ return '<option value="' + y + '">' + y + '</option>'; }).join('');
     var cur = currentFinancialYearStr();
     if (years.indexOf(cur) !== -1) sel.value = cur;
   }
-  function filterLeaveTable() {
-    var emp = document.getElementById('leaveTableEmpFilter').value;
-    var year = document.getElementById('leaveTableYearFilter').value;
+   function filterLeaveTable() {
+    var empSel = document.getElementById('leaveTableEmpFilter');
+    var yearSel = document.getElementById('leaveTableYearFilter');
+    var emp = empSel ? empSel.value : 'All';
+    var year = yearSel ? yearSel.value : 'All';
     var rows = (globalRawData && globalRawData.leaveSummary && globalRawData.leaveSummary.rows) || [];
     rows = rows.map(function(r) { return Object.assign({}, r, { displayName: leaveDisplayName_(r) }); });
     if (emp !== 'All') rows = rows.filter(function(r){ return r.displayName === emp; });
