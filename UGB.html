@@ -1897,7 +1897,7 @@ function refreshDashboard() {
     } catch (e) {}
     verifyAndEnter();
   }
-  function verifyAndEnter(retryCount) {
+ function verifyAndEnter(retryCount) {
   retryCount = retryCount || 0;
   if (!currentIdToken) return showSignIn();
   var payload = decodeJwtPayload(currentIdToken);
@@ -1911,36 +1911,30 @@ function refreshDashboard() {
   document.getElementById('authLoadingTxt').style.display = 'block';
   document.getElementById('authLoadingTxt').textContent = 'Verifying access…';
 
-  var savedCache = loadUserCache(payload.email);
-  var url = API + '?action=getData&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now();
-  if (savedCache && savedCache.from && savedCache.to) {
-    url += '&from=' + encodeURIComponent(toDDMMYYYY(savedCache.from)) + '&to=' + encodeURIComponent(toDDMMYYYY(savedCache.to));
-  }
- fetch(url, { redirect: 'follow' })
+  // FAST lightweight auth check only (no spreadsheet open) — login ab
+  // instant hoga. Actual dashboard data alag se background me load hoga
+  // (enterApp -> initialLoad), skeleton loaders ke saath.
+  var authUrl = API + '?action=auth&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now();
+  fetch(authUrl, { redirect: 'follow' })
     .then(function(r) { return r.json(); })
-    .then(function(data) {
+    .then(function(authData) {
       document.getElementById('authLoadingTxt').style.display = 'none';
-      if (data.authorized === false) { showDenied(payload.email); return; }
+      if (!authData || authData.authorized === false) { showDenied(payload.email); return; }
       currentUserEmail = payload.email;
-      enterApp(payload.name || currentUserEmail, currentUserEmail, true);
-      showLoginToast(payload.name || currentUserEmail, currentUserEmail);
-      document.getElementById('ldiv').style.display = 'none';
-      document.getElementById('mdiv').style.display = 'block';
-      renderAll(data);
-      // Keep this admin's own saved range on the fields (renderAll may reset
-      // it from the server's own week if the backend ignored from/to).
-      if (savedCache && savedCache.from) document.getElementById('dtFrom').value = savedCache.from;
-      if (savedCache && savedCache.to) document.getElementById('dtTo').value = savedCache.to;
-      saveUserCache(currentUserEmail, data);
+      var displayName = authData.name || payload.name || currentUserEmail;
+      // skipInitialLoad = false -> enterApp khud background me getData
+      // fetch karega (cached data pehle se dikhte hue)
+      enterApp(displayName, currentUserEmail, false);
+      showLoginToast(displayName, currentUserEmail);
     })
-       .catch(function(err) {
-      console.error('verifyAndEnter fetch failed:', err);
+    .catch(function(err) {
+      console.error('auth check failed:', err);
       if (retryCount < 2) {
         document.getElementById('authLoadingTxt').textContent = 'Retrying… (' + (retryCount + 1) + '/3)';
-        setTimeout(function() { verifyAndEnter(retryCount + 1); }, 1500);
+        setTimeout(function() { verifyAndEnter(retryCount + 1); }, 2000);
       } else {
         document.getElementById('authLoadingTxt').textContent =
-          'Could not connect to server. Please refresh the page. If this keeps happening, the backend deployment may need to be redeployed.';
+          'Could not connect to server. Please refresh the page.';
       }
     });
 }
