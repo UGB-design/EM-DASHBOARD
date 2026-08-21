@@ -1066,8 +1066,7 @@
           </div>
         </div>
       </div>
-      <div class="dash-lists-grid" style="display:none">
-      <div class="dash-lists-grid" style="display:none">
+           <div class="dash-lists-grid" style="display:none">
         <div class="ud-panel">
           <div class="ud-panel-title">Pending Approvals</div>
           <div id="dashPendingApprovalsList">
@@ -2501,7 +2500,6 @@ function renderUsersDashboardPanels(data) {
   }
 
   function renderDashPendingApprovals(data) {
-        function renderDashPendingApprovals(data) {
     var rows = (data.pendingApprovals && data.pendingApprovals.rows) || [];
     var el = document.getElementById('dashPendingApprovalsList');
     if (!el) return;
