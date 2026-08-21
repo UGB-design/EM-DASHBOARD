@@ -702,6 +702,23 @@
 #tab-delegation table thead th{position:sticky;top:76px;z-index:40}
 #tab-scores table thead th{position:sticky;top:0;z-index:40}
 .tc table thead th,.fms-card table thead th,.sp-card table thead th,.table-scroll-wrap table thead th,.sp-card table th{background:#1e3a6d !important;color:#fff !important}
+  .ql-card{background:#fff;border-radius:16px;border:1px solid #e2e8f0;box-shadow:0 2px 10px rgba(30,41,59,.05);padding:16px 20px 14px}
+.ql-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.ql-title{font-size:14px;font-weight:800;color:#1a1a1a;display:flex;align-items:center;gap:8px}
+.ql-list{display:flex;flex-direction:column;gap:2px;max-height:180px;overflow-y:auto}
+.ql-row{display:flex;align-items:center;gap:10px;padding:9px 6px;border-radius:8px;text-decoration:none;color:#374151;font-size:13px;font-weight:600;transition:background .15s}
+.ql-row:hover{background:#f8fafc}
+.ql-dot{width:6px;height:6px;border-radius:50%;background:#d4af5a;flex-shrink:0}
+.ql-empty{color:#c7c2b8;font-size:12px;text-align:center;padding:20px 0}
+
+.an-card{background:#fff;border-radius:16px;border:1px solid #e2e8f0;box-shadow:0 2px 10px rgba(30,41,59,.05);padding:16px 20px 14px}
+.an-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.an-title{font-size:14px;font-weight:800;color:#1a1a1a;display:flex;align-items:center;gap:8px}
+.an-item{background:linear-gradient(135deg,#fffbeb 0%,#fff7e6 100%);border:1px solid #fbe7b8;border-radius:12px;padding:12px 14px;margin-bottom:10px}
+.an-item:last-child{margin-bottom:0}
+.an-msg{font-size:13px;font-weight:700;color:#92400e;line-height:1.4}
+.an-date{font-size:10.5px;color:#b45309;font-weight:600;margin-top:5px}
+.an-empty{color:#c7c2b8;font-size:12px;text-align:center;padding:20px 0}
   </style>
  <script>
   window.addEventListener('error', function(e) {
@@ -1029,6 +1046,27 @@
           </div>
         </div>
       </div>
+            <div class="dash-lists-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px">
+        <div class="ql-card">
+          <div class="ql-head">
+            <div class="ql-title">🔗 Quick Links</div>
+          </div>
+          <div class="ql-list" id="quickLinksList">
+            <div class="skel skel-line" style="width:100%;height:20px;margin-bottom:8px"></div>
+            <div class="skel skel-line" style="width:90%;height:20px"></div>
+          </div>
+        </div>
+        <div class="an-card">
+          <div class="an-head">
+            <div class="an-title">📢 Announcements</div>
+          </div>
+          <div id="announcementsList">
+            <div class="skel skel-line" style="width:100%;height:40px;margin-bottom:8px"></div>
+            <div class="skel skel-line" style="width:100%;height:40px"></div>
+          </div>
+        </div>
+      </div>
+      <div class="dash-lists-grid" style="display:none">
       <div class="dash-lists-grid" style="display:none">
         <div class="ud-panel">
           <div class="ud-panel-title">Pending Approvals</div>
@@ -2186,8 +2224,10 @@ function loadUserCache(email) {
       }).join('');
     }
   renderUsers(data.staffData || []);
-       renderInternalSheets(data.internalSheets);
+        renderInternalSheets(data.internalSheets);
     renderTrainingVideos(data.trainingVideos);
+    renderQuickLinks(data.quickLinks);
+    renderAnnouncements(data.announcements);
     renderUsersDashboardPanels(data);
     renderPendingApprovalsAndHolidays(data);
     renderDashPendingApprovals(data);
@@ -2434,6 +2474,33 @@ function renderUsersDashboardPanels(data) {
       }
     }
   }
+    function renderQuickLinks(links) {
+    var el = document.getElementById('quickLinksList');
+    if (!el) return;
+    var list = links || [];
+    if (!list.length) { el.innerHTML = '<div class="ql-empty">No quick links added yet</div>'; return; }
+    el.innerHTML = list.map(function(l) {
+      var safeUrl = String(l.url).replace(/"/g, '&quot;');
+      return '<a class="ql-row" href="' + safeUrl + '" target="_blank" rel="noopener">' +
+        '<span class="ql-dot"></span>' + l.name +
+      '</a>';
+    }).join('');
+  }
+
+  function renderAnnouncements(items) {
+    var el = document.getElementById('announcementsList');
+    if (!el) return;
+    var list = items || [];
+    if (!list.length) { el.innerHTML = '<div class="an-empty">No announcements right now</div>'; return; }
+    el.innerHTML = list.map(function(a) {
+      return '<div class="an-item">' +
+        '<div class="an-msg">📣 ' + a.message + '</div>' +
+        (a.date ? '<div class="an-date">' + a.date + '</div>' : '') +
+      '</div>';
+    }).join('');
+  }
+
+  function renderDashPendingApprovals(data) {
         function renderDashPendingApprovals(data) {
     var rows = (data.pendingApprovals && data.pendingApprovals.rows) || [];
     var el = document.getElementById('dashPendingApprovalsList');
