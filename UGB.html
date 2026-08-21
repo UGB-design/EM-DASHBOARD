@@ -38,7 +38,7 @@
   .thb-dropdown button svg{width:15px;height:15px}
  @media(max-width:900px){.thb-left{width:auto;padding:0 14px}}
   @media(max-width:600px){.thb-firm-name{font-size:12.5px}.thb-firm-sub{display:none}.thb-profile-txt{display:none}.thb-right{padding:8px 14px}}
- .sidebar{width:225px;flex-shrink:0;background:rgba(11,20,55,.9);backdrop-filter:blur(22px) saturate(160%);-webkit-backdrop-filter:blur(22px) saturate(160%);border-right:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;padding:0 14px 22px;position:sticky;top:76px;height:calc(100vh - 76px);overflow-y:auto;z-index:70;scrollbar-width:none;-ms-overflow-style:none}
+  .sidebar{width:270px;flex-shrink:0;background:rgba(11,20,55,.9);backdrop-filter:blur(22px) saturate(160%);-webkit-backdrop-filter:blur(22px) saturate(160%);border-right:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;padding:0 14px 22px;position:sticky;top:76px;height:calc(100vh - 76px);overflow-y:auto;z-index:70;scrollbar-width:none;-ms-overflow-style:none}
 .sidebar::-webkit-scrollbar{display:none}
 .sb-brand{display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 10px 8px;background:transparent;border-radius:12px;border-bottom:2px solid #3a4680;margin-bottom:8px}
 .sb-brand-row{display:flex;align-items:center;gap:10px}
@@ -132,7 +132,7 @@
  .my-snapshot{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
 #usersUpcomingBanner:not(:empty){margin:0}
 .dash-top-row{display:flex;gap:16px;align-items:stretch;margin-top:10px;margin-bottom:10px}
-.dash-greet-card{flex:1;background-image:linear-gradient(90deg,rgba(255,255,255,.45) 0%,rgba(255,255,255,.22) 35%,rgba(255,255,255,.06) 75%,rgba(255,255,255,.02) 100%),url("https://lh3.googleusercontent.com/d/1n6N14R0kQGEPmrTh7_UUVYYLW_QB_ifq=w1920");background-size:cover;background-repeat:no-repeat;background-position:center center;backdrop-filter:blur(18px) saturate(180%);-webkit-backdrop-filter:blur(18px) saturate(180%);border:1px solid rgba(255,255,255,.55);border-radius:18px;padding:14px 28px;display:flex;align-items:center;justify-content:space-between;gap:16px;box-shadow:0 8px 32px rgba(30,58,109,.14),0 0 0 1px rgba(255,255,255,.35) inset;min-width:0;min-height:64px;box-sizing:border-box;position:relative;overflow:hidden}
+.dash-greet-card{flex:1;background-image:linear-gradient(90deg,rgba(255,255,255,.5) 0%,rgba(255,255,255,.3) 35%,rgba(255,255,255,.08) 75%,rgba(255,255,255,.03) 100%),url("https://lh3.googleusercontent.com/d/1n6N14R0kQGEPmrTh7_UUVYYLW_QB_ifq=w1920");background-size:cover;background-repeat:no-repeat;background-position:center center;border:1px solid rgba(255,255,255,.5);border-radius:18px;padding:14px 28px;display:flex;align-items:center;justify-content:space-between;gap:16px;box-shadow:0 8px 28px rgba(59,91,219,.16),0 0 0 1px rgba(255,255,255,.3) inset;min-width:0;min-height:64px;box-sizing:border-box;position:relative;overflow:hidden}
 .dash-greet-left{display:flex;align-items:center;gap:14px;min-width:0}
 .dash-greet-title{font-size:18px;font-weight:800;color:#1a1a1a;white-space:nowrap}
 .dash-greet-title .hg-name{color:#2544a8}
@@ -546,7 +546,7 @@
   .ucc-ring{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:400}
   .ucc-viewprofile{display:block;text-align:center;margin-top:12px;font-size:11.5px;font-weight:700;color:#1e3a6d;cursor:pointer}
   .ucc-viewprofile:hover{text-decoration:underline}
-  .ud-bottom-grid{display:none;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:16px;align-items:stretch}
+  .ud-bottom-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:16px;align-items:stretch}
   @media(max-width:1100px){.ud-bottom-grid{grid-template-columns:repeat(2,1fr)}}
 .ud-panel{background:#fff;border-radius:16px;border:1px solid #e2e8f0;box-shadow:0 2px 10px rgba(30,41,59,.05);padding:16px 20px 14px;display:flex;flex-direction:column;overflow:visible;min-height:0}
 #udAttendanceChart{max-height:100px;overflow:hidden}
@@ -702,38 +702,6 @@
 #tab-delegation table thead th{position:sticky;top:76px;z-index:40}
 #tab-scores table thead th{position:sticky;top:0;z-index:40}
 .tc table thead th,.fms-card table thead th,.sp-card table thead th,.table-scroll-wrap table thead th,.sp-card table th{background:#1e3a6d !important;color:#fff !important}
-  .ql-card{background:#fff;border-radius:16px;border:1px solid #e2e8f0;box-shadow:0 2px 10px rgba(30,41,59,.05);padding:16px 20px 14px}
-.ql-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.ql-title{font-size:14px;font-weight:800;color:#1a1a1a;display:flex;align-items:center;gap:8px}
-.ql-list{display:flex;flex-direction:column;gap:2px;max-height:180px;overflow-y:auto}
-.ql-row{display:flex;align-items:center;gap:10px;padding:9px 6px;border-radius:8px;text-decoration:none;color:#374151;font-size:13px;font-weight:600;transition:background .15s}
-.ql-row:hover{background:#f8fafc}
-.ql-dot{width:6px;height:6px;border-radius:50%;background:#d4af5a;flex-shrink:0}
-.ql-empty{color:#c7c2b8;font-size:12px;text-align:center;padding:20px 0}
-
-.an-card{background:#fff;border-radius:16px;border:1px solid #e2e8f0;box-shadow:0 2px 10px rgba(30,41,59,.05);padding:16px 20px 14px}
-.an-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.an-title{font-size:14px;font-weight:800;color:#1a1a1a;display:flex;align-items:center;gap:8px}
-.an-item{background:linear-gradient(135deg,#fffbeb 0%,#fff7e6 100%);border:1px solid #fbe7b8;border-radius:12px;padding:12px 14px;margin-bottom:10px}
-.an-item:last-child{margin-bottom:0}
-.an-msg{font-size:13px;font-weight:700;color:#92400e;line-height:1.4}
-.an-date{font-size:10.5px;color:#b45309;font-weight:600;margin-top:5px}
-.an-empty{color:#c7c2b8;font-size:12px;text-align:center;padding:20px 0}
-    .cal-legend{display:flex;gap:16px;flex-wrap:wrap;font-size:11.5px;color:#475569;font-weight:600;margin-bottom:12px}
-.cal-legend .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px}
-.cal-head{display:flex;align-items:center;justify-content:center;gap:16px;font-weight:800;font-size:14px;margin-bottom:10px}
-.cal-head button{background:none;border:none;cursor:pointer;font-size:14px;color:#64748b}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center;font-size:12px}
-.cal-grid .cal-dow{font-weight:700;color:#9aa0ac;font-size:10.5px;padding-bottom:4px}
-.cal-grid .cal-day{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;margin:0 auto}
-.cal-day.cd-present{background:#dcfce7;color:#166534}
-.cal-day.cd-holiday{background:#fef3c7;color:#92400e}
-.cal-day.cd-absent{background:#fee2e2;color:#991b1b}
-.cal-day.cd-future{background:#dbeafe;color:#1e40af}
-.cal-day.cd-empty{visibility:hidden}
-.ea-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:11px;border-radius:10px;font-size:13px;font-weight:700;margin-bottom:10px;cursor:pointer;border:none}
-.ea-green{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
-.ea-blue{background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe}
   </style>
  <script>
   window.addEventListener('error', function(e) {
@@ -844,7 +812,7 @@
       </div>
     </div>
   </div>
-<button id="bciBackBtn" onclick="switchTab('dashboard', document.querySelector('[data-tab=dashboard]'))" style="display:none;position:fixed;top:85px;right:20px;left:auto;z-index:100000;background:rgba(30,58,109,.35);backdrop-filter:blur(10px) saturate(160%);-webkit-backdrop-filter:blur(10px) saturate(160%);color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25);align-items:center;gap:6px;text-shadow:0 1px 3px rgba(0,0,0,.4)">← Back to Dashboard</button>
+<button id="bciBackBtn" onclick="switchTab('dashboard', document.querySelector('[data-tab=dashboard]'))" style="display:none;position:fixed;top:85px;right:20px;left:auto;z-index:100000;background:#1e3a6d;color:#fff;border:none;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(11,20,55,.35);align-items:center;gap:6px">← Back to Dashboard</button>
   <div class="app-shell">
   
     <!-- SIDEBAR NAVIGATION -->
@@ -883,7 +851,7 @@
         </button>
         <button class="sb-item" data-tab="leave" onclick="switchTab('leave',this)">
           <span class="sb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></span>
-          <span class="sb-label">Attendance &amp; Leave</span>
+          <span class="sb-label">Leave, Attendance &amp; Payroll</span>
           <span class="sb-count" id="badgeLeave" style="display:none">0</span>
         </button>
   <button class="sb-item" data-tab="internalsheets" onclick="switchTab('internalsheets',this)">
@@ -1013,26 +981,6 @@
         </div>
       </div>
     </div>
-      <div class="ud-panel dash-cal-card" style="margin-top:14px">
-  <div class="cal-legend">
-    <span><i class="dot" style="background:#22c55e"></i>Present</span>
-    <span><i class="dot" style="background:#f59e0b"></i>Holiday</span>
-    <span><i class="dot" style="background:#f87171"></i>Absent/Leave</span>
-    <span><i class="dot" style="background:#93c5fd"></i>Future Date</span>
-  </div>
-  <div class="cal-head">
-    <button onclick="calNav(-1)">◀</button>
-    <span id="calMonthLbl"></span>
-    <button onclick="calNav(1)">▶</button>
-  </div>
-  <div class="cal-grid" id="calGrid"></div>
-</div>
-
-<div class="ud-panel" style="margin-top:14px">
-  <div class="ud-panel-title">👤 Employee Actions</div>
-  <button class="ea-btn ea-green" onclick="showPendingApprovalsModal()">✅ Approve Leave</button>
-  <button class="ea-btn ea-blue" onclick="openStaffSheetOverlay()">👤 Profile Update</button>
-</div>
       <div class="ud-bottom-grid">
        <div class="ud-panel">
           <div class="ud-panel-title">Task Summary</div>
@@ -1081,27 +1029,7 @@
           </div>
         </div>
       </div>
-            <div class="dash-lists-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px">
-        <div class="ql-card">
-          <div class="ql-head">
-            <div class="ql-title">🔗 Quick Links</div>
-          </div>
-          <div class="ql-list" id="quickLinksList">
-            <div class="skel skel-line" style="width:100%;height:20px;margin-bottom:8px"></div>
-            <div class="skel skel-line" style="width:90%;height:20px"></div>
-          </div>
-        </div>
-        <div class="an-card">
-          <div class="an-head">
-            <div class="an-title">📢 Announcements</div>
-          </div>
-          <div id="announcementsList">
-            <div class="skel skel-line" style="width:100%;height:40px;margin-bottom:8px"></div>
-            <div class="skel skel-line" style="width:100%;height:40px"></div>
-          </div>
-        </div>
-      </div>
-          <div class="dash-lists-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px">
+      <div class="dash-lists-grid" style="display:none">
         <div class="ud-panel">
           <div class="ud-panel-title">Pending Approvals</div>
           <div id="dashPendingApprovalsList">
@@ -1195,7 +1123,7 @@
               <div class="sp-count" id="fmsByProcessCount"></div>
             </div>
          <table>
-              <thead><tr><th>#</th><th>FMS</th><th>Plan</th><th>Actual</th><th>Pending</th><th>Completion %</th></tr></thead>
+              <thead><tr><th>#</th><th>FMS</th><th>Plan</th><th>Actual</th><th>Pending</th><th>Progress</th></tr></thead>
                 <tbody id="fmsByProcessBody"></tbody>
               </table>
           </div>
@@ -1205,7 +1133,7 @@
               <div class="sp-count" id="clByDoerCount"></div>
             </div>
           <table>
-               <thead><tr><th>#</th><th>Employee</th><th>Dept</th><th>Plan</th><th>Actual</th><th>Pending</th><th>Completion %</th></tr></thead> 
+                <thead><tr><th>#</th><th>Doer</th><th>Dept</th><th>Plan</th><th>Actual</th><th>Pending</th><th>Progress</th></tr></thead>
                 <tbody id="clByDoerBody"></tbody>
               </table>
           </div>
@@ -1218,8 +1146,8 @@
       <div class="filter-bar">
         <label>FMS Type:</label>
         <select id="fmsFilterType" onchange="applyFmsFilters()"><option value="All">All Types</option></select>
-        <label>Employee:</label>
-        <select id="fmsFilterDoer" onchange="applyFmsFilters()"><option value="All">All Employees</option></select>
+        <label>Doer:</label>
+        <select id="fmsFilterDoer" onchange="applyFmsFilters()"><option value="All">All Doers</option></select>
         <label>Status:</label>
         <select id="fmsFilterStatus" onchange="applyFmsFilters()">
           <option value="All">All Status</option>
@@ -1237,8 +1165,8 @@
     <!-- CHECKLIST TAB -->
     <div class="tab-content" id="tab-checklist">
     <div class="filter-bar">
-        <label>Employee:</label>
-        <select id="clFilterDoer" onchange="applyChecklistFilters()"><option value="All">All Employees</option></select>
+        <label>Doer:</label>
+        <select id="clFilterDoer" onchange="applyChecklistFilters()"><option value="All">All Doers</option></select>
         <label>Dept:</label>
         <select id="clFilterDept" onchange="applyChecklistFilters()"><option value="All">All Depts</option></select>
         <label>Status:</label>
@@ -1255,7 +1183,7 @@
       <div class="tc">
           <table>
             <thead>
-              <tr><th>#</th><th>Employee</th><th>Dept</th><th>Task Details</th><th>Freq</th><th>Planned Date</th><th>Actual Date</th><th>Status</th></tr>
+              <tr><th>#</th><th>Doer</th><th>Dept</th><th>Task Details</th><th>Freq</th><th>Planned Date</th><th>Actual Date</th><th>Status</th></tr>
             </thead>
            <tbody id="clTableBody"><tr><td colspan="8"><div class="skel skel-line" style="width:100%;height:16px;margin:8px 0"></div><div class="skel skel-line" style="width:90%;height:16px;margin:8px 0"></div><div class="skel skel-line" style="width:95%;height:16px;margin:8px 0"></div><div class="skel skel-line" style="width:85%;height:16px;margin:8px 0"></div></td></tr></tbody>
           </table>
@@ -1265,8 +1193,8 @@
     <!-- DELEGATION TAB -->
     <div class="tab-content" id="tab-delegation">
       <div class="filter-bar">
-        <label>Employee:</label>
-        <select id="dlFilterDoer" onchange="applyDelegationFilters()"><option value="All">All Employees</option></select>
+        <label>Doer:</label>
+        <select id="dlFilterDoer" onchange="applyDelegationFilters()"><option value="All">All Doers</option></select>
         <label>Status:</label>
         <select id="dlFilterStatus" onchange="applyDelegationFilters()">
           <option value="All">All Status</option>
@@ -1279,7 +1207,7 @@
     <div class="tc">
           <table>
             <thead>
-              <tr><th>#</th><th>Employee</th><th>Task Description</th><th>First Date</th><th>Revision 1</th><th>Revision 2</th><th>Latest Revision</th><th>Status</th></tr>
+              <tr><th>#</th><th>Doer</th><th>Task Description</th><th>First Date</th><th>Revision 1</th><th>Revision 2</th><th>Latest Revision</th><th>Status</th></tr>
             </thead>
             <tbody id="dlTableBody"><tr><td colspan="8"><div class="skel skel-line" style="width:100%;height:16px;margin:8px 0"></div><div class="skel skel-line" style="width:90%;height:16px;margin:8px 0"></div><div class="skel skel-line" style="width:95%;height:16px;margin:8px 0"></div><div class="skel skel-line" style="width:85%;height:16px;margin:8px 0"></div></td></tr></tbody>
           </table>
@@ -1969,7 +1897,7 @@ function refreshDashboard() {
     } catch (e) {}
     verifyAndEnter();
   }
- function verifyAndEnter(retryCount) {
+  function verifyAndEnter(retryCount) {
   retryCount = retryCount || 0;
   if (!currentIdToken) return showSignIn();
   var payload = decodeJwtPayload(currentIdToken);
@@ -1983,30 +1911,36 @@ function refreshDashboard() {
   document.getElementById('authLoadingTxt').style.display = 'block';
   document.getElementById('authLoadingTxt').textContent = 'Verifying access…';
 
-  // FAST lightweight auth check only (no spreadsheet open) — login ab
-  // instant hoga. Actual dashboard data alag se background me load hoga
-  // (enterApp -> initialLoad), skeleton loaders ke saath.
-  var authUrl = API + '?action=auth&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now();
-  fetch(authUrl, { redirect: 'follow' })
+  var savedCache = loadUserCache(payload.email);
+  var url = API + '?action=getData&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now();
+  if (savedCache && savedCache.from && savedCache.to) {
+    url += '&from=' + encodeURIComponent(toDDMMYYYY(savedCache.from)) + '&to=' + encodeURIComponent(toDDMMYYYY(savedCache.to));
+  }
+ fetch(url, { redirect: 'follow' })
     .then(function(r) { return r.json(); })
-    .then(function(authData) {
+    .then(function(data) {
       document.getElementById('authLoadingTxt').style.display = 'none';
-      if (!authData || authData.authorized === false) { showDenied(payload.email); return; }
+      if (data.authorized === false) { showDenied(payload.email); return; }
       currentUserEmail = payload.email;
-      var displayName = authData.name || payload.name || currentUserEmail;
-      // skipInitialLoad = false -> enterApp khud background me getData
-      // fetch karega (cached data pehle se dikhte hue)
-      enterApp(displayName, currentUserEmail, false);
-      showLoginToast(displayName, currentUserEmail);
+      enterApp(payload.name || currentUserEmail, currentUserEmail, true);
+      showLoginToast(payload.name || currentUserEmail, currentUserEmail);
+      document.getElementById('ldiv').style.display = 'none';
+      document.getElementById('mdiv').style.display = 'block';
+      renderAll(data);
+      // Keep this admin's own saved range on the fields (renderAll may reset
+      // it from the server's own week if the backend ignored from/to).
+      if (savedCache && savedCache.from) document.getElementById('dtFrom').value = savedCache.from;
+      if (savedCache && savedCache.to) document.getElementById('dtTo').value = savedCache.to;
+      saveUserCache(currentUserEmail, data);
     })
-    .catch(function(err) {
-      console.error('auth check failed:', err);
+       .catch(function(err) {
+      console.error('verifyAndEnter fetch failed:', err);
       if (retryCount < 2) {
         document.getElementById('authLoadingTxt').textContent = 'Retrying… (' + (retryCount + 1) + '/3)';
-        setTimeout(function() { verifyAndEnter(retryCount + 1); }, 2000);
+        setTimeout(function() { verifyAndEnter(retryCount + 1); }, 1500);
       } else {
         document.getElementById('authLoadingTxt').textContent =
-          'Could not connect to server. Please refresh the page.';
+          'Could not connect to server. Please refresh the page. If this keeps happening, the backend deployment may need to be redeployed.';
       }
     });
 }
@@ -2258,13 +2192,10 @@ function loadUserCache(email) {
       }).join('');
     }
   renderUsers(data.staffData || []);
-        renderInternalSheets(data.internalSheets);
+       renderInternalSheets(data.internalSheets);
     renderTrainingVideos(data.trainingVideos);
-    renderQuickLinks(data.quickLinks);
-    renderAnnouncements(data.announcements);
     renderUsersDashboardPanels(data);
     renderPendingApprovalsAndHolidays(data);
-    renderMiniCalendar();  
     renderDashPendingApprovals(data);
     renderDashRecentActivities(data);
     renderFmsByProcess(data.fmsByProcess || []);
@@ -2509,55 +2440,7 @@ function renderUsersDashboardPanels(data) {
       }
     }
   }
-    var calViewDate = new Date();
-function calNav(dir){ calViewDate.setMonth(calViewDate.getMonth()+dir); renderMiniCalendar(); }
-function renderMiniCalendar(){
-  var y = calViewDate.getFullYear(), m = calViewDate.getMonth();
-  var monthNames=["January","February","March","April","May","June","July","August","September","October","November","December"];
-  document.getElementById('calMonthLbl').textContent = monthNames[m] + ' ' + y;
-  var holidays = {};
-  ((globalRawData && globalRawData.upcomingHolidays && globalRawData.upcomingHolidays.rows) || []).forEach(function(h){ holidays[h.date] = true; });
-  var firstDay = new Date(y,m,1).getDay();
-  var daysInMonth = new Date(y,m+1,0).getDate();
-  var today = new Date(); today.setHours(0,0,0,0);
-  var html = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(function(d){return '<div class="cal-dow">'+d+'</div>';}).join('');
-  for (var i=0;i<firstDay;i++) html += '<div class="cal-day cd-empty"></div>';
-  for (var d=1;d<=daysInMonth;d++){
-    var cellDate = new Date(y,m,d);
-    var cls = 'cd-present';
-    if (cellDate > today) cls = 'cd-future';
-    else if (cellDate.getDay()===0 || holidays[d+'/'+(m+1)+'/'+y]) cls = 'cd-holiday';
-    html += '<div class="cal-day '+cls+'">'+d+'</div>';
-  }
-  document.getElementById('calGrid').innerHTML = html;
-}
-    function renderQuickLinks(links) {
-    var el = document.getElementById('quickLinksList');
-    if (!el) return;
-    var list = links || [];
-    if (!list.length) { el.innerHTML = '<div class="ql-empty">No quick links added yet</div>'; return; }
-    el.innerHTML = list.map(function(l) {
-      var safeUrl = String(l.url).replace(/"/g, '&quot;');
-      return '<a class="ql-row" href="' + safeUrl + '" target="_blank" rel="noopener">' +
-        '<span class="ql-dot"></span>' + l.name +
-      '</a>';
-    }).join('');
-  }
-
-  function renderAnnouncements(items) {
-    var el = document.getElementById('announcementsList');
-    if (!el) return;
-    var list = items || [];
-    if (!list.length) { el.innerHTML = '<div class="an-empty">No announcements right now</div>'; return; }
-    el.innerHTML = list.map(function(a) {
-      return '<div class="an-item">' +
-        '<div class="an-msg">📣 ' + a.message + '</div>' +
-        (a.date ? '<div class="an-date">' + a.date + '</div>' : '') +
-      '</div>';
-    }).join('');
-  }
-
-  function renderDashPendingApprovals(data) {
+        function renderDashPendingApprovals(data) {
     var rows = (data.pendingApprovals && data.pendingApprovals.rows) || [];
     var el = document.getElementById('dashPendingApprovalsList');
     if (!el) return;
@@ -2590,7 +2473,7 @@ function renderMiniCalendar(){
       }
     });
     if (!tasks.length) { el.innerHTML = '<div class="dl-empty-note">No activity recorded today</div>'; return; }
-    el.innerHTML = tasks.slice(0, 5).map(function(t) {
+    el.innerHTML = tasks.slice(0, 2).map(function(t) {
       var icon = t.type === 'FMS' ? '📋' : t.type === 'Checklist' ? '✅' : '👥';
       return '<div class="dl-list-row">' +
         '<div class="dl-ra-icon" style="' + typeTagStyle(t.type) + '">' + icon + '</div>' +
@@ -3077,7 +2960,7 @@ function renderClByDoer(rows) {
             '<div style="width:120px">' + pg(gProg) + '</div>' +
           '</div>' +
         '</div>' +
-       '<table><thead><tr><th>#</th><th>Step</th><th>Employee</th><th>Plan</th><th>Actual</th><th>Pending</th><th>Completion %</th></tr></thead>' +
+       '<table><thead><tr><th>#</th><th>Step</th><th>Doer</th><th>Plan</th><th>Actual</th><th>Pending</th><th>Progress</th></tr></thead>' +
         '<tbody>' + rows + '</tbody></table>' +
         '</div>';
     }).join('');
@@ -3122,7 +3005,7 @@ function renderClByDoer(rows) {
   function updateSelectOptions(id, setObj) {
     var sel = document.getElementById(id);
     var currentVal = sel.value;
-    sel.innerHTML = '<option value="All">' + (id.includes('Doer') ? 'All Employees' : id.includes('Dept') ? 'All Depts' : 'All') + '</option>';
+    sel.innerHTML = '<option value="All">' + (id.includes('Doer') ? 'All Doers' : id.includes('Dept') ? 'All Depts' : 'All') + '</option>';
     Array.from(setObj).sort().forEach(function(v) {
       var o = document.createElement('option');
       o.value = v; o.textContent = v;
