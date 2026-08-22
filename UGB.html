@@ -589,7 +589,12 @@
     .tc4-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:10px}
 @media(max-width:900px){.tc4-row{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:600px){.tc4-row{grid-template-columns:1fr}}
-.tc4-card{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 3px 14px rgba(30,41,59,.08)}
+.tc4-card{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 3px 14px rgba(30,41,59,.08);cursor:pointer;transition:transform .15s,box-shadow .15s}
+.tc4-card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(30,41,59,.14)}
+.tc4-card-blue{background:#eff6ff}
+.tc4-card-green{background:#f0fdf4}
+.tc4-card-orange{background:#fff7ed}
+.tc4-card-purple{background:#f5f3ff}
 .tc4-head{display:flex;align-items:center;gap:8px;color:#fff;font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:11px 16px}
 .tc4-head svg{width:16px;height:16px;flex-shrink:0}
 .tc4-blue{background:linear-gradient(135deg,#2563eb 0%,#1e40af 100%)}
@@ -948,18 +953,18 @@ body.body-modal-lock{overflow:hidden}
       </div>
             <div style="margin-top:10px">
       <div class="tc4-row">
-        <div class="tc4-card">
-          <div class="tc4-head tc4-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M8 2v4M16 2v4M3 10h18"></path></svg>Today's Tasks</div>
+        <div class="tc4-card tc4-card-blue" onclick="openTodayTasksModal()">
+  <div class="tc4-head tc4-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M8 2v4M16 2v4M3 10h18"></path></svg>Today's Tasks</div>
           <div class="tc4-body">
             <div class="tc4-body-top">
               <div><div class="tc4-num val-loading" id="badgeTodayTasks">0</div><div class="tc4-lbl">Pending</div></div>
               <div class="tc4-wm tc4-wm-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M8 2v4M16 2v4M3 10h18"></path></svg></div>
             </div>
-            <div class="tc4-body-bottom"><span class="tc4-done" id="completedTodayTasks">Completed: 0</span><a class="tc4-link" onclick="openTodayTasksModal()">View all tasks →</a></div>
+            <div class="tc4-body-bottom"><span class="tc4-done" id="completedTodayTasks">Completed: 0</span><a class="tc4-link" onclick="event.stopPropagation();openTodayTasksModal()">View all tasks →</a></div>
           </div>
         </div>
-        <div class="tc4-card">
-          <div class="tc4-head tc4-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>FMS</div>
+       <div class="tc4-card tc4-card-green" onclick="openTodayTasksModal('FMS')">
+  <div class="tc4-head tc4-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>FMS</div>
           <div class="tc4-body">
             <div class="tc4-body-top">
               <div><div class="tc4-num val-loading" id="badgeTodayFms">0</div><div class="tc4-lbl">Pending</div></div>
@@ -968,8 +973,8 @@ body.body-modal-lock{overflow:hidden}
             <div class="tc4-body-bottom"><span class="tc4-done" id="completedTodayFms">Completed: 0</span><a class="tc4-link" onclick="openTodayTasksModal('FMS')">View details →</a></div>
           </div>
         </div>
-        <div class="tc4-card">
-          <div class="tc4-head tc4-orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 12l2 2 4-4"></path></svg>Checklist</div>
+       <div class="tc4-card tc4-card-orange" onclick="openTodayTasksModal('Checklist')">
+  <div class="tc4-head tc4-orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 12l2 2 4-4"></path></svg>Checklist</div>
           <div class="tc4-body">
             <div class="tc4-body-top">
               <div><div class="tc4-num val-loading" id="badgeTodayChecklist">0</div><div class="tc4-lbl">Pending</div></div>
@@ -978,8 +983,8 @@ body.body-modal-lock{overflow:hidden}
             <div class="tc4-body-bottom"><span class="tc4-done" id="completedTodayChecklist">Completed: 0</span><a class="tc4-link" onclick="openTodayTasksModal('Checklist')">View details →</a></div>
           </div>
         </div>
-        <div class="tc4-card">
-          <div class="tc4-head tc4-purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>Delegation</div>
+      <div class="tc4-card tc4-card-purple" onclick="openTodayTasksModal('Delegation')">
+  <div class="tc4-head tc4-purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>Delegation</div>
           <div class="tc4-body">
             <div class="tc4-body-top">
               <div><div class="tc4-num val-loading" id="badgeTodayDelegation">0</div><div class="tc4-lbl">Pending</div></div>
