@@ -215,15 +215,16 @@
   .c5{display:grid;grid-template-columns:repeat(5,1fr);gap:24px;margin-bottom:16px;margin-top:6px}
   .c1{display:grid;grid-template-columns:200px 1fr;gap:14px;margin-bottom:24px}
    .card{background:linear-gradient(160deg,#ffffff 0%,#f8fafc 100%);border-radius:14px;padding:13px 16px;box-shadow:0 4px 18px rgba(30,41,59,.07);border:1px solid rgba(255,255,255,.8);animation:cardPop .4s ease-out both}
-   .card-tint-blue{background:#eff6ff !important;border-top:3px solid #2563eb}
-.card-tint-green{background:#f0fdf4 !important;border-top:3px solid #16a34a}
-.card-tint-orange{background:#fff7ed !important;border-top:3px solid #f97316}
-.card-tint-purple{background:#f5f3ff !important;border-top:3px solid #8b5cf6}
-.card-tint-blue .cl,.card-tint-blue .cv{color:#1e40af}
-.card-tint-green .cl,.card-tint-green .cv{color:#166534}
-.card-tint-orange .cl,.card-tint-orange .cv{color:#c2410c}
-.card-tint-purple .cl,.card-tint-purple .cv{color:#6d28d9}
-.score-hero-card.card-tint-blue,.score-hero-card.card-tint-green,.score-hero-card.card-tint-orange,.score-hero-card.card-tint-purple{background:inherit}
+   .card-tint-blue{background:#eff6ff !important}
+.card-tint-green{background:#f0fdf4 !important}
+.card-tint-orange{background:#fff7ed !important}
+.card-tint-purple{background:#f5f3ff !important}
+.card-hd{display:flex;align-items:center;color:#fff;font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:10px 16px;margin:-13px -16px 14px;border-radius:14px 14px 0 0}
+.card-hd-blue{background:linear-gradient(135deg,#2563eb 0%,#1e40af 100%)}
+.card-hd-green{background:linear-gradient(135deg,#16a34a 0%,#0f766e 100%)}
+.card-hd-orange{background:linear-gradient(135deg,#f97316 0%,#c2410c 100%)}
+.card-hd-purple{background:linear-gradient(135deg,#8b5cf6 0%,#6d28d9 100%)}
+.score-hero-card.card-tint-blue .score-hero-label,.score-hero-card.card-tint-green .score-hero-label,.score-hero-card.card-tint-orange .score-hero-label,.score-hero-card.card-tint-purple .score-hero-label{color:#6b7280}
     .cl{font-size:9.5px;color:#9aa0ac;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;font-weight:700}
   .cv{font-size:22px;font-weight:700;margin-bottom:3px;line-height:1.1}
   .cv.blue{color:#0f766e}.cv.green{color:#16a34a}
@@ -1109,31 +1110,31 @@ body.body-modal-lock{overflow:hidden}
       <div id="mdiv" style="display:none">
   
         <div class="c5">
-          <div class="card card-tint-blue">
-  <div class="cl">Total Plan</div>
+         <div class="card card-tint-blue">
+  <div class="card-hd card-hd-blue">Total Plan</div>
   <div class="cv blue" id="cTP">—</div>
-            <div class="cs">FMS + CHECKLIST + DELEGATION</div>
-          </div>
+  <div class="cs">FMS + CHECKLIST + DELEGATION</div>
+</div>
          <div class="card card-tint-green">
-  <div class="cl">Total Actual</div>
+  <div class="card-hd card-hd-green">Total Actual</div>
   <div class="cv green" id="cTA">—</div>
-            <div class="cs" id="cTAs">—</div>
-          </div>
+  <div class="cs" id="cTAs">—</div>
+</div>
           <div class="card card-tint-green">
-  <div class="cl">FMS Plan</div>
+  <div class="card-hd card-hd-green">FMS Plan</div>
   <div class="cv blue" id="cFP">—</div>
-            <div class="cs-detail" id="cFPdetail"></div>
-          </div>
-         <div class="card card-tint-orange">
-  <div class="cl">Checklist Plan</div>
+  <div class="cs-detail" id="cFPdetail"></div>
+</div>
+        <div class="card card-tint-orange">
+  <div class="card-hd card-hd-orange">Checklist Plan</div>
   <div class="cv blue" id="cCP">—</div>
-            <div class="cs-detail" id="cCPdetail"></div>
-          </div>
+  <div class="cs-detail" id="cCPdetail"></div>
+</div>
          <div class="card card-tint-purple">
-  <div class="cl">Delegation Plan</div>
+  <div class="card-hd card-hd-purple">Delegation Plan</div>
   <div class="cv blue" id="cDP">—</div>
-            <div class="cs-detail" id="cDPdetail"></div>
-          </div>
+  <div class="cs-detail" id="cDPdetail"></div>
+</div>
         </div>
         <div class="tc">
           <div class="tc-top">
