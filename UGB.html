@@ -535,7 +535,11 @@
   .tv-empty{grid-column:1/-1;text-align:center;color:#94a3b8;font-size:13px;padding:50px 20px;background:#fff;border-radius:14px;border:1px dashed #e2e8f0}
   /* ── INTERNAL SHEETS TAB ─────────────────────────────────────── */
   .isheets-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-top:4px}
-  .isheet-card{display:flex;align-items:center;gap:12px;background:#fff;border-radius:10px;box-shadow:none;border:1px solid #e2e8f0;padding:14px 16px;text-decoration:none;transition:border-color .15s,background .15s}
+ .isheet-card{display:flex;align-items:center;gap:12px;background:#fff;border-radius:10px;box-shadow:none;border:1px solid #e2e8f0;border-left:4px solid #0F9D58;padding:14px 16px;text-decoration:none;transition:border-color .15s,background .15s}
+.isheet-card.is-form{border-left-color:#7c3aed;background:#faf9ff}
+.isheet-type{display:inline-flex;align-items:center;gap:4px;font-size:9.5px;font-weight:800;margin-top:3px;text-transform:uppercase;letter-spacing:.04em;padding:2px 8px;border-radius:20px}
+.isheet-type.type-sheet{background:#f0fdf4;color:#166534}
+.isheet-type.type-form{background:#f5f3ff;color:#6d28d9}
   .isheet-card:hover{background:#f8fafc;border-color:#cbd5e1}
   .isheet-ic{width:38px;height:38px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
   .isheet-txt{min-width:0}
@@ -1505,7 +1509,7 @@ body.body-modal-lock{overflow:hidden}
     var grid = document.getElementById('internalSheetsGrid');
     if (!grid) return;
     var list = (dynamicSheets && dynamicSheets.length) ? dynamicSheets : INTERNAL_SHEETS;
-    var sheetIconSvg = '<svg viewBox="0 0 48 48" width="30" height="30" xmlns="http://www.w3.org/2000/svg">' +
+        var sheetIconSvg = '<svg viewBox="0 0 48 48" width="30" height="30" xmlns="http://www.w3.org/2000/svg">' +
       '<rect x="6" y="4" width="36" height="40" rx="4" fill="#0F9D58"/>' +
       '<rect x="11" y="9" width="26" height="30" rx="1" fill="#fff"/>' +
       '<rect x="14" y="14" width="7" height="5" fill="#0F9D58" opacity=".55"/>' +
@@ -1516,18 +1520,32 @@ body.body-modal-lock{overflow:hidden}
       '<rect x="31" y="20.5" width="2.5" height="5" fill="#0F9D58" opacity=".85"/>' +
       '<rect x="14" y="27" width="7" height="5" fill="#0F9D58" opacity=".55"/>' +
       '<rect x="22.5" y="27" width="7" height="5" fill="#0F9D58" opacity=".85"/>' +
-      '<rect x="31" y="27" width="2.5" height="5" fill="#0F9D58" opacity=".55"/>' +
+      '<rect x="31" y="27" width="2.5" height="5" fill="#0F9D58" opacity=".85"/>' +
+      '</svg>';
+    var formIconSvg = '<svg viewBox="0 0 48 48" width="30" height="30" xmlns="http://www.w3.org/2000/svg">' +
+      '<rect x="6" y="4" width="36" height="40" rx="4" fill="#7c3aed"/>' +
+      '<rect x="11" y="9" width="26" height="30" rx="1" fill="#fff"/>' +
+      '<circle cx="16" cy="16" r="2.3" fill="#7c3aed"/>' +
+      '<rect x="21" y="14.7" width="12" height="2.6" rx="1.3" fill="#7c3aed" opacity=".55"/>' +
+      '<circle cx="16" cy="24" r="2.3" fill="#7c3aed"/>' +
+      '<rect x="21" y="22.7" width="12" height="2.6" rx="1.3" fill="#7c3aed" opacity=".85"/>' +
+      '<circle cx="16" cy="32" r="2.3" fill="#7c3aed"/>' +
+      '<rect x="21" y="30.7" width="12" height="2.6" rx="1.3" fill="#7c3aed" opacity=".55"/>' +
       '</svg>';
    document.getElementById('isheetsCountBadge').textContent = list.length + ' sheets';
   
-             grid.innerHTML = list.map(function(s) {
+                         grid.innerHTML = list.map(function(s) {
       var safeUrl = s.url.replace(/'/g, "\\'");
       var safeName = s.name.replace(/'/g, "\\'");
-      return '<a class="isheet-card" href="javascript:void(0)" onclick="openDocOverlay(\'' + safeUrl + '\',\'' + safeName + '\')">' +
-        '<span class="isheet-ic">' + sheetIconSvg + '</span>' +
+      var isForm = /form/i.test(s.type) || /form/i.test(s.name);
+      var icon = isForm ? formIconSvg : sheetIconSvg;
+      var typeCls = isForm ? 'type-form' : 'type-sheet';
+      var badgeIcon = isForm ? '📝' : '📊';
+      return '<a class="isheet-card' + (isForm ? ' is-form' : '') + '" href="javascript:void(0)" onclick="openDocOverlay(\'' + safeUrl + '\',\'' + safeName + '\')">' +
+        '<span class="isheet-ic">' + icon + '</span>' +
         '<div class="isheet-txt">' +
           '<div class="isheet-name" title="' + s.name + '">' + s.name + '</div>' +
-          '<div class="isheet-type">' + s.type + '</div>' +
+          '<span class="isheet-type ' + typeCls + '">' + badgeIcon + ' ' + s.type + '</span>' +
         '</div>' +
         '<span class="isheet-arrow">↗</span>' +
       '</a>';
