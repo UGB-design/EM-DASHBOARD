@@ -596,13 +596,22 @@
 .tc4-green{background:linear-gradient(135deg,#16a34a 0%,#0f766e 100%)}
 .tc4-orange{background:linear-gradient(135deg,#f97316 0%,#c2410c 100%)}
 .tc4-purple{background:linear-gradient(135deg,#8b5cf6 0%,#6d28d9 100%)}
-.tc4-body{padding:14px 18px 16px;display:flex;justify-content:space-between;align-items:flex-end}
+.tc4-body{padding:14px 18px 14px;display:flex;flex-direction:column;gap:10px}
+.tc4-body-top{display:flex;justify-content:space-between;align-items:flex-start}
 .tc4-num{font-size:30px;font-weight:800;color:#1a1a1a;line-height:1}
 .tc4-lbl{font-size:11.5px;color:#9aa0ac;font-weight:700;margin-top:3px}
-.tc4-right{text-align:right}
-.tc4-done{font-size:11px;font-weight:700;color:#16a34a}
-.tc4-link{font-size:11px;font-weight:700;color:#1e3a6d;cursor:pointer;text-decoration:none;display:inline-block;margin-top:6px}
+.tc4-wm{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tc4-wm svg{width:24px;height:24px}
+.tc4-wm-blue{background:#eff6ff;color:#93c5fd}
+.tc4-wm-green{background:#f0fdf4;color:#86efac}
+.tc4-wm-orange{background:#fff7ed;color:#fdba74}
+.tc4-wm-purple{background:#f5f3ff;color:#c4b5fd}
+.tc4-body-bottom{display:flex;justify-content:space-between;align-items:center;gap:8px;padding-top:8px;border-top:1px solid #f1f5f9}
+.tc4-done{font-size:11px;font-weight:700;color:#16a34a;white-space:nowrap}
+.tc4-link{font-size:11px;font-weight:700;color:#1e3a6d;cursor:pointer;text-decoration:none;white-space:nowrap}
 .tc4-link:hover{text-decoration:underline}
+.dlp-head svg{width:16px;height:16px;flex-shrink:0}
+.dlp-holiday-date{min-width:50px;flex-shrink:0}
 .scv2-today .scv2-icon{background:#eff6ff;color:#2563eb}
 .scv2-fms .scv2-icon{background:#f0fdf4;color:#16a34a}
 .scv2-cl .scv2-icon{background:#fff7ed;color:#ea580c}
@@ -930,39 +939,51 @@
         <div id="usersUpcomingBanner"></div>
       </div>
       <div class="my-snapshot" style="margin-top:10px">
-                 <div class="tc4-row">
+                      <div class="tc4-row">
         <div class="tc4-card">
           <div class="tc4-head tc4-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M8 2v4M16 2v4M3 10h18"></path></svg>Today's Tasks</div>
           <div class="tc4-body">
-            <div><div class="tc4-num val-loading" id="badgeTodayTasks">0</div><div class="tc4-lbl">Pending</div></div>
-            <div class="tc4-right"><div class="tc4-done" id="completedTodayTasks">Completed: 0</div><a class="tc4-link" onclick="openTodayTasksModal()">View all tasks →</a></div>
+            <div class="tc4-body-top">
+              <div><div class="tc4-num val-loading" id="badgeTodayTasks">0</div><div class="tc4-lbl">Pending</div></div>
+              <div class="tc4-wm tc4-wm-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M8 2v4M16 2v4M3 10h18"></path></svg></div>
+            </div>
+            <div class="tc4-body-bottom"><span class="tc4-done" id="completedTodayTasks">Completed: 0</span><a class="tc4-link" onclick="openTodayTasksModal()">View all tasks →</a></div>
           </div>
         </div>
         <div class="tc4-card">
           <div class="tc4-head tc4-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>FMS</div>
           <div class="tc4-body">
-            <div><div class="tc4-num val-loading" id="badgeTodayFms">0</div><div class="tc4-lbl">Pending</div></div>
-            <div class="tc4-right"><div class="tc4-done" id="completedTodayFms">Completed: 0</div><a class="tc4-link" onclick="openTodayTasksModal('FMS')">View details →</a></div>
+            <div class="tc4-body-top">
+              <div><div class="tc4-num val-loading" id="badgeTodayFms">0</div><div class="tc4-lbl">Pending</div></div>
+              <div class="tc4-wm tc4-wm-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M9 12l2 2 4-4"></path></svg></div>
+            </div>
+            <div class="tc4-body-bottom"><span class="tc4-done" id="completedTodayFms">Completed: 0</span><a class="tc4-link" onclick="openTodayTasksModal('FMS')">View details →</a></div>
           </div>
         </div>
         <div class="tc4-card">
           <div class="tc4-head tc4-orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 12l2 2 4-4"></path></svg>Checklist</div>
           <div class="tc4-body">
-            <div><div class="tc4-num val-loading" id="badgeTodayChecklist">0</div><div class="tc4-lbl">Pending</div></div>
-            <div class="tc4-right"><div class="tc4-done" id="completedTodayChecklist">Completed: 0</div><a class="tc4-link" onclick="openTodayTasksModal('Checklist')">View details →</a></div>
+            <div class="tc4-body-top">
+              <div><div class="tc4-num val-loading" id="badgeTodayChecklist">0</div><div class="tc4-lbl">Pending</div></div>
+              <div class="tc4-wm tc4-wm-orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 12l2 2 4-4"></path></svg></div>
+            </div>
+            <div class="tc4-body-bottom"><span class="tc4-done" id="completedTodayChecklist">Completed: 0</span><a class="tc4-link" onclick="openTodayTasksModal('Checklist')">View details →</a></div>
           </div>
         </div>
         <div class="tc4-card">
           <div class="tc4-head tc4-purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>Delegation</div>
           <div class="tc4-body">
-            <div><div class="tc4-num val-loading" id="badgeTodayDelegation">0</div><div class="tc4-lbl">Pending</div></div>
-            <div class="tc4-right"><div class="tc4-done" id="completedTodayDelegation">Completed: 0</div><a class="tc4-link" onclick="openTodayTasksModal('Delegation')">View details →</a></div>
+            <div class="tc4-body-top">
+              <div><div class="tc4-num val-loading" id="badgeTodayDelegation">0</div><div class="tc4-lbl">Pending</div></div>
+              <div class="tc4-wm tc4-wm-purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
+            </div>
+            <div class="tc4-body-bottom"><span class="tc4-done" id="completedTodayDelegation">Completed: 0</span><a class="tc4-link" onclick="openTodayTasksModal('Delegation')">View details →</a></div>
           </div>
         </div>
       </div>
       <div class="dash-lists-grid" style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin:10px 0 16px">
         <div class="dlp-panel">
-          <div class="dlp-head dlp-head-blue">Recent Activities <a class="dlp-head-view" onclick="showRecentActivitiesModal()">View all →</a></div>
+        <div class="dlp-head dlp-head-blue"><span style="display:flex;align-items:center;gap:8px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg>Recent Activities</span> <a class="dlp-head-view" onclick="showRecentActivitiesModal()">View all →</a></div>
           <div class="dlp-body" id="dashRecentActivitiesList">
             <div class="skel skel-line" style="width:100%;height:40px;margin-bottom:8px"></div>
             <div class="skel skel-line" style="width:100%;height:40px"></div>
@@ -970,7 +991,7 @@
         </div>
         <div style="display:flex;flex-direction:column;gap:16px">
           <div class="dlp-panel">
-            <div class="dlp-head dlp-head-teal">Upcoming Holidays</div>
+            <div class="dlp-head dlp-head-teal"><span style="display:flex;align-items:center;gap:8px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>Upcoming Holidays</span></div>
             <div class="dlp-body" id="dashHolidayList2">
               <div class="skel skel-line" style="width:100%;height:40px;margin-bottom:8px"></div>
               <div class="skel skel-line" style="width:100%;height:40px"></div>
@@ -1030,27 +1051,6 @@
             </div>
           </div>
         </div>
-      </div>
-            <div class="dash-lists-grid" style="display:grid;grid-template-columns:2fr 1fr">
-        <div class="dlp-panel">
-          <div class="dlp-head dlp-head-blue">Recent Activities <a class="dlp-head-view" onclick="showRecentActivitiesModal()">View all →</a></div>
-          <div class="dlp-body" id="dashRecentActivitiesList">
-            <div class="skel skel-line" style="width:100%;height:40px;margin-bottom:8px"></div>
-            <div class="skel skel-line" style="width:100%;height:40px"></div>
-          </div>
-        </div>
-        <div class="dlp-panel">
-          <div class="dlp-head dlp-head-teal">Upcoming Holidays</div>
-          <div class="dlp-body" id="dashHolidayList2">
-            <div class="skel skel-line" style="width:100%;height:40px;margin-bottom:8px"></div>
-            <div class="skel skel-line" style="width:100%;height:40px"></div>
-          </div>
-        </div>
-      </div>
-      <div class="ud-panel" style="margin-top:16px;max-width:340px">
-        <div class="ud-panel-title">Employee Actions</div>
-        <button class="emp-action-btn" onclick="showPendingApprovalsModal()">✅ Approve Leave</button>
-        <button class="emp-action-btn blue" onclick="openStaffSheetOverlay()">👤 Profile Update</button>
       </div>
     </div>
     <!-- TEAM DIRECTORY TAB -->
@@ -2560,18 +2560,24 @@ function renderUsersDashboardPanels(data) {
       }
     }
 
-    var h2El = document.getElementById('dashHolidayList2');
+       var h2El = document.getElementById('dashHolidayList2');
     if (h2El) {
       var hrows2 = (uh.rows || []).slice(0, 2);
       if (!hrows2.length) {
         h2El.innerHTML = '<div class="dl-empty-note">No holidays found</div>';
       } else {
         h2El.innerHTML = hrows2.map(function(h) {
-          var parts = String(h.date || '').split(' ');
-          return '<div class="dlp-holiday-row"><div class="dlp-holiday-date"><b>' + (parts[0]||'') + '</b><span>' + (parts[1]||'') + '</span></div><div style="font-weight:700;color:#1a1a1a;font-size:13px">' + h.name + '</div></div>';
+          var hd = splitHolidayDate_(h.date);
+          return '<div class="dlp-holiday-row"><div class="dlp-holiday-date"><b>' + hd.day + '</b><span>' + hd.mon + '</span></div><div style="font-weight:700;color:#1a1a1a;font-size:13px">' + h.name + '</div></div>';
         }).join('');
       }
     }
+  }
+  function splitHolidayDate_(dateStr) {
+    var s = String(dateStr || '').trim();
+    var dm = s.match(/(\d{1,2})/);
+    var mm = s.match(/[A-Za-z]+/);
+    return { day: dm ? dm[1] : '', mon: mm ? mm[0].slice(0,3).toUpperCase() : '' };
   }
   function showPendingApprovalsModal() {
     var rows = window._pendingApprovalsRows || [];
