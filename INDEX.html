@@ -222,6 +222,37 @@ body.fullscreen-embed-mode .back-to-dash-btn{display:inline-flex}
 .snap-perf-ring span{background:#fff;width:74px;height:74px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#1a1a1a;line-height:1.1}
 .snap-perf-ring span small{font-size:9px;font-weight:700;color:#9aa0ac;text-transform:uppercase;letter-spacing:.03em;margin-top:2px}
 
+.tc4-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px}
+.tc4-card{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 3px 14px rgba(30,41,59,.08);cursor:pointer;transition:transform .15s,box-shadow .15s}
+.tc4-card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(30,41,59,.14)}
+.tc4-card-blue{background:#eff6ff}
+.tc4-card-green{background:#f0fdf4}
+.tc4-card-orange{background:#fff7ed}
+.tc4-card-purple{background:#f5f3ff}
+.tc4-head{display:flex;align-items:center;gap:8px;color:#fff;font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:11px 16px}
+.tc4-head svg{width:16px;height:16px;flex-shrink:0}
+.tc4-blue{background:linear-gradient(135deg,#2563eb 0%,#1e40af 100%)}
+.tc4-green{background:linear-gradient(135deg,#16a34a 0%,#0f766e 100%)}
+.tc4-orange{background:linear-gradient(135deg,#f97316 0%,#c2410c 100%)}
+.tc4-purple{background:linear-gradient(135deg,#8b5cf6 0%,#6d28d9 100%)}
+.tc4-body{padding:14px 18px 14px;display:flex;flex-direction:column;gap:10px}
+.tc4-body-top{display:flex;justify-content:space-between;align-items:flex-start}
+.tc4-num{font-size:30px;font-weight:800;color:#1a1a1a;line-height:1}
+.tc4-lbl{font-size:11.5px;color:#9aa0ac;font-weight:700;margin-top:3px}
+.tc4-wm{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tc4-wm svg{width:24px;height:24px}
+.tc4-wm-blue{background:#eff6ff;color:#93c5fd}
+.tc4-wm-green{background:#f0fdf4;color:#86efac}
+.tc4-wm-orange{background:#fff7ed;color:#fdba74}
+.tc4-wm-purple{background:#f5f3ff;color:#c4b5fd}
+.tc4-body-bottom{display:flex;justify-content:space-between;align-items:center;gap:8px;padding-top:8px;border-top:1px solid #f1f5f9}
+.tc4-done{font-size:11px;font-weight:700;color:#16a34a;white-space:nowrap}
+.tc4-link{font-size:11px;font-weight:700;color:#1e3a6d;cursor:pointer;text-decoration:none;white-space:nowrap}
+.tc4-link:hover{text-decoration:underline}
+@media(max-width:900px){.tc4-row{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.tc4-row{grid-template-columns:1fr}}
+.dash-lists-grid{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px}
+@media(max-width:900px){.dash-lists-grid{grid-template-columns:1fr}}
 .ud-bottom-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:0}
 @media(max-width:1000px){.ud-bottom-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:600px){.ud-bottom-grid{grid-template-columns:1fr}}
@@ -400,7 +431,7 @@ body.fullscreen-embed-mode .back-to-dash-btn{display:inline-flex}
 
   <main class="main-area">
            <div class="topbar">
-      <img class="topbar-bg-img" src="https://lh3.googleusercontent.com/d/1n6N14R0kQGEPmrTh7_UUVYYLW_QB_ifq=w1920" referrerpolicy="no-referrer" alt="">
+           <img class="topbar-bg-img" src="https://lh3.googleusercontent.com/d/1HyBxnS8BN-TMuvnjMFxR3j3tLIb2ycjX=w1920" referrerpolicy="no-referrer" alt="">
       <div class="topbar-overlay"></div>
            <div class="tb-row1" style="justify-content:space-between">
                 <div>
@@ -416,51 +447,65 @@ body.fullscreen-embed-mode .back-to-dash-btn{display:inline-flex}
       <!-- ===== DASHBOARD TAB (redesigned) ===== -->
           <div class="tab-content active" id="tab-dashboard">
         <div id="recentActivityBanner"></div>
-              <div class="my-snapshot">
-          <div class="snap-item snap-today">
-            <div class="snap-item-top"><div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M8 2v4M16 2v4M3 10h18"></path></svg></div><div class="snap-lbl">Today's Tasks</div></div>
-                        <div class="snap-mid">
-              <div><div class="snap-val" id="dashToday">—</div><div class="snap-sub">Pending</div></div>
+                  <div class="tc4-row">
+        <div class="tc4-card tc4-card-blue" onclick="openTodayTasksModal()">
+          <div class="tc4-head tc4-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M8 2v4M16 2v4M3 10h18"></path></svg>Today's Tasks</div>
+          <div class="tc4-body">
+            <div class="tc4-body-top">
+              <div><div class="tc4-num" id="dashToday">—</div><div class="tc4-lbl">Pending</div></div>
+              <div class="tc4-wm tc4-wm-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M8 2v4M16 2v4M3 10h18"></path></svg></div>
             </div>
-            <div class="snap-bottom"><span id="dashTodayCompleted" style="color:#16a34a;font-weight:700">Completed: —</span><a class="snap-link" onclick="openTodayTasksModal()">View all tasks →</a></div>
-          </div>
-          <div class="snap-item snap-fms">
-            <div class="snap-item-top"><div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></div><div class="snap-lbl">FMS</div></div>
-                       <div class="snap-mid">
-              <div><div class="snap-val" id="dashFms">—</div><div class="snap-sub">Pending</div></div>
-            </div>
-            <div class="snap-bottom"><span id="dashFmsCompleted" style="color:#16a34a;font-weight:700">Completed: —</span><a class="snap-link" onclick="openTodayTasksModal('FMS')">View details →</a></div>
-          </div>
-          <div class="snap-item snap-cl">
-            <div class="snap-item-top"><div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 12l2 2 4-4"></path></svg></div><div class="snap-lbl">Checklist</div></div>
-                        <div class="snap-mid">
-              <div><div class="snap-val" id="dashChecklist">—</div><div class="snap-sub">Pending</div></div>
-            </div>
-            <div class="snap-bottom"><span id="dashChecklistCompleted" style="color:#16a34a;font-weight:700">Completed: —</span><a class="snap-link" onclick="openTodayTasksModal('Checklist')">View details →</a></div>
-          </div>
-          <div class="snap-item snap-dl">
-            <div class="snap-item-top"><div class="snap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div><div class="snap-lbl">Delegation</div></div>
-                        <div class="snap-mid">
-              <div><div class="snap-val" id="dashDelegation">—</div><div class="snap-sub">Pending</div></div>
-            </div>
-            <div class="snap-bottom"><span id="dashDelegationCompleted" style="color:#16a34a;font-weight:700">Completed: —</span><a class="snap-link" onclick="openTodayTasksModal('Delegation')">View details →</a></div>
-          </div>
-                </div>
-                <div class="ud-panel" style="margin-bottom:8px">
-          <div class="ud-panel-title">Recent Activities</div>
-          <div id="dashRecentActivitiesList">
-            <div class="skeleton sk-bar" style="width:100%;height:36px;margin-bottom:8px"></div>
-            <div class="skeleton sk-bar" style="width:100%;height:36px"></div>
+            <div class="tc4-body-bottom"><span class="tc4-done" id="dashTodayCompleted">Completed: —</span><a class="tc4-link" onclick="event.stopPropagation();openTodayTasksModal()">View all tasks →</a></div>
           </div>
         </div>
-        <div style="background:#fff;border:1px solid #bbf7d0;border-radius:12px;padding:8px 16px;margin-bottom:8px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <div class="snap-icon" style="background:#f0fdf4;color:#16a34a;width:24px;height:24px;border-radius:6px">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        <div class="tc4-card tc4-card-green" onclick="openTodayTasksModal('FMS')">
+          <div class="tc4-head tc4-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>FMS</div>
+          <div class="tc4-body">
+            <div class="tc4-body-top">
+              <div><div class="tc4-num" id="dashFms">—</div><div class="tc4-lbl">Pending</div></div>
+              <div class="tc4-wm tc4-wm-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></div>
             </div>
-            <span class="snap-lbl" id="upcomingHolidayLbl" style="font-size:11px">Upcoming Holidays</span>
+            <div class="tc4-body-bottom"><span class="tc4-done" id="dashFmsCompleted">Completed: —</span><a class="tc4-link" onclick="event.stopPropagation();openTodayTasksModal('FMS')">View details →</a></div>
           </div>
-          <div id="upcomingHolidayNotice"><div style="font-size:11.5px;color:#c7c2b8">Loading…</div></div>
+        </div>
+        <div class="tc4-card tc4-card-orange" onclick="openTodayTasksModal('Checklist')">
+          <div class="tc4-head tc4-orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 12l2 2 4-4"></path></svg>Checklist</div>
+          <div class="tc4-body">
+            <div class="tc4-body-top">
+              <div><div class="tc4-num" id="dashChecklist">—</div><div class="tc4-lbl">Pending</div></div>
+              <div class="tc4-wm tc4-wm-orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 12l2 2 4-4"></path></svg></div>
+            </div>
+            <div class="tc4-body-bottom"><span class="tc4-done" id="dashChecklistCompleted">Completed: —</span><a class="tc4-link" onclick="event.stopPropagation();openTodayTasksModal('Checklist')">View details →</a></div>
+          </div>
+        </div>
+        <div class="tc4-card tc4-card-purple" onclick="openTodayTasksModal('Delegation')">
+          <div class="tc4-head tc4-purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>Delegation</div>
+          <div class="tc4-body">
+            <div class="tc4-body-top">
+              <div><div class="tc4-num" id="dashDelegation">—</div><div class="tc4-lbl">Pending</div></div>
+              <div class="tc4-wm tc4-wm-purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
+            </div>
+            <div class="tc4-body-bottom"><span class="tc4-done" id="dashDelegationCompleted">Completed: —</span><a class="tc4-link" onclick="event.stopPropagation();openTodayTasksModal('Delegation')">View details →</a></div>
+          </div>
+        </div>
+      </div>
+                        <div class="dash-lists-grid">
+          <div class="ud-panel">
+            <div class="ud-panel-title">Recent Activities</div>
+            <div id="dashRecentActivitiesList">
+              <div class="skeleton sk-bar" style="width:100%;height:36px;margin-bottom:8px"></div>
+              <div class="skeleton sk-bar" style="width:100%;height:36px"></div>
+            </div>
+          </div>
+          <div style="background:#fff;border:1px solid #bbf7d0;border-radius:16px;padding:14px 18px 10px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+              <div class="snap-icon" style="background:#f0fdf4;color:#16a34a;width:24px;height:24px;border-radius:6px">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+              </div>
+              <span class="ud-panel-title" id="upcomingHolidayLbl" style="margin-bottom:0">Upcoming Holidays</span>
+            </div>
+            <div id="upcomingHolidayNotice"><div style="font-size:11.5px;color:#c7c2b8">Loading…</div></div>
+          </div>
         </div>
         
       <div class="ud-bottom-grid">
