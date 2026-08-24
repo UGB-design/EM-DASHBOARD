@@ -2536,7 +2536,17 @@ function renderUsersDashboardPanels(data) {
         b.style.display = 'none';
       }
     });
-        if (!tasks.length) { el.innerHTML = '<div class="dl-empty-note">No activity recorded today</div>'; return; }
+               if (!tasks.length) {
+          el.innerHTML =
+            '<div style="text-align:center;padding:40px 20px">' +
+              '<div style="width:64px;height:64px;background:#eff6ff;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px">' +
+                '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#93c5fd" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><circle cx="11.5" cy="14.5" r="2.5"></circle><line x1="13.3" y1="16.3" x2="15" y2="18"></line></svg>' +
+              '</div>' +
+              '<div style="font-size:14px;font-weight:700;color:#374151;margin-bottom:4px">No activity recorded today</div>' +
+              '<div style="font-size:12.5px;color:#9aa0ac">You\'re all caught up! Check back later for updates.</div>' +
+            '</div>';
+          return;
+        }
     el.innerHTML = tasks.slice(0, 5).map(function(t) {
       var icon = t.type === 'FMS' ? '📋' : t.type === 'Checklist' ? '✅' : '👥';
       var dateTime = t.plannedDate + (t.completedTime ? ', ' + t.completedTime : '');
