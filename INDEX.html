@@ -446,7 +446,14 @@ body.fullscreen-embed-mode .back-to-dash-btn{display:inline-flex}
             <div class="snap-bottom"><span id="dashDelegationCompleted" style="color:#16a34a;font-weight:700">Completed: —</span><a class="snap-link" onclick="openTodayTasksModal('Delegation')">View details →</a></div>
           </div>
                 </div>
-         <div style="background:#fff;border:1px solid #bbf7d0;border-radius:12px;padding:8px 16px;margin-bottom:8px">
+                <div class="ud-panel" style="margin-bottom:8px">
+          <div class="ud-panel-title">Recent Activities</div>
+          <div id="dashRecentActivitiesList">
+            <div class="skeleton sk-bar" style="width:100%;height:36px;margin-bottom:8px"></div>
+            <div class="skeleton sk-bar" style="width:100%;height:36px"></div>
+          </div>
+        </div>
+        <div style="background:#fff;border:1px solid #bbf7d0;border-radius:12px;padding:8px 16px;margin-bottom:8px">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
             <div class="snap-icon" style="background:#f0fdf4;color:#16a34a;width:24px;height:24px;border-radius:6px">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
@@ -706,6 +713,14 @@ function loadDashboard() {
   document.getElementById('dashboardWrap').style.display='block';
   setInitialFormDefaults();
 
+  // Last applied date range restore karo — login/refresh pe wahi range dikhe
+  var lastFrom = null, lastTo = null;
+  try {
+    lastFrom = localStorage.getItem('em_lastFrom');
+    lastTo = localStorage.getItem('em_lastTo');
+  } catch(e){}
+  if (lastFrom && lastTo) setDateInputs(lastFrom, lastTo);
+
    var cachedData = null;
   try {
     var cachedStr = localStorage.getItem('em_lastData');
@@ -719,6 +734,7 @@ function loadDashboard() {
     if(cachedData.doerName){SESSION.doerName=cachedData.doerName;}
     setTimeout(function(){
       renderAll(cachedData);
+      if (lastFrom && lastTo) setDateInputs(lastFrom, lastTo);
       setupDefaultFilters();
     }, 0);
   } else {
@@ -726,13 +742,20 @@ function loadDashboard() {
     document.getElementById('mdiv').style.display='none';
     showAllTabSkeletons();
   }
-  fetch(API+'?cb='+Date.now()+sessionParams(),{redirect:'follow'})
+
+  var loadUrl = API+'?cb='+Date.now()+sessionParams();
+  if (lastFrom && lastTo) {
+    loadUrl += '&from='+encodeURIComponent(lastFrom)+'&to='+encodeURIComponent(lastTo);
+  }
+
+  fetch(loadUrl,{redirect:'follow'})
     .then(function(r){return r.json();})
     .then(function(data){
            if(data.doerName){SESSION.doerName=data.doerName;localStorage.setItem('em_doerName',data.doerName);}
       document.getElementById('ldiv').style.display='none';
       document.getElementById('mdiv').style.display='block';
       renderAll(data);
+      if (lastFrom && lastTo) setDateInputs(lastFrom, lastTo);
       setupDefaultFilters();
       startTodayActivityPolling();
       try { localStorage.setItem('em_lastData', JSON.stringify(data)); } catch(e){}
@@ -805,6 +828,11 @@ function applyCustomDateRange(){
   var toStr=inputToDdmmyyyy(tEl.value);
   if(fEl.value>tEl.value){alert('"From" date must be before "To" date.');return;}
 
+  // Is range ko yaad rakho — agli baar login/refresh isi range se khulega
+  try {
+    localStorage.setItem('em_lastFrom', fromStr);
+    localStorage.setItem('em_lastTo', toStr);
+  } catch(e){}
   // Cache key is per date-range, so switching back to a previously-viewed
   // range shows instantly while the fresh fetch happens in the background.
   var rangeCacheKey = 'em_range_' + fromStr + '_' + toStr;
@@ -1093,6 +1121,37 @@ function showRecentActivityMessage(){
   recentActivityIndex++;
 }
 
+function renderDashRecentActivities(data){
+  var tasks = (data.todayTaskList || []).filter(function(t){ return t.status === 'Completed'; });
+  tasks = tasks.slice().reverse();
+  var el = document.getElementById('dashRecentActivitiesList');
+  if (!el) return;
+  if (!tasks.length) {
+    el.innerHTML =
+      '<div style="text-align:center;padding:28px 12px">'+
+        '<div style="width:52px;height:52px;background:#eff6ff;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px">'+
+          '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#93c5fd" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><circle cx="11.5" cy="14.5" r="2.5"></circle><line x1="13.3" y1="16.3" x2="15" y2="18"></line></svg>'+
+        '</div>'+
+        '<div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:4px">No activity recorded today</div>'+
+        '<div style="font-size:11.5px;color:#9aa0ac">You\'re all caught up! Check back later for updates.</div>'+
+      '</div>';
+    return;
+  }
+  function typeIcon(type){ return type==='FMS' ? '📋' : type==='Checklist' ? '✅' : '👥'; }
+  function typeTagStyle(type){
+    if(type==='FMS')return 'background:#eff6ff;color:#1d4ed8';
+    if(type==='Checklist')return 'background:#fff7ed;color:#ea580c';
+    return 'background:#f5f3ff;color:#7c3aed';
+  }
+  el.innerHTML = tasks.slice(0,6).map(function(t){
+    var clientPart = (t.client && t.client !== '-') ? ' for <b>'+t.client+'</b>' : '';
+    return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f1f5f9">'+
+      '<div style="width:32px;height:32px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;'+typeTagStyle(t.type)+'">'+typeIcon(t.type)+'</div>'+
+      '<div style="flex:1;font-size:12.5px;color:#374151">"'+t.task+'" completed'+clientPart+'</div>'+
+    '</div>';
+  }).join('');
+}
+
 function renderRecentActivityBanner(data){
   recentActivityMessages = buildRecentActivityMessages(data);
   recentActivityIndex = 0;
@@ -1165,6 +1224,7 @@ function renderAll(data){
 renderUsersDashboardPanels(data);
   renderDashboardPanels(data);
   renderRecentActivityBanner(data);
+  renderDashRecentActivities(data);
   renderFmsByProcess(data.fmsByProcess||[]);
   renderClByDoer(data.checklistByDoer||[]);
   renderMyScore(data.myScore,data.debugEmail,data.debugDoerName);
@@ -1452,8 +1512,9 @@ function pollTodayActivity(){
     .then(function(r){return r.json();})
     .then(function(data){
       if(!data || !data.todayTaskList) return;
-      if(globalRawData) globalRawData.todayTaskList = data.todayTaskList;
+          if(globalRawData) globalRawData.todayTaskList = data.todayTaskList;
       renderRecentActivityBanner(data);
+      renderDashRecentActivities(data);
       var todayList = data.todayTaskList || [];
       function cnt(type){
         var list = type ? todayList.filter(function(x){return x.type===type;}) : todayList;
