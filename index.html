@@ -5,9 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MIS Scores</title>
 <style>
-/* ============================================================
-   CONFIG — edit these to match your firm's branding
-   ============================================================ */
 :root{
   --teal-dark:#0f6b73;
   --teal:#14919b;
@@ -25,28 +22,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 .frame{width:100%;max-width:900px;background:#fff;border-radius:0;overflow:hidden;box-shadow:0 0 0 rgba(0,0,0,0)}
 
-/* ── Top firm header ─────────────────────────────────── */
 .firm-header{background:var(--teal-header);padding:16px 24px;display:flex;align-items:center;gap:14px}
 .firm-logo{width:44px;height:44px;border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
 .firm-logo img{width:100%;height:100%;object-fit:contain}
 .firm-name{color:#fff;font-size:22px;font-weight:800;text-decoration:underline;text-underline-offset:4px;letter-spacing:.01em}
 
-/* ── MIS Scores strip ────────────────────────────────── */
 .mis-strip{background:var(--teal-light);padding:9px 24px;text-align:center}
 .mis-strip span{color:#fff;font-size:17px;font-weight:700;text-decoration:underline;text-underline-offset:3px}
 
-/* ── Date row ─────────────────────────────────────────── */
 .date-row{display:flex;align-items:center;justify-content:center;gap:16px;padding:18px 24px 8px;background:#fff}
 .date-label{font-size:19px;font-weight:800;color:#1a1a1a}
 .date-box{border:2px solid var(--teal);border-radius:10px;padding:6px 22px;text-align:center;min-width:140px}
 .date-box .tag{font-size:10px;color:#9aa0ac;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
 .date-box .val{font-size:17px;font-weight:800;color:#1a1a1a;margin-top:2px}
 
-/* ── Section title ────────────────────────────────────── */
 .section-title{text-align:center;padding:14px 0 18px;background:#fff}
 .section-title span{font-size:19px;font-weight:800;color:var(--teal-dark);text-decoration:underline;text-underline-offset:3px}
 
-/* ── Employee card ────────────────────────────────────── */
 .card-wrap{background:#fff;padding:0 32px 26px;display:flex;justify-content:center}
 .emp-card{background:#f4faf9;border-radius:10px;padding:22px 26px;display:flex;gap:26px;align-items:flex-start;width:100%;max-width:700px;transition:opacity .4s ease}
 .emp-card.fading{opacity:0}
@@ -68,10 +60,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .val-blue{color:#2563eb}
 .val-red{color:#dc2626}
 
-/* ── Bottom decorative bar ───────────────────────────── */
 .bottom-bar{height:10px;background:var(--teal-light)}
 
 .loading{text-align:center;padding:60px;color:#9aa0ac;font-size:14px}
+.error{text-align:center;padding:40px 20px;color:#dc2626;font-size:13px;line-height:1.6;word-break:break-word}
 </style>
 
 <div class="frame">
@@ -103,7 +95,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 /* ============================================================
    CONFIG — edit only this block
    ============================================================ */
-var API_URL       = 'https://script.google.com/macros/s/AKfycbznU1mdbmjnTIEnsOxKd4cwAN2CvaCoeFqCUCxRY4vlHZ_89oVd7Kt_ZFbXcG8qVrA/exec'; // from script.gs deployment
+var API_URL       = 'https://script.google.com/macros/s/AKfycbznU1mdbmjnTIEnsOxKd4cwAN2CvaCoeFqCUCxRY4vlHZ_89oVd7Kt_ZFbXcG8qVrA/exec';   // .../exec URL of the EM DASHBOARD Code.gs deployment
+var INTERNAL_KEY  = 'ugb-warm-9273-secret';        // must match INTERNAL_WARM_KEY in Code.gs
 var FIRM_NAME     = 'UMESH BOLMAL & ASSOCIATES';
 var FIRM_LOGO_URL = '';           // e.g. 'https://lh3.googleusercontent.com/d/xxxxx=w200' — leave blank for no logo
 var ROTATE_MS     = 8000;         // how many milliseconds each employee is shown
@@ -115,8 +108,8 @@ if (FIRM_LOGO_URL) {
   document.getElementById('firmLogoBox').innerHTML = '<img src="' + FIRM_LOGO_URL + '">';
 }
 
-var AV_COLORS = ['#0f6b73','#14919b','#2563eb','#7c3aed','#ea580c','#16a34a','#db2777','#0891b2'];
 var scoresData = [];
+var staffByName = {};
 var idx = 0;
 
 function ini(n){ var p=String(n).trim().split(' '); return p.length>=2 ? (p[0][0]+p[1][0]).toUpperCase() : String(n).substring(0,2).toUpperCase(); }
@@ -130,51 +123,117 @@ function pctDisplay(raw){
   return (n===0?'0.00':n.toFixed(2)) + '%';
 }
 
-function todayStr(){
-  var d = new Date();
+/* dd/MM/yyyy — the format Code.gs's parseDateString() expects */
+function toBackendDate(d){
+  var dd = ('0' + d.getDate()).slice(-2);
+  var mm = ('0' + (d.getMonth()+1)).slice(-2);
+  return dd + '/' + mm + '/' + d.getFullYear();
+}
+
+/* dd Mon yyyy — for the on-screen From/UpTo boxes */
+function toDisplayDate(d){
   var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   return d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
 }
 
+/* LAST week = Monday to Sunday, the week BEFORE the current one */
+function getLastWeekRange(){
+  var now = new Date();
+  var day = now.getDay();                     // 0=Sun ... 6=Sat
+  var diffToMonday = (day === 0) ? 6 : day - 1;
+  var thisMonday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - diffToMonday);
+
+  var lastMonday = new Date(thisMonday);
+  lastMonday.setDate(thisMonday.getDate() - 7);
+  var lastSunday = new Date(lastMonday);
+  lastSunday.setDate(lastMonday.getDate() + 6);
+
+  return { from: lastMonday, to: lastSunday };
+}
+
+function setWeekDates(range){
+  document.getElementById('dateFrom').textContent = toDisplayDate(range.from);
+  document.getElementById('dateTo').textContent = toDisplayDate(range.to);
+}
+
+function showError(msg){
+  var wrap = document.getElementById('empCard');
+  wrap.innerHTML = '<div class="error">⚠ Data load nahi ho paaya.<br>' + msg + '<br><br>Console (F12) me poora error check karein.</div>';
+}
+
 function loadScores(){
-  fetch(API_URL + '?action=getScores&cb=' + Date.now())
-    .then(function(r){ return r.json(); })
+  if (!API_URL || API_URL.indexOf('PASTE_YOUR_EXEC_URL_HERE') !== -1) {
+    showError('API_URL config nahi hua hai — script ke top me apna .../exec URL daalein.');
+    return;
+  }
+
+  var range = getLastWeekRange();
+  setWeekDates(range);
+
+  var url = API_URL
+    + '?action=getData'
+    + '&from=' + encodeURIComponent(toBackendDate(range.from))
+    + '&to=' + encodeURIComponent(toBackendDate(range.to))
+    + '&internalKey=' + encodeURIComponent(INTERNAL_KEY)
+    + '&cb=' + Date.now();
+
+  fetch(url)
+    .then(function(r){
+      if(!r.ok) throw new Error('HTTP ' + r.status + ' from Apps Script URL');
+      return r.json();
+    })
     .then(function(data){
-      if(!data.ok) return;
+      if (data.authorized === false) {
+        showError('Authorization fail hui — INTERNAL_KEY galat hai ya Code.gs ke INTERNAL_WARM_KEY se match nahi karta.');
+        return;
+      }
+      if (data.error) {
+        console.error('Backend error', data);
+        showError('Backend error: ' + data.error);
+        return;
+      }
+
+      // Build name -> {designation, photoUrl} lookup from staffData
+      staffByName = {};
+      (data.staffData || []).forEach(function(s){
+        if (s.name) staffByName[s.name.trim().toUpperCase()] = s;
+      });
+
       scoresData = (data.scoresData || []).filter(function(r){ return r.employee; });
       if (idx >= scoresData.length) idx = 0;
       renderCard();
     })
-    .catch(function(){});
+    .catch(function(err){
+      console.error('Fetch failed:', err);
+      showError(err.message + ' — check: deployment "Anyone" access hai? URL sahi hai? CORS block to nahi ho raha?');
+    });
 }
 
 function renderCard(){
   var wrap = document.getElementById('empCard');
-  document.getElementById('dateFrom').textContent = todayStr();
-  document.getElementById('dateTo').textContent = todayStr();
 
   if(!scoresData.length){
-    wrap.innerHTML = '<div class="loading">No score data</div>';
+    wrap.innerHTML = '<div class="loading">No score data for last week</div>';
     return;
   }
 
   var r = scoresData[idx];
+  var staff = staffByName[String(r.employee).trim().toUpperCase()] || {};
   var plan = Number(r.totalPlan) || 0;
   var done = Number(r.totalCompleted) || 0;
   var onTime = Number(r.onTimeCompleted) || 0;
   var pending = Math.max(0, plan - done);
   var pctCompletion = pctNum(r.workNotDonePct);
-  var pctOnTime = pctNum(r.workNotDoneOnTimePct);
 
-  var photoHtml = r.photoUrl
-    ? '<img src="' + r.photoUrl + '">'
+  var photoHtml = staff.photoUrl
+    ? '<img src="' + staff.photoUrl + '">'
     : '<div class="initials">' + ini(r.employee) + '</div>';
 
   wrap.innerHTML =
     '<div class="emp-photo">' + photoHtml + '</div>' +
     '<div class="emp-info">' +
       '<div class="emp-name">' + r.employee + '</div>' +
-      '<div class="emp-desig">' + (r.designation || '') + '</div>' +
+      '<div class="emp-desig">' + (staff.designation || '') + '</div>' +
       '<table class="stat-table">' +
         '<tr><td>Task Allocated</td><td class="val-neutral">' + plan + '</td></tr>' +
         '<tr><td>Task Completed</td><td class="val-green">' + done + '</td></tr>' +
