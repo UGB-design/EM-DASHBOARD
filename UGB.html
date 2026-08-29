@@ -808,9 +808,9 @@ body.body-modal-lock{overflow:hidden}
         Chartered Accountants
         <span style="width:28px;height:1px;background:#d4af5a;opacity:.6"></span>
       </div>
-      <div class="auth-sub" style="margin-top:2px">Sign in with your company Google account to continue to your dashboard</div>
-      <div class="auth-btn-wrap" id="googleSignInBtn"></div>
-      <div class="auth-loading" id="authLoadingTxt">Verifying access…</div>
+           <div class="auth-sub" id="authSubText" style="margin-top:2px;display:none">Sign in with your company Google account to continue to your dashboard</div>
+      <div class="auth-btn-wrap" id="googleSignInBtn" style="display:none"></div>
+      <div class="auth-loading" id="authLoadingTxt" style="display:block">Checking access…</div>
      <div style="margin-top:20px"></div>
      <div style="border-top:1px solid #eef1f6;padding-top:20px;margin-top:6px;display:flex;justify-content:space-around;gap:10px">
         <div style="display:flex;flex-direction:column;align-items:center;gap:7px">
@@ -2099,7 +2099,7 @@ function loadUserCache(email) {
     showSignIn();
   }
   
-  function initGoogleAuth() {
+   function initGoogleAuth() {
     if (!window.google || !google.accounts || !google.accounts.id) {
       setTimeout(initGoogleAuth, 200);
       return;
@@ -2116,7 +2116,15 @@ function loadUserCache(email) {
       verifyAndEnter();
     } else {
       showSignIn();
-      google.accounts.id.prompt();
+      google.accounts.id.prompt(function(notification) {
+        // Silent One Tap sign-in nahi chal paya (dismissed/skipped/not shown)
+        // — tabhi manual button fallback ke roop mein dikhao
+        if (notification.isNotDisplayed() || notification.isSkippedMoment() || notification.isDismissedMoment()) {
+          document.getElementById('authSubText').style.display = 'block';
+          document.getElementById('googleSignInBtn').style.display = 'block';
+          document.getElementById('authLoadingTxt').style.display = 'none';
+        }
+      });
     }
   }
   
