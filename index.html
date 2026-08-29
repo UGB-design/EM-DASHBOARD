@@ -20,7 +20,7 @@
 html,body{height:100%}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0b1220;display:flex;align-items:center;justify-content:center;overflow:hidden}
 
-.frame{width:100%;max-width:900px;background:#fff;border-radius:0;overflow:hidden;box-shadow:0 0 0 rgba(0,0,0,0)}
+.frame{width:100%;max-width:1150px;background:#fff;border-radius:0;overflow:hidden;box-shadow:0 0 0 rgba(0,0,0,0)}
 
 .firm-header{background:var(--teal-header);padding:16px 24px;display:flex;align-items:center;gap:14px}
 .firm-logo{width:44px;height:44px;border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
@@ -44,9 +44,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 .section-title{text-align:center;padding:14px 0 18px;background:#fff}
 .section-title span{font-size:19px;font-weight:800;color:var(--teal-dark);text-decoration:underline;text-underline-offset:3px}
-
-.card-wrap{background:#fff;padding:0 32px 26px;display:flex;justify-content:center}
-.emp-card{background:#f4faf9;border-radius:10px;padding:22px 26px;display:flex;gap:26px;align-items:flex-start;width:100%;max-width:700px;transition:opacity .4s ease}
+.card-wrap{background:#fff;padding:0 32px 26px;display:flex;justify-content:center;max-width:1000px;margin:0 auto}
+.emp-card{background:#f4faf9;border-radius:10px;padding:22px 26px;display:flex;gap:26px;align-items:flex-start;width:100%;max-width:900px;transition:opacity .4s ease}
 .emp-card.fading{opacity:0}
 
 .emp-photo{width:150px;height:170px;border-radius:8px;border:3px solid var(--teal);overflow:hidden;flex-shrink:0;background:linear-gradient(135deg,#0b1437 0%,#1e3a6d 100%);display:flex;align-items:center;justify-content:center}
@@ -100,7 +99,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="section-title"><span>Employee Task Report</span></div>
   <div class="card-wrap">
     <div class="emp-card" id="empCard">
-      <div class="loading">Loading…</div>
+      <div class="loading">Loading employee data…</div>
     </div>
   </div>
 
@@ -176,12 +175,11 @@ function setWeekDates(range){
 
 function showError(msg){
   var wrap = document.getElementById('empCard');
-  wrap.innerHTML = '<div class="error">⚠ Data load nahi ho paaya.<br>' + msg + '<br><br>Console (F12) me poora error check karein.</div>';
+  wrap.innerHTML = '<div class="error">⚠ Unable to load data.<br>' + msg + '<br><br>Please check the browser console (F12) for full error details.</div>';
 }
-
 function loadScores(){
   if (!API_URL || API_URL.indexOf('PASTE_YOUR_EXEC_URL_HERE') !== -1) {
-    showError('API_URL config nahi hua hai — script ke top me apna .../exec URL daalein.');
+       showError('API URL is not configured — please set your .../exec URL at the top of the script.');
     return;
   }
 
@@ -204,7 +202,7 @@ function loadScores(){
     })
     .then(function(data){
       if (data.authorized === false) {
-        showError('Authorization fail hui — INTERNAL_KEY galat hai ya Code.gs ke INTERNAL_WARM_KEY se match nahi karta.');
+               showError('Authorization failed — the INTERNAL_KEY does not match the INTERNAL_WARM_KEY in Code.gs.');
         return;
       }
       if (data.error) {
@@ -225,7 +223,7 @@ function loadScores(){
     })
     .catch(function(err){
       console.error('Fetch failed:', err);
-      showError(err.message + ' — check: deployment "Anyone" access hai? URL sahi hai? CORS block to nahi ho raha?');
+      showError(err.message + ' — please verify: deployment access is set to "Anyone", the URL is correct, and no CORS issue is blocking the request.');
     });
 }
 
@@ -233,7 +231,7 @@ function renderCard(){
   var wrap = document.getElementById('empCard');
 
   if(!scoresData.length){
-    wrap.innerHTML = '<div class="loading">No score data for last week</div>';
+    wrap.innerHTML = '<div class="loading">No task data available for the selected period.</div>';
     return;
   }
 
@@ -300,7 +298,7 @@ btnApply.addEventListener('click', function(){
   var fromVal = document.getElementById('customFrom').value;
   var toVal   = document.getElementById('customTo').value;
   if(!fromVal || !toVal){
-    alert('Dono dates select karein.');
+    alert('Please select both From and To dates.');
     return;
   }
   var f = fromVal.split('-'), t = toVal.split('-');
