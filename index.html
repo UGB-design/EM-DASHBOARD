@@ -35,6 +35,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .date-box{border:2px solid var(--teal);border-radius:10px;padding:6px 22px;text-align:center;min-width:140px}
 .date-box .tag{font-size:10px;color:#9aa0ac;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
 .date-box .val{font-size:17px;font-weight:800;color:#1a1a1a;margin-top:2px}
+  .mode-row{display:flex;align-items:center;justify-content:center;gap:10px;padding:12px 24px 0;background:#fff}
+.mode-btn{border:2px solid var(--teal);background:#fff;color:var(--teal-dark);font-weight:700;font-size:13px;padding:7px 18px;border-radius:20px;cursor:pointer;transition:.2s}
+.mode-btn.active{background:var(--teal);color:#fff}
+.custom-date-row{display:flex;align-items:center;justify-content:center;gap:10px;padding:12px 24px 0;background:#fff}
+.custom-date-row input[type="date"]{border:2px solid var(--teal);border-radius:8px;padding:6px 10px;font-size:14px;font-weight:700;color:#1a1a1a}
+.custom-date-row button{border:none;background:var(--teal-dark);color:#fff;font-weight:700;font-size:13px;padding:8px 18px;border-radius:8px;cursor:pointer}
 
 .section-title{text-align:center;padding:14px 0 18px;background:#fff}
 .section-title span{font-size:19px;font-weight:800;color:var(--teal-dark);text-decoration:underline;text-underline-offset:3px}
@@ -74,14 +80,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <div class="mis-strip"><span>MIS Scores</span></div>
 
-  <div class="date-row">
+    <div class="date-row">
     <div class="date-label">Date :</div>
     <div class="date-box"><div class="tag">From</div><div class="val" id="dateFrom">—</div></div>
     <div class="date-box"><div class="tag">UpTo</div><div class="val" id="dateTo">—</div></div>
   </div>
 
-  <div class="section-title"><span>Employee Task Report</span></div>
+  <div class="mode-row">
+    <button class="mode-btn active" id="btnLive">Live (Last Week)</button>
+    <button class="mode-btn" id="btnCustom">Custom Range</button>
+  </div>
 
+  <div class="custom-date-row" id="customDateRow" style="display:none">
+    <input type="date" id="customFrom">
+    <input type="date" id="customTo">
+    <button id="btnApply">Apply</button>
+  </div>
+
+  <div class="section-title"><span>Employee Task Report</span></div>
   <div class="card-wrap">
     <div class="emp-card" id="empCard">
       <div class="loading">Loading…</div>
@@ -98,7 +114,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 var API_URL       = 'https://script.google.com/macros/s/AKfycbznU1mdbmjnTIEnsOxKd4cwAN2CvaCoeFqCUCxRY4vlHZ_89oVd7Kt_ZFbXcG8qVrA/exec';   // .../exec URL of the EM DASHBOARD Code.gs deployment
 var INTERNAL_KEY  = 'ugb-warm-9273-secret';        // must match INTERNAL_WARM_KEY in Code.gs
 var FIRM_NAME     = 'UMESH BOLMAL & ASSOCIATES';
-var FIRM_LOGO_URL = '';           // e.g. 'https://lh3.googleusercontent.com/d/xxxxx=w200' — leave blank for no logo
+var FIRM_LOGO_URL = 'https://lh3.googleusercontent.com/d/158_HBHOHewJ0wG2BY3ZiBdT_uD7eoDQX=w200';
 var ROTATE_MS     = 8000;         // how many milliseconds each employee is shown
 var REFRESH_MS    = 120000;       // how often fresh data is pulled from the sheet
 /* ============================================================ */
@@ -111,6 +127,8 @@ if (FIRM_LOGO_URL) {
 var scoresData = [];
 var staffByName = {};
 var idx = 0;
+var currentMode = 'live';      // 'live' ya 'custom'
+var customRange = null;        // Apply dabane par set hoga
 
 function ini(n){ var p=String(n).trim().split(' '); return p.length>=2 ? (p[0][0]+p[1][0]).toUpperCase() : String(n).substring(0,2).toUpperCase(); }
 
@@ -167,7 +185,9 @@ function loadScores(){
     return;
   }
 
-  var range = getLastWeekRange();
+   if (currentMode === 'custom' && !customRange) return;
+
+  var range = (currentMode === 'custom') ? customRange : getLastWeekRange();
   setWeekDates(range);
 
   var url = API_URL
@@ -255,6 +275,41 @@ function nextEmployee(){
     wrap.classList.remove('fading');
   }, 400);
 }
+
+var btnLive = document.getElementById('btnLive');
+var btnCustom = document.getElementById('btnCustom');
+var customDateRow = document.getElementById('customDateRow');
+var btnApply = document.getElementById('btnApply');
+
+btnLive.addEventListener('click', function(){
+  currentMode = 'live';
+  btnLive.classList.add('active');
+  btnCustom.classList.remove('active');
+  customDateRow.style.display = 'none';
+  loadScores();
+});
+
+btnCustom.addEventListener('click', function(){
+  currentMode = 'custom';
+  btnCustom.classList.add('active');
+  btnLive.classList.remove('active');
+  customDateRow.style.display = 'flex';
+});
+
+btnApply.addEventListener('click', function(){
+  var fromVal = document.getElementById('customFrom').value;
+  var toVal   = document.getElementById('customTo').value;
+  if(!fromVal || !toVal){
+    alert('Dono dates select karein.');
+    return;
+  }
+  var f = fromVal.split('-'), t = toVal.split('-');
+  customRange = {
+    from: new Date(f[0], f[1]-1, f[2]),
+    to:   new Date(t[0], t[1]-1, t[2])
+  };
+  loadScores();
+});
 
 loadScores();
 setInterval(loadScores, REFRESH_MS);
