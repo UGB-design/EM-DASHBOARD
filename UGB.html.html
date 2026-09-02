@@ -1044,15 +1044,10 @@ allRows.sort((a,b)=>{
     return (da?da.getTime():0) - (db?db.getTime():0);
   });
 
-  const totalPages = Math.max(1, Math.ceil(allRows.length / ATTENDANCE_PAGE_SIZE));
-  if(attendancePage > totalPages) attendancePage = totalPages;
-  const start = (attendancePage - 1) * ATTENDANCE_PAGE_SIZE;
-  const pageRows = allRows.slice(start, start + ATTENDANCE_PAGE_SIZE);
-
-  pageRows.forEach((r, i)=>{
+    allRows.forEach((r, i)=>{
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td class="num-cell">${start + i + 1}</td>
+      <td class="num-cell">${i + 1}</td>
       <td><div class="person"><div class="avatar" style="background:${colorFor(r["Emp Name"])}">${initials(r["Emp Name"])}</div>
         <div class="name">${r["Emp Name"]||""}</div></div></td>
       <td>${r["Date_f"]||r["Date"]||"–"}</td>
@@ -1063,8 +1058,6 @@ allRows.sort((a,b)=>{
     `;
     body.appendChild(tr);
   });
-
-  renderAttendancePagination(totalPages);
 }
 
 function renderAttendancePagination(totalPages){
@@ -1426,13 +1419,7 @@ function renderBalance(filterText=""){
     renderBalancePagination(0);
     return;
   }
-
-  const totalPages = Math.max(1, Math.ceil(rows.length / BALANCE_PAGE_SIZE));
-  if(balancePage > totalPages) balancePage = totalPages;
-  const start = (balancePage - 1) * BALANCE_PAGE_SIZE;
-  const pageRows = rows.slice(start, start + BALANCE_PAGE_SIZE);
-
-  pageRows.forEach(r=>{
+   rows.forEach(r=>{
     const staff = staffByEmail(r["Email"]);
     const displayName = staff ? staff["Name"] : (r["Email"]||"").split("@")[0];
     const tr = document.createElement("tr");
@@ -1448,8 +1435,6 @@ function renderBalance(filterText=""){
     `;
     body.appendChild(tr);
   });
-
-  renderBalancePagination(totalPages);
 }
 
 function renderBalancePagination(totalPages){
@@ -1502,13 +1487,8 @@ function renderDeductions(filterText=""){
     body.innerHTML = `<tr><td colspan="8"><div class="empty"><b>No deduction records${monthKey?" for this month":""}</b></div></td></tr>`;
     renderDeductionsPagination(0);
   } else {
-    const totalPages = Math.max(1, Math.ceil(rows.length / DEDUCTIONS_PAGE_SIZE));
-    if(deductionsPage > totalPages) deductionsPage = totalPages;
-    const start = (deductionsPage - 1) * DEDUCTIONS_PAGE_SIZE;
-    const pageRows = rows.slice(start, start + DEDUCTIONS_PAGE_SIZE);
-
-    pageRows.forEach((d, i)=>{
-      const idx = start + i;
+        rows.forEach((d, i)=>{
+      const idx = i;
       const ded = Number(d["DEDUCTION AMOUNT"])||0;
       const tr = document.createElement("tr");
       tr.innerHTML = `
@@ -1524,8 +1504,6 @@ function renderDeductions(filterText=""){
       `;
       body.appendChild(tr);
     });
-
-    renderDeductionsPagination(totalPages);
   }
 
   document.querySelectorAll(".slip-btn").forEach(btn=>{
@@ -1543,24 +1521,6 @@ function renderDeductions(filterText=""){
     <div class="card"><div class="eyebrow">Total Deduction</div><div class="num red">${money(totalDed)}</div><div class="sub">performance deduction</div></div>
   `;
 }
-
-function renderDeductionsPagination(totalPages){
-  const wrap = document.getElementById("deductionsPagination");
-  if(!wrap) return;
-  if(totalPages <= 0){ wrap.innerHTML = ""; return; }
-  wrap.innerHTML = `
-    <button class="btn ghost sm" id="dedPrevBtn" ${deductionsPage<=1?"disabled":""}>Previous</button>
-    <span style="font-size:12px;color:var(--ink-soft);margin:0 10px;">Page ${deductionsPage} of ${totalPages}</span>
-    <button class="btn ghost sm" id="dedNextBtn" ${deductionsPage>=totalPages?"disabled":""}>Next</button>
-  `;
-  document.getElementById("dedPrevBtn").addEventListener("click", ()=>{
-    if(deductionsPage>1){ deductionsPage--; renderDeductions(document.getElementById("searchDeductions").value); }
-  });
-  document.getElementById("dedNextBtn").addEventListener("click", ()=>{
-    if(deductionsPage<totalPages){ deductionsPage++; renderDeductions(document.getElementById("searchDeductions").value); }
-  });
-}
-
 function daysInMonth(monthName, year){
   const idx = MONTH_ORDER.indexOf(monthName);
   if(idx===-1 || !year) return 30;
