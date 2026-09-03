@@ -1383,9 +1383,12 @@ body.body-modal-lock{overflow:hidden}
   var currentUserEmail = null;
   
   // ── Helpers ──────────────────────────────────────────────────────────────────
-  function ini(n) {
+     function ini(n) {
     var p = String(n).trim().split(' ');
     return p.length >= 2 ? (p[0][0] + p[1][0]).toUpperCase() : String(n).substring(0, 2).toUpperCase();
+  }
+  function titleCase(s) {
+    return String(s || '').toLowerCase().replace(/\b\w/g, function(c) { return c.toUpperCase(); });
   }
   function nb(v) {
     var n = Number(v) || 0;
@@ -3102,13 +3105,14 @@ function renderClByDoer(rows) {
     updateSelectOptions('dlFilterDoer', dlDoers);
   }
   
-  function updateSelectOptions(id, setObj) {
+   function updateSelectOptions(id, setObj) {
     var sel = document.getElementById(id);
     var currentVal = sel.value;
         sel.innerHTML = '<option value="All">' + (id.includes('Doer') ? 'All Doers' : id.includes('Dept') ? 'All Depts' : id.includes('Type') ? 'All Types' : 'All') + '</option>';
     Array.from(setObj).sort().forEach(function(v) {
       var o = document.createElement('option');
-      o.value = v; o.textContent = v;
+      o.value = v;
+      o.textContent = (id.includes('Doer') || id.includes('Dept')) ? titleCase(v) : v;
       if (v === currentVal) o.selected = true;
       sel.appendChild(o);
     });
@@ -3159,10 +3163,10 @@ function renderClByDoer(rows) {
       negScoreCard('Work Not Done %', clWorkNotDonePct) +
       negScoreCard('Work Not Done On Time %', clWorkNotDoneOnTimePct);
   
-    document.getElementById('clTableBody').innerHTML = filtered.map(function(r, i) {
+      document.getElementById('clTableBody').innerHTML = filtered.map(function(r, i) {
       return '<tr><td>' + (i + 1) + '</td>' +
-        '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(r.doer) + '</div>' + r.doer + '</div></td>' +
-        '<td><span class="dept-pill">' + r.dept + '</span></td>' +
+        '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(r.doer) + '</div>' + titleCase(r.doer) + '</div></td>' +
+        '<td><span class="dept-pill">' + titleCase(r.dept) + '</span></td>' +
         '<td>' + r.task + '</td>' +
         '<td><span class="freq-pill">' + r.freq + '</span></td>' +
         '<td style="white-space:nowrap">' + r.plannedDate + '</td>' +
