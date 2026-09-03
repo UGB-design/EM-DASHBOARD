@@ -1216,8 +1216,10 @@ body.body-modal-lock{overflow:hidden}
           <option value="Done">Done</option>
           <option value="Pending">Pending</option>
         </select>
-        <label>Freq:</label>
+               <label>Freq:</label>
         <select id="clFilterFreq" onchange="applyChecklistFilters()"><option value="All">All Freq</option></select>
+        <label>Type:</label>
+        <select id="clFilterType" onchange="applyChecklistFilters()"><option value="All">All Types</option></select>
       </div>
       <div class="meta-info-badge" id="clMetaBadges"></div>
       <div class="stat-grid" id="clStatsGrid"></div>
@@ -3080,14 +3082,15 @@ function renderClByDoer(rows) {
   }
   
   // ── Checklist & Delegation filter population ──────────────────────────────────
-  function populateChecklistDelegationFilters() {
-    var clDoers = new Set(), clDepts = new Set(), clFreqs = new Set();
+   function populateChecklistDelegationFilters() {
+    var clDoers = new Set(), clDepts = new Set(), clFreqs = new Set(), clTypes = new Set();
     if (globalRawData.checklistData) {
-      globalRawData.checklistData.forEach(function(r) { clDoers.add(r.doer); clDepts.add(r.dept); clFreqs.add(r.freq); });
+      globalRawData.checklistData.forEach(function(r) { clDoers.add(r.doer); clDepts.add(r.dept); clFreqs.add(r.freq); clTypes.add(r.type || 'General Checklist'); });
     }
     updateSelectOptions('clFilterDoer', clDoers);
     updateSelectOptions('clFilterDept', clDepts);
     updateSelectOptions('clFilterFreq', clFreqs);
+    updateSelectOptions('clFilterType', clTypes);
     var dlDoers = new Set();
     if (globalRawData.delegationData) {
       // Doer dropdown should only reflect doers with visible (non "Week Shifted") rows
@@ -3099,7 +3102,7 @@ function renderClByDoer(rows) {
   function updateSelectOptions(id, setObj) {
     var sel = document.getElementById(id);
     var currentVal = sel.value;
-    sel.innerHTML = '<option value="All">' + (id.includes('Doer') ? 'All Doers' : id.includes('Dept') ? 'All Depts' : 'All') + '</option>';
+        sel.innerHTML = '<option value="All">' + (id.includes('Doer') ? 'All Doers' : id.includes('Dept') ? 'All Depts' : id.includes('Type') ? 'All Types' : 'All') + '</option>';
     Array.from(setObj).sort().forEach(function(v) {
       var o = document.createElement('option');
       o.value = v; o.textContent = v;
@@ -3117,17 +3120,19 @@ function renderClByDoer(rows) {
     return rows;
   }
   // ── Checklist Tab ─────────────────────────────────────────────────────────────
-  function applyChecklistFilters() {
+    function applyChecklistFilters() {
     var dFilter    = document.getElementById('clFilterDoer').value;
     var deptFilter = document.getElementById('clFilterDept').value;
     var sFilter    = document.getElementById('clFilterStatus').value;
     var fFilter    = document.getElementById('clFilterFreq').value;
+    var tFilter    = document.getElementById('clFilterType').value;
     var data = globalRawData ? (globalRawData.checklistData || []) : [];
     var filtered = data.filter(function(r) {
       return (dFilter === 'All' || r.doer === dFilter) &&
              (deptFilter === 'All' || r.dept === deptFilter) &&
              (sFilter === 'All' || r.status === sFilter) &&
-             (fFilter === 'All' || r.freq === fFilter);
+             (fFilter === 'All' || r.freq === fFilter) &&
+             (tFilter === 'All' || (r.type || 'General Checklist') === tFilter);
     });
     filtered.sort(function(a, b) { return String(a.plannedDate).localeCompare(String(b.plannedDate)); });
     var doneCount = filtered.filter(function(r) { return r.status === 'Done'; }).length;
