@@ -3082,10 +3082,13 @@ function renderClByDoer(rows) {
   }
   
   // ── Checklist & Delegation filter population ──────────────────────────────────
-   function populateChecklistDelegationFilters() {
+      function populateChecklistDelegationFilters() {
     var clDoers = new Set(), clDepts = new Set(), clFreqs = new Set(), clTypes = new Set();
     if (globalRawData.checklistData) {
-      globalRawData.checklistData.forEach(function(r) { clDoers.add(r.doer); clDepts.add(r.dept); clFreqs.add(r.freq); clTypes.add(r.type || 'General Checklist'); });
+      globalRawData.checklistData.forEach(function(r) {
+        clDoers.add(r.doer); clDepts.add(r.dept); clFreqs.add(r.freq);
+        if (r.type && r.type.trim() !== '') clTypes.add(r.type.trim());
+      });
     }
     updateSelectOptions('clFilterDoer', clDoers);
     updateSelectOptions('clFilterDept', clDepts);
@@ -3128,11 +3131,11 @@ function renderClByDoer(rows) {
     var tFilter    = document.getElementById('clFilterType').value;
     var data = globalRawData ? (globalRawData.checklistData || []) : [];
     var filtered = data.filter(function(r) {
-      return (dFilter === 'All' || r.doer === dFilter) &&
+            return (dFilter === 'All' || r.doer === dFilter) &&
              (deptFilter === 'All' || r.dept === deptFilter) &&
              (sFilter === 'All' || r.status === sFilter) &&
              (fFilter === 'All' || r.freq === fFilter) &&
-             (tFilter === 'All' || (r.type || 'General Checklist') === tFilter);
+             (tFilter === 'All' || r.type === tFilter);
     });
     filtered.sort(function(a, b) { return String(a.plannedDate).localeCompare(String(b.plannedDate)); });
     var doneCount = filtered.filter(function(r) { return r.status === 'Done'; }).length;
