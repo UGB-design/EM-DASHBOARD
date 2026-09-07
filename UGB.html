@@ -424,6 +424,7 @@
   }
   
   /* ── AUTH / DATE RANGE / USER CHIP ───────────────────────────── */
+    #authScreen{display:none}
 .auth-screen{position:fixed;inset:0;background:linear-gradient(135deg,rgba(5,10,30,.35) 0%,rgba(5,10,30,.2) 50%,rgba(5,10,30,.4) 100%),url('https://lh3.googleusercontent.com/d/1EtIeK1_FbUaPZc9fjsmdOzYjAFME2JtO=w1920') center/cover no-repeat;display:flex;align-items:center;justify-content:center;z-index:9999}
 .denied-screen{position:fixed;inset:0;background:linear-gradient(135deg,#eef2f9 0%,#eef4f6 28%,#eef1ea 58%,#e6ecf3 100%);display:flex;align-items:center;justify-content:center;z-index:9999}
  .auth-box,.denied-box{background:#fff;border-radius:18px;padding:40px 44px;box-shadow:0 20px 60px rgba(0,0,0,.35);text-align:center;max-width:380px}
@@ -2103,28 +2104,41 @@ function loadUserCache(email) {
     if (logoutBtnEl2) logoutBtnEl2.style.display = 'none';
     showSignIn();
   }
-  
   function initGoogleAuth() {
-    if (!window.google || !google.accounts || !google.accounts.id) {
-      setTimeout(initGoogleAuth, 200);
-      return;
-    }
-    google.accounts.id.initialize({
-      client_id: GOOGLE_CLIENT_ID,
-      callback: handleCredentialResponse,
-      auto_select: true
-    });
-    var saved = null;
-    try { saved = localStorage.getItem('emdash_idtoken'); } catch (e) {}
-    if (saved) {
-      currentIdToken = saved;
-      verifyAndEnter();
-    } else {
-      showSignIn();
-      google.accounts.id.prompt();
-    }
+  if (!window.google || !google.accounts || !google.accounts.id) {
+    setTimeout(initGoogleAuth, 200);
+    return;
   }
-  
+  google.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    callback: handleCredentialResponse,
+    auto_select: true,
+    use_fedcm_for_prompt: true,
+    itp_support: true,
+    cancel_on_tap_outside: false
+  });
+
+  var saved = null;
+  try { saved = localStorage.getItem('emdash_idtoken'); } catch (e) {}
+  if (saved) {
+    // Already logged in earlier — sign-in screen bilkul skip, seedha data
+    currentIdToken = saved;
+    verifyAndEnter();
+    return;
+  }
+
+  // Naya browser/session — pehle silently try karo (bina button dikhaye)
+  google.accounts.id.prompt(function (notification) {
+    if (notification.isNotDisplayed && notification.isNotDisplayed()) {
+      // Silent auto-login possible nahi hua — tabhi fallback button dikhao
+      showSignIn();
+    } else if (notification.isSkippedMoment && notification.isSkippedMoment()) {
+      showSignIn();
+    }
+    // Agar successfully auto-select ho gaya to handleCredentialResponse
+    // apne aap call ho jaayega — koi screen dikhegi hi nahi.
+  });
+} 
   // ── Delegation status helpers ────────────────────────────────────────────────
   // The sheet's own "Status" column (Completed / Pending / Week Shifted) is the
   // single source of truth. We ONLY hide rows whose sheet status is
