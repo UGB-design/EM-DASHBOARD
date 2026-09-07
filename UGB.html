@@ -78,6 +78,11 @@
   .sidebar.open{transform:translateX(0)}
   .sb-toggle-btn{display:inline-flex !important}
   .main-wrap{padding:0 4px}
+     .fc-toggle-row{display:flex;gap:8px;background:#eef1f6;padding:6px;border-radius:14px;width:fit-content;margin:16px 0}
+.fc-toggle-btn{display:flex;align-items:center;gap:8px;padding:9px 20px;border-radius:10px;border:none;background:transparent;color:#64748b;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s}
+.fc-toggle-btn svg{width:16px;height:16px}
+.fc-toggle-btn:hover:not(.active){color:#1a1a1a}
+.fc-toggle-btn.active{background:#fff;color:#1e3a6d;box-shadow:0 3px 10px rgba(0,0,0,.1)}
 }
 
   /* OVERVIEW WIDGETS (performers / task chart / bottleneck / attendance) */
@@ -907,16 +912,11 @@ body.body-modal-lock{overflow:hidden}
           <span class="sb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"></rect><rect x="14" y="3" width="7" height="5" rx="1"></rect><rect x="14" y="12" width="7" height="9" rx="1"></rect><rect x="3" y="16" width="7" height="5" rx="1"></rect></svg></span>
           <span class="sb-label">Summary</span>
         </button>
-        <button class="sb-item" data-tab="fms" onclick="switchTab('fms',this)">
-          <span class="sb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></span>
-          <span class="sb-label">FMS Steps</span>
-          <span class="sb-count" id="badgeFms" style="display:none">0</span>
-        </button>
-        <button class="sb-item" data-tab="checklist" onclick="switchTab('checklist',this)">
-          <span class="sb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></span>
-          <span class="sb-label">Checklist</span>
-          <span class="sb-count" id="badgeChecklist" style="display:none">0</span>
-        </button>
+        <button class="sb-item" data-tab="fmschecklist" onclick="switchTab('fmschecklist',this)">
+  <span class="sb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></span>
+  <span class="sb-label">FMS + Checklist</span>
+  <span class="sb-count" id="badgeFmsChecklist" style="display:none">0</span>
+</button>
         <button class="sb-item" data-tab="delegation" onclick="switchTab('delegation',this)">
           <span class="sb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21v-1a7 7 0 0 1 14 0v1"></path><path d="M19 8h3M20.5 6.5v3"></path></svg></span>
           <span class="sb-label">Delegation</span>
@@ -1182,56 +1182,70 @@ body.body-modal-lock{overflow:hidden}
       </div>
     </div>
   
-    <!-- FMS STEPS TAB -->
-    <div class="tab-content" id="tab-fms">
-      <div class="filter-bar">
-        <label>FMS Type:</label>
-        <select id="fmsFilterType" onchange="applyFmsFilters()"><option value="All">All Types</option></select>
-        <label>Doer:</label>
-        <select id="fmsFilterDoer" onchange="applyFmsFilters()"><option value="All">All Doers</option></select>
-        <label>Status:</label>
-        <select id="fmsFilterStatus" onchange="applyFmsFilters()">
-          <option value="All">All Status</option>
-          <option value="Completed">Completed</option>
-          <option value="Pending">Pending</option>
-        </select>
-        <label style="display:none">Step:</label>
-        <select id="fmsFilterStep" onchange="applyFmsFilters()" style="display:none"><option value="All">All Steps</option></select>
-      </div>
-      <div class="meta-info-badge" id="fmsMetaBadges"></div>
-      <div class="stat-grid" id="fmsStatsGrid"></div>
-     <div id="fmsCardsContainer"></div>
-    </div>
-  
-    <!-- CHECKLIST TAB -->
-    <div class="tab-content" id="tab-checklist">
+<!-- FMS + CHECKLIST COMBINED TAB -->
+<div class="tab-content" id="tab-fmschecklist">
+  <div class="fc-toggle-row">
+    <button class="fc-toggle-btn active" id="fcBtnFms" onclick="switchFcView('fms')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+      FMS Steps
+    </button>
+    <button class="fc-toggle-btn" id="fcBtnChecklist" onclick="switchFcView('checklist')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 12l2 2 4-4"></path></svg>
+      Checklist
+    </button>
+  </div>
+
+  <!-- ── FMS VIEW ── -->
+  <div id="fcViewFms">
     <div class="filter-bar">
-        <label>Doer:</label>
-        <select id="clFilterDoer" onchange="applyChecklistFilters()"><option value="All">All Doers</option></select>
-        <label>Dept:</label>
-        <select id="clFilterDept" onchange="applyChecklistFilters()"><option value="All">All Depts</option></select>
-        <label>Status:</label>
-        <select id="clFilterStatus" onchange="applyChecklistFilters()">
-          <option value="All">All Status</option>
-          <option value="Done">Done</option>
-          <option value="Pending">Pending</option>
-        </select>
-               <label>Freq:</label>
-        <select id="clFilterFreq" onchange="applyChecklistFilters()"><option value="All">All Freq</option></select>
-        <label>Type:</label>
-        <select id="clFilterType" onchange="applyChecklistFilters()"><option value="All">All Types</option></select>
-      </div>
-      <div class="meta-info-badge" id="clMetaBadges"></div>
-      <div class="stat-grid" id="clStatsGrid"></div>
-      <div class="tc">
-          <table>
-            <thead>
-              <tr><th>#</th><th>Doer</th><th>Dept</th><th>Task Details</th><th>Freq</th><th>Planned Date</th><th>Actual Date</th><th>Status</th></tr>
-            </thead>
-           <tbody id="clTableBody"><tr><td colspan="8"><div class="skel skel-line" style="width:100%;height:16px;margin:8px 0"></div><div class="skel skel-line" style="width:90%;height:16px;margin:8px 0"></div><div class="skel skel-line" style="width:95%;height:16px;margin:8px 0"></div><div class="skel skel-line" style="width:85%;height:16px;margin:8px 0"></div></td></tr></tbody>
-          </table>
-      </div>
+      <label>FMS Type:</label>
+      <select id="fmsFilterType" onchange="applyFmsFilters()"><option value="All">All Types</option></select>
+      <label>Doer:</label>
+      <select id="fmsFilterDoer" onchange="applyFmsFilters()"><option value="All">All Doers</option></select>
+      <label>Status:</label>
+      <select id="fmsFilterStatus" onchange="applyFmsFilters()">
+        <option value="All">All Status</option>
+        <option value="Completed">Completed</option>
+        <option value="Pending">Pending</option>
+      </select>
+      <label style="display:none">Step:</label>
+      <select id="fmsFilterStep" onchange="applyFmsFilters()" style="display:none"><option value="All">All Steps</option></select>
     </div>
+    <div class="meta-info-badge" id="fmsMetaBadges"></div>
+    <div class="stat-grid" id="fmsStatsGrid"></div>
+    <div id="fmsCardsContainer"></div>
+  </div>
+
+  <!-- ── CHECKLIST VIEW ── -->
+  <div id="fcViewChecklist" style="display:none">
+    <div class="filter-bar">
+      <label>Doer:</label>
+      <select id="clFilterDoer" onchange="applyChecklistFilters()"><option value="All">All Doers</option></select>
+      <label>Dept:</label>
+      <select id="clFilterDept" onchange="applyChecklistFilters()"><option value="All">All Depts</option></select>
+      <label>Status:</label>
+      <select id="clFilterStatus" onchange="applyChecklistFilters()">
+        <option value="All">All Status</option>
+        <option value="Done">Done</option>
+        <option value="Pending">Pending</option>
+      </select>
+      <label>Freq:</label>
+      <select id="clFilterFreq" onchange="applyChecklistFilters()"><option value="All">All Freq</option></select>
+      <label>Type:</label>
+      <select id="clFilterType" onchange="applyChecklistFilters()"><option value="All">All Types</option></select>
+    </div>
+    <div class="meta-info-badge" id="clMetaBadges"></div>
+    <div class="stat-grid" id="clStatsGrid"></div>
+    <div class="tc">
+      <table>
+        <thead>
+          <tr><th>#</th><th>Doer</th><th>Dept</th><th>Task Details</th><th>Freq</th><th>Planned Date</th><th>Actual Date</th><th>Status</th></tr>
+        </thead>
+        <tbody id="clTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
   
     <!-- DELEGATION TAB -->
     <div class="tab-content" id="tab-delegation">
@@ -3071,6 +3085,7 @@ function renderClByDoer(rows) {
       '<span class="m-badge b-red">' + Math.max(0, missed) + ' pending</span>';
   
     setTabBadge('badgeFms', Math.max(0, missed));
+    setTabBadge('badgeFmsChecklist', Math.max(0, missed) + (window._clPendingCount || 0));
   
     var fmsWorkNotDonePct       = totalPlan   > 0 ? (Math.max(0, missed) / totalPlan * 100) : 0;
     var fmsWorkNotDoneOnTimePct = totalActual > 0 ? Math.max(0, 100 - (totalOnTime / totalActual * 100)) : 0;
@@ -3149,7 +3164,9 @@ function renderClByDoer(rows) {
       '<span class="m-badge b-green">' + doneCount + ' done</span>' +
       '<span class="m-badge b-red">' + pendCount + ' pending</span>';
   
-    setTabBadge('badgeChecklist', pendCount);
+  window._clPendingCount = pendCount;
+var fmsMissedNow = document.getElementById('badgeFms') ? Number(document.getElementById('badgeFms').textContent)||0 : 0;
+setTabBadge('badgeFmsChecklist', pendCount + fmsMissedNow);
   
     var onTimeCount = filtered.filter(function(r) {
       return r.status === 'Done' && r.actualDate && r.actualDate !== '-' && r.plannedDate && r.plannedDate !== '-' && r.actualDate <= r.plannedDate;
@@ -3747,6 +3764,21 @@ function toggleSidebar() {
       wrap.classList.remove('open');
     }
   });  
+        function switchFcView(view) {
+    var fmsBtn = document.getElementById('fcBtnFms');
+    var clBtn  = document.getElementById('fcBtnChecklist');
+    var fmsDiv = document.getElementById('fcViewFms');
+    var clDiv  = document.getElementById('fcViewChecklist');
+    if (view === 'fms') {
+      fmsBtn.classList.add('active'); clBtn.classList.remove('active');
+      fmsDiv.style.display = ''; clDiv.style.display = 'none';
+    } else {
+      clBtn.classList.add('active'); fmsBtn.classList.remove('active');
+      clDiv.style.display = ''; fmsDiv.style.display = 'none';
+    }
+  }
+ // ── Tab switch ────────────────────────────────────────────────────────────────
+   function switchTab(name, el) {
  // ── Tab switch ────────────────────────────────────────────────────────────────
    function switchTab(name, el) {
     clearGlobalSearch();
