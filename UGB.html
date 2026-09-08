@@ -2106,6 +2106,13 @@ function loadUserCache(email) {
     if (logoutBtnEl2) logoutBtnEl2.style.display = 'none';
     showSignIn();
   }
+    function bootWithoutLogin() {
+  currentIdToken = 'no-auth';
+  currentUserEmail = 'team@ugbolmalassociates.com';
+  enterApp('Team', currentUserEmail, true);
+  var savedCache = loadUserCache(currentUserEmail);
+  initialLoad(savedCache && savedCache.from, savedCache && savedCache.to);
+}
   function initGoogleAuth() {
   if (!window.google || !google.accounts || !google.accounts.id) {
     setTimeout(initGoogleAuth, 200);
@@ -3967,10 +3974,10 @@ function populateLeaveEmpFilter(rows) {
   }
   function closeLeaveTableModal(){ document.getElementById('leaveTableModal').style.display = 'none'; }
   // ── Boot ─────────────────────────────────────────────────────────────────────
-  document.getElementById('ldiv').innerHTML = skeletonSummaryHTML();
+ document.getElementById('ldiv').innerHTML = skeletonSummaryHTML();
   document.getElementById('usersLoading').innerHTML = skeletonUsersHTML(9);
   document.getElementById('fmsCardsContainer').innerHTML = skeletonTableHTML(6);
-  initGoogleAuth();
+  bootWithoutLogin();
     function showFullReportModal(){
   var rows = (globalRawData && globalRawData.scoresData) || [];
   var filtered = rows.filter(function(r){ return String(r.employee||'').trim() && !isScoreRowAllZero(r); });
