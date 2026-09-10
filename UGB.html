@@ -2089,7 +2089,19 @@ function loadUserCache(email) {
   try {
     var raw = localStorage.getItem(cacheKeyFor(email));
     if (!raw) return null;
-    return JSON.parse(raw);
+    var parsed = JSON.parse(raw);
+    // Agar cache aaj ka nahi hai (pichle din ka save hua hai) to use ignore
+    // karo — taaki dashboard hamesha AAJ ke Today's Tasks/FMS/Checklist/
+    // Delegation, Recent Activities aur notification bell ke saath khule,
+    // kal ke stale numbers ke saath nahi.
+    if (parsed && parsed.ts) {
+      var cd = new Date(parsed.ts), now = new Date();
+      var sameDay = cd.getFullYear() === now.getFullYear() &&
+                    cd.getMonth() === now.getMonth() &&
+                    cd.getDate() === now.getDate();
+      if (!sameDay) return null;
+    }
+    return parsed;
   } catch (e) { return null; }
 }
   
@@ -3977,7 +3989,7 @@ function populateLeaveEmpFilter(rows) {
  document.getElementById('ldiv').innerHTML = skeletonSummaryHTML();
   document.getElementById('usersLoading').innerHTML = skeletonUsersHTML(9);
   document.getElementById('fmsCardsContainer').innerHTML = skeletonTableHTML(6);
-  bootWithoutLogin();
+  initGoogleAuth();
     function showFullReportModal(){
   var rows = (globalRawData && globalRawData.scoresData) || [];
   var filtered = rows.filter(function(r){ return String(r.employee||'').trim() && !isScoreRowAllZero(r); });
