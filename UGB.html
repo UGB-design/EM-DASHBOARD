@@ -1816,8 +1816,9 @@ function populateLeaveYearSelector() {
     var panel = document.getElementById('udLeaveSummary');
     if (sel) sel.disabled = true;
     if (panel) panel.style.opacity = '0.4';
-    fetch(API + '?action=getLeave&idToken=' + encodeURIComponent(currentIdToken) + '&leaveYear=' + year + '&cb=' + Date.now())
-      .then(function(data){
+   fetch(API + '?action=getLeave&idToken=' + encodeURIComponent(currentIdToken) + '&leaveYear=' + year + '&cb=' + Date.now())
+  .then(function(r){ return r.json(); })
+  .then(function(data){
         console.log('LEAVE DEBUG →', 'error:', data.debugLeaveError, 'rows:', data.debugLeaveRowCount);
         if (!globalRawData) globalRawData = {};
         globalRawData.leaveSummary = data.leaveSummary;
