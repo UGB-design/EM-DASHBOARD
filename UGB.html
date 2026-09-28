@@ -782,6 +782,24 @@ body.body-modal-lock{overflow:hidden}
 #tab-delegation table thead th{background:linear-gradient(135deg,#8b5cf6 0%,#6d28d9 100%) !important;color:#fff !important}
     .emp-action-badge{background:#16a34a;color:#fff;font-size:11px;font-weight:800;min-width:22px;height:22px;padding:0 7px;border-radius:20px;display:none;align-items:center;justify-content:center}
 .emp-action-badge.show{display:inline-flex}
+    #celebGallery{padding:14px 16px 4px}
+.cg-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.cg-tab{border:1px solid #e2e8f0;background:#fff;color:#475569;font-size:12px;font-weight:700;padding:6px 14px;border-radius:20px;cursor:pointer;transition:all .15s}
+.cg-tab:hover{background:#f1f5f9}
+.cg-tab.active{background:linear-gradient(135deg,#3b82f6,#1e40af);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(37,99,235,.3)}
+.cg-stage{position:relative;height:340px;border-radius:16px;overflow:hidden;background:#0b1437;box-shadow:0 8px 24px rgba(11,20,55,.25)}
+.cg-bg{position:absolute;inset:-20px;width:calc(100% + 40px);height:calc(100% + 40px);object-fit:cover;filter:blur(24px) brightness(.55);transform:scale(1.1)}
+.cg-img{position:relative;z-index:1;width:100%;height:100%;object-fit:contain;cursor:zoom-in;animation:cgFade .6s ease}
+@keyframes cgFade{from{opacity:0;transform:scale(1.03)}to{opacity:1;transform:scale(1)}}
+.cg-cap{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:34px 18px 14px;background:linear-gradient(0deg,rgba(0,0,0,.75),transparent);color:#fff;display:flex;align-items:center;gap:10px;flex-wrap:wrap;pointer-events:none}
+.cg-badge{font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:4px 11px;border-radius:20px;color:#fff}
+.cg-name{font-size:15px;font-weight:800}
+.cg-date{font-size:12px;opacity:.85;margin-left:auto}
+.cg-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:38px;height:38px;border-radius:50%;border:none;background:rgba(255,255,255,.85);color:#1e3a6d;font-size:20px;font-weight:800;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.cg-nav:hover{background:#fff}
+.cg-prev{left:12px}.cg-next{right:12px}
+.cg-count{position:absolute;top:12px;right:14px;z-index:3;background:rgba(0,0,0,.55);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px}
+@media(max-width:600px){.cg-stage{height:240px}}
   </style>
  <script>
   window.addEventListener('error', function(e) {
@@ -1013,7 +1031,8 @@ body.body-modal-lock{overflow:hidden}
       </div>
       <div class="dash-lists-grid" style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin:10px 0 16px">
         <div class="dlp-panel">
-        <div class="dlp-head dlp-head-blue"><span style="display:flex;align-items:center;gap:8px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg>Recent Activities</span> <a class="dlp-head-view" onclick="showRecentActivitiesModal()">View all →</a></div>
+       <div class="dlp-head dlp-head-blue"><span style="display:flex;align-items:center;gap:8px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg>Recent Activities</span> <a class="dlp-head-view" onclick="showRecentActivitiesModal()">View all →</a></div>
+         <div id="celebGallery" style="display:none"></div>
           <div class="dlp-body" id="dashRecentActivitiesList">
             <div class="skel skel-line" style="width:100%;height:40px;margin-bottom:8px"></div>
             <div class="skel skel-line" style="width:100%;height:40px"></div>
@@ -2289,6 +2308,7 @@ function loadUserCache(email) {
     }
   renderUsers(data.staffData || []);
        renderInternalSheets(data.internalSheets);
+        renderCelebGallery(data.celebrationPhotos);
     renderTrainingVideos(data.trainingVideos);
     renderUsersDashboardPanels(data);
     renderPendingApprovalsAndHolidays(data);
@@ -2598,6 +2618,74 @@ function renderUsersDashboardPanels(data) {
       '</div>';
     }).join('');
   }
+    var _celeb = { all: [], types: [], list: [], idx: 0, type: 'All', timer: null, paused: false };
+function celebEsc_(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function celebColor_(t) {
+  var s = String(t || '').toLowerCase();
+  if (s.indexOf('birth') !== -1) return '#ec4899';
+  if (s.indexOf('meet') !== -1) return '#3b82f6';
+  if (s.indexOf('out') !== -1) return '#16a34a';
+  return '#7c3aed';
+}
+function renderCelebGallery(photos) {
+  var host = document.getElementById('celebGallery');
+  if (!host) return;
+  _celeb.all = photos || [];
+  if (_celeb.timer) { clearInterval(_celeb.timer); _celeb.timer = null; }
+  if (!_celeb.all.length) { host.innerHTML = ''; host.style.display = 'none'; return; }
+  host.style.display = 'block';
+  var types = ['All'];
+  _celeb.all.forEach(function(p) { if (types.indexOf(p.type) === -1) types.push(p.type); });
+  _celeb.types = types;
+  if (types.indexOf(_celeb.type) === -1) _celeb.type = 'All';
+  host.innerHTML = '<div class="cg-tabs" id="cgTabs"></div><div class="cg-stage" id="cgStage" onmouseenter="_celeb.paused=true" onmouseleave="_celeb.paused=false"></div>';
+  celebApplyFilter_(false);
+  _celeb.timer = setInterval(function() {
+    if (!_celeb.paused && _celeb.list.length > 1) celebStep(1);
+  }, 4500);
+}
+function celebApplyFilter_(resetIdx) {
+  _celeb.list = _celeb.type === 'All' ? _celeb.all : _celeb.all.filter(function(p) { return p.type === _celeb.type; });
+  if (resetIdx) _celeb.idx = 0;
+  if (_celeb.idx >= _celeb.list.length) _celeb.idx = 0;
+  var tabs = document.getElementById('cgTabs');
+  if (tabs) {
+    tabs.innerHTML = _celeb.types.map(function(t, i) {
+      var n = t === 'All' ? _celeb.all.length : _celeb.all.filter(function(p) { return p.type === t; }).length;
+      return '<button class="cg-tab' + (t === _celeb.type ? ' active' : '') + '" onclick="celebSetType(' + i + ')">' + celebEsc_(t) + ' (' + n + ')</button>';
+    }).join('');
+  }
+  celebShow_();
+}
+function celebSetType(i) {
+  _celeb.type = _celeb.types[i] || 'All';
+  celebApplyFilter_(true);
+}
+function celebStep(d) {
+  var n = _celeb.list.length;
+  if (!n) return;
+  _celeb.idx = (_celeb.idx + d + n) % n;
+  celebShow_();
+}
+function celebShow_() {
+  var stage = document.getElementById('cgStage');
+  if (!stage) return;
+  var p = _celeb.list[_celeb.idx];
+  if (!p) { stage.innerHTML = ''; return; }
+  var src = 'https://drive.google.com/thumbnail?id=' + p.fileId + '&sz=w1600';
+  stage.innerHTML =
+    '<img class="cg-bg" src="' + src + '" alt="">' +
+    '<img class="cg-img" src="' + src + '" alt="' + celebEsc_(p.name) + '" onclick="celebOpen()">' +
+    '<div class="cg-count">' + (_celeb.idx + 1) + ' / ' + _celeb.list.length + '</div>' +
+    '<button class="cg-nav cg-prev" onclick="celebStep(-1)">‹</button>' +
+    '<button class="cg-nav cg-next" onclick="celebStep(1)">›</button>' +
+    '<div class="cg-cap"><span class="cg-badge" style="background:' + celebColor_(p.type) + '">' + celebEsc_(p.type) + '</span>' +
+    '<span class="cg-name">' + celebEsc_(p.name) + '</span><span class="cg-date">' + celebEsc_(p.date) + '</span></div>';
+}
+function celebOpen() {
+  var p = _celeb.list[_celeb.idx];
+  if (p) showFileView('https://drive.google.com/file/d/' + p.fileId + '/view', p.type + ' - ' + p.name, true);
+}
    function showRecentActivitiesModal() {
     var tasks = (window._dashActivityFull || []).slice();
 
