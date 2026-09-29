@@ -783,7 +783,7 @@ body.body-modal-lock{overflow:hidden}
     .emp-action-badge{background:#16a34a;color:#fff;font-size:11px;font-weight:800;min-width:22px;height:22px;padding:0 7px;border-radius:20px;display:none;align-items:center;justify-content:center}
 .emp-action-badge.show{display:inline-flex}
     #celebGallery{padding:14px 16px 4px}
-.cg-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.cg-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;margin-top:10px}
 .cg-tab{border:1px solid #e2e8f0;background:#fff;color:#475569;font-size:12px;font-weight:700;padding:6px 14px;border-radius:20px;cursor:pointer;transition:all .15s}
 .cg-tab:hover{background:#f1f5f9}
 .cg-tab.active{background:linear-gradient(135deg,#3b82f6,#1e40af);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(37,99,235,.3)}
@@ -800,9 +800,6 @@ body.body-modal-lock{overflow:hidden}
 .cg-prev{left:12px}.cg-next{right:12px}
 .cg-count{position:absolute;top:12px;right:14px;z-index:3;background:rgba(0,0,0,.55);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px}
 @media(max-width:600px){.cg-stage{height:240px}}
-.dash-lists-grid > div:last-child{display:flex;flex-direction:column}
-.dash-lists-grid > div:last-child > .dlp-panel{flex:1;display:flex;flex-direction:column}
-.dash-lists-grid > div:last-child > .dlp-panel .dlp-body{flex:1;display:flex;flex-direction:column;justify-content:center}
   </style>
  <script>
   window.addEventListener('error', function(e) {
@@ -1034,7 +1031,7 @@ body.body-modal-lock{overflow:hidden}
       </div>
       <div class="dash-lists-grid" style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin:10px 0 16px">
         <div class="dlp-panel">
-       <div class="dlp-head dlp-head-blue"><span style="display:flex;align-items:center;gap:8px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg>Office Moments</span> <a class="dlp-head-view" onclick="showRecentActivitiesModal()">View all →</a></div>
+       <div class="dlp-head dlp-head-blue"><span style="display:flex;align-items:center;gap:8px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg>Office Moments</span></div>
          <div id="celebGallery" style="display:none"></div>
          <div class="dlp-body" id="dashRecentActivitiesList" style="display:none">
             <div class="skel skel-line" style="width:100%;height:40px;margin-bottom:8px"></div>
@@ -2563,7 +2560,7 @@ function renderUsersDashboardPanels(data) {
     var uh = data.upcomingHolidays || { rows: [] };
     var hEl = document.getElementById('dashHolidayList2');
     if (hEl) {
-      var hrows = (uh.rows || []).slice(0, 2);
+      var hrows = (uh.rows || []).slice(0, 3);
       hEl.innerHTML = hrows.length ? hrows.map(function(h) {
         var parts = String(h.date||'').split(' ');
         return '<div class="dlp-holiday-row"><div class="dlp-holiday-date"><b>' + (parts[0]||'') + '</b><span>' + (parts[1]||'') + '</span></div><div style="font-weight:700;color:#1a1a1a;font-size:13px">' + h.name + '</div></div>';
@@ -2763,7 +2760,7 @@ function celebOpen() {
 
        var h2El = document.getElementById('dashHolidayList2');
     if (h2El) {
-      var hrows2 = (uh.rows || []).slice(0, 2);
+     var hrows2 = (uh.rows || []).slice(0, 3);
       if (!hrows2.length) {
         h2El.innerHTML = '<div class="dl-empty-note">No holidays found</div>';
       } else {
