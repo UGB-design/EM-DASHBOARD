@@ -800,6 +800,9 @@ body.body-modal-lock{overflow:hidden}
 .cg-prev{left:12px}.cg-next{right:12px}
 .cg-count{position:absolute;top:12px;right:14px;z-index:3;background:rgba(0,0,0,.55);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px}
 @media(max-width:600px){.cg-stage{height:240px}}
+.dash-lists-grid > div:last-child{display:flex;flex-direction:column}
+.dash-lists-grid > div:last-child > .dlp-panel{flex:1;display:flex;flex-direction:column}
+.dash-lists-grid > div:last-child > .dlp-panel .dlp-body{flex:1;display:flex;flex-direction:column;justify-content:center}
   </style>
  <script>
   window.addEventListener('error', function(e) {
@@ -1031,9 +1034,9 @@ body.body-modal-lock{overflow:hidden}
       </div>
       <div class="dash-lists-grid" style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin:10px 0 16px">
         <div class="dlp-panel">
-       <div class="dlp-head dlp-head-blue"><span style="display:flex;align-items:center;gap:8px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg>Recent Activities</span> <a class="dlp-head-view" onclick="showRecentActivitiesModal()">View all →</a></div>
+       <div class="dlp-head dlp-head-blue"><span style="display:flex;align-items:center;gap:8px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg>Office Moments</span> <a class="dlp-head-view" onclick="showRecentActivitiesModal()">View all →</a></div>
          <div id="celebGallery" style="display:none"></div>
-          <div class="dlp-body" id="dashRecentActivitiesList">
+         <div class="dlp-body" id="dashRecentActivitiesList" style="display:none">
             <div class="skel skel-line" style="width:100%;height:40px;margin-bottom:8px"></div>
             <div class="skel skel-line" style="width:100%;height:40px"></div>
           </div>
@@ -2673,6 +2676,8 @@ function celebShow_() {
   var p = _celeb.list[_celeb.idx];
   if (!p) { stage.innerHTML = ''; return; }
   var src = 'https://drive.google.com/thumbnail?id=' + p.fileId + '&sz=w1600';
+  var isBirthday = String(p.type || '').toLowerCase().indexOf('birth') !== -1;
+  var nameHtml = isBirthday ? '<span class="cg-name">' + celebEsc_(p.name) + '</span>' : '';
   stage.innerHTML =
     '<img class="cg-bg" src="' + src + '" alt="">' +
     '<img class="cg-img" src="' + src + '" alt="' + celebEsc_(p.name) + '" onclick="celebOpen()">' +
@@ -2680,7 +2685,7 @@ function celebShow_() {
     '<button class="cg-nav cg-prev" onclick="celebStep(-1)">‹</button>' +
     '<button class="cg-nav cg-next" onclick="celebStep(1)">›</button>' +
     '<div class="cg-cap"><span class="cg-badge" style="background:' + celebColor_(p.type) + '">' + celebEsc_(p.type) + '</span>' +
-    '<span class="cg-name">' + celebEsc_(p.name) + '</span><span class="cg-date">' + celebEsc_(p.date) + '</span></div>';
+    nameHtml + '<span class="cg-date">' + celebEsc_(p.date) + '</span></div>';
 }
 function celebOpen() {
   var p = _celeb.list[_celeb.idx];
