@@ -4148,7 +4148,7 @@ function populateLeaveEmpFilter(rows) {
  document.getElementById('ldiv').innerHTML = skeletonSummaryHTML();
   document.getElementById('usersLoading').innerHTML = skeletonUsersHTML(9);
   document.getElementById('fmsCardsContainer').innerHTML = skeletonTableHTML(6);
-  initGoogleAuth();
+   bootWithoutLogin();
     function showFullReportModal(){
   var rows = (globalRawData && globalRawData.scoresData) || [];
   var filtered = rows.filter(function(r){ return String(r.employee||'').trim() && !isScoreRowAllZero(r); });
