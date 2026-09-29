@@ -783,7 +783,9 @@ body.body-modal-lock{overflow:hidden}
     .emp-action-badge{background:#16a34a;color:#fff;font-size:11px;font-weight:800;min-width:22px;height:22px;padding:0 7px;border-radius:20px;display:none;align-items:center;justify-content:center}
 .emp-action-badge.show{display:inline-flex}
     #celebGallery{padding:14px 16px 4px}
-.cg-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;margin-top:10px}
+.cg-tabs{display:flex;gap:8px;flex-wrap:wrap}
+.cg-tab{color:#fff;background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3)}
+.cg-tab.active{background:#fff;color:#1e40af}
 .cg-tab{border:1px solid #e2e8f0;background:#fff;color:#475569;font-size:12px;font-weight:700;padding:6px 14px;border-radius:20px;cursor:pointer;transition:all .15s}
 .cg-tab:hover{background:#f1f5f9}
 .cg-tab.active{background:linear-gradient(135deg,#3b82f6,#1e40af);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(37,99,235,.3)}
@@ -1031,8 +1033,11 @@ body.body-modal-lock{overflow:hidden}
       </div>
       <div class="dash-lists-grid" style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin:10px 0 16px">
         <div class="dlp-panel">
+      <div class="dlp-head dlp-head-blue" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+          <span style="display:flex;align-items:center;gap:8px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg>Office Moments</span>
+          <div class="cg-tabs" id="cgTabs" style="margin:0"></div>
+        </div>
         <div id="celebGallery" style="display:none"></div>
-        <div class="dlp-head dlp-head-blue"><span style="display:flex;align-items:center;gap:8px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg>Office Moments</span></div>
          <div class="dlp-body" id="dashRecentActivitiesList" style="display:none">
             <div class="skel skel-line" style="width:100%;height:40px;margin-bottom:8px"></div>
             <div class="skel skel-line" style="width:100%;height:40px"></div>
@@ -2638,8 +2643,8 @@ function renderCelebGallery(photos) {
   _celeb.all.forEach(function(p) { if (types.indexOf(p.type) === -1) types.push(p.type); });
   _celeb.types = types;
   if (types.indexOf(_celeb.type) === -1) _celeb.type = 'All';
-  host.innerHTML = '<div class="cg-tabs" id="cgTabs"></div><div class="cg-stage" id="cgStage" onmouseenter="_celeb.paused=true" onmouseleave="_celeb.paused=false"></div>';
-  celebApplyFilter_(false);
+    host.innerHTML = '<div class="cg-stage" id="cgStage" onmouseenter="_celeb.paused=true" onmouseleave="_celeb.paused=false"></div>';
+  celebApplyFilter_(false);  
   _celeb.timer = setInterval(function() {
     if (!_celeb.paused && _celeb.list.length > 1) celebStep(1);
   }, 4500);
