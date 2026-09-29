@@ -807,6 +807,8 @@ body.body-modal-lock{overflow:hidden}
 .cg-prev{left:12px}.cg-next{right:12px}
 .cg-count{position:absolute;top:12px;right:14px;z-index:3;background:rgba(0,0,0,.55);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px}
 @media(max-width:600px){.cg-stage{height:240px}}
+    .dash-lists-grid > div:last-child{display:flex;flex-direction:column;gap:16px}
+.dash-lists-grid > div:last-child .dlp-panel:first-child{flex-shrink:0}
     .dlp-holiday-row-v2{display:flex;align-items:center;gap:12px;background:#f0fdf4;border:1px solid #dcfce7;border-radius:10px;padding:10px 14px;margin-bottom:8px}
 .dlp-hol-icon{display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff;border-radius:8px;padding:4px 10px;min-width:46px;flex-shrink:0}
 .dlp-hol-mon{font-size:9px;font-weight:800;color:#16a34a;text-transform:uppercase;letter-spacing:.04em}
@@ -891,11 +893,7 @@ body.body-modal-lock{overflow:hidden}
         <div class="thb-firm-name">UMESH BOLMAL &amp; ASSOCIATES</div>
         <div class="thb-firm-sub">Chartered Accountants</div>
       </div>
-        </div>
-    <div class="thb-search-wrap">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-      <input type="text" id="globalTopSearch" placeholder="Search anything (client, task, file, note...)" onkeydown="if(event.key==='Enter')globalTopSearchGo(this.value)">
-    </div>
+            </div>
    <div class="thb-right">
       <button class="add-delegation-btn" onclick="openAddDelegation()" title="Add a new delegation task">
         <span class="adb-plus">+</span> Delegation
@@ -1049,7 +1047,8 @@ body.body-modal-lock{overflow:hidden}
           </div>
         </div>
       </div>
-      <div class="dash-lists-grid" style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin:10px 0 16px">
+     <div class="dash-lists-grid" style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin:10px 0 16px;align-items:stretch">
+        <div style="display:flex;flex-direction:column">
         <div class="dlp-panel">
       <div class="dlp-head dlp-head-blue" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
           <span style="display:flex;align-items:center;gap:8px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg>Office Moments</span>
@@ -2583,7 +2582,7 @@ function renderUsersDashboardPanels(data) {
     var uh = data.upcomingHolidays || { rows: [] };
     var hEl = document.getElementById('dashHolidayList2');
     if (hEl) {
-            var hrows = (uh.rows || []).slice(0, 3);
+              var hrows = (uh.rows || []).slice(0, 2);
       hEl.innerHTML = hrows.length ? hrows.map(function(h) {
         var parts = String(h.date||'').split(' ');
         var monAbbr = (parts[0]||'').slice(0,3);
@@ -2796,7 +2795,7 @@ function celebOpen() {
 
        var h2El = document.getElementById('dashHolidayList2');
     if (h2El) {
-     var hrows2 = (uh.rows || []).slice(0, 3);
+     var hrows2 = (uh.rows || []).slice(0, 2);
       if (!hrows2.length) {
         h2El.innerHTML = '<div class="dl-empty-note">No holidays found</div>';
       } else {
