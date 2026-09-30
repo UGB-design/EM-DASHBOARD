@@ -2646,7 +2646,11 @@ function renderCelebGallery(photos) {
   _celeb.types = types;
   if (types.indexOf(_celeb.type) === -1) _celeb.type = 'All';
     host.innerHTML = '<div class="cg-stage" id="cgStage" onmouseenter="_celeb.paused=true" onmouseleave="_celeb.paused=false"></div>';
-  celebApplyFilter_(false);  
+   celebApplyFilter_(false);
+  _celeb.all.forEach(function(p) {
+    var pre = new Image();
+    pre.src = 'https://drive.google.com/thumbnail?id=' + p.fileId + '&sz=w1000';
+  });
   _celeb.timer = setInterval(function() {
     if (!_celeb.paused && _celeb.list.length > 1) celebStep(1);
   }, 4500);
@@ -2679,7 +2683,7 @@ function celebShow_() {
   if (!stage) return;
   var p = _celeb.list[_celeb.idx];
   if (!p) { stage.innerHTML = ''; return; }
-  var src = 'https://drive.google.com/thumbnail?id=' + p.fileId + '&sz=w1600';
+ var src = 'https://drive.google.com/thumbnail?id=' + p.fileId + '&sz=w1000';
   var isBirthday = String(p.type || '').toLowerCase().indexOf('birth') !== -1;
   var nameHtml = isBirthday ? '<span class="cg-name">' + celebEsc_(p.name) + '</span>' : '';
   var dotsHtml = '';
@@ -2689,14 +2693,19 @@ function celebShow_() {
     }).join('') + '</div>';
   }
   stage.innerHTML =
-    '<img class="cg-bg" src="' + src + '" alt="">' +
+    '<img class="cg-bg" src="https://drive.google.com/thumbnail?id=' + p.fileId + '&sz=w200" alt="">' +
     '<img class="cg-img" src="' + src + '" alt="' + celebEsc_(p.name) + '" onclick="celebOpen()">' +
     '<div class="cg-count">' + (_celeb.idx + 1) + ' / ' + _celeb.list.length + '</div>' +
     '<button class="cg-nav cg-prev" onclick="celebStep(-1)">‹</button>' +
     '<button class="cg-nav cg-next" onclick="celebStep(1)">›</button>' +
     dotsHtml +
     '<div class="cg-cap"><span class="cg-badge" style="background:' + celebColor_(p.type) + '">' + celebEsc_(p.type) + '</span>' +
-    nameHtml + '<span class="cg-date">' + celebEsc_(p.date) + '</span></div>';
+  nameHtml + '</div>';
+  // Preload next 2 photos so slideshow is instant
+  for (var k = 1; k <= 2; k++) {
+    var np = _celeb.list[(_celeb.idx + k) % _celeb.list.length];
+    if (np) { var pre = new Image(); pre.src = 'https://drive.google.com/thumbnail?id=' + np.fileId + '&sz=w1000'; }
+  }
 }
 function celebGoto(i) {
   _celeb.idx = i;
