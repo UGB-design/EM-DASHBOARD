@@ -1914,7 +1914,7 @@ function refreshDashboard() {
   }
  function startTodayStatsPolling() {
     if (window._todayStatsPollTimer) clearInterval(window._todayStatsPollTimer);
-  window._todayStatsPollTimer = setInterval(pollTodayStats, 90000);
+  window._todayStatsPollTimer = setInterval(pollTodayStats, 180000);
   }
   // ── Date helpers ─────────────────────────────────────────────────────────────
   function toISO(ddmmyyyy) {
@@ -1947,7 +1947,7 @@ function refreshDashboard() {
     var to = toDDMMYYYY(tISO);
     document.getElementById('savingTxt').classList.add('show');
     document.getElementById('applyBtn').disabled = true;
-   fetch(API + '?action=setDates&from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to) + '&idToken='  + encodeURIComponent(currentIdToken) + '&cb=' + Date.now(), { redirect: 'follow' })
+   fetch(API + '?action=getData&from='+ encodeURIComponent(from) + '&to=' + encodeURIComponent(to) + '&idToken='  + encodeURIComponent(currentIdToken) + '&cb=' + Date.now(), { redirect: 'follow' })
       .then(function(r) { return r.json(); })
       .then(function(data) {
       document.getElementById('savingTxt').classList.remove('show');
