@@ -1869,6 +1869,7 @@ function populateLeaveYearSelector() {
 function refreshDashboard() {
     var btn = document.getElementById('refreshBtn');
     if (!currentIdToken) return;
+      _empTrendCache = null;
     if (btn) btn.classList.add('spinning');
     var fISO = document.getElementById('dtFrom').value;
     var tISO = document.getElementById('dtTo').value;
@@ -2921,7 +2922,155 @@ function celebOpen() {
            '<a class="udm-updatebtn" href="javascript:void(0)" onclick="openStaffSheetOverlay()">' +
         '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"></path></svg> Update Profile' +
       '</a>';
+       document.getElementById('udmBody').insertAdjacentHTML('beforeend', '<div id="udmDrill"></div>');
+    document.getElementById('udmOverlay').querySelector('.udm-box').style.maxWidth = '720px';
     document.getElementById('udmOverlay').style.display = 'flex';
+    renderEmpDrill(r.name);
+  }
+      // ══════════ EMPLOYEE DRILL-DOWN (Team Directory modal) ══════════
+  var _empTrendCache = null;
+
+  function sameEmp_(a, b) {
+    var x = normalizeName(baseName(a)), y = normalizeName(baseName(b));
+    if (!x || !y) return false;
+    return x === y || x.indexOf(y) === 0 || y.indexOf(x) === 0;
+  }
+  function daysLate_(dateStr) {
+    var dm = parseFullDate(dateStr);
+    if (!dm || !dm.year) return 0;
+    var t = new Date(); t.setHours(0,0,0,0);
+    return Math.floor((t - new Date(dm.year, dm.month - 1, dm.day)) / 86400000);
+  }
+  function drillBox_(title, inner) {
+    return '<div style="margin-top:18px;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden">' +
+      '<div style="background:#f8fafc;padding:10px 14px;font-size:12px;font-weight:800;color:#1e3a6d;text-transform:uppercase;letter-spacing:.04em">' + title + '</div>' +
+      '<div style="padding:12px 14px">' + inner + '</div></div>';
+  }
+
+  function fetchEmpTrend(cb) {
+    if (_empTrendCache) return cb(_empTrendCache);
+    fetch(API + '?action=getEmpTrend&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now(), { redirect: 'follow' })
+      .then(function(r) { return r.json(); })
+      .then(function(d) { _empTrendCache = d.trend || {}; cb(_empTrendCache); })
+      .catch(function() { cb(null); });
+  }
+
+  function drillPendingHTML_(name) {
+    var sc = (globalRawData && globalRawData.scoresData || []).find(function(s) { return sameEmp_(s.employee, name); });
+    var tasks = collectAllPendingTasks(sc ? sc.employee : name);
+    var f = tasks.filter(function(t) { return t.type === 'FMS'; }).length;
+    var c = tasks.filter(function(t) { return t.type === 'Checklist'; }).length;
+    var d = tasks.filter(function(t) { return t.type === 'Delegation'; }).length;
+    var head = '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">' +
+      '<span class="m-badge b-red">' + tasks.length + ' pending</span>' +
+      '<span class="m-badge b-blue">FMS ' + f + '</span>' +
+      '<span class="m-badge" style="background:#fff7ed;color:#c2410c">Checklist ' + c + '</span>' +
+      '<span class="m-badge" style="background:#f5f3ff;color:#7c3aed">Delegation ' + d + '</span></div>';
+    if (!tasks.length) return head + '<div style="color:#16a34a;font-size:13px;font-weight:700;padding:6px 0">Koi pending task nahi 🎉</div>';
+    var rows = tasks.map(function(t) {
+      var late = daysLate_(t.plannedDate);
+      var lateBadge = late > 0
+        ? '<span style="background:#fef2f2;color:#dc2626;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:20px;white-space:nowrap">' + late + 'd late</span>'
+        : '<span style="background:#f0fdf4;color:#16a34a;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:20px">Due today</span>';
+      return '<tr>' +
+        '<td style="padding:8px 10px;border-bottom:1px solid #f3f4f6"><span style="font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:20px;' + typeTagStyle(t.type) + '">' + t.type + '</span></td>' +
+        '<td style="padding:8px 10px;border-bottom:1px solid #f3f4f6;font-size:12.5px;color:#374151">' + t.task + (t.client && t.client !== '-' ? ' <span style="color:#9aa0ac">(' + t.client + ')</span>' : '') + '</td>' +
+        '<td style="padding:8px 10px;border-bottom:1px solid #f3f4f6;font-size:12px;white-space:nowrap">' + fmtDMY(t.plannedDate) + '</td>' +
+        '<td style="padding:8px 10px;border-bottom:1px solid #f3f4f6">' + lateBadge + '</td></tr>';
+    }).join('');
+    return head + '<div style="max-height:260px;overflow-y:auto"><table style="width:100%;min-width:0;border-collapse:collapse">' +
+      '<thead><tr><th style="position:static;padding:8px 10px;font-size:10.5px">Type</th><th style="position:static;padding:8px 10px;font-size:10.5px">Task</th><th style="position:static;padding:8px 10px;font-size:10.5px">Planned</th><th style="position:static;padding:8px 10px;font-size:10.5px">Status</th></tr></thead>' +
+      '<tbody>' + rows + '</tbody></table></div>';
+  }
+
+  function drillTrendHTML_(trend, name) {
+    if (!trend) return '<div style="color:#dc2626;font-size:12.5px">Trend load nahi hua. Dobara try karo.</div>';
+    var agg = {};
+    Object.keys(trend).forEach(function(k) {
+      if (!sameEmp_(k, name)) return;
+      Object.keys(trend[k]).forEach(function(dk) {
+        var v = trend[k][dk];
+        if (!agg[dk]) agg[dk] = [0, 0];
+        agg[dk][0] += v[0]; agg[dk][1] += v[1];
+      });
+    });
+    function p2(n) { return n < 10 ? '0' + n : '' + n; }
+    var t0 = new Date(); t0.setHours(0,0,0,0);
+    var days = [], maxPlan = 1, totP = 0, totD = 0;
+    for (var i = 29; i >= 0; i--) {
+      var d = new Date(t0.getFullYear(), t0.getMonth(), t0.getDate() - i);
+      var key = d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate());
+      var v = agg[key] || [0, 0];
+      days.push({ lbl: p2(d.getDate()) + '/' + p2(d.getMonth() + 1), plan: v[0], done: v[1] });
+      if (v[0] > maxPlan) maxPlan = v[0];
+      totP += v[0]; totD += v[1];
+    }
+    if (totP === 0) return '<div style="color:#9aa0ac;font-size:12.5px">Last 30 din mein is employee ka koi planned task nahi mila.</div>';
+    var pct = Math.round(totD / totP * 100);
+    var W = 640, H = 130, base = 110, top = 8, bw = W / 30;
+    var bars = '', labels = '';
+    days.forEach(function(x, idx) {
+      var hp = (x.plan / maxPlan) * (base - top);
+      var hd = (x.done / maxPlan) * (base - top);
+      var xx = idx * bw;
+      bars += '<g><title>' + x.lbl + ' — Plan: ' + x.plan + ', Done: ' + x.done + '</title>' +
+        '<rect x="' + (xx + 2) + '" y="' + (base - hp) + '" width="' + (bw - 4) + '" height="' + hp + '" rx="2" fill="#dbeafe"></rect>' +
+        '<rect x="' + (xx + 5) + '" y="' + (base - hd) + '" width="' + (bw - 10) + '" height="' + hd + '" rx="2" fill="#16a34a"></rect></g>';
+      if (idx % 5 === 0 || idx === 29) labels += '<text x="' + (xx + bw / 2) + '" y="125" text-anchor="middle" font-size="8.5" fill="#9aa0ac">' + x.lbl + '</text>';
+    });
+    var pctColor = pct >= 90 ? '#16a34a' : pct >= 50 ? '#f59e0b' : '#dc2626';
+    return '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">' +
+      '<span class="m-badge b-blue">Plan ' + totP + '</span>' +
+      '<span class="m-badge b-green">Done ' + totD + '</span>' +
+      '<span class="m-badge" style="background:#f8fafc;color:' + pctColor + '">Completion ' + pct + '%</span></div>' +
+      '<div style="overflow-x:auto"><svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;min-width:420px;height:150px">' +
+      '<line x1="0" y1="' + base + '" x2="' + W + '" y2="' + base + '" stroke="#e5e7eb"></line>' + bars + labels + '</svg></div>' +
+      '<div style="font-size:10.5px;color:#9aa0ac;margin-top:4px"><span style="color:#93c5fd">■</span> Planned &nbsp; <span style="color:#16a34a">■</span> Completed</div>';
+  }
+
+  function drillAttendanceHTML_(name) {
+    var rows = (globalRawData && globalRawData.attendanceOverview && globalRawData.attendanceOverview.rows) || [];
+    var t = new Date(); t.setHours(0,0,0,0);
+    var from = new Date(t.getFullYear(), t.getMonth(), t.getDate() - 29);
+    var mine = rows.filter(function(r) { return sameEmp_(r.name, name); }).map(function(r) {
+      var dm = parseFullDate(r.date);
+      return { r: r, d: dm ? new Date(dm.year, dm.month - 1, dm.day) : null };
+    }).filter(function(x) { return x.d && x.d >= from && x.d <= t; })
+      .sort(function(a, b) { return a.d - b.d; });
+    if (!mine.length) return '<div style="color:#9aa0ac;font-size:12.5px">Last 30 din ka attendance data nahi mila.</div>';
+    var pres = 0, late = 0, abs = 0, off = 0;
+    var chips = mine.map(function(x) {
+      var s = String(x.r.finalStatus || '').trim().toUpperCase();
+      var bg, fg;
+      if (s === 'WO' || s === 'HOLIDAY' || s === 'HO') { off++; bg = '#f1f5f9'; fg = '#64748b'; }
+      else if (s === 'A') { abs++; bg = '#fee2e2'; fg = '#991b1b'; }
+      else if (s.indexOf('LT') !== -1) { late++; bg = '#fef9c3'; fg = '#854d0e'; }
+      else { pres++; bg = '#dcfce7'; fg = '#166534'; }
+      var tip = x.r.date + ' | ' + (x.r.finalStatus || '-') + ' | In: ' + x.r.in1 + ' | Out: ' + x.r.out2 + ' | Hrs: ' + x.r.workHrs;
+      return '<span title="' + tip + '" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;font-size:11px;font-weight:700;background:' + bg + ';color:' + fg + '">' + x.d.getDate() + '</span>';
+    }).join('');
+    return '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">' +
+      '<span class="m-badge b-green">Present ' + pres + '</span>' +
+      '<span class="m-badge" style="background:#fef9c3;color:#854d0e">Late ' + late + '</span>' +
+      '<span class="m-badge b-red">Absent ' + abs + '</span>' +
+      '<span class="m-badge" style="background:#f1f5f9;color:#64748b">Off ' + off + '</span></div>' +
+      '<div style="display:flex;gap:5px;flex-wrap:wrap">' + chips + '</div>' +
+      '<div style="font-size:10.5px;color:#9aa0ac;margin-top:6px">Chip par mouse le jao (hover) to In/Out time dikhega. Number = date.</div>';
+  }
+
+  function renderEmpDrill(name) {
+    var host = document.getElementById('udmDrill');
+    if (!host) return;
+    window._drillFor = name;
+    host.innerHTML =
+      drillBox_('Pending Tasks', drillPendingHTML_(name)) +
+      drillBox_('Last 30 Days — Completion Trend', '<div id="udmTrendBox"><div class="skel" style="height:120px;border-radius:8px"></div></div>') +
+      drillBox_('Attendance — Last 30 Days', drillAttendanceHTML_(name));
+    fetchEmpTrend(function(trend) {
+      if (window._drillFor !== name) return; // modal doosre employee ke liye khul gaya
+      var box = document.getElementById('udmTrendBox');
+      if (box) box.innerHTML = drillTrendHTML_(trend, name);
+    });
   }
   function closeUserDetail() {
     document.getElementById('udmOverlay').style.display = 'none';
