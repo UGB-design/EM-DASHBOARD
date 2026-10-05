@@ -1938,6 +1938,15 @@ function fmtDMY(v) {
   if (m) return m[3] + '/' + m[2] + '/' + m[1];
   return s;
 }
+    // Default range: mahine ki 1 tarikh se aaj tak (ISO yyyy-mm-dd)
+function defaultRangeISO() {
+  var d = new Date();
+  function p(n) { return n < 10 ? '0' + n : '' + n; }
+  return {
+    from: d.getFullYear() + '-' + p(d.getMonth() + 1) + '-01',
+    to:   d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate())
+  };
+}
   // Checks whether a delegation date field actually holds a real date value
   function hasValidDate(v) {
     if (v === null || v === undefined) return false;
@@ -2279,9 +2288,25 @@ function loadUserCache(email) {
     var t  = em.totals || {};
     var bd = em.breakdown || {};
   
-    if (em.week) {
-      document.getElementById('dtFrom').value = toISO(em.week.from);
-      document.getElementById('dtTo').value = toISO(em.week.to);
+       if (em.week) {
+      var dr = defaultRangeISO();
+      var srvFromISO = toISO(em.week.from);
+      var srvToISO = toISO(em.week.to);
+      var srvMonthEnd = (function() {
+        var n = new Date();
+        var last = new Date(n.getFullYear(), n.getMonth() + 1, 0);
+        function p(x) { return x < 10 ? '0' + x : '' + x; }
+        return last.getFullYear() + '-' + p(last.getMonth() + 1) + '-' + p(last.getDate());
+      })();
+      // Agar server ne poore mahine ki default range bheji hai, to usko
+      // "1st se aaj tak" mein badlo. Agar user ne custom range chuni thi, to waisi hi rehne do.
+      if (srvFromISO === dr.from && srvToISO === srvMonthEnd) {
+        document.getElementById('dtFrom').value = dr.from;
+        document.getElementById('dtTo').value = dr.to;
+      } else {
+        document.getElementById('dtFrom').value = srvFromISO;
+        document.getElementById('dtTo').value = srvToISO;
+      }
     }
   
     // ── Summary card numbers ──────────────────────────────────────────────────
