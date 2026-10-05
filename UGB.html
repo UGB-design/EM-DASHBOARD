@@ -1929,7 +1929,15 @@ function refreshDashboard() {
     if (p.length !== 3) return '';
     return p[2] + '/' + p[1] + '/' + p[0];
   }
-  
+  // Display ke liye date ko DD/MM/YYYY mein badalta hai (sorting/logic ko touch nahi karta)
+function fmtDMY(v) {
+  if (v === null || v === undefined) return '-';
+  var s = String(v).trim();
+  if (!s || s === '-' || s === '—') return '-';
+  var m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (m) return m[3] + '/' + m[2] + '/' + m[1];
+  return s;
+}
   // Checks whether a delegation date field actually holds a real date value
   function hasValidDate(v) {
     if (v === null || v === undefined) return false;
@@ -2124,7 +2132,12 @@ function loadUserCache(email) {
       var sameDay = cd.getFullYear() === now.getFullYear() &&
                     cd.getMonth() === now.getMonth() &&
                     cd.getDate() === now.getDate();
-      if (!sameDay) return null;
+           if (!sameDay) {
+        // Purana data turant dikhao, par purani date range reuse mat karo
+        // (warna purane mahine ka data maangega aur cache miss hoga)
+        parsed.from = '';
+        parsed.to = '';
+      }
     }
     return parsed;
   } catch (e) { return null; }
@@ -2312,9 +2325,11 @@ function loadUserCache(email) {
       }).join('');
     }
   renderUsers(data.staffData || []);
-       renderInternalSheets(data.internalSheets);
-        renderCelebGallery(data.celebrationPhotos);
-    renderTrainingVideos(data.trainingVideos);
+          setTimeout(function() {
+      renderInternalSheets(data.internalSheets);
+      renderCelebGallery(data.celebrationPhotos);
+      renderTrainingVideos(data.trainingVideos);
+    }, 400);
     renderUsersDashboardPanels(data);
     renderPendingApprovalsAndHolidays(data);
     renderDashPendingApprovals(data);
@@ -2647,10 +2662,6 @@ function renderCelebGallery(photos) {
   if (types.indexOf(_celeb.type) === -1) _celeb.type = 'All';
     host.innerHTML = '<div class="cg-stage" id="cgStage" onmouseenter="_celeb.paused=true" onmouseleave="_celeb.paused=false"></div>';
    celebApplyFilter_(false);
-  _celeb.all.forEach(function(p) {
-    var pre = new Image();
-    pre.src = 'https://drive.google.com/thumbnail?id=' + p.fileId + '&sz=w1000';
-  });
   _celeb.timer = setInterval(function() {
     if (!_celeb.paused && _celeb.list.length > 1) celebStep(1);
   }, 4500);
@@ -3328,8 +3339,8 @@ function renderClByDoer(rows) {
         '<td><span class="dept-pill">' + titleCase(r.dept) + '</span></td>' +
         '<td>' + r.task + '</td>' +
         '<td><span class="freq-pill">' + r.freq + '</span></td>' +
-        '<td style="white-space:nowrap">' + r.plannedDate + '</td>' +
-        '<td style="white-space:nowrap">' + r.actualDate + '</td>' +
+               '<td style="white-space:nowrap">' + fmtDMY(r.plannedDate) + '</td>' +
+        '<td style="white-space:nowrap">' + fmtDMY(r.actualDate) + '</td>' +
         '<td><span class="' + (r.status === 'Done' ? 'st-done' : 'st-pend') + '">' + r.status + '</span></td></tr>';
     }).join('');
   }
@@ -3394,10 +3405,10 @@ function renderClByDoer(rows) {
       return '<tr><td>' + (i + 1) + '</td>' +
         '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(r.client) + '</div>' + r.client + '</div></td>' +
         '<td>' + r.task + '</td>' +
-        '<td style="white-space:nowrap">' + r.firstDate + '</td>' +
-        '<td style="white-space:nowrap">' + r.revision1 + '</td>' +
-        '<td style="white-space:nowrap">' + r.revision2 + '</td>' +
-        '<td style="white-space:nowrap">' + r.latestRevision + '</td>' +
+        '<td style="white-space:nowrap">' + fmtDMY(r.firstDate) + '</td>' +
+        '<td style="white-space:nowrap">' + fmtDMY(r.revision1) + '</td>' +
+        '<td style="white-space:nowrap">' + fmtDMY(r.revision2) + '</td>' +
+        '<td style="white-space:nowrap">' + fmtDMY(r.latestRevision) + '</td>' +
         '<td><span class="' + sCls + '">' + r.status + '</span></td></tr>';
     }).join('');
   }
@@ -3747,7 +3758,7 @@ function renderClByDoer(rows) {
         '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6"><span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;' + typeTagStyle(t.type) + '">' + t.type + '</span></td>' +
         '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151">' + t.task + '</td>' +
         '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151">' + (t.client && t.client !== '-' ? t.client : '<span style="color:#d1d5db">—</span>') + '</td>' +
-        '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151;white-space:nowrap">' + t.plannedDate + '</td>' +
+        '<td style="padding:11px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151;white-space:nowrap">' + fmtDMY(t.plannedDate) + '</td>' +
         '</tr>';
     }).join('') || '<tr><td colspan="5" style="text-align:center;color:#bbb;padding:30px">No pending tasks 🎉</td></tr>';
   }
@@ -4031,12 +4042,16 @@ function initialLoad(savedFrom, savedTo) {
     }
     var url = API + '?action=getData&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now();
     if (savedFrom && savedTo) {
-      url += '&from=' + encodeURIComponent(savedFrom) + '&to=' + encodeURIComponent(savedTo);
+          url += '&from=' + encodeURIComponent(toDDMMYYYY(savedFrom)) + '&to=' + encodeURIComponent(toDDMMYYYY(savedTo));
     }
-    fetch(url, { redirect: 'follow' })
+        var ctrl = new AbortController();
+    var tmo = setTimeout(function() { ctrl.abort(); }, 90000);
+    fetch(url, { redirect: 'follow', signal: ctrl.signal })
       .then(function(r) { return r.json(); })
       .then(function(data) {
+        clearTimeout(tmo);
         if (data.authorized === false) { showDenied(currentUserEmail); return; }
+        if (data.error) throw new Error(data.error);
         document.getElementById('ldiv').style.display = 'none';
         document.getElementById('mdiv').style.display = 'block';
         renderAll(data);
@@ -4044,7 +4059,7 @@ function initialLoad(savedFrom, savedTo) {
       })
       .catch(function(err) {
         if (!haveCache) {
-          document.getElementById('ldiv').innerHTML = '<div class="ebox">Error loading data. Please refresh.<br><small>' + err + '</small></div>';
+              document.getElementById('ldiv').innerHTML = '<div class="ebox">Server slow hai ya data load nahi hua. <button onclick="location.reload()" style="margin-left:8px;padding:5px 12px;border-radius:6px;border:none;background:#1e3a6d;color:#fff;cursor:pointer">Retry</button><br><small>' + err + '</small></div>';
         }
       });
   }
