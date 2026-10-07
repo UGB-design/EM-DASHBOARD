@@ -2678,7 +2678,15 @@ function celebColor_(t) {
 function renderCelebGallery(photos) {
   var host = document.getElementById('celebGallery');
   if (!host) return;
-   var _rawPhotos = (photos || []).map(function(p, i) { p._origIdx = i; return p; });
+   var _fyNow = new Date();
+  var _fyStartYear = _fyNow.getMonth() >= 3 ? _fyNow.getFullYear() : _fyNow.getFullYear() - 1;
+  var _fyStart = new Date(_fyStartYear, 3, 1);
+  var _fyEnd = new Date(_fyStartYear + 1, 3, 1);
+  var _rawPhotos = (photos || []).filter(function(p) {
+    var pd = new Date(p.date);
+    if (isNaN(pd.getTime())) return true;
+    return pd >= _fyStart && pd < _fyEnd;
+  }).map(function(p, i) { p._origIdx = i; return p; });
   function celebTypeRank_(t) {
     var s = String(t || '').toLowerCase();
     if (s.indexOf('birth') !== -1) return 1;
