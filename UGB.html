@@ -2678,7 +2678,19 @@ function celebColor_(t) {
 function renderCelebGallery(photos) {
   var host = document.getElementById('celebGallery');
   if (!host) return;
-  _celeb.all = photos || [];
+   var _rawPhotos = (photos || []).map(function(p, i) { p._origIdx = i; return p; });
+  function celebTypeRank_(t) {
+    var s = String(t || '').toLowerCase();
+    if (s.indexOf('birth') !== -1) return 1;
+    if (s.indexOf('meet') !== -1) return 2;
+    if (s.indexOf('out') !== -1) return 3;
+    return 4;
+  }
+  _celeb.all = _rawPhotos.slice().sort(function(a, b) {
+    var ra = celebTypeRank_(a.type), rb = celebTypeRank_(b.type);
+    if (ra !== rb) return ra - rb;
+    return b._origIdx - a._origIdx;
+  });
   if (_celeb.timer) { clearInterval(_celeb.timer); _celeb.timer = null; }
   if (!_celeb.all.length) { host.innerHTML = ''; host.style.display = 'none'; return; }
   host.style.display = 'block';
@@ -2689,7 +2701,7 @@ function renderCelebGallery(photos) {
     host.innerHTML = '<div class="cg-stage" id="cgStage" onmouseenter="_celeb.paused=true" onmouseleave="_celeb.paused=false"></div>';
    celebApplyFilter_(false);
   _celeb.timer = setInterval(function() {
-    if (!_celeb.paused && _celeb.list.length > 1) celebStep(1);
+    if (!_celeb.paused && !_celeb.videoPlaying && _celeb.list.length > 1) celebStep(1);
   }, 4500);
 }
 function celebApplyFilter_(resetIdx) {
@@ -2718,10 +2730,12 @@ function celebStep(d) {
 function celebShow_() {
   var stage = document.getElementById('cgStage');
   if (!stage) return;
+  _celeb.videoPlaying = false;
   var p = _celeb.list[_celeb.idx];
   if (!p) { stage.innerHTML = ''; return; }
- var src = 'https://drive.google.com/thumbnail?id=' + p.fileId + '&sz=w1000';
+  var src = 'https://drive.google.com/thumbnail?id=' + p.fileId + '&sz=w1000';
   var isBirthday = String(p.type || '').toLowerCase().indexOf('birth') !== -1;
+  var isVideo = !!p.isVideo;
   var nameHtml = isBirthday ? '<span class="cg-name">' + celebEsc_(p.name) + '</span>' : '';
   var dotsHtml = '';
   if (_celeb.list.length > 1 && _celeb.list.length <= 12) {
@@ -2729,16 +2743,35 @@ function celebShow_() {
       return '<span class="cg-dot' + (di === _celeb.idx ? ' active' : '') + '" onclick="celebGoto(' + di + ')"></span>';
     }).join('') + '</div>';
   }
+  var videoHtml = '';
+  var playIcHtml = '';
+  if (isVideo) {
+    videoHtml = '<video id="cgVideo" muted playsinline preload="auto" poster="' + src + '" src="https://drive.google.com/uc?export=download&id=' + p.fileId + '" ' +
+      'style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;z-index:1;cursor:zoom-in;background:transparent" ' +
+      'onclick="celebOpen()" ' +
+      'onplaying="_celeb.videoPlaying=true;var i=document.getElementById(\'cgPlayIc\');if(i)i.style.display=\'none\'" ' +
+      'onended="_celeb.videoPlaying=false;celebStep(1)" ' +
+      'onerror="_celeb.videoPlaying=false;this.style.display=\'none\'"></video>';
+    playIcHtml = '<div id="cgPlayIc" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2;width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,.4)"><svg viewBox="0 0 24 24" width="26" height="26" fill="#1e3a6d" style="margin-left:3px"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg></div>';
+  }
   stage.innerHTML =
     '<img class="cg-bg" src="https://drive.google.com/thumbnail?id=' + p.fileId + '&sz=w200" alt="">' +
     '<img class="cg-img" src="' + src + '" alt="' + celebEsc_(p.name) + '" onclick="celebOpen()">' +
+    videoHtml + playIcHtml +
     '<div class="cg-count">' + (_celeb.idx + 1) + ' / ' + _celeb.list.length + '</div>' +
     '<button class="cg-nav cg-prev" onclick="celebStep(-1)">‹</button>' +
     '<button class="cg-nav cg-next" onclick="celebStep(1)">›</button>' +
     dotsHtml +
     '<div class="cg-cap"><span class="cg-badge" style="background:' + celebColor_(p.type) + '">' + celebEsc_(p.type) + '</span>' +
-  nameHtml + '</div>';
-  // Preload next 2 photos so slideshow is instant
+    nameHtml + '</div>';
+  if (isVideo) {
+    var v = document.getElementById('cgVideo');
+    if (v) {
+      v.muted = true;
+      var pr = v.play();
+      if (pr && pr.catch) pr.catch(function() {});
+    }
+  }
   for (var k = 1; k <= 2; k++) {
     var np = _celeb.list[(_celeb.idx + k) % _celeb.list.length];
     if (np) { var pre = new Image(); pre.src = 'https://drive.google.com/thumbnail?id=' + np.fileId + '&sz=w1000'; }
