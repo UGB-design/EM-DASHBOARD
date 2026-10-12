@@ -18,7 +18,7 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;background:#dbe8fb}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#dbe8fb;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#dbe8fb;display:flex;align-items:flex-start;justify-content:center;overflow:hidden}
 
 .frame{width:100%;max-width:100%;background:#dbe8fb;border-radius:0;overflow:hidden;box-shadow:0 0 0 rgba(0,0,0,0)}
 
@@ -30,7 +30,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .mis-strip{background:var(--teal-light);padding:9px 24px;text-align:center}
 .mis-strip span{color:#fff;font-size:17px;font-weight:700;text-decoration:underline;text-underline-offset:3px}
 
-.date-row{display:flex;align-items:center;justify-content:center;gap:16px;padding:18px 24px 8px;background:#dbe8fb}
+.date-row{display:flex;align-items:center;justify-content:center;gap:16px;padding:10px 24px 8px;background:#dbe8fb}
 .date-label{font-size:19px;font-weight:800;color:#1a1a1a}
 .date-box{border:2px solid var(--teal);border-radius:10px;padding:6px 22px;text-align:center;min-width:140px}
 .date-box .tag{font-size:10px;color:#9aa0ac;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
@@ -72,8 +72,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 </style>
 
 <div class="frame">
-<div class="mis-strip"><span>MIS SCORES</span></div>
-
     <div class="date-row">
     <div class="date-label">Date :</div>
     <div class="date-box"><div class="tag">From</div><div class="val" id="dateFrom">—</div></div>
