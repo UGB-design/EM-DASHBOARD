@@ -3544,12 +3544,25 @@ function renderClByDoer(rows) {
     filtered.sort(function(a, b) { return String(a.plannedDate).localeCompare(String(b.plannedDate)); });
     var doneCount = filtered.filter(function(r) { return r.status === 'Done'; }).length;
     var pendCount = filtered.length - doneCount;
-    document.getElementById('clMetaBadges').innerHTML =
-      '<span class="m-badge b-blue">' + filtered.length + ' planned</span>' +
-      '<span class="m-badge b-green">' + doneCount + ' done</span>' +
-      '<span class="m-badge b-red">' + pendCount + ' pending</span>';
+       var clMetaHTML = '<span class="m-badge b-blue">' + filtered.length + ' planned</span>';
+    if (sFilter === 'All') {
+      clMetaHTML += '<span class="m-badge b-green">' + doneCount + ' done</span>' +
+                    '<span class="m-badge b-red">' + pendCount + ' pending</span>';
+    } else if (sFilter === 'Done') {
+      clMetaHTML += '<span class="m-badge b-green">' + doneCount + ' done</span>';
+    } else if (sFilter === 'Pending') {
+      clMetaHTML += '<span class="m-badge b-red">' + pendCount + ' pending</span>';
+    }
+    document.getElementById('clMetaBadges').innerHTML = clMetaHTML;
   
-    setTabBadge('badgeChecklist', pendCount);
+    var clAllPend = data.filter(function(r) {
+      return (dFilter === 'All' || r.doer === dFilter) &&
+             (deptFilter === 'All' || r.dept === deptFilter) &&
+             (fFilter === 'All' || r.freq === fFilter) &&
+             (tFilter === 'All' || r.type === tFilter) &&
+             r.status !== 'Done';
+    }).length;
+    setTabBadge('badgeChecklist', clAllPend);
   
     var onTimeCount = filtered.filter(function(r) {
       return r.status === 'Done' && r.actualDate && r.actualDate !== '-' && r.plannedDate && r.plannedDate !== '-' && r.actualDate <= r.plannedDate;
