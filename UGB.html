@@ -3449,13 +3449,28 @@ function renderClByDoer(rows) {
         '</div>';
     }).join('');
   
-        var missed = (statusFilter === 'Completed') ? 0 : (totalPlan - totalActual);
-    document.getElementById('fmsMetaBadges').innerHTML =
-      '<span class="m-badge b-blue">' + groupCount + ' groups</span>' +
-      '<span class="m-badge b-green">' + totalActual + ' done</span>' +
-      '<span class="m-badge b-red">' + Math.max(0, missed) + ' pending</span>';
+    var missed = totalPlan - totalActual;
+       var metaHTML = '<span class="m-badge b-blue">' + groupCount + ' groups</span>';
+    if (statusFilter === 'All') {
+      metaHTML += '<span class="m-badge b-green">' + totalActual + ' done</span>' +
+                  '<span class="m-badge b-red">' + Math.max(0, missed) + ' pending</span>';
+    } else if (statusFilter === 'Completed') {
+      metaHTML += '<span class="m-badge b-green">' + totalActual + ' done</span>';
+    } else if (statusFilter === 'Pending') {
+      metaHTML += '<span class="m-badge b-red">' + Math.max(0, missed) + ' pending</span>';
+    }
+    document.getElementById('fmsMetaBadges').innerHTML = metaHTML;
   
-    setTabBadge('badgeFms', Math.max(0, missed));
+   var allPlan = 0, allActual = 0;
+    groups.forEach(function(g) {
+      g.steps.forEach(function(s) {
+        if (doerFilter !== 'All' && s.doer !== doerFilter) return;
+        if (typeFilter !== 'All' && g.groupName !== typeFilter) return;
+        allPlan += Number(s.plan) || 0;
+        allActual += Number(s.actual) || 0;
+      });
+    });
+    setTabBadge('badgeFms', Math.max(0, allPlan - allActual));
   
     var fmsWorkNotDonePct       = totalPlan   > 0 ? (Math.max(0, missed) / totalPlan * 100) : 0;
     var fmsWorkNotDoneOnTimePct = totalActual > 0 ? Math.max(0, 100 - (totalOnTime / totalActual * 100)) : 0;
