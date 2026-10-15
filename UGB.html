@@ -3402,8 +3402,8 @@ function renderClByDoer(rows) {
       var filteredSteps = g.steps.filter(function(s) {
         if (doerFilter !== 'All' && s.doer !== doerFilter) return false;
         if (stepFilter !== 'All' && s.step !== stepFilter) return false;
-        if (statusFilter === 'Completed' && (s.missed || 0) !== 0) return false;
-        if (statusFilter === 'Pending' && (s.missed || 0) === 0) return false;
+        if (statusFilter === 'Completed' && (Number(s.actual) || 0) === 0) return false;
+        if (statusFilter === 'Pending' && (Number(s.missed) || 0) === 0) return false;
         return true;
       });
       if (filteredSteps.length === 0) return '';
@@ -3449,7 +3449,7 @@ function renderClByDoer(rows) {
         '</div>';
     }).join('');
   
-    var missed = totalPlan - totalActual;
+        var missed = (statusFilter === 'Completed') ? 0 : (totalPlan - totalActual);
     document.getElementById('fmsMetaBadges').innerHTML =
       '<span class="m-badge b-blue">' + groupCount + ' groups</span>' +
       '<span class="m-badge b-green">' + totalActual + ' done</span>' +
