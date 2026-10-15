@@ -3544,7 +3544,13 @@ function renderClByDoer(rows) {
     filtered.sort(function(a, b) { return String(a.plannedDate).localeCompare(String(b.plannedDate)); });
     var doneCount = filtered.filter(function(r) { return r.status === 'Done'; }).length;
     var pendCount = filtered.length - doneCount;
-       var clMetaHTML = '<span class="m-badge b-blue">' + filtered.length + ' planned</span>';
+    var clTotalPlanned = data.filter(function(r) {
+      return (dFilter === 'All' || r.doer === dFilter) &&
+             (deptFilter === 'All' || r.dept === deptFilter) &&
+             (fFilter === 'All' || r.freq === fFilter) &&
+             (tFilter === 'All' || r.type === tFilter);
+    }).length;
+    var clMetaHTML = '<span class="m-badge b-blue">' + clTotalPlanned + ' planned</span>';
     if (sFilter === 'All') {
       clMetaHTML += '<span class="m-badge b-green">' + doneCount + ' done</span>' +
                     '<span class="m-badge b-red">' + pendCount + ' pending</span>';
