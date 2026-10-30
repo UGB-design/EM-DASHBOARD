@@ -1935,13 +1935,17 @@ document.getElementById("loginEmail").addEventListener("keydown", e=>{ if(e.key=
 /* #attendance hash aaye to sirf Attendance tab dikhao */
 function applyAttendanceOnlyMode(){
   const h = (location.hash || "").replace("#","").toLowerCase();
-  if(h !== "attendance") return;
+  const allowed = ["requests","balance","deductions","history","attendance"];
+  if(!allowed.includes(h)) return;
+  if(h === "requests" && !IS_ADMIN) return;
+
   document.body.classList.add("att-only");
   document.querySelectorAll("section[id^='tab-']").forEach(s => s.style.display = "none");
-  document.getElementById("tab-attendance").style.display = "block";
+  const sec = document.getElementById("tab-" + h);
+  if(sec) sec.style.display = "block";
   document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
-  const attBtn = document.querySelector('.tab[data-tab="attendance"]');
-  if(attBtn) attBtn.classList.add("active");
+  const btn = document.querySelector('.tab[data-tab="' + h + '"]');
+  if(btn) btn.classList.add("active");
 }
 (function initGate(){
   const saved = localStorage.getItem("leaveDashboardEmail");
