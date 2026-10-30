@@ -2343,7 +2343,7 @@ function loadUserCache(email) {
     if (em.doers) {
       document.getElementById('dBody').innerHTML = em.doers.map(function(d, i) {
         return '<tr><td style="text-align:center">' + (i + 1) + '</td>' +
-          '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(d.name) + '</div>' + d.name + '</div></td>' +
+         '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(displayName(d.name)) + '</div>' + displayName(d.name) + '</div></td>' +
           '<td style="text-align:center">' + nbB(d.fmsPlan) + '</td><td style="text-align:center">' + nbG(d.fmsActual) + '</td>' +
           '<td style="text-align:center">' + nbB(d.clPlan) + '</td><td style="text-align:center">' + nbG(d.clActual) + '</td>' +
           '<td style="text-align:center">' + nbB(d.dlPlan) + '</td><td style="text-align:center">' + nbG(d.dlActual) + '</td>' +
@@ -3784,7 +3784,7 @@ function renderClByDoer(rows) {
     document.getElementById('scTableBody').innerHTML = sorted.map(function(r, i) {
       return '<tr>' +
         '<td style="text-align:center;font-weight:700;color:#9aa0ac">' + (i + 1) + '</td>' +
-        '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(r.employee) + '</div><strong>' + r.employee + '</strong></div></td>' +
+       '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(displayName(r.employee)) + '</div><strong>' + displayName(r.employee) + '</strong></div></td>' +
         '<td style="text-align:center">' + nbB(r.totalPlan) + '</td>' +
         '<td style="text-align:center">' + nbG(r.totalCompleted) + '</td>' +
         '<td style="text-align:center">' + nbG(r.onTimeCompleted) + '</td>' +
@@ -3801,6 +3801,12 @@ function renderClByDoer(rows) {
   // to a doer's name (e.g. "Aishwarya - 9886160130" → "Aishwarya"), so the
   // same person doesn't get split into multiple pending-task buckets.
   function baseName(n) {
+    // Display ke liye: "Sanjeevini Upadhye - 9535121108" → "SANJEEVINI"
+function displayName(n) {
+  var base = baseName(n);                 // " - phone" hata deta hai
+  var first = String(base).trim().split(/\s+/)[0] || base;
+  return first.toUpperCase();
+}
     return String(n || '').split(/\s*-\s*/)[0].trim();
   }
   
@@ -4419,9 +4425,9 @@ function populateLeaveEmpFilter(rows) {
   document.getElementById('fullReportBody').innerHTML = sorted.map(function(r,i){
     return '<tr>'+
       '<td style="text-align:center">'+(i+1)+'</td>'+
-      '<td><div class="dc"><div class="av av'+(i%16)+'">'+ini(r.employee)+'</div><strong>'+r.employee+'</strong></div></td>'+
+      '<td><div class="dc"><div class="av av'+(i%16)+'">'+ini(displayName(r.employee))+'</div><strong>'+displayName(r.employee)+'</strong></div></td>'+
       '<td style="text-align:center">'+nbB(r.totalPlan)+'</td>'+
-      '<td style="text-align:center">'+nbG(r.totalCompleted)+'</td>'+
+      '<td style="text-align:center">'+nbG(r.totalCompleted)+'</td>'+  
       '<td style="text-align:center">'+nbG(r.onTimeCompleted)+'</td>'+
       '<td style="text-align:center">'+pctCell(r.workNotDoneOnTimePct)+'</td>'+
       '<td style="text-align:center">'+workNotDoneCell(r.workNotDonePct)+'</td></tr>';
