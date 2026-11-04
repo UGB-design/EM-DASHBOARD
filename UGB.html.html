@@ -730,7 +730,11 @@ async function loadAll(background=false){
   DATA.balance = balanceRaw.filter(r=>r["Email"]);
   DATA.deduction = withFCopy(combined["PERFORMANCE_DEDUCTION"]).filter(r=>r["EMPLOYEE"]);
   DATA.holidays = withFCopy(combined["UPCOMING_HOLIDAY"]).filter(r=>r["OCCASION"] || r["DATE"]);
-  DATA.attendance = withFCopy(combined["Attendance"]).filter(r=>r["Emp Name"] && r["Date"]);
+ const activeNames = new Set(DATA.staff.map(s => (s["Name"]||"").trim().toUpperCase()));
+DATA.attendance = withFCopy(combined["Attendance"]).filter(r =>
+  r["Emp Name"] && r["Date"] &&
+  activeNames.has(String(r["Emp Name"]).trim().toUpperCase())
+);
   DATA.scorecards = extractScorecards(balanceRaw);
   if(!DATA.scorecards && balanceRaw.length) failed.push("Leave Balance summary cards");
 
