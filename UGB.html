@@ -966,6 +966,10 @@ body.body-modal-lock{overflow:hidden}
           <span class="sb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg></span>
           <span class="sb-label">Training Videos</span>
         </button>
+                <button class="sb-item" data-tab="timesheet" onclick="switchTab('timesheet',this)">
+          <span class="sb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg></span>
+          <span class="sb-label">Timesheet</span>
+        </button>
       </div>
     </div>
   
@@ -1342,6 +1346,54 @@ body.body-modal-lock{overflow:hidden}
         <span class="m-badge b-blue" id="isheetsCountBadge" style="flex-shrink:0">0 sheets</span>
       </div>
       <div id="internalSheetsGrid" class="isheets-grid"></div>
+    </div>
+          <!-- TIMESHEET TAB -->
+    <div class="tab-content" id="tab-timesheet">
+      <div class="filter-bar">
+        <label>Staff:</label>
+        <select id="tsFilterStaff" onchange="applyTimesheetFilters()"><option value="All">All Staff</option></select>
+        <label>Client:</label>
+        <select id="tsFilterClient" onchange="applyTimesheetFilters()"><option value="All">All Clients</option></select>
+        <label>Work Type:</label>
+        <select id="tsFilterWork" onchange="applyTimesheetFilters()"><option value="All">All Work Types</option></select>
+        <label>Status:</label>
+        <select id="tsFilterStatus" onchange="applyTimesheetFilters()">
+          <option value="All">All Status</option>
+          <option value="Done">Done</option>
+          <option value="Pending">Pending</option>
+        </select>
+      </div>
+      <div class="stat-grid" id="tsStatsGrid"></div>
+
+      <div class="summary-panels" style="grid-template-columns:1fr 1fr;margin-top:0">
+        <div class="sp-card">
+          <div class="sp-head"><div class="sp-title">Time by Client</div><div class="sp-count" id="tsClientCount"></div></div>
+          <div style="max-height:420px;overflow-y:auto">
+            <table><thead><tr><th>#</th><th>Client</th><th>Hours</th><th>Share</th></tr></thead>
+            <tbody id="tsClientBody"></tbody></table>
+          </div>
+        </div>
+        <div class="sp-card">
+          <div class="sp-head"><div class="sp-title">Time by Work Type</div><div class="sp-count" id="tsWorkCount"></div></div>
+          <div style="max-height:420px;overflow-y:auto">
+            <table><thead><tr><th>#</th><th>Work Type</th><th>Hours</th><th>Share</th></tr></thead>
+            <tbody id="tsWorkBody"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <div class="tc" style="margin-top:16px">
+        <div class="tc-top"><div class="tc-title">Client × Work Type (Hours)</div></div>
+        <div style="overflow-x:auto"><table id="tsMatrix"></table></div>
+      </div>
+
+      <div class="tc" style="margin-top:16px">
+        <div class="tc-top"><div class="tc-title">Timesheet Entries</div><div id="tsRowCount" style="font-size:12px;color:#9aa0ac"></div></div>
+        <table>
+          <thead><tr><th>#</th><th>Date</th><th>Staff</th><th>Slot</th><th>Client</th><th>Work Type</th><th>Task</th><th>Min</th><th>Status</th></tr></thead>
+          <tbody id="tsTableBody"></tbody>
+        </table>
+      </div>
     </div>
    <!-- TRAINING VIDEOS TAB -->
     <div class="tab-content" id="tab-trainingvideos">
@@ -1878,7 +1930,7 @@ function refreshDashboard() {
     if (btn) btn.classList.add('spinning');
     var fISO = document.getElementById('dtFrom').value;
     var tISO = document.getElementById('dtTo').value;
-    var refreshUrl = API + '?action=getData&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now();
+   var refreshUrl = API + '?action=getData&forceRefresh=1&idToken=' + encodeURIComponent(currentIdToken) + '&cb=' + Date.now();
     if (fISO && tISO) {
       refreshUrl += '&from=' + encodeURIComponent(toDDMMYYYY(fISO)) + '&to=' + encodeURIComponent(toDDMMYYYY(tISO));
     }
@@ -2380,8 +2432,10 @@ function loadUserCache(email) {
     var scData = data.scoresData || [];
     if (!data.scoresData) console.warn('⚠️ scoresData missing from API response — check code.gs SCORES section');
     else console.log('✅ scoresData received:', scData.length, 'rows');
-   populateScoreFilters(scData);
+     populateScoreFilters(scData);
     applyScoreFilters();
+    populateTimesheetFilters();
+    applyTimesheetFilters();
   }
   // ── USERS TAB (employee profile cards, from Staff_info sheet) ────────────────
   var UCR_ICONS = {
@@ -4414,6 +4468,96 @@ function populateLeaveEmpFilter(rows) {
     }).join('') || '<tr><td colspan="7" style="text-align:center;color:#bbb;padding:20px">No leave data</td></tr>';
   }
   function closeLeaveTableModal(){ document.getElementById('leaveTableModal').style.display = 'none'; }
+      // ── TIMESHEET TAB ──
+function tsHrs(m) { return (m / 60).toFixed(1) + ' h'; }
+function tsIsDone(s) { s = String(s).toLowerCase(); return s === 'done' || s === 'completed'; }
+function tsFillSel(id, set, allLabel) {
+  var sel = document.getElementById(id), cur = sel.value;
+  sel.innerHTML = '<option value="All">' + allLabel + '</option>';
+  Array.from(set).sort().forEach(function(v) {
+    var o = document.createElement('option');
+    o.value = v; o.textContent = v;
+    if (v === cur) o.selected = true;
+    sel.appendChild(o);
+  });
+}
+function populateTimesheetFilters() {
+  var rows = (globalRawData && globalRawData.timesheetData && globalRawData.timesheetData.rows) || [];
+  var s = new Set(), c = new Set(), w = new Set();
+  rows.forEach(function(r) { s.add(r.staff); c.add(r.client); w.add(r.workType); });
+  tsFillSel('tsFilterStaff', s, 'All Staff');
+  tsFillSel('tsFilterClient', c, 'All Clients');
+  tsFillSel('tsFilterWork', w, 'All Work Types');
+}
+function tsGroup(rows, key) {
+  var m = {};
+  rows.forEach(function(r) { m[r[key]] = (m[r[key]] || 0) + r.minutes; });
+  return Object.keys(m).map(function(k) { return { name: k, mins: m[k] }; })
+    .sort(function(a, b) { return b.mins - a.mins; });
+}
+function tsRankRows(list, total) {
+  return list.map(function(x, i) {
+    var pctv = total > 0 ? (x.mins / total * 100) : 0;
+    return '<tr><td>' + (i + 1) + '</td><td>' + x.name + '</td><td><b>' + tsHrs(x.mins) + '</b></td><td>' + pg(pctv) + '</td></tr>';
+  }).join('') || '<tr><td colspan="4" style="text-align:center;color:#bbb;padding:20px">No data</td></tr>';
+}
+function applyTimesheetFilters() {
+  var all = (globalRawData && globalRawData.timesheetData && globalRawData.timesheetData.rows) || [];
+  var fs = document.getElementById('tsFilterStaff').value;
+  var fc = document.getElementById('tsFilterClient').value;
+  var fw = document.getElementById('tsFilterWork').value;
+  var fst = document.getElementById('tsFilterStatus').value;
+  var rows = all.filter(function(r) {
+    if (fs !== 'All' && r.staff !== fs) return false;
+    if (fc !== 'All' && r.client !== fc) return false;
+    if (fw !== 'All' && r.workType !== fw) return false;
+    if (fst === 'Done' && !tsIsDone(r.status)) return false;
+    if (fst === 'Pending' && tsIsDone(r.status)) return false;
+    return true;
+  });
+
+  var total = rows.reduce(function(s, r) { return s + r.minutes; }, 0);
+  var byClient = tsGroup(rows, 'client');
+  var byWork = tsGroup(rows, 'workType');
+
+  document.getElementById('tsStatsGrid').innerHTML =
+    statCard('Total Time', tsHrs(total), 'blue') +
+    statCard('Entries', rows.length, 'green') +
+    statCard('Clients', byClient.length, 'orange') +
+    statCard('Top Client', byClient[0] ? byClient[0].name : '-', 'blue') +
+    statCard('Top Work Type', byWork[0] ? byWork[0].name : '-', 'green');
+
+  document.getElementById('tsClientCount').textContent = byClient.length + ' clients';
+  document.getElementById('tsWorkCount').textContent = byWork.length + ' work types';
+  document.getElementById('tsClientBody').innerHTML = tsRankRows(byClient, total);
+  document.getElementById('tsWorkBody').innerHTML = tsRankRows(byWork, total);
+
+  var topClients = byClient.slice(0, 15).map(function(x) { return x.name; });
+  var works = byWork.map(function(x) { return x.name; });
+  var mx = {};
+  rows.forEach(function(r) {
+    if (topClients.indexOf(r.client) === -1) return;
+    mx[r.client] = mx[r.client] || {};
+    mx[r.client][r.workType] = (mx[r.client][r.workType] || 0) + r.minutes;
+  });
+  var head = '<thead><tr><th>Client</th>' + works.map(function(w) { return '<th style="text-align:center">' + w + '</th>'; }).join('') + '<th style="text-align:center">Total</th></tr></thead>';
+  var body = topClients.map(function(c) {
+    var t = 0;
+    var cells = works.map(function(w) {
+      var v = (mx[c] && mx[c][w]) || 0; t += v;
+      return '<td style="text-align:center">' + (v ? tsHrs(v) : '<span class="hdash">–</span>') + '</td>';
+    }).join('');
+    return '<tr><td><b>' + c + '</b></td>' + cells + '<td style="text-align:center"><b>' + tsHrs(t) + '</b></td></tr>';
+  }).join('');
+  document.getElementById('tsMatrix').innerHTML = head + '<tbody>' + (body || '<tr><td style="padding:20px;color:#bbb">No data</td></tr>') + '</tbody>';
+
+  document.getElementById('tsRowCount').textContent = rows.length + ' entries';
+  document.getElementById('tsTableBody').innerHTML = rows.slice(0, 500).map(function(r, i) {
+    return '<tr><td>' + (i + 1) + '</td><td style="white-space:nowrap">' + r.date + '</td><td>' + r.staff + '</td><td style="white-space:nowrap">' + r.slot +
+      '</td><td>' + r.client + '</td><td><span class="dept-pill">' + r.workType + '</span></td><td>' + r.task + '</td><td>' + r.minutes +
+      '</td><td><span class="' + (tsIsDone(r.status) ? 'st-done' : 'st-pend') + '">' + r.status + '</span></td></tr>';
+  }).join('') || '<tr><td colspan="9" style="text-align:center;color:#bbb;padding:30px">No timesheet entries for this date range</td></tr>';
+}
   // ── Boot ─────────────────────────────────────────────────────────────────────
  document.getElementById('ldiv').innerHTML = skeletonSummaryHTML();
   document.getElementById('usersLoading').innerHTML = skeletonUsersHTML(9);
