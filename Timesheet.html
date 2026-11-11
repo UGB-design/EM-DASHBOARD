@@ -8,11 +8,11 @@
   *{box-sizing:border-box}
   body{margin:0;font-family:Segoe UI,Roboto,Arial,sans-serif;background:#eef3fb;color:#14284b;padding:16px}
   .bar,.panel{background:#fff;border-radius:14px;box-shadow:0 2px 10px rgba(20,40,80,.08);padding:14px 18px}
-  .bar{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+  .bar{display:flex;flex-wrap:wrap;gap:16px;align-items:center}
   .bar label{font-weight:600}
   .bar .f{display:flex;align-items:center;gap:8px}
   select,input{padding:9px 12px;border:1px solid #cfd8e8;border-radius:10px;font-size:15px;background:#fff;color:#14284b}
-  #client{min-width:260px}
+  #client{min-width:300px;max-width:380px}
   button{cursor:pointer;font-size:15px;border-radius:10px;border:1px solid #cfd8e8;padding:9px 16px;background:#fff;color:#0b2a6b;font-weight:600}
   .reset{background:#dce8fb}
   .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:16px 0}
@@ -44,14 +44,12 @@
 <body>
 
 <div class="bar">
-  <div class="f"><label>Select Client</label>
-    <input id="client" list="clientList" placeholder="All Clients (type to search)">
-    <datalist id="clientList"></datalist></div>
-  <div class="f"><label>Select Employee</label>
+  <div class="f"><label for="client">Client</label>
+    <select id="client"><option value="">All Clients</option></select></div>
+  <div class="f"><label for="emp">Employee</label>
     <select id="emp"><option value="">All Employees</option></select></div>
-  <div class="f"><label>Period</label>
-    <select id="period"></select>
-    <span id="custom" class="hide"><input type="date" id="from"> – <input type="date" id="to"></span></div>
+  <div class="f"><label for="from">From</label><input type="date" id="from">
+    <label for="to">To</label><input type="date" id="to"></div>
   <button class="reset" id="reset">⟲ Reset</button>
 </div>
 
@@ -84,46 +82,32 @@
 </div>
 
 <script>
-// ====== YAHAN APNA WEB APP URL DAALO ======
+// ====== PASTE YOUR APPS SCRIPT WEB APP URL HERE ======
 const API_URL = 'https://script.google.com/a/macros/ugbolmalassociates.com/s/AKfycbx_AUw0ptbydQyVuhKFaMubqMgcg5O-F6mwhAyIdkfO4nNjZKMqRxnbnIIG2M_NwDLN/exec';
-// ==========================================
+// =====================================================
 
 const $ = id => document.getElementById(id);
 const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 let RAW = [], VIEW = 'client', TAB = 'hist';
 
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const fmtDate = iso => { const [y,m,d] = iso.split('-'); return iso ? `${d}-${MON[+m-1]}-${y}` : ''; };
+const fmtDate = iso => { if (!iso) return ''; const [y,m,d] = iso.split('-'); return `${d}-${MON[+m-1]}-${y}`; };
 function fmtMins(m){
   const h = Math.floor(m/60), r = m%60;
   return `${h} ${h===1?'hr':'hrs'} ${String(r).padStart(2,'0')} mins`;
 }
 function statusInfo(s){
-  const t = s.toLowerCase();
+  const t = String(s).toLowerCase();
   if (['done','completed','complete'].includes(t)) return ['done','✔ Done',true];
   if (t.includes('progress')) return ['prog','⏳ In Progress',false];
   return ['pend','◔ '+(s||'Pending'),false];
 }
-const pad = n => String(n).padStart(2,'0');
-const iso = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 
 function fyStart(){ const n = new Date(); return n.getMonth() >= 3 ? n.getFullYear() : n.getFullYear()-1; }
-
-function initPeriods(){
-  const cur = fyStart(), sel = $('period');
-  sel.innerHTML = '';
-  for (let y = cur+1; y >= cur-5; y--) {
-    sel.innerHTML += `<option value="fy-${y}">01-Apr-${y} – 31-Mar-${y+1}</option>`;
-  }
-  sel.innerHTML += '<option value="month">This Month</option><option value="all">All Time</option><option value="custom">Custom Range</option>';
-  sel.value = 'fy-' + cur;
-}
-function getRange(){
-  const v = $('period').value;
-  if (v.startsWith('fy-')) { const y = +v.slice(3); return [`${y}-04-01`, `${y+1}-03-31`]; }
-  if (v === 'month') { const n = new Date(); return [iso(new Date(n.getFullYear(), n.getMonth(), 1)), iso(new Date(n.getFullYear(), n.getMonth()+1, 0))]; }
-  if (v === 'custom') return [$('from').value || '', $('to').value || ''];
-  return ['', ''];
+function setDefaultDates(){
+  const y = fyStart();
+  $('from').value = `${y}-04-01`;
+  $('to').value = `${y+1}-03-31`;
 }
 
 async function api(params){
@@ -136,15 +120,14 @@ async function api(params){
 
 async function loadMeta(){
   const m = await api({action:'meta'});
-  $('clientList').innerHTML = m.clients.map(c => `<option value="${esc(c)}">`).join('');
-  $('emp').innerHTML = '<option value="">All Employees</option>' + m.staff.map(s => `<option>${esc(s)}</option>`).join('');
+  $('client').innerHTML = '<option value="">All Clients</option>' + m.clients.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  $('emp').innerHTML = '<option value="">All Employees</option>' + m.staff.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('');
 }
 
 async function loadData(){
-  const [from, to] = getRange();
-  setMsg('Loading data…');
+  setMsg('Loading data...');
   try {
-    const j = await api({action:'data', client:$('client').value.trim(), from, to});
+    const j = await api({action:'data', client:$('client').value, from:$('from').value, to:$('to').value});
     RAW = j.rows;
     render();
   } catch(e){ setMsg('Error: ' + e.message); }
@@ -167,8 +150,7 @@ function render(){
   $('sDone').textContent = done;
   $('sPend').textContent = rows.length - done;
   $('sTime').textContent = fmtMins(mins);
-  const c = $('client').value.trim();
-  $('title').textContent = 'Work History – ' + (c || 'All Clients');
+  $('title').textContent = 'Work History – ' + ($('client').value || 'All Clients');
   renderHist(rows);
   renderSumm(rows);
 }
@@ -183,8 +165,8 @@ function rowHtml(r, i, showClient){
 
 function renderHist(rows){
   const t = $('histTbl');
-  if (!rows.length){ t.innerHTML = '<tr><td class="msg">Is selection ke liye koi record nahi mila.</td></tr>'; return; }
-  const showClient = !$('client').value.trim();
+  if (!rows.length){ t.innerHTML = '<tr><td class="msg">No records found for the selected filters.</td></tr>'; return; }
+  const showClient = !$('client').value;
   const cols = showClient ? 8 : 7;
   let h = `<tr><th>#</th><th>Date</th>${showClient?'<th>Client</th>':''}<th>Employee</th><th>Work Type</th><th>Task Description</th><th>Time Spent</th><th>Status</th></tr>`;
   if (VIEW === 'client') {
@@ -194,7 +176,7 @@ function renderHist(rows){
     rows.forEach(r => (g[r.staff || '—'] = g[r.staff || '—'] || []).push(r));
     Object.keys(g).sort().forEach(s => {
       const list = g[s], m = list.reduce((a,r) => a + r.mins, 0);
-      h += `<tr class="grp"><td colspan="${cols}">${esc(s)} — ${list.length} items, ${fmtMins(m)}</td></tr>`;
+      h += `<tr class="grp"><td colspan="${cols}">${esc(s)} — ${list.length} item${list.length===1?'':'s'}, ${fmtMins(m)}</td></tr>`;
       list.forEach((r,i) => h += rowHtml(r, i+1, showClient));
     });
   }
@@ -210,7 +192,7 @@ function renderSumm(rows){
     if (statusInfo(r.status)[2]) g[k].d++;
   });
   const keys = Object.keys(g).sort();
-  if (!keys.length){ $('summTbl').innerHTML = '<tr><td class="msg">Koi record nahi.</td></tr>'; return; }
+  if (!keys.length){ $('summTbl').innerHTML = '<tr><td class="msg">No records found for the selected filters.</td></tr>'; return; }
   let h = '<tr><th>#</th><th>Employee</th><th>Total Items</th><th>Completed</th><th>Pending</th><th>Time Spent</th></tr>';
   let T = {n:0,d:0,m:0};
   keys.forEach((k,i) => {
@@ -224,16 +206,11 @@ function renderSumm(rows){
 // ===== Events =====
 $('client').addEventListener('change', loadData);
 $('emp').addEventListener('change', render);
-$('period').addEventListener('change', () => {
-  $('custom').classList.toggle('hide', $('period').value !== 'custom');
-  if ($('period').value !== 'custom') loadData();
-});
 $('from').addEventListener('change', loadData);
 $('to').addEventListener('change', loadData);
 $('reset').addEventListener('click', () => {
   $('client').value = ''; $('emp').value = '';
-  $('period').value = 'fy-' + fyStart();
-  $('custom').classList.add('hide');
+  setDefaultDates();
   loadData();
 });
 document.querySelectorAll('.pill').forEach(b => b.addEventListener('click', () => {
@@ -248,8 +225,8 @@ document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () =>
 }));
 
 (async function(){
-  initPeriods();
-  try { await loadMeta(); } catch(e){ setMsg('Meta load error: ' + e.message); return; }
+  setDefaultDates();
+  try { await loadMeta(); } catch(e){ setMsg('Unable to load client and employee lists: ' + e.message); return; }
   loadData();
 })();
 </script>
