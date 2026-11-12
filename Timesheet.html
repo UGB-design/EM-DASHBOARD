@@ -177,7 +177,7 @@ function render(){
 
 function rowHtml(r, i, showClient){
   const [cls, label] = statusInfo(r.status);
-  return `<tr><td>${i}</td><td>${fmtDate(r.date)}</td>
+   return `<tr><td>${i}</td><td>${fmtDate(r.date)}</td><td>${esc(r.slot)}</td>
     ${showClient ? `<td>${esc(r.client)}</td>` : ''}
     <td>${esc(r.staff)}</td><td>${esc(r.type)}</td><td>${esc(r.task)}</td>
     <td>${fmtMins(r.mins)}</td><td><span class="st ${cls}">${label}</span></td></tr>`;
@@ -187,8 +187,8 @@ function renderHist(rows){
   const t = $('histTbl');
   if (!rows.length){ t.innerHTML = '<tr><td class="msg">No records found for the selected filters.</td></tr>'; return; }
   const showClient = !CLIENT;
-  const cols = showClient ? 8 : 7;
-  let h = `<tr><th>#</th><th>Date</th>${showClient?'<th>Client</th>':''}<th>Employee</th><th>Work Type</th><th>Task Description</th><th>Time Spent</th><th>Status</th></tr>`;
+   const cols = showClient ? 9 : 8;
+  let h = `<tr><th>#</th><th>Date</th><th>Time Slot</th>${showClient?'<th>Client</th>':''}<th>Employee</th><th>Work Type</th><th>Task Description</th><th>Time Spent</th><th>Status</th></tr>`;
   if (VIEW === 'client') {
     rows.forEach((r,i) => h += rowHtml(r, i+1, showClient));
   } else {
