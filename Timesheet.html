@@ -26,10 +26,10 @@
   .list div.sel{font-weight:700;color:#0b3a8c}
   .list .none{color:#5a6b8c;cursor:default}
 
-  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:16px 0}
-  .card{border-radius:16px;padding:18px 22px}
-  .card small{font-size:16px;font-weight:600;display:block}
-  .card b{font-size:34px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:10px 0}
+ .card{border-radius:10px;padding:8px 14px}
+.card small{font-size:13px;font-weight:600;display:block}
+ .card b{font-size:20px}
   .c1{background:#dfeafb}.c2{background:#d9f5e3}.c3{background:#fdeacb}.c4{background:#e8e0fb}
   .tabs{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
   .tab{padding:12px 22px;border-radius:10px}
@@ -50,6 +50,8 @@
   .pend{background:#fde0e0;color:#c62828}
   .msg{padding:30px;text-align:center;color:#5a6b8c}
   .hide{display:none}
+ .rad{display:inline-flex;align-items:center;gap:6px;font-weight:600;cursor:pointer;margin-right:16px;font-size:15px}
+.rad input{width:16px;height:16px;padding:0;accent-color:#0b3a8c;cursor:pointer}
 </style>
 </head>
 <body>
@@ -76,17 +78,17 @@
 </div>
 
 <div class="tabs">
-  <button class="tab active" data-tab="hist">👥 Client Wise History</button>
-  <button class="tab" data-tab="summ">👤 Employee Wise Summary</button>
+  <label class="rad"><input type="radio" name="tab" value="hist" checked> Client Wise History</label>
+  <label class="rad"><input type="radio" name="tab" value="summ"> Employee Wise Summary</label>
 </div>
 
 <div class="panel">
   <div id="histBox">
     <div class="head">
       <h2 id="title">Work History – All Clients</h2>
-      <div><span style="margin-right:8px">View:</span>
-        <button class="pill active" data-view="client">Client Wise (All Employees)</button>
-        <button class="pill" data-view="emp">Employee Wise (Selected Client)</button></div>
+           <div><span style="margin-right:10px;font-weight:600">View:</span>
+        <label class="rad"><input type="radio" name="view" value="client" checked> Client Wise (All Employees)</label>
+        <label class="rad"><input type="radio" name="view" value="emp"> Employee Wise (Selected Client)</label></div>
     </div>
     <div class="wrap"><table id="histTbl"></table></div>
   </div>
@@ -279,13 +281,11 @@ box.addEventListener('blur', hideList);
 // ===== Other events =====
 $('emp').addEventListener('change', render);
 $('apply').addEventListener('click', loadData);
-document.querySelectorAll('.pill').forEach(b => b.addEventListener('click', () => {
-  document.querySelectorAll('.pill').forEach(x => x.classList.remove('active'));
-  b.classList.add('active'); VIEW = b.dataset.view; render();
+document.querySelectorAll('input[name="view"]').forEach(b => b.addEventListener('change', () => {
+  VIEW = b.value; render();
 }));
-document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => {
-  document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-  b.classList.add('active'); TAB = b.dataset.tab;
+document.querySelectorAll('input[name="tab"]').forEach(b => b.addEventListener('change', () => {
+  TAB = b.value;
   $('histBox').classList.toggle('hide', TAB !== 'hist');
   $('summBox').classList.toggle('hide', TAB !== 'summ');
 }));
