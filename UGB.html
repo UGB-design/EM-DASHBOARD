@@ -3102,20 +3102,13 @@ function celebOpen() {
       '<div style="display:flex;gap:5px;flex-wrap:wrap">' + chips + '</div>' +
       '<div style="font-size:10.5px;color:#9aa0ac;margin-top:6px">Hover over a date to view In/Out time and working hours.</div>';
   }
-
-  function renderEmpDrill(name) {
+function renderEmpDrill(name) {
     var host = document.getElementById('udmDrill');
     if (!host) return;
     window._drillFor = name;
     host.innerHTML =
       drillBox_('Pending Tasks', drillPendingHTML_(name)) +
-      drillBox_('Task Completion Trend (Last 30 Days)', '<div id="udmTrendBox"><div class="skel" style="height:120px;border-radius:8px"></div></div>') +
       drillBox_('Attendance Summary (Last 30 Days)', drillAttendanceHTML_(name));
-    fetchEmpTrend(function(trend) {
-      if (window._drillFor !== name) return; // modal doosre employee ke liye khul gaya
-      var box = document.getElementById('udmTrendBox');
-      if (box) box.innerHTML = drillTrendHTML_(trend, name);
-    });
   }
   function closeUserDetail() {
     document.getElementById('udmOverlay').style.display = 'none';
