@@ -1246,12 +1246,6 @@ body.body-modal-lock{overflow:hidden}
         <select id="clFilterFreq" onchange="applyChecklistFilters()"><option value="All">All Freq</option></select>
         <label>Type:</label>
         <select id="clFilterType" onchange="applyChecklistFilters()"><option value="All">All Types</option></select>
-      <select id="clFilterSubType" onchange="applyChecklistFilters()" style="display:none">
-  <option value="All">All (Regular + Opening + Closing)</option>
-  <option value="REGULAR">Regular</option>
-  <option value="OPENING PROCESS">Opening Process</option>
-  <option value="CLOSING PROCESS">Closing Process</option>
-</select>
       </div>
       <div class="meta-info-badge" id="clMetaBadges"></div>
       <div class="stat-grid" id="clStatsGrid"></div>
@@ -3529,86 +3523,74 @@ function renderClByDoer(rows) {
     }
     return rows;
   }
-function applyChecklistFilters() {
-  var dFilter    = document.getElementById('clFilterDoer').value;
-  var deptFilter = document.getElementById('clFilterDept').value;
-  var sFilter    = document.getElementById('clFilterStatus').value;
-  var fFilter    = document.getElementById('clFilterFreq').value;
-  var tFilter    = document.getElementById('clFilterType').value;
-
-  // Sub-type dropdown: sirf "Opening & Closing" chunne par dikhega
-  var subSel = document.getElementById('clFilterSubType');
-  var isOC = /opening/i.test(tFilter);
-  subSel.style.display = isOC ? '' : 'none';
-  if (!isOC) subSel.value = 'All';
-  var subFilter = subSel.value;
-  function subOk(r) {
-    return subFilter === 'All' || String(r.subType || '').trim().toUpperCase() === subFilter;
+  // ── Checklist Tab ─────────────────────────────────────────────────────────────
+    function applyChecklistFilters() {
+    var dFilter    = document.getElementById('clFilterDoer').value;
+    var deptFilter = document.getElementById('clFilterDept').value;
+    var sFilter    = document.getElementById('clFilterStatus').value;
+    var fFilter    = document.getElementById('clFilterFreq').value;
+    var tFilter    = document.getElementById('clFilterType').value;
+    var data = globalRawData ? (globalRawData.checklistData || []) : [];
+    var filtered = data.filter(function(r) {
+            return (dFilter === 'All' || r.doer === dFilter) &&
+             (deptFilter === 'All' || r.dept === deptFilter) &&
+             (sFilter === 'All' || r.status === sFilter) &&
+             (fFilter === 'All' || r.freq === fFilter) &&
+             (tFilter === 'All' || r.type === tFilter);
+    });
+    filtered.sort(function(a, b) { return String(a.plannedDate).localeCompare(String(b.plannedDate)); });
+    var doneCount = filtered.filter(function(r) { return r.status === 'Done'; }).length;
+    var pendCount = filtered.length - doneCount;
+    var clTotalPlanned = data.filter(function(r) {
+      return (dFilter === 'All' || r.doer === dFilter) &&
+             (deptFilter === 'All' || r.dept === deptFilter) &&
+             (fFilter === 'All' || r.freq === fFilter) &&
+             (tFilter === 'All' || r.type === tFilter);
+    }).length;
+    var clMetaHTML = '<span class="m-badge b-blue">' + clTotalPlanned + ' planned</span>';
+    if (sFilter === 'All') {
+      clMetaHTML += '<span class="m-badge b-green">' + doneCount + ' done</span>' +
+                    '<span class="m-badge b-red">' + pendCount + ' pending</span>';
+    } else if (sFilter === 'Done') {
+      clMetaHTML += '<span class="m-badge b-green">' + doneCount + ' done</span>';
+    } else if (sFilter === 'Pending') {
+      clMetaHTML += '<span class="m-badge b-red">' + pendCount + ' pending</span>';
+    }
+    document.getElementById('clMetaBadges').innerHTML = clMetaHTML;
+  
+    var clAllPend = data.filter(function(r) {
+      return (dFilter === 'All' || r.doer === dFilter) &&
+             (deptFilter === 'All' || r.dept === deptFilter) &&
+             (fFilter === 'All' || r.freq === fFilter) &&
+             (tFilter === 'All' || r.type === tFilter) &&
+             r.status !== 'Done';
+    }).length;
+    setTabBadge('badgeChecklist', clAllPend);
+  
+    var onTimeCount = filtered.filter(function(r) {
+      return r.status === 'Done' && r.actualDate && r.actualDate !== '-' && r.plannedDate && r.plannedDate !== '-' && r.actualDate <= r.plannedDate;
+    }).length;
+  
+    var clWorkNotDonePct       = filtered.length > 0 ? (pendCount / filtered.length * 100) : 0;
+    var clWorkNotDoneOnTimePct = doneCount > 0 ? Math.max(0, 100 - (onTimeCount / doneCount * 100)) : 0;
+  
+    document.getElementById('clStatsGrid').innerHTML =
+      statCard('On Time Completed', onTimeCount, 'blue') +
+      negScoreCard('Work Not Done %', clWorkNotDonePct) +
+      negScoreCard('Work Not Done On Time %', clWorkNotDoneOnTimePct);
+  
+      document.getElementById('clTableBody').innerHTML = filtered.map(function(r, i) {
+      return '<tr><td>' + (i + 1) + '</td>' +
+        '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(r.doer) + '</div>' + titleCase(r.doer) + '</div></td>' +
+        '<td><span class="dept-pill">' + titleCase(r.dept) + '</span></td>' +
+        '<td>' + r.task + '</td>' +
+        '<td><span class="freq-pill">' + r.freq + '</span></td>' +
+               '<td style="white-space:nowrap">' + fmtDMY(r.plannedDate) + '</td>' +
+        '<td style="white-space:nowrap">' + fmtDMY(r.actualDate) + '</td>' +
+        '<td><span class="' + (r.status === 'Done' ? 'st-done' : 'st-pend') + '">' + r.status + '</span></td></tr>';
+    }).join('');
   }
-
-  var data = globalRawData ? (globalRawData.checklistData || []) : [];
-  var filtered = data.filter(function(r) {
-    return (dFilter === 'All' || r.doer === dFilter) &&
-           (deptFilter === 'All' || r.dept === deptFilter) &&
-           (sFilter === 'All' || r.status === sFilter) &&
-           (fFilter === 'All' || r.freq === fFilter) &&
-           (tFilter === 'All' || r.type === tFilter) &&
-           subOk(r);
-  });
-  filtered.sort(function(a, b) { return String(a.plannedDate).localeCompare(String(b.plannedDate)); });
-  var doneCount = filtered.filter(function(r) { return r.status === 'Done'; }).length;
-  var pendCount = filtered.length - doneCount;
-  var clTotalPlanned = data.filter(function(r) {
-    return (dFilter === 'All' || r.doer === dFilter) &&
-           (deptFilter === 'All' || r.dept === deptFilter) &&
-           (fFilter === 'All' || r.freq === fFilter) &&
-           (tFilter === 'All' || r.type === tFilter) &&
-           subOk(r);
-  }).length;
-  var clMetaHTML = '<span class="m-badge b-blue">' + clTotalPlanned + ' planned</span>';
-  if (sFilter === 'All') {
-    clMetaHTML += '<span class="m-badge b-green">' + doneCount + ' done</span>' +
-                  '<span class="m-badge b-red">' + pendCount + ' pending</span>';
-  } else if (sFilter === 'Done') {
-    clMetaHTML += '<span class="m-badge b-green">' + doneCount + ' done</span>';
-  } else if (sFilter === 'Pending') {
-    clMetaHTML += '<span class="m-badge b-red">' + pendCount + ' pending</span>';
-  }
-  document.getElementById('clMetaBadges').innerHTML = clMetaHTML;
-
-  var clAllPend = data.filter(function(r) {
-    return (dFilter === 'All' || r.doer === dFilter) &&
-           (deptFilter === 'All' || r.dept === deptFilter) &&
-           (fFilter === 'All' || r.freq === fFilter) &&
-           (tFilter === 'All' || r.type === tFilter) &&
-           subOk(r) &&
-           r.status !== 'Done';
-  }).length;
-  setTabBadge('badgeChecklist', clAllPend);
-
-  var onTimeCount = filtered.filter(function(r) {
-    return r.status === 'Done' && r.actualDate && r.actualDate !== '-' && r.plannedDate && r.plannedDate !== '-' && r.actualDate <= r.plannedDate;
-  }).length;
-
-  var clWorkNotDonePct       = filtered.length > 0 ? (pendCount / filtered.length * 100) : 0;
-  var clWorkNotDoneOnTimePct = doneCount > 0 ? Math.max(0, 100 - (onTimeCount / doneCount * 100)) : 0;
-
-  document.getElementById('clStatsGrid').innerHTML =
-    statCard('On Time Completed', onTimeCount, 'blue') +
-    negScoreCard('Work Not Done %', clWorkNotDonePct) +
-    negScoreCard('Work Not Done On Time %', clWorkNotDoneOnTimePct);
-
-  document.getElementById('clTableBody').innerHTML = filtered.map(function(r, i) {
-    return '<tr><td>' + (i + 1) + '</td>' +
-      '<td><div class="dc"><div class="av av' + (i % 16) + '">' + ini(r.doer) + '</div>' + titleCase(r.doer) + '</div></td>' +
-      '<td><span class="dept-pill">' + titleCase(r.dept) + '</span></td>' +
-      '<td>' + r.task + '</td>' +
-      '<td><span class="freq-pill">' + r.freq + '</span></td>' +
-      '<td style="white-space:nowrap">' + fmtDMY(r.plannedDate) + '</td>' +
-      '<td style="white-space:nowrap">' + fmtDMY(r.actualDate) + '</td>' +
-      '<td><span class="' + (r.status === 'Done' ? 'st-done' : 'st-pend') + '">' + r.status + '</span></td></tr>';
-  }).join('');
-}  
+  
   // ── Delegation Tab ────────────────────────────────────────────────────────────
   // Rows whose sheet Status is "Week Shifted" are hidden entirely (they don't
   // appear in the list, filters, badges, or stat cards). Every remaining row
