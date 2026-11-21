@@ -225,6 +225,7 @@ body.att-only .wrap > div:first-of-type { display: none !important; }
       <button class="tab" data-tab="deductions"> Deduction & Salary Slip</button>
       <button class="tab" data-tab="history"> All Leave Requests</button>
       <button class="tab" data-tab="attendance"> Attendance</button>
+      <button class="tab" data-tab="overtime"> Overtime</button>
     </div>
     <button class="btn ghost sm tabRefreshBtn" title="Reload live data">⟳ Refresh</button>
   </div>
@@ -415,6 +416,43 @@ body.att-only .wrap > div:first-of-type { display: none !important; }
         </table>
       </div>
       <div id="attendancePagination" style="display:flex;align-items:center;justify-content:flex-end;padding:10px 16px;"></div>
+    </div>
+  </section>
+<section id="tab-overtime" style="display:none;">
+    <div class="cards" id="otCards"></div>
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Weekly Extra Hours (OT)</h2>
+        <div class="panel-filters">
+          <div class="mini-field">
+            <label>Employee</label>
+            <select id="otEmp"><option value="">All</option></select>
+          </div>
+          <div class="mini-field">
+            <label>Month</label>
+            <select id="otMonth"><option value="">All</option></select>
+          </div>
+        </div>
+      </div>
+      <div class="tablewrap">
+        <table>
+          <thead><tr>
+            <th>Employee</th><th>Week</th><th>Days Worked</th><th>Total Hours</th><th>Extra (OT) Hours</th><th>Days with OT</th>
+          </tr></thead>
+          <tbody id="otWeekBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>Month-end OT Balance &amp; Extra Pay</h2></div>
+      <div class="tablewrap">
+        <table>
+          <thead><tr>
+            <th>Employee</th><th>Month</th><th>OT Earned</th><th>Comp-Off Used</th><th>Balance</th><th>Rate / Hr</th><th>Extra Pay</th>
+          </tr></thead>
+          <tbody id="otMonthBody"></tbody>
+        </table>
+      </div>
     </div>
   </section>
 
@@ -1805,6 +1843,132 @@ function renderSummaryCards(){
   `;
 }
 
+/* ============ Overtime / Comp-Off ============ */
+const BASIC_HOURS = 8.5;
+const OT_RATE_FACTOR = 1;
+const MON3 = MONTH_ORDER.map(m => m.slice(0,3));
+
+function hoursOf(raw){ return parseHM(formatTimeValue(raw)); }
+function fmtHM(h){
+  const neg = h < 0; h = Math.abs(h);
+  const t = Math.round(h * 60);
+  return (neg ? "-" : "") + String(Math.floor(t/60)).padStart(2,"0") + ":" + String(t%60).padStart(2,"0");
+}
+function weekStart(d){
+  const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  x.setDate(x.getDate() - ((x.getDay() + 6) % 7));
+  return x;
+}
+function dmyShort(d){ return String(d.getDate()).padStart(2,"0") + "-" + MON3[d.getMonth()]; }
+
+function otOfRow(r){
+  const worked = hoursOf(getFieldFuzzy(r, "W.Hrs_f", "W.Hrs", "WHrs"));
+  const basic = hoursOf(getFieldFuzzy(r, "Basic.Hrs_f", "Basic.Hrs", "BasicHrs"));
+  const otRaw = getFieldFuzzy(r, "OT_f", "OT");
+  const ot = otRaw !== null ? hoursOf(otRaw) : Math.max(worked - basic, 0);
+  const used = hoursOf(getFieldFuzzy(r, "CompOff_Used_f", "CompOff_Used", "CompOffUsed"));
+  return { worked, ot, used };
+}
+
+function hourlyRate(name){
+  const key = String(name||"").trim().toUpperCase();
+  const s = DATA.staff.find(x => String(x["Name"]||"").trim().toUpperCase() === key);
+  if(!s) return 0;
+  const perDay = Number(s["Per_Day_Salary"]) || ((Number(s["Monthly_Salary"]) || 0) / 30);
+  return perDay / BASIC_HOURS * OT_RATE_FACTOR;
+}
+
+let otInit = false;
+function populateOtFilters(){
+  const e = document.getElementById("otEmp"), m = document.getElementById("otMonth");
+  if(!e || !m) return;
+  const pe = e.value, pm = m.value;
+  const names = [...new Set(DATA.attendance.map(r => r["Emp Name"]).filter(Boolean))].sort();
+  e.innerHTML = '<option value="">All</option>' + names.map(n => `<option>${n}</option>`).join("");
+  if(names.includes(pe)) e.value = pe;
+  m.innerHTML = '<option value="">All</option>' + getFiscalMonthList().map(c => `<option value="${c.key}">${c.month} ${c.year}</option>`).join("");
+  if(!otInit){
+    const now = new Date();
+    m.value = MONTH_ORDER[now.getMonth()] + "|" + now.getFullYear();
+    otInit = true;
+  } else if([...m.options].some(o => o.value === pm)) {
+    m.value = pm;
+  }
+}
+
+function renderOvertime(){
+  const emp = document.getElementById("otEmp").value;
+  const mk = document.getElementById("otMonth").value;
+
+  const base = DATA.attendance.map(r => {
+    const ds = r["Date_f"] || r["Date"];
+    return { r, d: parseDMY(ds), mk: attendanceMonthKey(ds), name: r["Emp Name"], ...otOfRow(r) };
+  }).filter(x => x.d && (!emp || x.name === emp) && (!mk || x.mk === mk));
+
+  const wk = {};
+  base.forEach(x => {
+    const ws = weekStart(x.d);
+    const key = x.name + "|" + ws.getTime();
+    const o = wk[key] = wk[key] || { name: x.name, ws, days: 0, worked: 0, ot: 0, otDays: 0 };
+    if(x.worked > 0){ o.days++; o.worked += x.worked; }
+    if(x.ot > 0){ o.ot += x.ot; o.otDays++; }
+  });
+  const wrows = Object.values(wk).filter(o => o.ot > 0)
+    .sort((a,b) => (b.ws - a.ws) || a.name.localeCompare(b.name));
+
+  const wb = document.getElementById("otWeekBody");
+  wb.innerHTML = wrows.length ? "" : `<tr><td colspan="6"><div class="empty"><b>No extra hours found</b>Selected filters me kisi ne OT nahi kiya.</div></td></tr>`;
+  wrows.forEach(o => {
+    const end = new Date(o.ws); end.setDate(end.getDate() + 6);
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><div class="person"><div class="avatar" style="background:${colorFor(o.name)}">${initials(o.name)}</div><div class="name">${o.name}</div></div></td>
+      <td>${dmyShort(o.ws)} to ${dmyShort(end)}</td>
+      <td class="num-cell">${o.days}</td>
+      <td class="num-cell">${fmtHM(o.worked)}</td>
+      <td class="num-cell" style="font-weight:700;color:var(--green);">${fmtHM(o.ot)}</td>
+      <td class="num-cell">${o.otDays}</td>`;
+    wb.appendChild(tr);
+  });
+
+  const mo = {};
+  base.forEach(x => {
+    const key = x.name + "|" + x.mk;
+    const o = mo[key] = mo[key] || { name: x.name, mk: x.mk, ot: 0, used: 0, ts: x.d.getFullYear()*12 + x.d.getMonth() };
+    o.ot += x.ot; o.used += x.used;
+  });
+  const mrows = Object.values(mo).filter(o => o.ot > 0 || o.used > 0)
+    .sort((a,b) => (b.ts - a.ts) || a.name.localeCompare(b.name));
+
+  const mb = document.getElementById("otMonthBody");
+  mb.innerHTML = mrows.length ? "" : `<tr><td colspan="7"><div class="empty"><b>No OT balance</b></div></td></tr>`;
+  let totOt = 0, totUsed = 0, totPay = 0;
+  mrows.forEach(o => {
+    const bal = o.ot - o.used;
+    const rate = hourlyRate(o.name);
+    const pay = bal > 0 ? Math.round(bal * rate) : 0;
+    totOt += o.ot; totUsed += o.used; totPay += pay;
+    const [mName, yName] = String(o.mk).split("|");
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><div class="person"><div class="avatar" style="background:${colorFor(o.name)}">${initials(o.name)}</div><div class="name">${o.name}</div></div></td>
+      <td>${mName} ${yName}</td>
+      <td class="num-cell">${fmtHM(o.ot)}</td>
+      <td class="num-cell">${fmtHM(o.used)}</td>
+      <td class="num-cell ${bal < 0 ? 'neg' : ''}" style="font-weight:700;">${fmtHM(bal)}</td>
+      <td class="num-cell">${money(rate)}</td>
+      <td class="num-cell" style="font-weight:700;color:${pay ? 'var(--green)' : 'var(--ink-faint)'};">${money(pay)}</td>`;
+    mb.appendChild(tr);
+  });
+
+  document.getElementById("otCards").innerHTML = `
+    <div class="card"><div class="eyebrow">Staff with OT</div><div class="num blue">${new Set(mrows.filter(o=>o.ot>0).map(o=>o.name)).size}</div></div>
+    <div class="card"><div class="eyebrow">OT Earned</div><div class="num green">${fmtHM(totOt)}</div></div>
+    <div class="card"><div class="eyebrow">Comp-Off Used</div><div class="num amber">${fmtHM(totUsed)}</div></div>
+    <div class="card"><div class="eyebrow">Extra Pay Payable</div><div class="num red">${money(totPay)}</div></div>
+  `;
+}
+
 function renderAll(){
   updatePendingBadge();
   renderRequests(document.getElementById("searchRequests").value);
@@ -1812,7 +1976,10 @@ function renderAll(){
   renderBalanceCards();
   renderDeductions(document.getElementById("searchDeductions").value);
   renderHistory(document.getElementById("searchHistory").value);
-  renderHolidays(document.getElementById("searchHolidays").value);
+renderHolidays(document.getElementById("searchHolidays").value);
+  populateOtFilters();
+  renderOvertime();
+ 
   renderAttendanceCards();
   renderAttendanceTable();
 }
@@ -1846,6 +2013,8 @@ document.getElementById("attendanceEmployeeFilter").addEventListener("change", (
 document.getElementById("attendanceStatusFilter").addEventListener("change", ()=>{ attendancePage=1; renderAttendanceCards(); renderAttendanceTable(); });
 document.getElementById("attendanceMonthSel").addEventListener("change", ()=>{ attendancePage=1; renderAttendanceCards(); renderAttendanceTable(); });
 document.getElementById("searchAttendance").addEventListener("input", ()=>{ attendancePage=1; renderAttendanceCards(); renderAttendanceTable(); });
+document.getElementById("otEmp").addEventListener("change", renderOvertime);
+document.getElementById("otMonth").addEventListener("change", renderOvertime);
 document.querySelectorAll(".tabRefreshBtn").forEach(btn=>{
   btn.addEventListener("click", ()=>loadAll(false));
 });
