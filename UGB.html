@@ -4134,6 +4134,10 @@ function displayName(n) {
   }
   function closeScorePendingModal() {
     document.getElementById('scorePendingModal').style.display = 'none';
+    if (window._reopenFullReport) {
+      window._reopenFullReport = false;
+      showFullReportModal();
+    }
   }
     function isSameAsToday(dateStr) {
     var dm = parseFullDate(dateStr);
@@ -4491,7 +4495,7 @@ function populateLeaveEmpFilter(rows) {
   document.getElementById('fullReportBody').innerHTML = sorted.map(function(r,i){
     return '<tr>'+
       '<td style="text-align:center">'+(i+1)+'</td>'+
-      '<td><div class="dc"><div class="av av'+(i%16)+'">'+ini(displayName(r.employee))+'</div><strong>'+displayName(r.employee)+'</strong></div></td>'+
+      '<td><div class="dc" style="cursor:pointer" title="Click to view pending tasks" onclick="openEmpPendingFromReport(\''+String(r.employee).replace(/'/g,"\\'")+'\')"><div class="av av'+(i%16)+'">'+ini(displayName(r.employee))+'</div><strong style="color:#1e3a6d;text-decoration:underline">'+displayName(r.employee)+'</strong></div></td>'+
       '<td style="text-align:center">'+nbB(r.totalPlan)+'</td>'+
       '<td style="text-align:center">'+nbG(r.totalCompleted)+'</td>'+  
       '<td style="text-align:center">'+nbG(r.onTimeCompleted)+'</td>'+
@@ -4499,6 +4503,12 @@ function populateLeaveEmpFilter(rows) {
       '<td style="text-align:center">'+workNotDoneCell(r.workNotDonePct)+'</td></tr>';
   }).join('') || '<tr><td colspan="7" style="text-align:center;color:#bbb;padding:30px">No score data</td></tr>';
   document.getElementById('fullReportModal').style.display='flex';
+}
+    function openEmpPendingFromReport(empName) {
+  window._reopenFullReport = true;          // pending popup band hone par Full Report wapas khule
+  closeFullReportModal();                   // pehle Full Report band karo (warna peeche chhup jata hai)
+  renderScorePendingDetail(resolveCanonicalEmployee(empName));
+  document.getElementById('scorePendingModal').style.display = 'flex';
 }
 function closeFullReportModal(){ document.getElementById('fullReportModal').style.display='none'; }
   </script>
