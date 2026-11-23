@@ -1910,7 +1910,7 @@ function renderOvertime(){
     const isOff = (st === "WO" || st === "HLD" || st === "POW");
     const ws = weekStart(d);
     const key = name + "|" + ws.getTime() + "|" + k;
-    const o = chunks[key] = chunks[key] || { name, ws, mk: k, ts: d.getFullYear()*12 + d.getMonth(), days: 0, offHrs: 0, worked: 0, used: 0 };
+    const o = chunks[key] = chunks[key] || { name, ws, mk: k, ts: d.getFullYear()*12 + d.getMonth(), days: 0, offHrs: 0, worked: 0, used: 0, ms: new Date(d.getFullYear(), d.getMonth(), 1), me: new Date(d.getFullYear(), d.getMonth() + 1, 0) };
     if(worked > 0){
       o.worked += worked;
       if(isOff){ o.offHrs += worked; } else { o.days++; }
@@ -1929,11 +1929,13 @@ function renderOvertime(){
   const wb = document.getElementById("otWeekBody");
   wb.innerHTML = wrows.length ? "" : `<tr><td colspan="7"><div class="empty"><b>No overtime records</b></div></td></tr>`;
   wrows.forEach(o => {
-    const end = new Date(o.ws); end.setDate(end.getDate() + 6);
+    const wEnd = new Date(o.ws); wEnd.setDate(wEnd.getDate() + 6);
+    const from = o.ws < o.ms ? o.ms : o.ws;
+    const to = wEnd > o.me ? o.me : wEnd;
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td><div class="person"><div class="avatar" style="background:${colorFor(o.name)}">${initials(o.name)}</div><div class="name">${o.name}</div></div></td>
-      <td>${dmyShort(o.ws)} to ${dmyShort(end)}</td>
+     <td>${dmyShort(from)} to ${dmyShort(to)}</td>
       <td>${o.days}</td>
       <td>${fmtDur(o.basic)}</td>
       <td>${fmtDur(o.worked)}</td>
